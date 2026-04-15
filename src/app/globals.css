@@ -1,0 +1,163 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ====================================================
+   PURION OS — Identidade Visual Dark Luxury
+   Paleta: Preto profundo + Dourado Fosco
+==================================================== */
+@theme inline {
+  /* Cores base Shadcn */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ✦ PURION — Cores de marca */
+  --color-purion-black: #0D0D0D;
+  --color-purion-gold: #C9A84C;
+  --color-purion-gold-muted: rgba(201, 168, 76, 0.1);
+  --color-purion-gold-border: rgba(201, 168, 76, 0.25);
+  --color-purion-white: #FAFAF8;
+  --color-purion-surface: #1A1A1A;
+  --color-purion-surface-2: #141414;
+  --color-purion-border: #2A2A2A;
+  --color-purion-muted: #6B6B6B;
+  --color-purion-success: #4CAF7A;
+  --color-purion-warning: #E8A838;
+  --color-purion-danger: #E85238;
+}
+
+/* Tema forçado escuro — PURION sempre usa dark mode */
+:root {
+  --background: #0D0D0D;
+  --foreground: #FAFAF8;
+  --card: #1A1A1A;
+  --card-foreground: #FAFAF8;
+  --popover: #141414;
+  --popover-foreground: #FAFAF8;
+  --primary: #C9A84C;
+  --primary-foreground: #0D0D0D;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FAFAF8;
+  --muted: #141414;
+  --muted-foreground: #6B6B6B;
+  --accent: rgba(201, 168, 76, 0.1);
+  --accent-foreground: #C9A84C;
+  --destructive: #E85238;
+  --border: #2A2A2A;
+  --input: #1A1A1A;
+  --ring: rgba(201, 168, 76, 0.4);
+  --chart-1: #C9A84C;
+  --chart-2: #4CAF7A;
+  --chart-3: #E8A838;
+  --chart-4: #5B8FE8;
+  --chart-5: #E85238;
+  --radius: 0.5rem;
+  --sidebar: #141414;
+  --sidebar-foreground: #FAFAF8;
+  --sidebar-primary: #C9A84C;
+  --sidebar-primary-foreground: #0D0D0D;
+  --sidebar-accent: rgba(201, 168, 76, 0.1);
+  --sidebar-accent-foreground: #C9A84C;
+  --sidebar-border: #2A2A2A;
+  --sidebar-ring: rgba(201, 168, 76, 0.4);
+}
+
+/* Sem tema claro — PURION é always dark */
+.dark {
+  --background: #0D0D0D;
+  --foreground: #FAFAF8;
+  --card: #1A1A1A;
+  --card-foreground: #FAFAF8;
+  --popover: #141414;
+  --popover-foreground: #FAFAF8;
+  --primary: #C9A84C;
+  --primary-foreground: #0D0D0D;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FAFAF8;
+  --muted: #141414;
+  --muted-foreground: #6B6B6B;
+  --accent: rgba(201, 168, 76, 0.1);
+  --accent-foreground: #C9A84C;
+  --destructive: #E85238;
+  --border: #2A2A2A;
+  --input: #1A1A1A;
+  --ring: rgba(201, 168, 76, 0.4);
+  --sidebar: #141414;
+  --sidebar-foreground: #FAFAF8;
+  --sidebar-primary: #C9A84C;
+  --sidebar-primary-foreground: #0D0D0D;
+  --sidebar-accent: rgba(201, 168, 76, 0.1);
+  --sidebar-accent-foreground: #C9A84C;
+  --sidebar-border: #2A2A2A;
+  --sidebar-ring: rgba(201, 168, 76, 0.4);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Montserrat', 'Inter', sans-serif;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Scrollbar customizada — estilo PURION */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A2A2A;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 168, 76, 0.4);
+}
