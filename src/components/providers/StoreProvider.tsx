@@ -2,36 +2,53 @@
 
 /**
  * PURION OS — Provider de Estado Global
- * Inicializa o store Zustand com os dados de seed.
- * Executa apenas uma vez no lado do cliente.
+ *
+ * Comportamento:
+ *  - Se NEXT_PUBLIC_SUPABASE_URL estiver configurado: carrega dados do Supabase
+ *    e escuta mudanças em tempo real (os 3 sócios sempre veem os mesmos dados).
+ *  - Se não estiver configurado (desenvolvimento local): usa dados de seed.
  */
 
 import { useEffect, useRef } from 'react'
 import { usePurionStore } from '@/store'
+import { supabase } from '@/lib/supabase'
 import { seedData } from '@/data/seed'
 
+// Hooks de sincronização Supabase ↔ Zustand
+import { useFinanceiro } from '@/hooks/useFinanceiro'
+import { useCRM }        from '@/hooks/useCRM'
+import { useTarefas }    from '@/hooks/useTarefas'
+import { useProducao }   from '@/hooks/useProducao'
+import { useMarketing }  from '@/hooks/useMarketing'
+import { useReunioes }   from '@/hooks/useReunioes'
+import { useConfiguracoes } from '@/hooks/useConfiguracoes'
+
+// ── Componente interno que chama todos os hooks de sync ──────────────────────
+// Só é renderizado quando Supabase está configurado.
+function SupabaseSync() {
+  useFinanceiro()
+  useCRM()
+  useTarefas()
+  useProducao()
+  useMarketing()
+  useReunioes()
+  useConfiguracoes()
+  return null
+}
+
+// ── Provider principal ────────────────────────────────────────────────────────
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const inicializado = useRef(false)
   const {
-    setLeads,
-    setReceitas,
-    setDespesas,
-    setTarefas,
-    setLotes,
-    setEstoque,
-    setCreators,
-    setCampanhasAds,
-    setReunioes,
-    setProdutosSKU,
-    setPedidosExpedicao,
-    setConteudosCalendario,
-    setDailyEntries,
-    setDecisoes,
+    setLeads, setReceitas, setDespesas, setTarefas, setLotes, setEstoque,
+    setCreators, setCampanhasAds, setReunioes, setProdutosSKU,
+    setPedidosExpedicao, setConteudosCalendario, setDailyEntries, setDecisoes,
     leads,
   } = usePurionStore()
 
   useEffect(() => {
-    // Inicializa apenas se o store estiver vazio (evita sobrescrever dados reais)
+    // Seed apenas se: Supabase não configurado E store ainda vazio
+    if (supabase) return
     if (inicializado.current || leads.length > 0) return
     inicializado.current = true
 
@@ -57,5 +74,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setDailyEntries, setDecisoes,
   ])
 
-  return <>{children}</>
+  return (
+    <>
+      {supabase && <SupabaseSync />}
+      {children}
+    </>
+  )
 }
