@@ -19,7 +19,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main
         className={`
           ${marginLeft} min-h-screen
-          bg-[#0D0D0D]
+          bg-[var(--bg-primary)]
           transition-all duration-300 ease-in-out
         `}
       >

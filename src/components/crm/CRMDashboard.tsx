@@ -88,7 +88,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: L
       onDragEnd={onDragEnd}
       className={`
         rounded-xl border p-3.5 cursor-grab active:cursor-grabbing
-        bg-[#1A1A1A] border-[#2A2A2A]
+        bg-[var(--bg-surface)] border-[var(--border)]
         hover:border-[rgba(201,168,76,0.25)]
         transition-all duration-150 select-none
         ${isDragging ? 'opacity-40 scale-95 border-[#C9A84C]' : ''}
@@ -104,7 +104,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: L
           }}
           title={`${SCORE_COR[score].label} — ${diasSem} dias sem contato`}
         />
-        <h3 className="text-xs font-bold text-[#FAFAF8] leading-snug flex-1 min-w-0">
+        <h3 className="text-xs font-bold text-[var(--text-primary)] leading-snug flex-1 min-w-0">
           {lead.nomeEmpresa}
         </h3>
       </div>
@@ -153,7 +153,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: L
         onClick={(e) => { e.stopPropagation(); onVerDetalhes(lead.id) }}
         className="
           w-full py-1.5 rounded-lg text-[10px] font-semibold
-          border border-[#2A2A2A] text-[#8A8A8A]
+          border border-[var(--border)] text-[#8A8A8A]
           hover:border-[rgba(201,168,76,0.3)] hover:text-[#C9A84C]
           hover:bg-[rgba(201,168,76,0.05)]
           transition-all
@@ -193,7 +193,7 @@ function KanbanCol({
         transition-all duration-150
         ${isDragOver
           ? 'border-[rgba(201,168,76,0.4)] bg-[rgba(201,168,76,0.04)]'
-          : 'border-[#2A2A2A] bg-[#141414]'
+          : 'border-[var(--border)] bg-[var(--bg-surface-2)]'
         }
       `}
       onDragOver={(e) => onDragOver(e, coluna.id)}
@@ -201,7 +201,7 @@ function KanbanCol({
       onDrop={(e) => onDrop(e, coluna.id)}
     >
       {/* Header da coluna */}
-      <div className="px-3 py-2.5 border-b border-[#2A2A2A] flex items-center gap-2 shrink-0">
+      <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center gap-2 shrink-0">
         <div
           className="w-2 h-2 rounded-full"
           style={{ backgroundColor: coluna.cor }}
@@ -274,10 +274,10 @@ function DrawerLead({
   return (
     <div className="flex flex-col h-full">
       {/* Header do drawer */}
-      <div className="px-5 py-4 border-b border-[#2A2A2A] flex items-start gap-3 shrink-0">
+      <div className="px-5 py-4 border-b border-[var(--border)] flex items-start gap-3 shrink-0">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h2 className="text-sm font-black text-[#FAFAF8]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h2 className="text-sm font-black text-[var(--text-primary)]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {lead.nomeEmpresa}
             </h2>
             <span
@@ -305,7 +305,7 @@ function DrawerLead({
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[#FAFAF8] transition-colors shrink-0"
+          className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors shrink-0"
         >
           <X size={16} />
         </button>
@@ -339,9 +339,9 @@ function DrawerLead({
             { label: 'Último pedido', valor: lead.ultimoPedido ?? 'Sem pedido' },
             { label: 'Cadastrado', valor: lead.createdAt.substring(0, 10) },
           ].map(({ label, valor }) => (
-            <div key={label} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-2.5">
+            <div key={label} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-2.5">
               <p className="text-[9px] text-[#4A4A4A] uppercase tracking-wider mb-1">{label}</p>
-              <p className="text-xs font-semibold text-[#FAFAF8]">{valor}</p>
+              <p className="text-xs font-semibold text-[var(--text-primary)]">{valor}</p>
             </div>
           ))}
         </div>
@@ -373,8 +373,8 @@ function DrawerLead({
             onChange={(e) => onNotasChange(e.target.value)}
             rows={4}
             className="
-              w-full bg-[#141414] border border-[#2A2A2A] rounded-lg p-3
-              text-xs text-[#FAFAF8] placeholder-[#4A4A4A] resize-none
+              w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-3
+              text-xs text-[var(--text-primary)] placeholder-[#4A4A4A] resize-none
               focus:outline-none focus:border-[rgba(201,168,76,0.4)]
               transition-colors
             "
@@ -394,8 +394,8 @@ function DrawerLead({
               onChange={(e) => setTextoContato(e.target.value)}
               placeholder="Descrição do contato..."
               className="
-                flex-1 bg-[#141414] border border-[#2A2A2A] rounded-lg px-3 py-2
-                text-xs text-[#FAFAF8] placeholder-[#4A4A4A]
+                flex-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2
+                text-xs text-[var(--text-primary)] placeholder-[#4A4A4A]
                 focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors
               "
               onKeyDown={(e) => {
@@ -427,7 +427,7 @@ function DrawerLead({
             </p>
             <ul className="space-y-2">
               {[...historicos].reverse().map((h) => (
-                <li key={h.id} className="bg-[#141414] border border-[#2A2A2A] rounded-lg p-2.5">
+                <li key={h.id} className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-2.5">
                   <p className="text-[10px] text-[#4A4A4A] mb-1">{h.timestamp}</p>
                   <p className="text-xs text-[#8A8A8A]">{h.texto}</p>
                 </li>
@@ -446,7 +446,7 @@ function DrawerLead({
               value={lead.status}
               onChange={(e) => onMoverPara(e.target.value as StatusLead)}
               className="
-                w-full bg-[#141414] border border-[#2A2A2A] rounded-lg px-3 py-2
+                w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2
                 text-xs text-[#8A8A8A] cursor-pointer appearance-none
                 focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors
               "
@@ -475,7 +475,7 @@ function KPICard({ label, valor, icon: Icon, sub, cor = '#C9A84C' }: {
   label: string; valor: string; icon: React.ElementType; sub?: string; cor?: string
 }) {
   return (
-    <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4 flex flex-col gap-2 hover:border-[rgba(201,168,76,0.2)] transition-colors">
+    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 flex flex-col gap-2 hover:border-[rgba(201,168,76,0.2)] transition-colors">
       <div className="flex items-center justify-between">
         <span className="text-[10px] text-[#6B6B6B] uppercase tracking-wider font-medium">{label}</span>
         <Icon size={13} style={{ color: cor }} />
@@ -622,7 +622,7 @@ export function CRMDashboard() {
         {/* ── Header ── */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-black text-[#FAFAF8] tracking-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               CRM B2B
             </h1>
             <p className="text-sm text-[#6B6B6B] mt-0.5">Pipeline de parceiros · Kanban</p>
@@ -648,7 +648,7 @@ export function CRMDashboard() {
         {/* ── Filtros ── */}
         <div className="flex items-center gap-4 flex-wrap">
           {/* Estado */}
-          <div className="flex items-center gap-1 bg-[#141414] border border-[#2A2A2A] rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-1">
             {BTN_ESTADO.map((e) => (
               <button
                 key={e}
@@ -657,7 +657,7 @@ export function CRMDashboard() {
                   px-3 py-1.5 rounded-md text-xs font-semibold transition-all
                   ${filtroEstado === e
                     ? 'bg-[rgba(201,168,76,0.15)] text-[#C9A84C] border border-[rgba(201,168,76,0.25)]'
-                    : 'text-[#6B6B6B] hover:text-[#FAFAF8]'
+                    : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'
                   }
                 `}
               >
@@ -667,7 +667,7 @@ export function CRMDashboard() {
           </div>
 
           {/* Score */}
-          <div className="flex items-center gap-1 bg-[#141414] border border-[#2A2A2A] rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-1">
             {BTN_SCORE.map(({ id, label }) => (
               <button
                 key={id}
@@ -676,7 +676,7 @@ export function CRMDashboard() {
                   px-3 py-1.5 rounded-md text-xs font-semibold transition-all
                   ${filtroScore === id
                     ? 'bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.2)]'
-                    : 'text-[#6B6B6B] hover:text-[#FAFAF8]'
+                    : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'
                   }
                 `}
                 style={{ color: filtroScore === id ? COR_BTN_SCORE[id] : undefined }}
@@ -724,7 +724,7 @@ export function CRMDashboard() {
             onClick={() => setLeadSelecionadoId(null)}
           />
           {/* Painel */}
-          <div className="fixed top-0 right-0 h-full w-[420px] z-40 bg-[#141414] border-l border-[#2A2A2A] shadow-2xl flex flex-col">
+          <div className="fixed top-0 right-0 h-full w-[420px] z-40 bg-[var(--bg-surface-2)] border-l border-[var(--border)] shadow-2xl flex flex-col">
             <DrawerLead
               lead={leadAtual}
               historicos={historicosAtual}

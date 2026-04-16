@@ -9,6 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, LineChart, Line, Legend,
 } from 'recharts'
+import { useTheme } from 'next-themes'
 import type { TrafegoDaily } from '@/lib/trafego-types'
 
 // ─────────────────────────────────────────────
@@ -44,14 +45,14 @@ function TooltipEmpilhado({ active, payload, label }: {
   if (!active || !payload?.length) return null
   const total = payload.reduce((s, p) => s + (p.value ?? 0), 0)
   return (
-    <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-3 text-xs shadow-xl">
+    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="text-[#6B6B6B] mb-2">{label}</p>
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color }}>
           {p.name}: {fmtR(p.value)}
         </p>
       ))}
-      <p className="text-[#FAFAF8] font-bold mt-1 border-t border-[#2A2A2A] pt-1">
+      <p className="text-[var(--text-primary)] font-bold mt-1 border-t border-[var(--border)] pt-1">
         Total: {fmtR(total)}
       </p>
     </div>
@@ -65,9 +66,9 @@ function TooltipLinha({ active, payload, label }: {
 }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-3 text-xs shadow-xl">
+    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="text-[#6B6B6B] mb-1">{label}</p>
-      <p className="font-bold text-[#FAFAF8]">{fmtR(payload[0].value)}</p>
+      <p className="font-bold text-[var(--text-primary)]">{fmtR(payload[0].value)}</p>
     </div>
   )
 }
@@ -77,20 +78,26 @@ function TooltipLinha({ active, payload, label }: {
 // ─────────────────────────────────────────────
 
 export default function TrafegoGraficos({ tipo, empilhadoData = [], linhaData = [], cor = '#C9A84C' }: Props) {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
+  const tickFill   = isDark ? '#4A4A4A' : '#888880'
+
   if (tipo === 'empilhado') {
     return (
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={empilhadoData} barCategoryGap="30%">
-          <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
           <XAxis
             dataKey="data"
-            tick={{ fill: '#4A4A4A', fontSize: 9 }}
+            tick={{ fill: tickFill, fontSize: 9 }}
             axisLine={false} tickLine={false}
             interval={Math.floor(empilhadoData.length / 6)}
           />
           <YAxis
             tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-            tick={{ fill: '#4A4A4A', fontSize: 9 }}
+            tick={{ fill: tickFill, fontSize: 9 }}
             axisLine={false} tickLine={false} width={40}
           />
           <Tooltip content={<TooltipEmpilhado />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
@@ -106,16 +113,16 @@ export default function TrafegoGraficos({ tipo, empilhadoData = [], linhaData = 
   return (
     <ResponsiveContainer width="100%" height={180}>
       <LineChart data={linhaData}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
         <XAxis
           dataKey="data"
-          tick={{ fill: '#4A4A4A', fontSize: 9 }}
+          tick={{ fill: tickFill, fontSize: 9 }}
           axisLine={false} tickLine={false}
           interval={Math.floor(linhaData.length / 6)}
         />
         <YAxis
           tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-          tick={{ fill: '#4A4A4A', fontSize: 9 }}
+          tick={{ fill: tickFill, fontSize: 9 }}
           axisLine={false} tickLine={false} width={40}
         />
         <Tooltip content={<TooltipLinha />} />

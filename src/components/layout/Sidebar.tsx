@@ -102,13 +102,13 @@ export function Sidebar() {
       className={`
         ${largura} h-screen fixed left-0 top-0 z-50
         flex flex-col
-        bg-[#141414] border-r border-[#2A2A2A]
+        bg-[var(--sidebar-bg)] border-r border-[var(--border)]
         transition-all duration-300 ease-in-out
         overflow-hidden
       `}
     >
       {/* ── Logo ── */}
-      <div className="flex items-center justify-between px-4 py-5 border-b border-[#2A2A2A] min-h-[72px]">
+      <div className="flex items-center justify-between px-4 py-5 border-b border-[var(--border)] min-h-[72px]">
         {!sidebarRecolhida && (
           <div className="flex flex-col leading-none select-none">
             <span
@@ -171,14 +171,14 @@ export function Sidebar() {
                     group relative
                     ${ativo
                       ? 'bg-[rgba(201,168,76,0.10)] text-[#C9A84C] border-l-2 border-[#C9A84C] pl-[10px]'
-                      : 'text-[#8A8A8A] hover:text-[#FAFAF8] hover:bg-[rgba(255,255,255,0.04)] border-l-2 border-transparent pl-[10px]'
+                      : 'text-[#8A8A8A] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)] border-l-2 border-transparent pl-[10px]'
                     }
                   `}
                 >
                   <span className="relative shrink-0">
                     <Icon
                       size={18}
-                      className={ativo ? 'text-[#C9A84C]' : 'text-[#6B6B6B] group-hover:text-[#FAFAF8]'}
+                      className={ativo ? 'text-[#C9A84C]' : 'text-[#6B6B6B] group-hover:text-[var(--text-primary)]'}
                     />
                     {href === '/producao' && temPedidoExpirado && (
                       <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 border border-[#141414]" />
@@ -219,8 +219,8 @@ export function Sidebar() {
                     <span
                       className="
                         absolute left-full ml-2 px-2 py-1
-                        bg-[#1A1A1A] border border-[#2A2A2A]
-                        text-[#FAFAF8] text-xs rounded-md
+                        bg-[var(--bg-surface)] border border-[var(--border)]
+                        text-[var(--text-primary)] text-xs rounded-md
                         whitespace-nowrap opacity-0 pointer-events-none
                         group-hover:opacity-100
                         transition-opacity duration-150 z-50
@@ -237,7 +237,7 @@ export function Sidebar() {
       </nav>
 
       {/* ── Seletor de Perfil ── */}
-      <div className="border-t border-[#2A2A2A] p-3">
+      <div className="border-t border-[var(--border)] p-3">
         {!sidebarRecolhida ? (
           <div>
             {/* Perfil ativo */}
@@ -252,7 +252,7 @@ export function Sidebar() {
                 {perfilInfo.inicial}
               </div>
               <div className="flex flex-col leading-tight min-w-0">
-                <span className="text-sm font-semibold text-[#FAFAF8] truncate">
+                <span className="text-sm font-semibold text-[var(--text-primary)] truncate">
                   {perfilInfo.nome}
                 </span>
                 <span className="text-[11px] text-[#6B6B6B]">
@@ -275,7 +275,7 @@ export function Sidebar() {
                     className="
                       flex items-center gap-2.5 w-full px-2 py-1.5 rounded-md
                       text-left text-xs text-[#6B6B6B]
-                      hover:text-[#FAFAF8] hover:bg-[rgba(255,255,255,0.04)]
+                      hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)]
                       transition-colors duration-150
                     "
                   >

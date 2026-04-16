@@ -75,11 +75,11 @@ function TarefaCard({ tarefa, onMover }: TarefaCardProps) {
 
   return (
     <div className={`
-      rounded-xl border p-3.5 bg-[#1A1A1A] group relative
+      rounded-xl border p-3.5 bg-[var(--bg-surface)] group relative
       transition-all duration-150
       ${tarefa.status === 'bloqueada'
         ? 'border-[rgba(232,168,56,0.3)] bg-[rgba(232,168,56,0.04)]'
-        : 'border-[#2A2A2A] hover:border-[rgba(201,168,76,0.2)]'
+        : 'border-[var(--border)] hover:border-[rgba(201,168,76,0.2)]'
       }
     `}>
 
@@ -97,19 +97,19 @@ function TarefaCard({ tarefa, onMover }: TarefaCardProps) {
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[#FAFAF8] transition-all"
+            className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-all"
           >
             <ChevronDown size={11} />
           </button>
           {showMenu && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-              <div className="absolute right-0 top-full mt-1 z-20 bg-[#141414] border border-[#2A2A2A] rounded-lg py-1 min-w-[140px] shadow-xl">
+              <div className="absolute right-0 top-full mt-1 z-20 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg py-1 min-w-[140px] shadow-xl">
                 {COLUNAS.filter((c) => c.id !== tarefa.status).map((c) => (
                   <button
                     key={c.id}
                     onClick={() => { onMover(tarefa.id, c.id); setShowMenu(false) }}
-                    className="w-full px-3 py-1.5 text-left text-xs text-[#8A8A8A] hover:text-[#FAFAF8] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+                    className="w-full px-3 py-1.5 text-left text-xs text-[#8A8A8A] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
                   >
                     → {c.label}
                   </button>
@@ -121,7 +121,7 @@ function TarefaCard({ tarefa, onMover }: TarefaCardProps) {
       </div>
 
       {/* Título */}
-      <h3 className="text-xs font-bold text-[#FAFAF8] mb-1.5 leading-snug">
+      <h3 className="text-xs font-bold text-[var(--text-primary)] mb-1.5 leading-snug">
         {tarefa.titulo}
       </h3>
 
@@ -179,9 +179,9 @@ interface ColunaBoardProps {
 function ColunaBoard({ coluna, tarefas, onAbrirModal, onMover }: ColunaBoardProps) {
   const Icon = coluna.icon
   return (
-    <div className="flex flex-col min-w-[260px] flex-1 bg-[#141414] border border-[#2A2A2A] rounded-xl">
+    <div className="flex flex-col min-w-[260px] flex-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl">
       {/* Header */}
-      <div className="px-3 py-2.5 border-b border-[#2A2A2A] flex items-center gap-2 shrink-0">
+      <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center gap-2 shrink-0">
         <Icon size={13} style={{ color: coluna.cor }} />
         <span className="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-wider flex-1">
           {coluna.label}
@@ -208,7 +208,7 @@ function ColunaBoard({ coluna, tarefas, onAbrirModal, onMover }: ColunaBoardProp
           className="
             w-full py-2 rounded-lg text-[10px] font-semibold
             text-[#4A4A4A] hover:text-[#C9A84C]
-            border border-dashed border-[#2A2A2A] hover:border-[rgba(201,168,76,0.25)]
+            border border-dashed border-[var(--border)] hover:border-[rgba(201,168,76,0.25)]
             hover:bg-[rgba(201,168,76,0.04)]
             transition-all flex items-center justify-center gap-1
           "
@@ -278,8 +278,8 @@ function ModalNovaTarefa({ statusInicial, perfilAtivo, onCriar, onFechar }: Moda
   }
 
   const inputCls = `
-    w-full bg-[#0D0D0D] border border-[#2A2A2A] rounded-lg px-3 py-2.5
-    text-sm text-[#FAFAF8] placeholder-[#4A4A4A]
+    w-full bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg px-3 py-2.5
+    text-sm text-[var(--text-primary)] placeholder-[#4A4A4A]
     focus:outline-none focus:border-[rgba(201,168,76,0.5)]
     transition-colors
   `
@@ -289,19 +289,19 @@ function ModalNovaTarefa({ statusInicial, perfilAtivo, onCriar, onFechar }: Moda
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onFechar} />
-      <div className="relative z-10 bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl w-full max-w-lg shadow-2xl">
+      <div className="relative z-10 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl w-full max-w-lg shadow-2xl">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#2A2A2A]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
           <div>
-            <h3 className="font-black text-[#FAFAF8] text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h3 className="font-black text-[var(--text-primary)] text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Nova Tarefa
             </h3>
             <p className="text-[10px] text-[#6B6B6B] mt-0.5">
               Coluna: <span className="text-[#C9A84C]">{colLabel}</span>
             </p>
           </div>
-          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[#FAFAF8] transition-colors">
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -395,8 +395,8 @@ function ModalNovaTarefa({ statusInicial, perfilAtivo, onCriar, onFechar }: Moda
                 placeholder="Descreva o que está impedindo o avanço desta tarefa..."
                 rows={3}
                 className="
-                  w-full bg-[#0D0D0D] border border-[rgba(232,168,56,0.2)] rounded-lg px-3 py-2.5
-                  text-xs text-[#FAFAF8] placeholder-[#4A4A4A] resize-none
+                  w-full bg-[var(--bg-primary)] border border-[rgba(232,168,56,0.2)] rounded-lg px-3 py-2.5
+                  text-xs text-[var(--text-primary)] placeholder-[#4A4A4A] resize-none
                   focus:outline-none focus:border-[rgba(232,168,56,0.5)] transition-colors
                 "
                 maxLength={400}
@@ -412,7 +412,7 @@ function ModalNovaTarefa({ statusInicial, perfilAtivo, onCriar, onFechar }: Moda
             <button
               type="button"
               onClick={onFechar}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-[#6B6B6B] border border-[#2A2A2A] hover:text-[#FAFAF8] hover:border-[#3A3A3A] transition-colors"
+              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-[#6B6B6B] border border-[var(--border)] hover:text-[var(--text-primary)] hover:border-[#3A3A3A] transition-colors"
             >
               Cancelar
             </button>
@@ -522,14 +522,14 @@ export function TarefasDashboard() {
 
       {/* ── Header ── */}
       <div>
-        <h1 className="text-2xl font-black text-[#FAFAF8] tracking-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           Tarefas
         </h1>
         <p className="text-sm text-[#6B6B6B] mt-0.5">Boards por sócio · A Fazer / Em Andamento / Concluído / Bloqueado</p>
       </div>
 
       {/* ── Abas dos sócios ── */}
-      <div className="flex gap-1 bg-[#141414] border border-[#2A2A2A] rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl p-1 w-fit">
         {SOCIOS.map((socio) => {
           const count = tarefas.filter(
             (t) => t.responsavel === socio.id && t.status !== 'cancelada'
@@ -547,7 +547,7 @@ export function TarefasDashboard() {
                 text-sm font-semibold transition-all duration-150
                 ${abaAtiva === socio.id
                   ? 'shadow-sm'
-                  : 'text-[#6B6B6B] hover:text-[#FAFAF8]'
+                  : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'
                 }
               `}
               style={abaAtiva === socio.id ? {
@@ -594,7 +594,7 @@ export function TarefasDashboard() {
           {infoAba.inicial}
         </div>
         <div>
-          <span className="text-sm font-bold text-[#FAFAF8]">{infoAba.nome}</span>
+          <span className="text-sm font-bold text-[var(--text-primary)]">{infoAba.nome}</span>
           <span className="text-sm text-[#6B6B6B]"> · {infoAba.dominio}</span>
         </div>
       </div>

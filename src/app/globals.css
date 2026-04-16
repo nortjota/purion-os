@@ -67,8 +67,55 @@
   --color-purion-danger: #E85238;
 }
 
-/* Tema forçado escuro — PURION sempre usa dark mode */
+/* ── PURION — Modo Claro (light) ── */
 :root {
+  /* Shadcn / Radix */
+  --background: #FAFAF8;
+  --foreground: #0D0D0D;
+  --card: #F0EFED;
+  --card-foreground: #0D0D0D;
+  --popover: #E8E7E4;
+  --popover-foreground: #0D0D0D;
+  --primary: #C9A84C;
+  --primary-foreground: #0D0D0D;
+  --secondary: #F0EFED;
+  --secondary-foreground: #0D0D0D;
+  --muted: #E8E7E4;
+  --muted-foreground: #555550;
+  --accent: rgba(201, 168, 76, 0.12);
+  --accent-foreground: #9B7A28;
+  --destructive: #C23B1E;
+  --border: #D4D3CF;
+  --input: #F0EFED;
+  --ring: rgba(201, 168, 76, 0.4);
+  --chart-1: #C9A84C;
+  --chart-2: #3A9B5F;
+  --chart-3: #C88A20;
+  --chart-4: #3B70C4;
+  --chart-5: #C23B1E;
+  --radius: 0.5rem;
+  --sidebar: #F5F4F0;
+  --sidebar-foreground: #0D0D0D;
+  --sidebar-primary: #C9A84C;
+  --sidebar-primary-foreground: #0D0D0D;
+  --sidebar-accent: rgba(201, 168, 76, 0.1);
+  --sidebar-accent-foreground: #9B7A28;
+  --sidebar-border: #D4D3CF;
+  --sidebar-ring: rgba(201, 168, 76, 0.4);
+
+  /* ✦ PURION — variáveis semânticas */
+  --bg-primary:    #FAFAF8;
+  --bg-surface:    #F0EFED;
+  --bg-surface-2:  #E8E7E4;
+  --text-primary:  #0D0D0D;
+  --text-secondary:#555550;
+  --border-purion: #D4D3CF;
+  --sidebar-bg:    #F5F4F0;
+}
+
+/* ── PURION — Modo Escuro (dark) ── */
+.dark {
+  /* Shadcn / Radix */
   --background: #0D0D0D;
   --foreground: #FAFAF8;
   --card: #1A1A1A;
@@ -92,8 +139,7 @@
   --chart-3: #E8A838;
   --chart-4: #5B8FE8;
   --chart-5: #E85238;
-  --radius: 0.5rem;
-  --sidebar: #141414;
+  --sidebar: #111111;
   --sidebar-foreground: #FAFAF8;
   --sidebar-primary: #C9A84C;
   --sidebar-primary-foreground: #0D0D0D;
@@ -101,36 +147,15 @@
   --sidebar-accent-foreground: #C9A84C;
   --sidebar-border: #2A2A2A;
   --sidebar-ring: rgba(201, 168, 76, 0.4);
-}
 
-/* Sem tema claro — PURION é always dark */
-.dark {
-  --background: #0D0D0D;
-  --foreground: #FAFAF8;
-  --card: #1A1A1A;
-  --card-foreground: #FAFAF8;
-  --popover: #141414;
-  --popover-foreground: #FAFAF8;
-  --primary: #C9A84C;
-  --primary-foreground: #0D0D0D;
-  --secondary: #1A1A1A;
-  --secondary-foreground: #FAFAF8;
-  --muted: #141414;
-  --muted-foreground: #6B6B6B;
-  --accent: rgba(201, 168, 76, 0.1);
-  --accent-foreground: #C9A84C;
-  --destructive: #E85238;
-  --border: #2A2A2A;
-  --input: #1A1A1A;
-  --ring: rgba(201, 168, 76, 0.4);
-  --sidebar: #141414;
-  --sidebar-foreground: #FAFAF8;
-  --sidebar-primary: #C9A84C;
-  --sidebar-primary-foreground: #0D0D0D;
-  --sidebar-accent: rgba(201, 168, 76, 0.1);
-  --sidebar-accent-foreground: #C9A84C;
-  --sidebar-border: #2A2A2A;
-  --sidebar-ring: rgba(201, 168, 76, 0.4);
+  /* ✦ PURION — variáveis semânticas */
+  --bg-primary:    #0D0D0D;
+  --bg-surface:    #1A1A1A;
+  --bg-surface-2:  #141414;
+  --text-primary:  #FAFAF8;
+  --text-secondary:#888880;
+  --border-purion: #2A2A2A;
+  --sidebar-bg:    #111111;
 }
 
 @layer base {
@@ -152,12 +177,17 @@
   height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #0D0D0D;
+  background: var(--bg-primary);
 }
 ::-webkit-scrollbar-thumb {
-  background: #2A2A2A;
+  background: var(--border-purion);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(201, 168, 76, 0.4);
+}
+
+/* Transição suave de tema */
+*, *::before, *::after {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
 }

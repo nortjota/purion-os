@@ -141,10 +141,10 @@ function ModalReuniao({ onSalvar, onFechar }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
       <div
-        className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-sm font-bold text-[#FAFAF8] mb-4">Registrar Reunião</h3>
+        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Registrar Reunião</h3>
         <div className="flex flex-col gap-3">
           <div>
             <label className="text-xs text-[#8A8A8A] block mb-1">Título</label>
@@ -152,7 +152,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
               placeholder="ex: Alinhamento semanal"
               value={form.titulo}
               onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             />
           </div>
           <div className="grid grid-cols-3 gap-3">
@@ -161,7 +161,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
               <select
                 value={form.tipo}
                 onChange={(e) => setForm({ ...form, tipo: e.target.value as ReuniaoItem['tipo'] })}
-                className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
               >
                 {Object.entries(TIPO_REUNIAO_LABEL).map(([v, l]) => (
                   <option key={v} value={v}>{l}</option>
@@ -174,7 +174,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
                 type="date"
                 value={form.data}
                 onChange={(e) => setForm({ ...form, data: e.target.value })}
-                className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
               />
             </div>
             <div>
@@ -183,7 +183,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
                 type="time"
                 value={form.hora}
                 onChange={(e) => setForm({ ...form, hora: e.target.value })}
-                className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
               type="number"
               value={form.duracao}
               onChange={(e) => setForm({ ...form, duracao: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             />
           </div>
           <div>
@@ -224,7 +224,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
               placeholder="Item 1&#10;Item 2"
               value={form.pauta}
               onChange={(e) => setForm({ ...form, pauta: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C] resize-none"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
             />
           </div>
           <div>
@@ -234,12 +234,12 @@ function ModalReuniao({ onSalvar, onFechar }: {
               placeholder="Decisão 1&#10;Decisão 2"
               value={form.decisoes}
               onChange={(e) => setForm({ ...form, decisoes: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C] resize-none"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
             />
           </div>
         </div>
         <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[#2A2A2A] rounded-lg">
+          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg">
             Cancelar
           </button>
           <button
@@ -286,10 +286,10 @@ function ModalDecisao({ onSalvar, onFechar, propostoPor }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
       <div
-        className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-md shadow-2xl"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-sm font-bold text-[#FAFAF8] mb-4">Nova Decisão Estratégica</h3>
+        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Nova Decisão Estratégica</h3>
         <div className="flex flex-col gap-3">
           <div>
             <label className="text-xs text-[#8A8A8A] block mb-1">Título</label>
@@ -297,7 +297,7 @@ function ModalDecisao({ onSalvar, onFechar, propostoPor }: {
               placeholder="ex: Expandir para Goiânia"
               value={form.titulo}
               onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
               autoFocus
             />
           </div>
@@ -308,13 +308,13 @@ function ModalDecisao({ onSalvar, onFechar, propostoPor }: {
               placeholder="Descreva a proposta, impacto e alternativas..."
               value={form.descricao}
               onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C] resize-none"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
             />
           </div>
           <p className="text-[10px] text-[#6B6B6B]">Prazo para votação: 24h a partir de agora</p>
         </div>
         <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[#2A2A2A] rounded-lg">
+          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg">
             Cancelar
           </button>
           <button
@@ -377,14 +377,14 @@ function DailyCard({
   const temBloqueio = ultimaEntry?.bloqueadoEm
 
   return (
-    <div className={`bg-[#1A1A1A] border rounded-xl overflow-hidden ${temBloqueio ? 'border-amber-500/40' : 'border-[#2A2A2A]'}`}>
+    <div className={`bg-[var(--bg-surface)] border rounded-xl overflow-hidden ${temBloqueio ? 'border-amber-500/40' : 'border-[var(--border)]'}`}>
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#2A2A2A]">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)]">
         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${SOCIO_COLOR[socio]}`}>
           {SOCIO_INICIAL[socio]}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-[#FAFAF8]">{SOCIO_NOME[socio]}</p>
+          <p className="text-sm font-bold text-[var(--text-primary)]">{SOCIO_NOME[socio]}</p>
           <p className="text-[10px] text-[#6B6B6B]">{SOCIO_CARGO[socio]}</p>
         </div>
         {temBloqueio && (
@@ -397,7 +397,7 @@ function DailyCard({
 
       {/* Última entrada (leitura) */}
       {ultimaEntry && (
-        <div className="px-4 py-3 border-b border-[#2A2A2A] space-y-2">
+        <div className="px-4 py-3 border-b border-[var(--border)] space-y-2">
           <p className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">
             Último update · {fmtDataSimples(ultimaEntry.data)}
           </p>
@@ -431,7 +431,7 @@ function DailyCard({
             rows={2}
             value={form.ontemFiz}
             onChange={(e) => setForm({ ...form, ontemFiz: e.target.value })}
-            className="w-full bg-[#141414] border border-[#2A2A2A] rounded-md px-2.5 py-1.5 text-xs text-[#FAFAF8] outline-none focus:border-[#C9A84C] resize-none"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
             placeholder="O que fiz ontem..."
           />
         </div>
@@ -441,7 +441,7 @@ function DailyCard({
             rows={2}
             value={form.hojeFarei}
             onChange={(e) => setForm({ ...form, hojeFarei: e.target.value })}
-            className="w-full bg-[#141414] border border-[#2A2A2A] rounded-md px-2.5 py-1.5 text-xs text-[#FAFAF8] outline-none focus:border-[#C9A84C] resize-none"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
             placeholder="O que farei hoje..."
           />
         </div>
@@ -451,7 +451,7 @@ function DailyCard({
             rows={1}
             value={form.bloqueadoEm}
             onChange={(e) => setForm({ ...form, bloqueadoEm: e.target.value })}
-            className="w-full bg-[#141414] border border-[#2A2A2A] rounded-md px-2.5 py-1.5 text-xs text-[#FAFAF8] outline-none focus:border-[rgba(232,168,56,0.4)] resize-none"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[rgba(232,168,56,0.4)] resize-none"
             placeholder="Algum impedimento? (opcional)"
           />
         </div>
@@ -465,7 +465,7 @@ function DailyCard({
 
       {/* Histórico */}
       {historicoEntries.length > 1 && (
-        <div className="border-t border-[#2A2A2A]">
+        <div className="border-t border-[var(--border)]">
           <button
             onClick={() => setHistorico((h) => !h)}
             className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-[#6B6B6B] hover:text-[#8A8A8A]"
@@ -476,7 +476,7 @@ function DailyCard({
           {historico && (
             <div className="px-4 pb-3 space-y-2 max-h-[200px] overflow-y-auto">
               {historicoEntries.slice(1).map((e) => (
-                <div key={e.id} className="bg-[#141414] rounded-md px-3 py-2 text-[10px] text-[#6B6B6B]">
+                <div key={e.id} className="bg-[var(--bg-surface-2)] rounded-md px-3 py-2 text-[10px] text-[#6B6B6B]">
                   <p className="text-[#4A4A4A] mb-1">{fmtDataSimples(e.data)}</p>
                   {e.ontemFiz && <p><span className="text-[#4A4A4A]">Fez: </span>{e.ontemFiz}</p>}
                   {e.hojeFarei && <p><span className="text-[#4A4A4A]">Planeja: </span>{e.hojeFarei}</p>}
@@ -528,7 +528,7 @@ export function ReunioesDashboard() {
 
       {/* ── Header ── */}
       <div>
-        <h1 className="text-lg font-black tracking-widest text-[#FAFAF8] uppercase">Reuniões & Decisões</h1>
+        <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Reuniões & Decisões</h1>
         <p className="text-xs text-[#6B6B6B] mt-0.5">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
       </div>
 
@@ -568,7 +568,7 @@ export function ReunioesDashboard() {
 
         <div className="flex flex-col gap-2">
           {reunioesOrdenadas.length === 0 && (
-            <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-4 py-8 text-center text-xs text-[#4A4A4A]">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#4A4A4A]">
               Nenhuma reunião registrada
             </div>
           )}
@@ -581,14 +581,14 @@ export function ReunioesDashboard() {
             }[reuniao.status]
 
             return (
-              <div key={reuniao.id} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
+              <div key={reuniao.id} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
                 <button
                   onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}
                   className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[rgba(255,255,255,0.02)] transition-colors text-left"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-[#FAFAF8] truncate">{reuniao.titulo}</p>
+                      <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{reuniao.titulo}</p>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${statusColor}`}>
                         {reuniao.status === 'agendada' ? 'Agendada' : reuniao.status === 'realizada' ? 'Realizada' : 'Cancelada'}
                       </span>
@@ -605,7 +605,7 @@ export function ReunioesDashboard() {
                 </button>
 
                 {expandida && (
-                  <div className="px-4 pb-4 border-t border-[#2A2A2A] pt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="px-4 pb-4 border-t border-[var(--border)] pt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {reuniao.pauta.length > 0 && (
                       <div>
                         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Pauta</p>
@@ -663,9 +663,9 @@ export function ReunioesDashboard() {
           </button>
         </div>
 
-        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
           {/* Cabeçalho */}
-          <div className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[#2A2A2A]">
+          <div className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
             {['Decisão', 'Proposto por', 'Data', 'Votos M · J · G', 'Status'].map((h) => (
               <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
             ))}
@@ -715,11 +715,11 @@ export function ReunioesDashboard() {
             return (
               <div
                 key={decisao.id}
-                className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr] gap-4 px-4 py-3.5 border-b border-[#2A2A2A] last:border-0 items-start hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+                className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr] gap-4 px-4 py-3.5 border-b border-[var(--border)] last:border-0 items-start hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               >
                 {/* Decisão */}
                 <div>
-                  <p className="text-xs font-semibold text-[#FAFAF8] leading-snug">{decisao.titulo}</p>
+                  <p className="text-xs font-semibold text-[var(--text-primary)] leading-snug">{decisao.titulo}</p>
                   {decisao.descricao && (
                     <p className="text-[10px] text-[#4A4A4A] mt-0.5 line-clamp-2 leading-relaxed">{decisao.descricao}</p>
                   )}

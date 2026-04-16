@@ -156,7 +156,7 @@ function ModalCreator({ onSalvar, onFechar }: {
         placeholder={placeholder}
         value={form[field] as string}
         onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-        className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+        className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
       />
     </div>
   )
@@ -164,10 +164,10 @@ function ModalCreator({ onSalvar, onFechar }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
       <div
-        className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-sm font-bold text-[#FAFAF8] mb-4">Adicionar Creator</h3>
+        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Adicionar Creator</h3>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2"><F label="Nome" field="nome" placeholder="ex: Lucas Automania" /></div>
           <F label="Instagram" field="instagram" placeholder="@usuario" />
@@ -180,7 +180,7 @@ function ModalCreator({ onSalvar, onFechar }: {
             <select
               value={form.status}
               onChange={(e) => setForm({ ...form, status: e.target.value as Creator['status'] })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             >
               <option value="contatado">Contatado</option>
               <option value="negociando">Negociando</option>
@@ -195,7 +195,7 @@ function ModalCreator({ onSalvar, onFechar }: {
             <select
               value={form.responsavel}
               onChange={(e) => setForm({ ...form, responsavel: e.target.value as PerfilUsuario })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             >
               <option value="joao">João</option>
               <option value="matheus">Matheus</option>
@@ -208,12 +208,12 @@ function ModalCreator({ onSalvar, onFechar }: {
               rows={2}
               value={form.notas}
               onChange={(e) => setForm({ ...form, notas: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C] resize-none"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
             />
           </div>
         </div>
         <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[#2A2A2A] rounded-lg hover:border-[#3A3A3A]">
+          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg hover:border-[#3A3A3A]">
             Cancelar
           </button>
           <button
@@ -261,10 +261,10 @@ function ModalConteudo({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
       <div
-        className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-sm shadow-2xl"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-sm font-bold text-[#FAFAF8] mb-4">Novo Conteúdo</h3>
+        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Novo Conteúdo</h3>
         <div className="flex flex-col gap-3">
           <div>
             <label className="text-xs text-[#8A8A8A] block mb-1">Data</label>
@@ -272,7 +272,7 @@ function ModalConteudo({
               type="date"
               value={form.data}
               onChange={(e) => setForm({ ...form, data: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -281,7 +281,7 @@ function ModalConteudo({
               <select
                 value={form.formato}
                 onChange={(e) => setForm({ ...form, formato: e.target.value as FormatoConteudo })}
-                className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
               >
                 <option value="reels">Reels</option>
                 <option value="post">Post</option>
@@ -296,7 +296,7 @@ function ModalConteudo({
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value as StatusConteudo })}
-                className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
               >
                 <option value="planejado">Planejado</option>
                 <option value="em_producao">Em produção</option>
@@ -310,7 +310,7 @@ function ModalConteudo({
             <select
               value={form.responsavel}
               onChange={(e) => setForm({ ...form, responsavel: e.target.value as PerfilUsuario })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             >
               <option value="joao">João</option>
               <option value="matheus">Matheus</option>
@@ -324,12 +324,12 @@ function ModalConteudo({
               placeholder="Descreva o conteúdo..."
               value={form.descricao}
               onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C] resize-none"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
             />
           </div>
         </div>
         <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[#2A2A2A] rounded-lg">
+          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg">
             Cancelar
           </button>
           <button
@@ -401,7 +401,7 @@ export function MarketingDashboard() {
 
       {/* ── Header ── */}
       <div>
-        <h1 className="text-lg font-black tracking-widest text-[#FAFAF8] uppercase">Marketing & Creators</h1>
+        <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Marketing & Creators</h1>
         <p className="text-xs text-[#6B6B6B] mt-0.5">KPIs, tracker de influenciadores e calendário de conteúdo</p>
       </div>
 
@@ -412,7 +412,7 @@ export function MarketingDashboard() {
         <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">KPIs de Creators</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Kits enviados */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-end justify-between mb-3">
               <div>
                 <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider mb-1">Kits Enviados</p>
@@ -435,7 +435,7 @@ export function MarketingDashboard() {
           </div>
 
           {/* Vídeos publicados */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-end justify-between mb-3">
               <div>
                 <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider mb-1">Vídeos Publicados</p>
@@ -474,7 +474,7 @@ export function MarketingDashboard() {
               <select
                 value={filtroPlatforma}
                 onChange={(e) => setFiltroPlatforma(e.target.value)}
-                className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-md px-2 py-1 text-xs text-[#8A8A8A] outline-none focus:border-[#C9A84C]"
+                className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[#8A8A8A] outline-none focus:border-[#C9A84C]"
               >
                 <option value="todos">Todas plataformas</option>
                 <option value="instagram">Instagram</option>
@@ -485,7 +485,7 @@ export function MarketingDashboard() {
             <select
               value={filtroStatus}
               onChange={(e) => setFiltroStatus(e.target.value)}
-              className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-md px-2 py-1 text-xs text-[#8A8A8A] outline-none focus:border-[#C9A84C]"
+              className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[#8A8A8A] outline-none focus:border-[#C9A84C]"
             >
               <option value="todos">Todos os status</option>
               <option value="Não enviado">Não enviado</option>
@@ -503,9 +503,9 @@ export function MarketingDashboard() {
           </div>
         </div>
 
-        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
           {/* Cabeçalho */}
-          <div className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[#2A2A2A]">
+          <div className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
             {['Nome', 'Plataforma', 'Seguidores', 'Status Kit', 'Data Envio', 'Link Conteúdo'].map((h) => (
               <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
             ))}
@@ -527,11 +527,11 @@ export function MarketingDashboard() {
             return (
               <div
                 key={creator.id}
-                className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 py-3 border-b border-[#2A2A2A] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]"
+                className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]"
               >
                 {/* Nome */}
                 <div>
-                  <p className="text-xs font-semibold text-[#FAFAF8]">{creator.nome}</p>
+                  <p className="text-xs font-semibold text-[var(--text-primary)]">{creator.nome}</p>
                   <p className="text-[10px] text-[#6B6B6B]">{creator.nichoPrincipal}</p>
                 </div>
 
@@ -550,7 +550,7 @@ export function MarketingDashboard() {
                 </div>
 
                 {/* Seguidores */}
-                <span className="text-xs text-[#FAFAF8] font-semibold">
+                <span className="text-xs text-[var(--text-primary)] font-semibold">
                   {fmtSeguidores(creator.seguidores)}
                 </span>
 
@@ -638,12 +638,12 @@ export function MarketingDashboard() {
 
                 {/* Coluna do dia */}
                 <div
-                  className="min-h-[120px] bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-1.5 flex flex-col gap-1.5"
+                  className="min-h-[120px] bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-1.5 flex flex-col gap-1.5"
                 >
                   {cards.map((c) => (
                     <div
                       key={c.id}
-                      className="bg-[#141414] border border-[#2A2A2A] rounded-md p-2 flex flex-col gap-1"
+                      className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md p-2 flex flex-col gap-1"
                     >
                       {/* Formato badge */}
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded self-start uppercase ${FORMATO_COLOR[c.formato]}`}>

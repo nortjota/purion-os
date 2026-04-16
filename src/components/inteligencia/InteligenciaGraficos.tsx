@@ -12,6 +12,7 @@ import {
   PieChart, Pie, Legend,
   LineChart, Line,
 } from 'recharts'
+import { useTheme } from 'next-themes'
 
 // ─────────────────────────────────────────────
 // TIPOS (re-exportados para uso no Dashboard)
@@ -57,9 +58,9 @@ function TooltipProduto({ active, payload, label }: {
   if (!active || !payload?.length) return null
   const d = payload[0]
   return (
-    <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-3 text-xs shadow-xl">
+    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="font-bold text-[#C9A84C] mb-2 tracking-widest">{label}</p>
-      <p className="text-[#8A8A8A]">Receita: <span className="text-[#FAFAF8] font-semibold">{fmtR(d.value)}</span></p>
+      <p className="text-[#8A8A8A]">Receita: <span className="text-[var(--text-primary)] font-semibold">{fmtR(d.value)}</span></p>
     </div>
   )
 }
@@ -70,10 +71,10 @@ function TooltipCanal({ active, payload }: {
   if (!active || !payload?.length) return null
   const item = payload[0]
   return (
-    <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-3 text-xs shadow-xl">
-      <p className="font-bold text-[#FAFAF8] mb-1">{item.name}</p>
+    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
+      <p className="font-bold text-[var(--text-primary)] mb-1">{item.name}</p>
       <p className="text-[#8A8A8A]">Receita: <span className="text-[#C9A84C] font-bold">{fmtR(item.value)}</span></p>
-      <p className="text-[#8A8A8A]">Participação: <span className="text-[#FAFAF8] font-semibold">{item.payload.percentual}%</span></p>
+      <p className="text-[#8A8A8A]">Participação: <span className="text-[var(--text-primary)] font-semibold">{item.payload.percentual}%</span></p>
     </div>
   )
 }
@@ -83,7 +84,7 @@ function TooltipSemanal({ active, payload, label }: {
 }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-3 text-xs shadow-xl">
+    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="text-[#6B6B6B] mb-1">Semana de {label}</p>
       <p className="font-bold text-[#C9A84C]">{fmtR(payload[0].value)}</p>
     </div>
@@ -95,6 +96,12 @@ function TooltipSemanal({ active, payload, label }: {
 // ─────────────────────────────────────────────
 
 export default function GraficosInteligencia({ produtosData, canaisData, semanalData }: Props) {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
+  const tickFill   = isDark ? '#4A4A4A' : '#888880'
+
   return (
     <div className="flex flex-col gap-6">
 
@@ -102,13 +109,13 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* Seção 1 — Ranking de Produtos (BarChart) */}
-        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
           <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
             Seção 1 — Ranking de Produtos
           </p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={produtosData} barCategoryGap="35%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
               <XAxis
                 dataKey="nome"
                 tick={{ fill: '#6B6B6B', fontSize: 11, fontWeight: 700 }}
@@ -116,7 +123,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
               />
               <YAxis
                 tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-                tick={{ fill: '#4A4A4A', fontSize: 10 }}
+                tick={{ fill: tickFill, fontSize: 10 }}
                 axisLine={false} tickLine={false} width={44}
               />
               <Tooltip content={<TooltipProduto />} cursor={{ fill: 'rgba(201,168,76,0.05)' }} />
@@ -130,7 +137,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
           {/* Métricas por produto */}
           <div className="grid grid-cols-3 gap-2 mt-3">
             {produtosData.map((p, i) => (
-              <div key={p.nome} className="bg-[#141414] rounded-md p-2">
+              <div key={p.nome} className="bg-[var(--bg-surface-2)] rounded-md p-2">
                 <p className="text-[9px] font-black tracking-widest mb-1.5"
                    style={{ color: PRODUTO_CORES[i] }}>{p.nome}</p>
                 <p className="text-[10px] text-[#6B6B6B]">
@@ -142,7 +149,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
         </div>
 
         {/* Seção 2 — Ranking de Canais (PieChart) */}
-        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
           <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-1">
             Seção 2 — Ranking de Canais
           </p>
@@ -174,7 +181,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
               <div key={c.nome} className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CANAL_CORES[i] ?? '#3A3A3A' }} />
                 <span className="text-[10px] text-[#8A8A8A] flex-1">{c.nome}</span>
-                <span className="text-[10px] font-bold text-[#FAFAF8]">{c.percentual}%</span>
+                <span className="text-[10px] font-bold text-[var(--text-primary)]">{c.percentual}%</span>
               </div>
             ))}
           </div>
@@ -182,21 +189,21 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
       </div>
 
       {/* Seção 5 — Sazonalidade (LineChart) — largura total */}
-      <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+      <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
           Seção 5 — Sazonalidade — Vendas por Semana (2 meses)
         </p>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={semanalData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
             <XAxis
               dataKey="semana"
-              tick={{ fill: '#4A4A4A', fontSize: 10 }}
+              tick={{ fill: tickFill, fontSize: 10 }}
               axisLine={false} tickLine={false}
             />
             <YAxis
               tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-              tick={{ fill: '#4A4A4A', fontSize: 10 }}
+              tick={{ fill: tickFill, fontSize: 10 }}
               axisLine={false} tickLine={false} width={44}
             />
             <Tooltip content={<TooltipSemanal />} />

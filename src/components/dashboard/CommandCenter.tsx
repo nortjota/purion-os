@@ -65,7 +65,7 @@ function KPICard({ label, valor, subvalor, icon: Icon, tendencia, destaque }: KP
       transition-all duration-200 hover:border-[rgba(201,168,76,0.3)]
       ${destaque
         ? 'bg-[rgba(201,168,76,0.06)] border-[rgba(201,168,76,0.2)]'
-        : 'bg-[#1A1A1A] border-[#2A2A2A]'
+        : 'bg-[var(--bg-surface)] border-[var(--border)]'
       }
     `}>
       <div className="flex items-center justify-between">
@@ -116,11 +116,11 @@ function MetaFaturamento({ receitas, despesas }: { receitas: { valor: number; da
   const diasRestantes = Math.max(0, Math.ceil((dataFim.getTime() - dataReferencia.getTime()) / 86_400_000))
 
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Target size={16} className="text-[#C9A84C]" />
-          <span className="text-sm font-semibold text-[#FAFAF8]">Meta de Faturamento — 90 dias</span>
+          <span className="text-sm font-semibold text-[var(--text-primary)]">Meta de Faturamento — 90 dias</span>
         </div>
         <span className="text-lg font-black text-[#C9A84C]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           {percentual.toFixed(1)}%
@@ -142,7 +142,7 @@ function MetaFaturamento({ receitas, despesas }: { receitas: { valor: number; da
         <span>
           <span className="text-[#C9A84C] font-semibold">{formatarMoeda(totalReceita)}</span>
           {' '}de{' '}
-          <span className="text-[#FAFAF8]">{formatarMoeda(META_90_DIAS)}</span>
+          <span className="text-[var(--text-primary)]">{formatarMoeda(META_90_DIAS)}</span>
         </span>
         <span className="flex items-center gap-1">
           <Clock size={11} />
@@ -234,7 +234,7 @@ function SocioCard({ perfilId, tarefas, campanhas, ativo, onClick }: SocioCardPr
         transition-all duration-200 hover:border-[rgba(201,168,76,0.3)]
         ${ativo
           ? 'bg-[rgba(201,168,76,0.06)] border-[rgba(201,168,76,0.25)]'
-          : 'bg-[#1A1A1A] border-[#2A2A2A]'
+          : 'bg-[var(--bg-surface)] border-[var(--border)]'
         }
       `}
     >
@@ -248,7 +248,7 @@ function SocioCard({ perfilId, tarefas, campanhas, ativo, onClick }: SocioCardPr
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-[#FAFAF8]">{info.nome}</span>
+            <span className="text-sm font-bold text-[var(--text-primary)]">{info.nome}</span>
             {/* Badge especial para João */}
             {perfilId === 'joao' && (
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#2A2A2A] text-[#6B6B6B] font-medium whitespace-nowrap">
@@ -268,7 +268,7 @@ function SocioCard({ perfilId, tarefas, campanhas, ativo, onClick }: SocioCardPr
           { label: 'Andamento',    valor: emAndamento, cor: info.cor  },
           { label: 'Concluídas',   valor: concluidas,  cor: '#4CAF7A' },
         ].map(({ label, valor, cor }) => (
-          <div key={label} className="bg-[#141414] rounded-lg p-2 text-center border border-[#2A2A2A]">
+          <div key={label} className="bg-[var(--bg-surface-2)] rounded-lg p-2 text-center border border-[var(--border)]">
             <span className="block text-base font-black leading-none mb-0.5" style={{ color: cor }}>
               {valor}
             </span>
@@ -308,10 +308,10 @@ const ICON_MODULO: Record<string, React.ElementType> = {
 
 function FeedAtividade({ items }: { items: AtividadeItem[] }) {
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-[#2A2A2A] flex items-center gap-2">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-[var(--border)] flex items-center gap-2">
         <Activity size={14} className="text-[#C9A84C]" />
-        <span className="text-sm font-semibold text-[#FAFAF8]">Atividade Recente</span>
+        <span className="text-sm font-semibold text-[var(--text-primary)]">Atividade Recente</span>
         <span className="ml-auto text-[10px] text-[#4A4A4A] uppercase tracking-wider">
           últimas {items.length} ações
         </span>
@@ -342,7 +342,7 @@ function FeedAtividade({ items }: { items: AtividadeItem[] }) {
 
               {/* Conteúdo */}
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-[#FAFAF8] leading-relaxed">
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   <span className="font-semibold" style={{ color: item.corAvatar }}>
                     {item.responsavel}
                   </span>{' '}
@@ -481,7 +481,7 @@ export function CommandCenter() {
             Bem-vindo, {INFO_SOCIOS[perfilAtivo].nome}
           </p>
           <h1
-            className="text-2xl font-black text-[#FAFAF8] tracking-tight"
+            className="text-2xl font-black text-[var(--text-primary)] tracking-tight"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Command Center

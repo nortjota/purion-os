@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import { StoreProvider } from '@/components/providers/StoreProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { AppShell } from '@/components/layout/AppShell'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 // Fonte principal — identidade visual PURION
 const montserrat = Montserrat({
@@ -31,17 +33,20 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${montserrat.variable} h-full dark`}
+      className={`${montserrat.variable} h-full`}
       suppressHydrationWarning
     >
-      <body className="min-h-full antialiased bg-[#0D0D0D] text-[#FAFAF8]">
-        {/* Provider de estado — inicializa dados de seed */}
-        <StoreProvider>
-          {/* Shell: Sidebar + conteúdo principal */}
-          <AppShell>
-            {children}
-          </AppShell>
-        </StoreProvider>
+      <body className="min-h-full antialiased bg-[var(--bg-primary)] text-[var(--text-primary)]">
+        <ThemeProvider>
+          {/* Provider de estado — inicializa dados de seed */}
+          <StoreProvider>
+            {/* Shell: Sidebar + conteúdo principal */}
+            <AppShell>
+              {children}
+            </AppShell>
+            <ThemeToggle />
+          </StoreProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

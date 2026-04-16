@@ -10,6 +10,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
+import { useTheme } from 'next-themes'
 import type { MesGrafico } from '@/lib/calculos'
 
 interface TooltipPayloadEntry {
@@ -33,7 +34,7 @@ function CustomTooltip({ active, payload, label }: {
   }
 
   return (
-    <div className="bg-[#141414] border border-[#2A2A2A] rounded-xl p-3 shadow-xl min-w-[160px]">
+    <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl p-3 shadow-xl min-w-[160px]">
       <p className="text-[11px] text-[#6B6B6B] uppercase tracking-wider mb-2 font-medium">
         {label}
       </p>
@@ -59,21 +60,21 @@ function CustomTooltip({ active, payload, label }: {
 }
 
 // Tick customizado para o eixo Y monetário
-function TickMoeda({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
+function TickMoeda({ x, y, payload, fill }: { x?: number; y?: number; payload?: { value: number }; fill?: string }) {
   if (!payload) return null
   const val = payload.value >= 1000 ? `${(payload.value / 1000).toFixed(0)}k` : String(payload.value)
   return (
-    <text x={x} y={y} dy={4} textAnchor="end" fill="#4A4A4A" fontSize={11}>
+    <text x={x} y={y} dy={4} textAnchor="end" fill={fill ?? '#4A4A4A'} fontSize={11}>
       {val}
     </text>
   )
 }
 
 // Tick para eixo Y de percentual (direita)
-function TickPercent({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
+function TickPercent({ x, y, payload, fill }: { x?: number; y?: number; payload?: { value: number }; fill?: string }) {
   if (!payload) return null
   return (
-    <text x={x} y={y} dy={4} textAnchor="start" fill="#4A4A4A" fontSize={11}>
+    <text x={x} y={y} dy={4} textAnchor="start" fill={fill ?? '#4A4A4A'} fontSize={11}>
       {payload.value}%
     </text>
   )
@@ -88,25 +89,33 @@ interface GraficoEvolucaoProps {
 }
 
 export function GraficoEvolucao({ dados }: GraficoEvolucaoProps) {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const gridStroke  = isDark ? '#1E1E1E' : '#E0DFDB'
+  const axisStroke  = isDark ? '#2A2A2A' : '#D4D3CF'
+  const tickFill    = isDark ? '#4A4A4A' : '#888880'
+  const dotStroke   = isDark ? '#0D0D0D' : '#FAFAF8'
+
   return (
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={dados} margin={{ top: 4, right: 24, left: 0, bottom: 0 }}>
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="#1E1E1E"
+          stroke={gridStroke}
           vertical={false}
         />
         <XAxis
           dataKey="mes"
-          tick={{ fill: '#4A4A4A', fontSize: 11 }}
-          axisLine={{ stroke: '#2A2A2A' }}
+          tick={{ fill: tickFill, fontSize: 11 }}
+          axisLine={{ stroke: axisStroke }}
           tickLine={false}
         />
         {/* Eixo Y esquerdo — valores monetários */}
         <YAxis
           yAxisId="moeda"
           orientation="left"
-          tick={<TickMoeda />}
+          tick={<TickMoeda fill={tickFill} />}
           axisLine={false}
           tickLine={false}
           width={44}
@@ -115,7 +124,7 @@ export function GraficoEvolucao({ dados }: GraficoEvolucaoProps) {
         <YAxis
           yAxisId="pct"
           orientation="right"
-          tick={<TickPercent />}
+          tick={<TickPercent fill={tickFill} />}
           axisLine={false}
           tickLine={false}
           domain={[0, 100]}
@@ -142,7 +151,7 @@ export function GraficoEvolucao({ dados }: GraficoEvolucaoProps) {
           stroke="#C9A84C"
           strokeWidth={2.5}
           dot={{ fill: '#C9A84C', strokeWidth: 0, r: 3 }}
-          activeDot={{ r: 5, fill: '#C9A84C', stroke: '#0D0D0D', strokeWidth: 2 }}
+          activeDot={{ r: 5, fill: '#C9A84C', stroke: dotStroke, strokeWidth: 2 }}
         />
         {/* Linha Despesa — vermelho suave */}
         <Line
@@ -153,7 +162,7 @@ export function GraficoEvolucao({ dados }: GraficoEvolucaoProps) {
           strokeWidth={2}
           strokeOpacity={0.7}
           dot={{ fill: '#E85238', strokeWidth: 0, r: 3 }}
-          activeDot={{ r: 5, fill: '#E85238', stroke: '#0D0D0D', strokeWidth: 2 }}
+          activeDot={{ r: 5, fill: '#E85238', stroke: dotStroke, strokeWidth: 2 }}
         />
         {/* Linha Margem % — cinza */}
         <Line
@@ -164,7 +173,7 @@ export function GraficoEvolucao({ dados }: GraficoEvolucaoProps) {
           strokeWidth={1.5}
           strokeDasharray="5 3"
           dot={false}
-          activeDot={{ r: 4, fill: '#6B6B6B', stroke: '#0D0D0D', strokeWidth: 2 }}
+          activeDot={{ r: 4, fill: '#6B6B6B', stroke: dotStroke, strokeWidth: 2 }}
         />
       </LineChart>
     </ResponsiveContainer>

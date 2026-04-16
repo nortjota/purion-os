@@ -195,7 +195,7 @@ export function InteligenciaDashboard() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-lg font-black tracking-widest text-[#FAFAF8] uppercase">
+          <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">
             Inteligência Comercial
           </h1>
           <p className="text-xs text-[#6B6B6B] mt-0.5">
@@ -216,7 +216,7 @@ export function InteligenciaDashboard() {
           { label: 'Lotes Aprovados',   valor: lotesAprovados, cor: '#8B5CF6' },
           { label: 'Lotes Em Testes',   valor: lotesEmTestes,  cor: '#F59E0B' },
         ].map(({ label, valor, cor }) => (
-          <div key={label} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-4 py-3">
+          <div key={label} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-3">
             <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider mb-1">{label}</p>
             <p className="text-2xl font-black" style={{ color: cor }}>{valor}</p>
           </div>
@@ -243,7 +243,7 @@ export function InteligenciaDashboard() {
               const label = regiao === 'DF' ? 'Brasília' : regiao === 'SP' ? 'São Paulo' : 'Santa Catarina'
               const cor   = conversao >= 40 ? '#10B981' : conversao >= 20 ? '#F59E0B' : '#EF4444'
               return (
-                <div key={regiao} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
+                <div key={regiao} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-black text-[#C9A84C] tracking-widest">{regiao}</span>
@@ -288,8 +288,8 @@ export function InteligenciaDashboard() {
           <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
             Seção 4 — Ticket Médio por Canal
           </h2>
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
-            <div className="grid grid-cols-4 gap-3 px-4 py-2.5 border-b border-[#2A2A2A]">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
+            <div className="grid grid-cols-4 gap-3 px-4 py-2.5 border-b border-[var(--border)]">
               {['Canal', 'Ticket Médio', 'Pedidos', 'Receita Total'].map((h) => (
                 <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
               ))}
@@ -297,7 +297,7 @@ export function InteligenciaDashboard() {
             {ticketData.map((row, idx) => (
               <div
                 key={row.canal}
-                className="grid grid-cols-4 gap-3 px-4 py-3.5 border-b border-[#2A2A2A] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]"
+                className="grid grid-cols-4 gap-3 px-4 py-3.5 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]"
               >
                 <div className="flex items-center gap-2">
                   {idx === 0 && (
@@ -305,11 +305,11 @@ export function InteligenciaDashboard() {
                       LÍDER
                     </span>
                   )}
-                  <span className="text-xs font-semibold text-[#FAFAF8]">{row.canal}</span>
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">{row.canal}</span>
                 </div>
                 <span className="text-xs font-bold text-[#C9A84C]">{fmtR(row.ticketMedio)}</span>
                 <span className="text-xs text-[#8A8A8A]">{row.pedidos}</span>
-                <span className="text-xs font-semibold text-[#FAFAF8]">{fmtR(row.receita)}</span>
+                <span className="text-xs font-semibold text-[var(--text-primary)]">{fmtR(row.receita)}</span>
               </div>
             ))}
           </div>
@@ -319,14 +319,14 @@ export function InteligenciaDashboard() {
             <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-2">
               Performance de Campanhas
             </p>
-            <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
               {campanhasAds.map((c) => {
                 const roas = c.gastoTotal > 0 ? (c.receitaGerada / c.gastoTotal).toFixed(1) : '—'
                 const roasOk = c.gastoTotal > 0 && c.receitaGerada / c.gastoTotal >= (configuracoes.roasMinimo ?? 2.5)
                 return (
-                  <div key={c.id} className="px-4 py-3 border-b border-[#2A2A2A] last:border-0 flex items-center justify-between gap-4">
+                  <div key={c.id} className="px-4 py-3 border-b border-[var(--border)] last:border-0 flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-[#FAFAF8] truncate">{c.nome}</p>
+                      <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{c.nome}</p>
                       <p className="text-[10px] text-[#6B6B6B]">
                         {c.plataforma.toUpperCase()} · {fmtR(c.gastoTotal)} gasto
                       </p>
@@ -362,7 +362,7 @@ export function InteligenciaDashboard() {
             return (
               <div
                 key={i}
-                className="bg-[#1A1A1A] rounded-xl px-5 py-4 flex items-start gap-4"
+                className="bg-[var(--bg-surface)] rounded-xl px-5 py-4 flex items-start gap-4"
                 style={{ borderLeft: `2px solid ${borderColor}` }}
               >
                 <div

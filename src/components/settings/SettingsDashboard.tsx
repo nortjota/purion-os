@@ -44,9 +44,9 @@ function InputNum({
   return (
     <div>
       <label className="text-xs text-[#8A8A8A] block mb-1">{label}</label>
-      <div className="flex items-center bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C] transition-colors">
+      <div className="flex items-center bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C] transition-colors">
         {prefix && (
-          <span className="px-2.5 py-2 text-xs text-[#4A4A4A] border-r border-[#3A3A3A] bg-[#141414]">
+          <span className="px-2.5 py-2 text-xs text-[#4A4A4A] border-r border-[#3A3A3A] bg-[var(--bg-surface-2)]">
             {prefix}
           </span>
         )}
@@ -57,10 +57,10 @@ function InputNum({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-          className="flex-1 px-3 py-2 text-sm text-[#FAFAF8] bg-transparent outline-none"
+          className="flex-1 px-3 py-2 text-sm text-[var(--text-primary)] bg-transparent outline-none"
         />
         {suffix && (
-          <span className="px-2.5 py-2 text-xs text-[#4A4A4A] border-l border-[#3A3A3A] bg-[#141414]">
+          <span className="px-2.5 py-2 text-xs text-[#4A4A4A] border-l border-[#3A3A3A] bg-[var(--bg-surface-2)]">
             {suffix}
           </span>
         )}
@@ -79,13 +79,13 @@ function InputPwd({
   return (
     <div>
       <label className="text-xs text-[#8A8A8A] block mb-1">{label}</label>
-      <div className="flex items-center bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C]">
+      <div className="flex items-center bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C]">
         <input
           type={visible ? 'text' : 'password'}
           placeholder={placeholder ?? '••••••••••••'}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 px-3 py-2 text-sm text-[#FAFAF8] bg-transparent outline-none font-mono"
+          className="flex-1 px-3 py-2 text-sm text-[var(--text-primary)] bg-transparent outline-none font-mono"
         />
         <button
           type="button"
@@ -279,12 +279,12 @@ export function SettingsDashboard() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-lg font-black tracking-widest text-[#FAFAF8] uppercase">Configurações</h1>
+        <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Configurações</h1>
         <p className="text-xs text-[#6B6B6B] mt-0.5">Regras financeiras, metas, alertas e integrações</p>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[#141414] p-1 rounded-xl border border-[#2A2A2A] mb-6 overflow-x-auto">
+      <div className="flex gap-1 bg-[var(--bg-surface-2)] p-1 rounded-xl border border-[var(--border)] mb-6 overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -293,7 +293,7 @@ export function SettingsDashboard() {
               flex-1 px-3 py-2 text-xs font-semibold rounded-lg whitespace-nowrap transition-all
               ${abaAtiva === tab.id
                 ? 'bg-[#C9A84C] text-[#0D0D0D]'
-                : 'text-[#6B6B6B] hover:text-[#FAFAF8] hover:bg-[rgba(255,255,255,0.04)]'
+                : 'text-[#6B6B6B] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)]'
               }
             `}
           >
@@ -309,7 +309,7 @@ export function SettingsDashboard() {
         <div className="space-y-6">
 
           {/* Precificação */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Precificação</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
@@ -335,7 +335,7 @@ export function SettingsDashboard() {
           </div>
 
           {/* Reinvestimento */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider">
                 Reinvestimento do Lucro
@@ -423,7 +423,7 @@ export function SettingsDashboard() {
       ════════════════════════════════════ */}
       {abaAtiva === 'metas' && (
         <div className="space-y-4">
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputNum
@@ -440,7 +440,7 @@ export function SettingsDashboard() {
               />
             </div>
           </div>
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Crescimento Mensal</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
@@ -481,7 +481,7 @@ export function SettingsDashboard() {
       ════════════════════════════════════ */}
       {abaAtiva === 'alertas' && (
         <div className="space-y-4">
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Limites de Performance</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputNum
@@ -500,7 +500,7 @@ export function SettingsDashboard() {
               />
             </div>
           </div>
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Orçamento Diário Máximo</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
@@ -541,7 +541,7 @@ export function SettingsDashboard() {
       ════════════════════════════════════ */}
       {abaAtiva === 'estoque' && (
         <div className="space-y-4">
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Thresholds de Alerta por SKU</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
@@ -577,7 +577,7 @@ export function SettingsDashboard() {
                 return (
                   <div
                     key={sku.id}
-                    className={`bg-[#141414] border rounded-lg p-3 ${alerta ? 'border-red-500/40' : 'border-[#2A2A2A]'}`}
+                    className={`bg-[var(--bg-surface-2)] border rounded-lg p-3 ${alerta ? 'border-red-500/40' : 'border-[var(--border)]'}`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-[10px] font-black text-[#C9A84C] tracking-widest">
@@ -587,7 +587,7 @@ export function SettingsDashboard() {
                         <span className="text-[9px] font-bold text-red-400">ALERTA</span>
                       )}
                     </div>
-                    <p className={`text-xl font-black ${alerta ? 'text-red-400' : 'text-[#FAFAF8]'}`}>
+                    <p className={`text-xl font-black ${alerta ? 'text-red-400' : 'text-[var(--text-primary)]'}`}>
                       {sku.unidades}
                     </p>
                     <p className="text-[9px] text-[#4A4A4A]">mín {threshold} un</p>
@@ -596,7 +596,7 @@ export function SettingsDashboard() {
               })}
             </div>
           </div>
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Expedição</h3>
             <div className="max-w-xs">
               <InputNum
@@ -635,7 +635,7 @@ export function SettingsDashboard() {
           </div>
 
           {/* Meta Ads */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center">
                 <span className="text-[8px] font-black text-white">f</span>
@@ -649,7 +649,7 @@ export function SettingsDashboard() {
           </div>
 
           {/* Google Ads */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-5 h-5 rounded bg-red-500 flex items-center justify-center">
                 <span className="text-[8px] font-black text-white">G</span>
@@ -666,10 +666,10 @@ export function SettingsDashboard() {
           </div>
 
           {/* TikTok Ads */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-5 h-5 rounded bg-[#1A1A1A] border border-[#3A3A3A] flex items-center justify-center">
-                <span className="text-[8px] font-black text-[#FAFAF8]">TT</span>
+              <div className="w-5 h-5 rounded bg-[var(--bg-surface)] border border-[#3A3A3A] flex items-center justify-center">
+                <span className="text-[8px] font-black text-[var(--text-primary)]">TT</span>
               </div>
               <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider">TikTok Ads</h3>
             </div>
@@ -693,7 +693,7 @@ export function SettingsDashboard() {
       )}
 
       {/* ── Rodapé — Export JSON ── */}
-      <div className="mt-10 pt-6 border-t border-[#2A2A2A] flex items-center justify-between flex-wrap gap-3">
+      <div className="mt-10 pt-6 border-t border-[var(--border)] flex items-center justify-between flex-wrap gap-3">
         <div>
           <p className="text-xs text-[#6B6B6B]">Exportar todos os dados do PURION OS em formato JSON.</p>
           <p className="text-[10px] text-[#4A4A4A] mt-0.5">

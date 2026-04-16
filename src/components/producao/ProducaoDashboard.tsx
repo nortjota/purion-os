@@ -107,10 +107,10 @@ function ModalAjusteEstoque({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
       <div
-        className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-sm shadow-2xl"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-sm font-bold text-[#FAFAF8] mb-1">Ajustar Estoque</h3>
+        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-1">Ajustar Estoque</h3>
         <p className="text-xs text-[#6B6B6B] mb-4">{nome}</p>
         <label className="text-xs text-[#8A8A8A] block mb-1">Novas unidades em estoque</label>
         <input
@@ -118,11 +118,11 @@ function ModalAjusteEstoque({
           min={0}
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C] mb-4"
+          className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] mb-4"
           autoFocus
         />
         <div className="flex gap-2">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[#2A2A2A] rounded-lg hover:border-[#3A3A3A]">
+          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg hover:border-[#3A3A3A]">
             Cancelar
           </button>
           <button
@@ -173,17 +173,17 @@ function ModalNovoLote({ onSalvar, onFechar }: { onSalvar: (lote: Lote) => void;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
       <div
-        className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-sm shadow-2xl"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-sm font-bold text-[#FAFAF8] mb-4">Novo Lote</h3>
+        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Novo Lote</h3>
         <div className="flex flex-col gap-3">
           <div>
             <label className="text-xs text-[#8A8A8A] block mb-1">Fragrância</label>
             <select
               value={form.fragrancia}
               onChange={(e) => setForm({ ...form, fragrancia: e.target.value as SKUProduto })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             >
               <option value="noir">NOIR Intense</option>
               <option value="urban">URBAN Fresh</option>
@@ -196,7 +196,7 @@ function ModalNovoLote({ onSalvar, onFechar }: { onSalvar: (lote: Lote) => void;
               type="date"
               value={form.dataProd}
               onChange={(e) => setForm({ ...form, dataProd: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             />
           </div>
           <div>
@@ -207,12 +207,12 @@ function ModalNovoLote({ onSalvar, onFechar }: { onSalvar: (lote: Lote) => void;
               placeholder="ex: 200"
               value={form.quantidade}
               onChange={(e) => setForm({ ...form, quantidade: e.target.value })}
-              className="w-full bg-[#0D0D0D] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[#FAFAF8] outline-none focus:border-[#C9A84C]"
+              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
             />
           </div>
         </div>
         <div className="flex gap-2 mt-5">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[#2A2A2A] rounded-lg hover:border-[#3A3A3A]">
+          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg hover:border-[#3A3A3A]">
             Cancelar
           </button>
           <button
@@ -257,7 +257,7 @@ export function ProducaoDashboard() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-black tracking-widest text-[#FAFAF8] uppercase">
+          <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">
             Produção & Estoque
           </h1>
           <p className="text-xs text-[#6B6B6B] mt-0.5">Controle de qualidade, SKUs e expedição</p>
@@ -286,8 +286,8 @@ export function ProducaoDashboard() {
               <div
                 key={sku.id}
                 className={`
-                  bg-[#1A1A1A] border rounded-xl p-5 flex flex-col gap-3
-                  ${alerta ? 'border-red-500/40' : 'border-[#2A2A2A]'}
+                  bg-[var(--bg-surface)] border rounded-xl p-5 flex flex-col gap-3
+                  ${alerta ? 'border-red-500/40' : 'border-[var(--border)]'}
                 `}
               >
                 {/* SKU header */}
@@ -366,9 +366,9 @@ export function ProducaoDashboard() {
           </button>
         </div>
 
-        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
           {/* Cabeçalho tabela */}
-          <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4 px-4 py-2.5 border-b border-[#2A2A2A]">
+          <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
             {['Nº Lote', 'Fragrância', 'Data Prod.', 'Qtd', 'Status'].map((h) => (
               <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
             ))}
@@ -394,16 +394,16 @@ export function ProducaoDashboard() {
             }[statusGeral]
 
             return (
-              <div key={lote.id} className="border-b border-[#2A2A2A] last:border-0">
+              <div key={lote.id} className="border-b border-[var(--border)] last:border-0">
                 {/* Linha principal */}
                 <button
                   onClick={() => toggleLote(lote.id)}
                   className="w-full grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4 px-4 py-3 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors"
                 >
                   <span className="text-xs font-mono text-[#C9A84C]">{lote.codigo}</span>
-                  <span className="text-xs text-[#FAFAF8]">{lote.produto}</span>
+                  <span className="text-xs text-[var(--text-primary)]">{lote.produto}</span>
                   <span className="text-xs text-[#8A8A8A]">{fmt(lote.dataInicio)}</span>
-                  <span className="text-xs text-[#FAFAF8] font-bold">{lote.quantidadeProduzida}</span>
+                  <span className="text-xs text-[var(--text-primary)] font-bold">{lote.quantidadeProduzida}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full self-center ${statusColor}`}>
                     {statusLabel}
                   </span>
@@ -415,7 +415,7 @@ export function ProducaoDashboard() {
                 {/* Checklist expandida */}
                 {expandido && (
                   <div className="px-4 pb-4 pt-1">
-                    <div className="bg-[#141414] border border-[#2A2A2A] rounded-lg p-4">
+                    <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-4">
                       <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-3">
                         Checklist de Testes — {lote.codigo}
                       </p>
@@ -435,7 +435,7 @@ export function ProducaoDashboard() {
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className={`text-xs font-medium ${resultado === 'aprovado' ? 'text-[#FAFAF8]' : resultado === 'reprovado' ? 'text-red-400' : 'text-[#6B6B6B]'}`}>
+                                  <span className={`text-xs font-medium ${resultado === 'aprovado' ? 'text-[var(--text-primary)]' : resultado === 'reprovado' ? 'text-red-400' : 'text-[#6B6B6B]'}`}>
                                     {req.label}
                                   </span>
                                   {teste?.data && (
@@ -515,8 +515,8 @@ export function ProducaoDashboard() {
           </div>
         </div>
 
-        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
-          <div className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[#2A2A2A]">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
+          <div className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
             {['Pedido', 'Destinatário', 'Data', 'SLA 48h', 'Status'].map((h) => (
               <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
             ))}
@@ -534,11 +534,11 @@ export function ProducaoDashboard() {
             return (
               <div
                 key={pedido.id}
-                className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-3 border-b border-[#2A2A2A] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+                className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               >
                 <span className="text-xs font-mono text-[#C9A84C]">{pedido.numeroPedido}</span>
                 <div>
-                  <p className="text-xs text-[#FAFAF8]">{pedido.destinatario}</p>
+                  <p className="text-xs text-[var(--text-primary)]">{pedido.destinatario}</p>
                   <p className="text-[10px] text-[#4A4A4A]">
                     {pedido.itens.map((i) => `${i.quantidade}× ${SKU_LABEL[i.sku]}`).join(', ')}
                   </p>
@@ -580,7 +580,7 @@ export function ProducaoDashboard() {
                   style={{ backgroundColor: 'transparent' }}
                 >
                   {Object.entries(STATUS_PEDIDO_LABEL).map(([val, label]) => (
-                    <option key={val} value={val} className="bg-[#1A1A1A] text-[#FAFAF8]">{label}</option>
+                    <option key={val} value={val} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">{label}</option>
                   ))}
                 </select>
               </div>

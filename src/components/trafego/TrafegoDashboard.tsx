@@ -15,7 +15,7 @@ import type { DailyConsolidado } from './TrafegoGraficos'
 
 const TrafegoGraficos = dynamic(() => import('./TrafegoGraficos'), {
   ssr: false,
-  loading: () => <div className="h-[220px] bg-[#141414] rounded-lg animate-pulse" />,
+  loading: () => <div className="h-[220px] bg-[var(--bg-surface-2)] rounded-lg animate-pulse" />,
 })
 
 // ─────────────────────────────────────────────
@@ -59,7 +59,7 @@ const fmtTs = (iso: string) => {
 // ─────────────────────────────────────────────
 
 function SkeletonCard() {
-  return <div className="bg-[#1A1A1A] rounded-xl h-24 animate-pulse" />
+  return <div className="bg-[var(--bg-surface)] rounded-xl h-24 animate-pulse" />
 }
 
 function BannerErro({ status, plataforma, ultimaAtualizacao }: {
@@ -70,11 +70,11 @@ function BannerErro({ status, plataforma, ultimaAtualizacao }: {
   if (status === 'no_credentials') {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-        <div className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full bg-[var(--bg-surface)] flex items-center justify-center">
           <Settings size={20} className="text-[#C9A84C]" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-[#FAFAF8]">Configure a API de {plataforma}</p>
+          <p className="text-sm font-semibold text-[var(--text-primary)]">Configure a API de {plataforma}</p>
           <p className="text-xs text-[#6B6B6B] mt-1">As credenciais não foram preenchidas em Configurações.</p>
         </div>
         <Link href="/settings"
@@ -133,9 +133,9 @@ function KpiCard({ label, valor, destaque, alerta, aviso }: {
   label: string; valor: string; destaque?: boolean; alerta?: boolean; aviso?: boolean
 }) {
   return (
-    <div className="bg-[#141414] border border-[#2A2A2A] rounded-xl px-4 py-3">
+    <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl px-4 py-3">
       <p className="text-[9px] text-[#6B6B6B] uppercase tracking-widest mb-1">{label}</p>
-      <p className={`text-lg font-black ${alerta ? 'text-red-400' : aviso ? 'text-amber-400' : destaque ? 'text-[#C9A84C]' : 'text-[#FAFAF8]'}`}>
+      <p className={`text-lg font-black ${alerta ? 'text-red-400' : aviso ? 'text-amber-400' : destaque ? 'text-[#C9A84C]' : 'text-[var(--text-primary)]'}`}>
         {valor}
       </p>
       {alerta && <span className="text-[8px] font-bold text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded mt-1 inline-block">ACIMA DO LIMITE</span>}
@@ -152,8 +152,8 @@ function TabelaCampanhas({ campanhas, roasMinimo, cpaMaximo }: {
     <p className="text-xs text-[#4A4A4A] py-4 text-center">Nenhuma campanha no período.</p>
   )
   return (
-    <div className="bg-[#141414] border border-[#2A2A2A] rounded-xl overflow-hidden">
-      <div className="grid grid-cols-6 gap-2 px-4 py-2.5 border-b border-[#2A2A2A]">
+    <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl overflow-hidden">
+      <div className="grid grid-cols-6 gap-2 px-4 py-2.5 border-b border-[var(--border)]">
         {['Nome', 'Status', 'Gasto', 'Conv.', 'ROAS', 'CPA'].map((h) => (
           <span key={h} className="text-[9px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
         ))}
@@ -162,17 +162,17 @@ function TabelaCampanhas({ campanhas, roasMinimo, cpaMaximo }: {
         const roasOk = c.roas >= roasMinimo || c.roas === 0
         const cpaOk  = c.cpa  <= cpaMaximo  || c.cpa  === 0
         return (
-          <div key={c.id} className="grid grid-cols-6 gap-2 px-4 py-3 border-b border-[#2A2A2A] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]">
-            <span className="text-xs text-[#FAFAF8] truncate col-span-1">{c.nome}</span>
-            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded w-fit ${c.status === 'ATIVO' ? 'text-emerald-400 bg-emerald-400/10' : 'text-[#6B6B6B] bg-[#1A1A1A]'}`}>
+          <div key={c.id} className="grid grid-cols-6 gap-2 px-4 py-3 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]">
+            <span className="text-xs text-[var(--text-primary)] truncate col-span-1">{c.nome}</span>
+            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded w-fit ${c.status === 'ATIVO' ? 'text-emerald-400 bg-emerald-400/10' : 'text-[#6B6B6B] bg-[var(--bg-surface)]'}`}>
               {c.status}
             </span>
-            <span className="text-xs text-[#FAFAF8] font-semibold">{fmtR(c.gasto)}</span>
+            <span className="text-xs text-[var(--text-primary)] font-semibold">{fmtR(c.gasto)}</span>
             <span className="text-xs text-[#8A8A8A]">{fmtN(Math.round(c.conversoes))}</span>
             <span className={`text-xs font-bold ${roasOk ? 'text-emerald-400' : 'text-red-400'}`}>
               {c.roas > 0 ? `${c.roas.toFixed(1)}×` : '—'}
             </span>
-            <span className={`text-xs font-bold ${cpaOk ? 'text-[#FAFAF8]' : 'text-amber-400'}`}>
+            <span className={`text-xs font-bold ${cpaOk ? 'text-[var(--text-primary)]' : 'text-amber-400'}`}>
               {c.cpa > 0 ? fmtR(c.cpa) : '—'}
             </span>
           </div>
@@ -225,7 +225,7 @@ function PlataformaTab({ data, loading, plataforma, cor, subLabel, roasMinimo, c
           </div>
 
           {/* Gráfico de linha — gasto diário */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
               Gasto Diário — {subLabel}
             </p>
@@ -326,14 +326,14 @@ export function TrafegoDashboard() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-lg font-black tracking-widest text-[#FAFAF8] uppercase">Tráfego Pago</h1>
+          <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Tráfego Pago</h1>
           <p className="text-xs text-[#6B6B6B] mt-0.5">Meta · Google · TikTok — dados em tempo real</p>
         </div>
         {/* Seletor de período */}
-        <div className="flex gap-1 bg-[#141414] border border-[#2A2A2A] rounded-lg p-1">
+        <div className="flex gap-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-1">
           {PERIODOS.map(({ value, label }) => (
             <button key={value} onClick={() => setPeriod(value)}
-              className={`text-[10px] font-bold px-3 py-1.5 rounded-md transition-colors ${period === value ? 'bg-[#C9A84C] text-[#0A0A0A]' : 'text-[#6B6B6B] hover:text-[#FAFAF8]'}`}>
+              className={`text-[10px] font-bold px-3 py-1.5 rounded-md transition-colors ${period === value ? 'bg-[#C9A84C] text-[#0A0A0A]' : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'}`}>
               {label}
             </button>
           ))}
@@ -341,10 +341,10 @@ export function TrafegoDashboard() {
       </div>
 
       {/* ── Tabs ── */}
-      <div className="flex gap-1 border-b border-[#2A2A2A]">
+      <div className="flex gap-1 border-b border-[var(--border)]">
         {([{ id: 'painel' as const, label: 'Painel Unificado' }, ...PLATAFORMAS.map((p) => ({ id: p.id, label: p.label }))]).map(({ id, label }) => (
           <button key={id} onClick={() => setActiveTab(id)}
-            className={`text-[11px] font-bold px-4 py-2.5 border-b-2 transition-colors ${activeTab === id ? 'border-[#C9A84C] text-[#C9A84C]' : 'border-transparent text-[#6B6B6B] hover:text-[#FAFAF8]'}`}>
+            className={`text-[11px] font-bold px-4 py-2.5 border-b-2 transition-colors ${activeTab === id ? 'border-[#C9A84C] text-[#C9A84C]' : 'border-transparent text-[#6B6B6B] hover:text-[var(--text-primary)]'}`}>
             {label}
           </button>
         ))}
@@ -369,12 +369,12 @@ export function TrafegoDashboard() {
           </div>
 
           {/* Gráfico empilhado */}
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
               Gasto Diário por Plataforma
             </p>
             {anyLoading
-              ? <div className="h-[220px] bg-[#141414] rounded-lg animate-pulse" />
+              ? <div className="h-[220px] bg-[var(--bg-surface-2)] rounded-lg animate-pulse" />
               : <TrafegoGraficos tipo="empilhado" empilhadoData={empilhadoData} />
             }
           </div>
@@ -384,8 +384,8 @@ export function TrafegoDashboard() {
             <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
               Comparativo de Plataformas
             </p>
-            <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
-              <div className="grid grid-cols-6 gap-2 px-4 py-2.5 border-b border-[#2A2A2A]">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
+              <div className="grid grid-cols-6 gap-2 px-4 py-2.5 border-b border-[var(--border)]">
                 {['Plataforma', 'Gasto', 'Cliques', 'CPA', 'ROAS', 'Conexão'].map((h) => (
                   <span key={h} className="text-[9px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
                 ))}
@@ -394,10 +394,10 @@ export function TrafegoDashboard() {
                 const d = id === 'meta' ? metaData : id === 'google' ? googleData : tiktokData
                 const isLoading = loading[id as keyof typeof loading]
                 return (
-                  <div key={id} className="grid grid-cols-6 gap-2 px-4 py-3.5 border-b border-[#2A2A2A] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]">
+                  <div key={id} className="grid grid-cols-6 gap-2 px-4 py-3.5 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cor }} />
-                      <span className="text-xs font-semibold text-[#FAFAF8]">{label}</span>
+                      <span className="text-xs font-semibold text-[var(--text-primary)]">{label}</span>
                     </div>
                     {isLoading ? (
                       <div className="col-span-5 h-4 bg-[#2A2A2A] rounded animate-pulse" />
@@ -405,7 +405,7 @@ export function TrafegoDashboard() {
                       <>
                         <span className="text-xs font-bold text-[#C9A84C]">{fmtR(d.gasto)}</span>
                         <span className="text-xs text-[#8A8A8A]">{fmtN(d.cliques)}</span>
-                        <span className={`text-xs font-bold ${d.cpa > cpaMaximo && d.cpa > 0 ? 'text-amber-400' : 'text-[#FAFAF8]'}`}>
+                        <span className={`text-xs font-bold ${d.cpa > cpaMaximo && d.cpa > 0 ? 'text-amber-400' : 'text-[var(--text-primary)]'}`}>
                           {d.cpa > 0 ? fmtR(d.cpa) : '—'}
                         </span>
                         <span className={`text-xs font-bold ${d.roas > 0 && d.roas < roasMinimo ? 'text-red-400' : 'text-emerald-400'}`}>
