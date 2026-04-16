@@ -436,17 +436,17 @@ export function CommandCenter() {
     },
     {
       label: 'ROAS Atual',
-      valor: `${kpis.roas.toFixed(2)}x`,
-      subvalor: kpis.roas < 2.5 ? '⚠ Abaixo de 2.5x' : '✓ Meta atingida',
+      valor: kpis.roas > 0 ? `${kpis.roas.toFixed(2)}x` : '—',
+      subvalor: kpis.roas === 0 ? 'Sem dados de ads' : kpis.roas < 2.5 ? '⚠ Abaixo de 2.5x' : '✓ Meta atingida',
       icon: TrendingUp,
-      tendencia: kpis.roas >= 2.5 ? 'up' : 'down',
+      tendencia: kpis.roas === 0 ? 'neutral' : kpis.roas >= 2.5 ? 'up' : 'down',
     },
     {
       label: 'CPA Médio',
-      valor: formatarMoeda(kpis.cpa),
-      subvalor: kpis.cpa > 30 ? '⚠ Acima de R$ 30,00' : '✓ Dentro do limite',
+      valor: kpis.cpa > 0 ? formatarMoeda(kpis.cpa) : '—',
+      subvalor: kpis.cpa === 0 ? 'Sem conversões registradas' : kpis.cpa > 30 ? '⚠ Acima de R$ 30,00' : '✓ Dentro do limite',
       icon: ShoppingCart,
-      tendencia: kpis.cpa <= 30 ? 'up' : 'down',
+      tendencia: kpis.cpa === 0 ? 'neutral' : kpis.cpa <= 30 ? 'up' : 'down',
     },
     {
       label: 'Margem Bruta',
@@ -477,6 +477,9 @@ export function CommandCenter() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between">
         <div>
+          <p className="text-xs text-[#6B6B6B] uppercase tracking-widest mb-0.5">
+            Bem-vindo, {INFO_SOCIOS[perfilAtivo].nome}
+          </p>
           <h1
             className="text-2xl font-black text-[#FAFAF8] tracking-tight"
             style={{ fontFamily: 'Montserrat, sans-serif' }}

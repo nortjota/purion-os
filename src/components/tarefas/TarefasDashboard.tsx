@@ -483,9 +483,9 @@ function BoardSocio({ perfilId, tarefas, onCriarTarefa, onMoverTarefa }: BoardSo
 // ─────────────────────────────────────────────
 
 export function TarefasDashboard() {
-  const { tarefas, adicionarTarefa, atualizarTarefa } = usePurionStore()
+  const { tarefas, adicionarTarefa, atualizarTarefa, perfilAtivo } = usePurionStore()
 
-  const [abaAtiva, setAbaAtiva]   = useState<PerfilUsuario>('matheus')
+  const [abaAtiva, setAbaAtiva]   = useState<PerfilUsuario>(perfilAtivo)
   const [modal, setModal]         = useState<{ aberto: boolean; colunaId: ColunaTarefa }>({
     aberto: false,
     colunaId: 'pendente',

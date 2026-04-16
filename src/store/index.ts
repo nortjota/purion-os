@@ -601,7 +601,20 @@ export const usePurionStore = create<PurionState>()(
             reunioes: s.reunioes.map((r) => (r.id === id ? { ...r, ...dados } : r)),
           })),
         adicionarDailyEntry: (entry) =>
-          set((s) => ({ dailyEntries: [...s.dailyEntries, entry] })),
+          set((s) => {
+            const all = [...s.dailyEntries, entry]
+            // Mantém os últimos 7 entries por sócio
+            const result: DailyEntry[] = []
+            const socios: PerfilUsuario[] = ['matheus', 'joao', 'gabriel']
+            socios.forEach((socio) => {
+              const porSocio = all
+                .filter((e) => e.socio === socio)
+                .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+                .slice(0, 7)
+              result.push(...porSocio)
+            })
+            return { dailyEntries: result }
+          }),
         adicionarDecisao: (decisao) =>
           set((s) => ({ decisoes: [...s.decisoes, decisao] })),
         atualizarDecisao: (id, dados) =>
@@ -622,11 +635,12 @@ export const usePurionStore = create<PurionState>()(
       }),
       {
         name: 'purion-os-storage',
-        // Persiste apenas configurações e perfil ativo — dados virão do Supabase
+        // Persiste perfil, configurações e leads (fallback sem Supabase)
         partialize: (state) => ({
           perfilAtivo: state.perfilAtivo,
           configuracoes: state.configuracoes,
           sidebarRecolhida: state.sidebarRecolhida,
+          leads: state.leads,
         }),
         // Garante que campos novos adicionados ao configPadrao sempre existam
         // mesmo que o localStorage tenha sido gravado por uma versão anterior.

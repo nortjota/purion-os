@@ -454,12 +454,14 @@ export function ProducaoDashboard() {
                                   <button
                                     onClick={() => {
                                       const novosTestes = lote.testes.map((t) =>
-                                        t.tipo === req.tipo ? { ...t, resultado: 'aprovado' as const, data: '2024-02-12' } : t
+                                        t.tipo === req.tipo ? { ...t, resultado: 'aprovado' as const, data: new Date().toISOString().slice(0, 10) } : t
                                       )
                                       if (!lote.testes.find((t) => t.tipo === req.tipo)) {
-                                        novosTestes.push({ tipo: req.tipo as Lote['testes'][number]['tipo'], resultado: 'aprovado', data: '2024-02-12', observacoes: '' })
+                                        novosTestes.push({ tipo: req.tipo as Lote['testes'][number]['tipo'], resultado: 'aprovado', data: new Date().toISOString().slice(0, 10), observacoes: '' })
                                       }
-                                      atualizarLote(lote.id, { testes: novosTestes })
+                                      const statusCalc = calcularStatusLote({ ...lote, testes: novosTestes })
+                                      const novoStatus = statusCalc === 'aprovado' ? 'aprovado' as const : statusCalc === 'reprovado' ? 'reprovado' as const : lote.status
+                                      atualizarLote(lote.id, { testes: novosTestes, status: novoStatus })
                                     }}
                                     className="px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-400/30 rounded hover:bg-emerald-400/10"
                                   >
@@ -468,12 +470,14 @@ export function ProducaoDashboard() {
                                   <button
                                     onClick={() => {
                                       const novosTestes = lote.testes.map((t) =>
-                                        t.tipo === req.tipo ? { ...t, resultado: 'reprovado' as const, data: '2024-02-12' } : t
+                                        t.tipo === req.tipo ? { ...t, resultado: 'reprovado' as const, data: new Date().toISOString().slice(0, 10) } : t
                                       )
                                       if (!lote.testes.find((t) => t.tipo === req.tipo)) {
-                                        novosTestes.push({ tipo: req.tipo as Lote['testes'][number]['tipo'], resultado: 'reprovado', data: '2024-02-12', observacoes: '' })
+                                        novosTestes.push({ tipo: req.tipo as Lote['testes'][number]['tipo'], resultado: 'reprovado', data: new Date().toISOString().slice(0, 10), observacoes: '' })
                                       }
-                                      atualizarLote(lote.id, { testes: novosTestes })
+                                      const statusCalc = calcularStatusLote({ ...lote, testes: novosTestes })
+                                      const novoStatus = statusCalc === 'reprovado' ? 'reprovado' as const : lote.status
+                                      atualizarLote(lote.id, { testes: novosTestes, status: novoStatus })
                                     }}
                                     className="px-2 py-0.5 text-[10px] font-bold text-red-400 border border-red-400/30 rounded hover:bg-red-400/10"
                                   >

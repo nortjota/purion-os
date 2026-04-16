@@ -6,6 +6,7 @@
  * Usa Zustand para controle do perfil ativo e estado recolhido.
  */
 
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -65,13 +66,33 @@ const perfis: Array<{
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { perfilAtivo, setPerfilAtivo, sidebarRecolhida, setSidebarRecolhida, pedidosExpedicao } = usePurionStore()
+  const {
+    perfilAtivo, setPerfilAtivo, sidebarRecolhida, setSidebarRecolhida,
+    pedidosExpedicao, campanhasAds, produtosSKU, configuracoes,
+  } = usePurionStore()
 
   const temPedidoExpirado = pedidosExpedicao.some((p) => {
     if (p.status === 'enviado' || p.status === 'entregue' || p.status === 'cancelado') return false
     const deadline = new Date(new Date(p.dataPedido).getTime() + p.prazoHoras * 3_600_000)
     return DATA_REF > deadline
   })
+
+  // Alertas de tráfego inline
+  const alertasTrafego = useMemo(() => {
+    const gastoAds = campanhasAds.reduce((s, c) => s + c.gastoTotal, 0)
+    const receitaAds = campanhasAds.reduce((s, c) => s + c.receitaGerada, 0)
+    const conversoes = campanhasAds.reduce((s, c) => s + c.conversoes, 0)
+    const roas = gastoAds > 0 ? receitaAds / gastoAds : 0
+    const cpa = conversoes > 0 ? gastoAds / conversoes : 0
+    let count = 0
+    if (gastoAds > 0 && roas < configuracoes.roasMinimo) count++
+    if (conversoes > 0 && cpa > configuracoes.cpaMaximo) count++
+    return count
+  }, [campanhasAds, configuracoes])
+
+  const alertasEstoque = useMemo(() =>
+    produtosSKU.filter((s) => s.unidades < s.threshold).length,
+  [produtosSKU])
 
   const perfilInfo = perfis.find((p) => p.id === perfilAtivo)!
   const largura = sidebarRecolhida ? 'w-[64px]' : 'w-[260px]'
@@ -134,6 +155,11 @@ export function Sidebar() {
             const ativo =
               href === '/' ? pathname === '/' : pathname.startsWith(href)
 
+            // Badges por rota
+            const temAlertaTrafego = href === '/trafego' && alertasTrafego > 0
+            const temAlertaEstoque = href === '/producao' && alertasEstoque > 0
+            const totalAlertas = href === '/' ? alertasTrafego + alertasEstoque : 0
+
             return (
               <li key={href}>
                 <Link
@@ -157,6 +183,12 @@ export function Sidebar() {
                     {href === '/producao' && temPedidoExpirado && (
                       <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 border border-[#141414]" />
                     )}
+                    {temAlertaTrafego && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-orange-400 border border-[#141414]" />
+                    )}
+                    {temAlertaEstoque && !temPedidoExpirado && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-yellow-400 border border-[#141414]" />
+                    )}
                   </span>
                   {!sidebarRecolhida && (
                     <span className="truncate flex-1">{label}</span>
@@ -164,6 +196,21 @@ export function Sidebar() {
                   {!sidebarRecolhida && href === '/producao' && temPedidoExpirado && (
                     <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">
                       SLA
+                    </span>
+                  )}
+                  {!sidebarRecolhida && temAlertaTrafego && (
+                    <span className="text-[10px] font-bold text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded">
+                      {alertasTrafego}
+                    </span>
+                  )}
+                  {!sidebarRecolhida && temAlertaEstoque && (
+                    <span className="text-[10px] font-bold text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">
+                      {alertasEstoque}
+                    </span>
+                  )}
+                  {!sidebarRecolhida && totalAlertas > 0 && (
+                    <span className="text-[10px] font-bold text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded">
+                      {totalAlertas}
                     </span>
                   )}
 

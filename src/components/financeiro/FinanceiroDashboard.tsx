@@ -176,9 +176,10 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
   const [tipo, setTipo]           = useState<TipoMovimentacao>('receita')
   const [categoria, setCategoria] = useState<string>('')
   const [valor, setValor]         = useState<string>('')
-  const [data, setData]           = useState<string>('2024-02-12')
+  const [data, setData]           = useState<string>(new Date().toISOString().slice(0, 10))
   const [descricao, setDescricao] = useState<string>('')
   const [erro, setErro]           = useState<string>('')
+  const [salvo, setSalvo]         = useState<boolean>(false)
 
   const categoriasDisponiveis =
     tipo === 'receita'
@@ -226,6 +227,8 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
     setCategoria('')
     setDescricao('')
     setErro('')
+    setSalvo(true)
+    setTimeout(() => setSalvo(false), 2500)
   }
 
   const inputCls = `
@@ -309,6 +312,14 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
       {/* Erro */}
       {erro && (
         <p className="text-xs text-[#E85238] px-1">{erro}</p>
+      )}
+
+      {/* Toast de confirmação */}
+      {salvo && (
+        <div className="flex items-center gap-1.5 text-xs text-emerald-400">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="6" fill="#10B981"/><path d="M3.5 6l1.8 1.8 3-3.6" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          {tipo === 'receita' ? 'Receita registrada!' : 'Despesa registrada!'}
+        </div>
       )}
 
       {/* Botão */}
