@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
-import { StoreProvider } from '@/components/providers/StoreProvider'
-import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { AppShell } from '@/components/layout/AppShell'
+import { StoreProvider }  from '@/components/providers/StoreProvider'
+import { ThemeProvider }  from '@/components/providers/ThemeProvider'
+import { AuthProvider }   from '@/components/providers/AuthProvider'
+import { ConditionalShell } from '@/components/layout/ConditionalShell'
 
-// Fonte principal — identidade visual PURION
 const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -18,32 +18,22 @@ export const metadata: Metadata = {
     template: '%s — PURION OS',
     default: 'PURION OS',
   },
-  description: 'Sistema operacional da PURION — Perfumaria Automotiva de Luxo',
-  icons: {
-    icon: '/favicon.ico',
-  },
+  description: 'Sistema operacional para marcas DTC',
+  icons: { icon: '/favicon.ico' },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${montserrat.variable} h-full`}
-      suppressHydrationWarning
-    >
+    <html lang="pt-BR" className={`${montserrat.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full antialiased bg-[var(--bg-primary)] text-[var(--text-primary)]">
         <ThemeProvider>
-          {/* Provider de estado — inicializa dados de seed */}
-          <StoreProvider>
-            {/* Shell: Sidebar + conteúdo principal */}
-            <AppShell>
-              {children}
-            </AppShell>
-          </StoreProvider>
+          <AuthProvider>
+            <StoreProvider>
+              <ConditionalShell>
+                {children}
+              </ConditionalShell>
+            </StoreProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
