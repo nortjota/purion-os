@@ -16,8 +16,9 @@ const MODULE_NAMES: Record<string, string> = {
   '/creators':     'Creators',
   '/inteligencia': 'Inteligência',
   '/reunioes':     'Reuniões',
-  '/trafego':      'Tráfego',
-  '/settings':     'Configurações',
+  '/trafego':       'Tráfego',
+  '/contabilidade': 'Contabilidade',
+  '/settings':      'Configurações',
 }
 
 const PERFIL_INICIAIS: Record<string, string> = {

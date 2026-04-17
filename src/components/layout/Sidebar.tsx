@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Zap, Settings,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, BookOpen,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 
@@ -22,6 +22,7 @@ const navItems = [
   { href: '/inteligencia', label: 'Inteligência',   icon: BarChart2 },
   { href: '/reunioes',     label: 'Reuniões',       icon: Calendar },
   { href: '/trafego',      label: 'Tráfego',        icon: Zap },
+  { href: '/contabilidade', label: 'Contabilidade',  icon: BookOpen },
   { href: '/settings',     label: 'Config',         icon: Settings },
 ]
 

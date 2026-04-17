@@ -401,6 +401,11 @@ export interface Configuracoes {
   // Impostos (Simples Nacional)
   aliquotaSimples: number        // ex: 0.06 = 6%
   faixaFaturamento: string       // ex: 'Até R$ 180.000'
+
+  // Contabilidade Gerencial
+  regimeTributario: 'simples_nacional' | 'lucro_presumido'
+  cnae: string                   // ex: '4772-5/00'
+  aliquotaContabil: number       // sobrescreve aliquotaSimples para estimativa gerencial
 }
 
 // ─────────────────────────────────────────────
@@ -426,6 +431,8 @@ interface PurionState {
   setDespesas: (despesas: Despesa[]) => void
   adicionarReceita: (receita: Receita) => void
   adicionarDespesa: (despesa: Despesa) => void
+  atualizarReceita: (id: string, dados: Partial<Receita>) => void
+  atualizarDespesa: (id: string, dados: Partial<Despesa>) => void
 
   // Tarefas
   tarefas: Tarefa[]
@@ -528,6 +535,10 @@ const configPadrao: Configuracoes = {
 
   aliquotaSimples: 0.06,
   faixaFaturamento: 'Até R$ 180.000',
+
+  regimeTributario: 'simples_nacional',
+  cnae: '4772-5/00',
+  aliquotaContabil: 0.06,
 }
 
 // ─────────────────────────────────────────────
@@ -563,6 +574,10 @@ export const usePurionStore = create<PurionState>()(
           set((s) => ({ receitas: [...s.receitas, receita] })),
         adicionarDespesa: (despesa) =>
           set((s) => ({ despesas: [...s.despesas, despesa] })),
+        atualizarReceita: (id, dados) =>
+          set((s) => ({ receitas: s.receitas.map((r) => r.id === id ? { ...r, ...dados } : r) })),
+        atualizarDespesa: (id, dados) =>
+          set((s) => ({ despesas: s.despesas.map((d) => d.id === id ? { ...d, ...dados } : d) })),
 
         // ── Tarefas ──
         tarefas: [],
