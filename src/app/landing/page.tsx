@@ -94,12 +94,20 @@ export default function LandingPage() {
         <p style={{ fontSize: '18px', color: '#8B8B8B', maxWidth: '520px', margin: '0 auto 40px', lineHeight: 1.6 }}>
           Gerencie CRM, financeiro, produção, creators e tráfego pago num único painel. Feito para quem escala.
         </p>
-        <a
-          href="#demo"
-          style={{ display: 'inline-block', backgroundColor: '#C9A84C', color: '#0D0D0D', padding: '14px 32px', borderRadius: '10px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', letterSpacing: '0.02em' }}
-        >
-          Solicitar demonstração
-        </a>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a
+            href="/signup"
+            style={{ display: 'inline-block', backgroundColor: '#C9A84C', color: '#0D0D0D', padding: '14px 32px', borderRadius: '10px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', letterSpacing: '0.02em' }}
+          >
+            Começar agora — grátis
+          </a>
+          <a
+            href="#demo"
+            style={{ display: 'inline-block', backgroundColor: 'transparent', color: '#C9A84C', padding: '14px 32px', borderRadius: '10px', fontSize: '14px', fontWeight: 500, textDecoration: 'none', border: '1px solid rgba(201,168,76,0.3)' }}
+          >
+            Solicitar demonstração
+          </a>
+        </div>
       </section>
 
       {/* Benefits */}

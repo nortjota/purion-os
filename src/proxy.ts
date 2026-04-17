@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Paths that don't require authentication
-const PUBLIC_PATHS = ['/login', '/reset-password', '/landing']
+const PUBLIC_PATHS = ['/login', '/signup', '/reset-password', '/landing']
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname

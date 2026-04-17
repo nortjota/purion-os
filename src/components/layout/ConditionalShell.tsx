@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { AppShell } from './AppShell'
 
 // Paths that render without the sidebar/header shell
-const NO_SHELL_PREFIXES = ['/login', '/reset-password', '/invite/', '/landing']
+const NO_SHELL_PREFIXES = ['/login', '/signup', '/reset-password', '/invite/', '/landing']
 
 export function ConditionalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
