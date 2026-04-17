@@ -34,10 +34,12 @@ export type StatusLote = 'em_producao' | 'controle_qualidade' | 'aprovado' | 're
 
 export type StatusCreator =
   | 'contatado'
+  | 'negociando'
   | 'kit_enviado'
   | 'postado'
   | 'pago'
-  | 'negociando'
+  | 'parceiro_recorrente'
+  | 'descartado'
   | 'inativo'
 
 export type StatusReuniaoItem = 'agendada' | 'realizada' | 'cancelada'
@@ -188,30 +190,63 @@ export interface ItemEstoque {
 // INTERFACES — MARKETING / CREATORS
 // ─────────────────────────────────────────────
 
+export type TipoAcordoCreator = 'permuta' | 'pago' | 'afiliado'
+
 export interface Creator {
   id: string
   nome: string
   instagram: string
   tiktok?: string
+  youtube?: string
+  email?: string
+  whatsapp?: string
+  cidade?: string
   seguidores: number
   nichoPrincipal: string
   status: StatusCreator
-  cacheCombinado: number    // R$ combinado
+  cacheCombinado: number
+  tipoAcordo?: TipoAcordoCreator
+  codigoDesconto?: string       // auto-gerado: PURION-XXX-001
+  engajamentoMedio?: number     // %
+  viewsMedias?: number
+  ultimoContato?: string        // ISO date
   produtosEnviados: string[]
   postagens: Array<{
     plataforma: 'instagram' | 'tiktok' | 'youtube'
     url?: string
     data: string
     alcance: number
-    engajamento: number    // %
+    engajamento: number
+    views?: number
+    likes?: number
+    comentarios?: number
     codigoCupom?: string
     vendasGeradas: number
     receitaGerada: number
   }>
-  roi: number              // calculado automaticamente
+  roi: number
   createdAt: string
   responsavel: PerfilUsuario
   notas: string
+}
+
+export interface CampanhaCreators {
+  id: string
+  nome: string
+  produto: SKUProduto
+  dataInicio: string
+  dataFim: string
+  orcamentoTotal: number
+  creatorsIds: string[]
+  metaPublicacoes: number
+  metaAlcance: number
+  metaVendas: number
+  publicacoesRealizadas: number
+  alcanceReal: number
+  vendasPorCodigo: number
+  roiFinal: number
+  status: 'planejamento' | 'ativa' | 'encerrada' | 'pausada'
+  createdAt: string
 }
 
 export interface CampanhaAds {
@@ -418,12 +453,16 @@ interface PurionState {
   // Marketing
   creators: Creator[]
   campanhasAds: CampanhaAds[]
+  campanhasCreators: CampanhaCreators[]
   conteudosCalendario: ConteudoCalendario[]
   setCreators: (creators: Creator[]) => void
   setCampanhasAds: (campanhas: CampanhaAds[]) => void
+  setCampanhasCreators: (campanhas: CampanhaCreators[]) => void
   setConteudosCalendario: (conteudos: ConteudoCalendario[]) => void
   adicionarCreator: (creator: Creator) => void
   atualizarCreator: (id: string, dados: Partial<Creator>) => void
+  adicionarCampanhaCreators: (campanha: CampanhaCreators) => void
+  atualizarCampanhaCreators: (id: string, dados: Partial<CampanhaCreators>) => void
   adicionarConteudo: (conteudo: ConteudoCalendario) => void
   atualizarConteudo: (id: string, dados: Partial<ConteudoCalendario>) => void
 
@@ -570,15 +609,23 @@ export const usePurionStore = create<PurionState>()(
         // ── Marketing ──
         creators: [],
         campanhasAds: [],
+        campanhasCreators: [],
         conteudosCalendario: [],
         setCreators: (creators) => set({ creators }),
         setCampanhasAds: (campanhasAds) => set({ campanhasAds }),
+        setCampanhasCreators: (campanhasCreators) => set({ campanhasCreators }),
         setConteudosCalendario: (conteudosCalendario) => set({ conteudosCalendario }),
         adicionarCreator: (creator) =>
           set((s) => ({ creators: [...s.creators, creator] })),
         atualizarCreator: (id, dados) =>
           set((s) => ({
             creators: s.creators.map((c) => (c.id === id ? { ...c, ...dados } : c)),
+          })),
+        adicionarCampanhaCreators: (campanha) =>
+          set((s) => ({ campanhasCreators: [...s.campanhasCreators, campanha] })),
+        atualizarCampanhaCreators: (id, dados) =>
+          set((s) => ({
+            campanhasCreators: s.campanhasCreators.map((c) => (c.id === id ? { ...c, ...dados } : c)),
           })),
         adicionarConteudo: (conteudo) =>
           set((s) => ({ conteudosCalendario: [...s.conteudosCalendario, conteudo] })),

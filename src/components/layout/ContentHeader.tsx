@@ -13,6 +13,7 @@ const MODULE_NAMES: Record<string, string> = {
   '/financeiro':   'Financeiro',
   '/producao':     'Produção',
   '/marketing':    'Marketing',
+  '/creators':     'Creators',
   '/inteligencia': 'Inteligência',
   '/reunioes':     'Reuniões',
   '/trafego':      'Tráfego',

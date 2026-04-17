@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
-  Package, Megaphone, BarChart2, Calendar, Zap, Settings,
+  Package, Users2, BarChart2, Calendar, Zap, Settings,
   ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
@@ -18,7 +18,7 @@ const navItems = [
   { href: '/tarefas',      label: 'Tarefas',        icon: CheckSquare },
   { href: '/financeiro',   label: 'Financeiro',     icon: TrendingUp },
   { href: '/producao',     label: 'Produção',       icon: Package },
-  { href: '/marketing',    label: 'Marketing',      icon: Megaphone },
+  { href: '/creators',     label: 'Creators',       icon: Users2 },
   { href: '/inteligencia', label: 'Inteligência',   icon: BarChart2 },
   { href: '/reunioes',     label: 'Reuniões',       icon: Calendar },
   { href: '/trafego',      label: 'Tráfego',        icon: Zap },
