@@ -139,65 +139,64 @@ function ModalReuniao({ onSalvar, onFechar }: {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
-      <div
-        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Registrar Reunião</h3>
-        <div className="flex flex-col gap-3">
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Título</label>
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Registrar Reunião</h3>
+        </div>
+        <div className="p-7 flex flex-col gap-3">
+          <div className="field-gap">
+            <label className="label-purion">Título</label>
             <input
               placeholder="ex: Alinhamento semanal"
               value={form.titulo}
               onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="input-purion"
             />
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Tipo</label>
+            <div className="field-gap">
+              <label className="label-purion">Tipo</label>
               <select
                 value={form.tipo}
                 onChange={(e) => setForm({ ...form, tipo: e.target.value as ReuniaoItem['tipo'] })}
-                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+                className="select-purion"
               >
                 {Object.entries(TIPO_REUNIAO_LABEL).map(([v, l]) => (
                   <option key={v} value={v}>{l}</option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Data</label>
+            <div className="field-gap">
+              <label className="label-purion">Data</label>
               <input
                 type="date"
                 value={form.data}
                 onChange={(e) => setForm({ ...form, data: e.target.value })}
-                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+                className="input-purion"
               />
             </div>
-            <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Horário</label>
+            <div className="field-gap">
+              <label className="label-purion">Horário</label>
               <input
                 type="time"
                 value={form.hora}
                 onChange={(e) => setForm({ ...form, hora: e.target.value })}
-                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+                className="input-purion"
               />
             </div>
           </div>
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Duração (min)</label>
+          <div className="field-gap">
+            <label className="label-purion">Duração (min)</label>
             <input
               type="number"
               value={form.duracao}
               onChange={(e) => setForm({ ...form, duracao: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="input-purion"
             />
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-2">Participantes</label>
+            <label className="label-purion mb-2">Participantes</label>
             <div className="flex gap-2">
               {SOCIOS.map((s) => (
                 <button
@@ -217,37 +216,30 @@ function ModalReuniao({ onSalvar, onFechar }: {
               ))}
             </div>
           </div>
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Pauta (1 item por linha)</label>
+          <div className="field-gap">
+            <label className="label-purion">Pauta (1 item por linha)</label>
             <textarea
               rows={3}
               placeholder="Item 1&#10;Item 2"
               value={form.pauta}
               onChange={(e) => setForm({ ...form, pauta: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
+              className="textarea-purion"
             />
           </div>
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Decisões (1 por linha, opcional)</label>
+          <div className="field-gap">
+            <label className="label-purion">Decisões (1 por linha, opcional)</label>
             <textarea
               rows={2}
               placeholder="Decisão 1&#10;Decisão 2"
               value={form.decisoes}
               onChange={(e) => setForm({ ...form, decisoes: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
+              className="textarea-purion"
             />
           </div>
         </div>
-        <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg">
-            Cancelar
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="flex-1 px-3 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
-          >
-            Registrar
-          </button>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+          <button onClick={handleSubmit} className="btn btn-primary btn-sm">Registrar</button>
         </div>
       </div>
     </div>
@@ -284,45 +276,37 @@ function ModalDecisao({ onSalvar, onFechar, propostoPor }: {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
-      <div
-        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Nova Decisão Estratégica</h3>
-        <div className="flex flex-col gap-3">
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Título</label>
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Nova Decisão Estratégica</h3>
+        </div>
+        <div className="p-7 flex flex-col gap-3">
+          <div className="field-gap">
+            <label className="label-purion">Título</label>
             <input
               placeholder="ex: Expandir para Goiânia"
               value={form.titulo}
               onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="input-purion"
               autoFocus
             />
           </div>
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Descrição / Contexto</label>
+          <div className="field-gap">
+            <label className="label-purion">Descrição / Contexto</label>
             <textarea
               rows={3}
               placeholder="Descreva a proposta, impacto e alternativas..."
               value={form.descricao}
               onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
+              className="textarea-purion"
             />
           </div>
-          <p className="text-[10px] text-[#6B6B6B]">Prazo para votação: 24h a partir de agora</p>
+          <p className="caption">Prazo para votação: 24h a partir de agora</p>
         </div>
-        <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg">
-            Cancelar
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="flex-1 px-3 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
-          >
-            Propor
-          </button>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+          <button onClick={handleSubmit} className="btn btn-primary btn-sm">Propor</button>
         </div>
       </div>
     </div>
@@ -524,19 +508,19 @@ export function ReunioesDashboard() {
   }
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-8">
+    <div className="page-content section-gap">
 
       {/* ── Header ── */}
       <div>
-        <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Reuniões & Decisões</h1>
-        <p className="text-xs text-[#6B6B6B] mt-0.5">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
+        <h1 className="page-title">Reuniões & Decisões</h1>
+        <p className="caption mt-1">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
       </div>
 
       {/* ══════════════════════════════════════
           SEÇÃO 1 — DAILY ASSÍNCRONO
       ══════════════════════════════════════ */}
       <section>
-        <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">Daily Assíncrono</h2>
+        <p className="kpi-label mb-4">Daily Assíncrono</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {SOCIOS.map((socio) => (
             <DailyCard
@@ -554,12 +538,12 @@ export function ReunioesDashboard() {
       ══════════════════════════════════════ */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest">
+          <p className="kpi-label">
             Reuniões ({reunioes.length})
-          </h2>
+          </p>
           <button
             onClick={() => setModalReuniao(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+            className="btn btn-primary btn-sm"
           >
             <Plus size={12} />
             Registrar reunião
@@ -651,12 +635,12 @@ export function ReunioesDashboard() {
       ══════════════════════════════════════ */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest">
+          <p className="kpi-label">
             Log de Decisões Estratégicas
-          </h2>
+          </p>
           <button
             onClick={() => setModalDecisao(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+            className="btn btn-primary btn-sm"
           >
             <Plus size={12} />
             Nova decisão

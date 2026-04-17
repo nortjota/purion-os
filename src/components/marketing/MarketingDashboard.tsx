@@ -149,79 +149,73 @@ function ModalCreator({ onSalvar, onFechar }: {
   const F = ({ label, field, type = 'text', placeholder = '' }: {
     label: string; field: keyof typeof form; type?: string; placeholder?: string
   }) => (
-    <div>
-      <label className="text-xs text-[#8A8A8A] block mb-1">{label}</label>
+    <div className="field-gap">
+      <label className="label-purion">{label}</label>
       <input
         type={type}
         placeholder={placeholder}
         value={form[field] as string}
         onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-        className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+        className="input-purion"
       />
     </div>
   )
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
-      <div
-        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Adicionar Creator</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2"><F label="Nome" field="nome" placeholder="ex: Lucas Automania" /></div>
-          <F label="Instagram" field="instagram" placeholder="@usuario" />
-          <F label="TikTok (opcional)" field="tiktok" placeholder="@usuario" />
-          <F label="Seguidores" field="seguidores" type="number" placeholder="0" />
-          <F label="Nicho principal" field="nicho" placeholder="ex: Automotivo" />
-          <F label="Cachê combinado (R$)" field="cache" type="number" placeholder="0" />
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Status inicial</label>
-            <select
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value as Creator['status'] })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
-            >
-              <option value="contatado">Contatado</option>
-              <option value="negociando">Negociando</option>
-              <option value="kit_enviado">Kit Enviado</option>
-              <option value="postado">Postado</option>
-              <option value="pago">Pago</option>
-              <option value="inativo">Inativo</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Responsável</label>
-            <select
-              value={form.responsavel}
-              onChange={(e) => setForm({ ...form, responsavel: e.target.value as PerfilUsuario })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
-            >
-              <option value="joao">João</option>
-              <option value="matheus">Matheus</option>
-              <option value="gabriel">Gabriel</option>
-            </select>
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-[#8A8A8A] block mb-1">Notas</label>
-            <textarea
-              rows={2}
-              value={form.notas}
-              onChange={(e) => setForm({ ...form, notas: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
-            />
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-md max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Adicionar Creator</h3>
+        </div>
+        <div className="p-7">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2"><F label="Nome" field="nome" placeholder="ex: Lucas Automania" /></div>
+            <F label="Instagram" field="instagram" placeholder="@usuario" />
+            <F label="TikTok (opcional)" field="tiktok" placeholder="@usuario" />
+            <F label="Seguidores" field="seguidores" type="number" placeholder="0" />
+            <F label="Nicho principal" field="nicho" placeholder="ex: Automotivo" />
+            <F label="Cachê combinado (R$)" field="cache" type="number" placeholder="0" />
+            <div>
+              <label className="label-purion">Status inicial</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as Creator['status'] })}
+                className="select-purion"
+              >
+                <option value="contatado">Contatado</option>
+                <option value="negociando">Negociando</option>
+                <option value="kit_enviado">Kit Enviado</option>
+                <option value="postado">Postado</option>
+                <option value="pago">Pago</option>
+                <option value="inativo">Inativo</option>
+              </select>
+            </div>
+            <div>
+              <label className="label-purion">Responsável</label>
+              <select
+                value={form.responsavel}
+                onChange={(e) => setForm({ ...form, responsavel: e.target.value as PerfilUsuario })}
+                className="select-purion"
+              >
+                <option value="joao">João</option>
+                <option value="matheus">Matheus</option>
+                <option value="gabriel">Gabriel</option>
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="label-purion">Notas</label>
+              <textarea
+                rows={2}
+                value={form.notas}
+                onChange={(e) => setForm({ ...form, notas: e.target.value })}
+                className="textarea-purion"
+              />
+            </div>
           </div>
         </div>
-        <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg hover:border-[#3A3A3A]">
-            Cancelar
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="flex-1 px-3 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
-          >
-            Adicionar
-          </button>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+          <button onClick={handleSubmit} className="btn btn-primary btn-sm">Adicionar</button>
         </div>
       </div>
     </div>
@@ -259,29 +253,28 @@ function ModalConteudo({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
-      <div
-        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Novo Conteúdo</h3>
-        <div className="flex flex-col gap-3">
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Data</label>
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Novo Conteúdo</h3>
+        </div>
+        <div className="p-7 flex flex-col gap-3">
+          <div className="field-gap">
+            <label className="label-purion">Data</label>
             <input
               type="date"
               value={form.data}
               onChange={(e) => setForm({ ...form, data: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="input-purion"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Formato</label>
+            <div className="field-gap">
+              <label className="label-purion">Formato</label>
               <select
                 value={form.formato}
                 onChange={(e) => setForm({ ...form, formato: e.target.value as FormatoConteudo })}
-                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+                className="select-purion"
               >
                 <option value="reels">Reels</option>
                 <option value="post">Post</option>
@@ -291,12 +284,12 @@ function ModalConteudo({
                 <option value="live">Live</option>
               </select>
             </div>
-            <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Status</label>
+            <div className="field-gap">
+              <label className="label-purion">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value as StatusConteudo })}
-                className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+                className="select-purion"
               >
                 <option value="planejado">Planejado</option>
                 <option value="em_producao">Em produção</option>
@@ -305,39 +298,32 @@ function ModalConteudo({
               </select>
             </div>
           </div>
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Responsável</label>
+          <div className="field-gap">
+            <label className="label-purion">Responsável</label>
             <select
               value={form.responsavel}
               onChange={(e) => setForm({ ...form, responsavel: e.target.value as PerfilUsuario })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="select-purion"
             >
               <option value="joao">João</option>
               <option value="matheus">Matheus</option>
               <option value="gabriel">Gabriel</option>
             </select>
           </div>
-          <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Descrição</label>
+          <div className="field-gap">
+            <label className="label-purion">Descrição</label>
             <textarea
               rows={2}
               placeholder="Descreva o conteúdo..."
               value={form.descricao}
               onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
+              className="textarea-purion"
             />
           </div>
         </div>
-        <div className="flex gap-2 mt-4">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg">
-            Cancelar
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="flex-1 px-3 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
-          >
-            Adicionar
-          </button>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+          <button onClick={handleSubmit} className="btn btn-primary btn-sm">Adicionar</button>
         </div>
       </div>
     </div>
@@ -397,64 +383,58 @@ export function MarketingDashboard() {
   }, [creators, filtroPlatforma, filtroStatus])
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-8">
+    <div className="page-content section-gap">
 
       {/* ── Header ── */}
       <div>
-        <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Marketing & Creators</h1>
-        <p className="text-xs text-[#6B6B6B] mt-0.5">KPIs, tracker de influenciadores e calendário de conteúdo</p>
+        <h1 className="page-title">Marketing & Creators</h1>
+        <p className="caption mt-1">KPIs, tracker de influenciadores e calendário de conteúdo</p>
       </div>
 
       {/* ══════════════════════════════════════
           SEÇÃO 1 — KPIs
       ══════════════════════════════════════ */}
       <section>
-        <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">KPIs de Creators</h2>
+        <p className="kpi-label mb-4">KPIs de Creators</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Kits enviados */}
-          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <div className="flex items-end justify-between mb-3">
+          <div className="kpi-card flex flex-col gap-3">
+            <div className="flex items-end justify-between">
               <div>
-                <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider mb-1">Kits Enviados</p>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl font-black text-[#C9A84C]">{kitsEnviados}</span>
-                  <span className="text-sm text-[#4A4A4A]">/ {META_KITS}</span>
+                <p className="kpi-label">Kits Enviados</p>
+                <div className="flex items-baseline gap-1.5 mt-2">
+                  <span className="kpi-value">{kitsEnviados}</span>
+                  <span className="caption">/ {META_KITS}</span>
                 </div>
               </div>
-              <span className="text-xs font-bold text-[#C9A84C]">
+              <span className="text-xs font-semibold text-[#C9A84C]">
                 {Math.round((kitsEnviados / META_KITS) * 100)}%
               </span>
             </div>
-            <div className="h-2 bg-[#2A2A2A] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${Math.min(100, (kitsEnviados / META_KITS) * 100)}%`, backgroundColor: '#C9A84C' }}
-              />
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${Math.min(100, (kitsEnviados / META_KITS) * 100)}%` }} />
             </div>
-            <p className="text-[10px] text-[#4A4A4A] mt-2">Meta: {META_KITS} kits no mês</p>
+            <p className="caption">Meta: {META_KITS} kits no mês</p>
           </div>
 
           {/* Vídeos publicados */}
-          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <div className="flex items-end justify-between mb-3">
+          <div className="kpi-card flex flex-col gap-3">
+            <div className="flex items-end justify-between">
               <div>
-                <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider mb-1">Vídeos Publicados</p>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl font-black text-[#C9A84C]">{videosPublicados}</span>
-                  <span className="text-sm text-[#4A4A4A]">/ {META_VIDEOS}</span>
+                <p className="kpi-label">Vídeos Publicados</p>
+                <div className="flex items-baseline gap-1.5 mt-2">
+                  <span className="kpi-value">{videosPublicados}</span>
+                  <span className="caption">/ {META_VIDEOS}</span>
                 </div>
               </div>
-              <span className="text-xs font-bold text-[#C9A84C]">
+              <span className="text-xs font-semibold text-[#C9A84C]">
                 {Math.round((videosPublicados / META_VIDEOS) * 100)}%
               </span>
             </div>
-            <div className="h-2 bg-[#2A2A2A] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${Math.min(100, (videosPublicados / META_VIDEOS) * 100)}%`, backgroundColor: '#C9A84C' }}
-              />
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${Math.min(100, (videosPublicados / META_VIDEOS) * 100)}%` }} />
             </div>
-            <p className="text-[10px] text-[#4A4A4A] mt-2">Meta: {META_VIDEOS} vídeos no trimestre</p>
+            <p className="caption">Meta: {META_VIDEOS} vídeos no trimestre</p>
           </div>
         </div>
       </section>
@@ -464,9 +444,9 @@ export function MarketingDashboard() {
       ══════════════════════════════════════ */}
       <section>
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest">
+          <p className="kpi-label">
             Tracker de Creators ({creatoresFiltrados.length})
-          </h2>
+          </p>
           <div className="flex items-center gap-2">
             {/* Filtro plataforma */}
             <div className="flex items-center gap-1.5">
@@ -495,7 +475,7 @@ export function MarketingDashboard() {
             </select>
             <button
               onClick={() => setModalCreator(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+              className="btn btn-primary btn-sm"
             >
               <Plus size={12} />
               Adicionar creator
@@ -593,9 +573,9 @@ export function MarketingDashboard() {
       ══════════════════════════════════════ */}
       <section>
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest">
+          <p className="kpi-label">
             Calendário de Conteúdo
-          </h2>
+          </p>
           <div className="flex items-center gap-2">
             {/* Navegação de semana */}
             <button
@@ -615,7 +595,7 @@ export function MarketingDashboard() {
             </button>
             <button
               onClick={() => setModalConteudo(isoDate(diasSemanaAtual[0]))}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+              className="btn btn-primary btn-sm"
             >
               <Plus size={12} />
               Novo conteúdo

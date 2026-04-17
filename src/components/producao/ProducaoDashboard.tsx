@@ -105,29 +105,26 @@ function ModalAjusteEstoque({
 }) {
   const [valor, setValor] = useState(String(unidadesAtual))
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
-      <div
-        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-1">Ajustar Estoque</h3>
-        <p className="text-xs text-[#6B6B6B] mb-4">{nome}</p>
-        <label className="text-xs text-[#8A8A8A] block mb-1">Novas unidades em estoque</label>
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Ajustar Estoque</h3>
+        </div>
+        <p className="caption mb-4">{nome}</p>
+        <label className="label-purion">Novas unidades em estoque</label>
         <input
           type="number"
           min={0}
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C] mb-4"
+          className="input-purion mb-2"
           autoFocus
         />
-        <div className="flex gap-2">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg hover:border-[#3A3A3A]">
-            Cancelar
-          </button>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
           <button
             onClick={() => { const n = parseInt(valor, 10); if (!isNaN(n)) onSalvar(n) }}
-            className="flex-1 px-3 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+            className="btn btn-primary btn-sm"
           >
             Salvar
           </button>
@@ -171,19 +168,18 @@ function ModalNovoLote({ onSalvar, onFechar }: { onSalvar: (lote: Lote) => void;
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onFechar}>
-      <div
-        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Novo Lote</h3>
-        <div className="flex flex-col gap-3">
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Novo Lote</h3>
+        </div>
+        <div className="field-gap">
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Fragrância</label>
+            <label className="label-purion">Fragrância</label>
             <select
               value={form.fragrancia}
               onChange={(e) => setForm({ ...form, fragrancia: e.target.value as SKUProduto })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="select-purion"
             >
               <option value="noir">NOIR Intense</option>
               <option value="urban">URBAN Fresh</option>
@@ -191,36 +187,29 @@ function ModalNovoLote({ onSalvar, onFechar }: { onSalvar: (lote: Lote) => void;
             </select>
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Data de produção</label>
+            <label className="label-purion">Data de produção</label>
             <input
               type="date"
               value={form.dataProd}
               onChange={(e) => setForm({ ...form, dataProd: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="input-purion"
             />
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Quantidade produzida (un)</label>
+            <label className="label-purion">Quantidade produzida (un)</label>
             <input
               type="number"
               min={1}
               placeholder="ex: 200"
               value={form.quantidade}
               onChange={(e) => setForm({ ...form, quantidade: e.target.value })}
-              className="w-full bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[#C9A84C]"
+              className="input-purion"
             />
           </div>
         </div>
-        <div className="flex gap-2 mt-5">
-          <button onClick={onFechar} className="flex-1 px-3 py-2 text-xs text-[#6B6B6B] border border-[var(--border)] rounded-lg hover:border-[#3A3A3A]">
-            Cancelar
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="flex-1 px-3 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
-          >
-            Criar Lote
-          </button>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+          <button onClick={handleSubmit} className="btn btn-primary btn-sm">Criar Lote</button>
         </div>
       </div>
     </div>
@@ -252,20 +241,18 @@ export function ProducaoDashboard() {
   const expirados = pedidosAtivos.filter((p) => calcularSLA(p).expirado).length
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-8">
+    <div className="page-content section-gap">
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">
-            Produção & Estoque
-          </h1>
-          <p className="text-xs text-[#6B6B6B] mt-0.5">Controle de qualidade, SKUs e expedição</p>
+          <h1 className="page-title">Produção & Estoque</h1>
+          <p className="caption mt-1">Controle de qualidade, SKUs e expedição</p>
         </div>
         {expirados > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg">
-            <AlertTriangle size={14} className="text-red-400" />
-            <span className="text-xs font-bold text-red-400">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg badge-danger border">
+            <AlertTriangle size={13} />
+            <span className="text-[13px] font-[500]">
               {expirados} pedido{expirados > 1 ? 's' : ''} com SLA expirado
             </span>
           </div>
@@ -276,9 +263,7 @@ export function ProducaoDashboard() {
           SEÇÃO 1 — ESTOQUE POR SKU
       ══════════════════════════════════════ */}
       <section>
-        <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
-          Estoque Atual — Produto Acabado
-        </h2>
+        <p className="kpi-label mb-4">Estoque Atual — Produto Acabado</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {produtosSKU.map((sku) => {
             const alerta = sku.unidades < sku.threshold
@@ -353,14 +338,9 @@ export function ProducaoDashboard() {
           SEÇÃO 2 — CONTROLE DE LOTES
       ══════════════════════════════════════ */}
       <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest">
-            Controle de Lotes
-          </h2>
-          <button
-            onClick={() => setNovoLoteModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568] transition-colors"
-          >
+        <div className="flex items-center justify-between mb-4">
+          <p className="kpi-label">Controle de Lotes</p>
+          <button onClick={() => setNovoLoteModal(true)} className="btn btn-primary btn-sm">
             <Plus size={12} />
             Novo lote
           </button>

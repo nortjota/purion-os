@@ -321,13 +321,13 @@ export function TrafegoDashboard() {
   const anyLoading = loading.meta || loading.google || loading.tiktok
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-6">
+    <div className="page-content section-gap">
 
       {/* ── Header ── */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Tráfego Pago</h1>
-          <p className="text-xs text-[#6B6B6B] mt-0.5">Meta · Google · TikTok — dados em tempo real</p>
+          <h1 className="page-title">Tráfego Pago</h1>
+          <p className="caption mt-1">Meta · Google · TikTok — dados em tempo real</p>
         </div>
         {/* Seletor de período */}
         <div className="flex gap-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-1">

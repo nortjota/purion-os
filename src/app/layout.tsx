@@ -4,7 +4,6 @@ import './globals.css'
 import { StoreProvider } from '@/components/providers/StoreProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { AppShell } from '@/components/layout/AppShell'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 // Fonte principal — identidade visual PURION
 const montserrat = Montserrat({
@@ -44,7 +43,6 @@ export default function RootLayout({
             <AppShell>
               {children}
             </AppShell>
-            <ThemeToggle />
           </StoreProvider>
         </ThemeProvider>
       </body>

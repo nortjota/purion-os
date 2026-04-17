@@ -1,35 +1,16 @@
 'use client'
 
-/**
- * PURION OS — Sidebar de Navegação
- * Sidebar fixa com identidade Dark Luxury.
- * Usa Zustand para controle do perfil ativo e estado recolhido.
- */
-
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard,
-  Users,
-  CheckSquare,
-  TrendingUp,
-  Package,
-  Megaphone,
-  BarChart2,
-  Calendar,
-  Zap,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
+  LayoutDashboard, Users, CheckSquare, TrendingUp,
+  Package, Megaphone, BarChart2, Calendar, Zap, Settings,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
-
-// ─────────────────────────────────────────────
-// CONFIGURAÇÃO DOS ITENS DE NAVEGAÇÃO
-// ─────────────────────────────────────────────
 
 const navItems = [
   { href: '/',             label: 'Início',        icon: LayoutDashboard },
@@ -41,12 +22,8 @@ const navItems = [
   { href: '/inteligencia', label: 'Inteligência',   icon: BarChart2 },
   { href: '/reunioes',     label: 'Reuniões',       icon: Calendar },
   { href: '/trafego',      label: 'Tráfego',        icon: Zap },
-  { href: '/settings',     label: 'Configurações',  icon: Settings },
+  { href: '/settings',     label: 'Config',         icon: Settings },
 ]
-
-// ─────────────────────────────────────────────
-// CONFIGURAÇÃO DOS PERFIS
-// ─────────────────────────────────────────────
 
 const perfis: Array<{
   id: PerfilUsuario
@@ -55,14 +32,10 @@ const perfis: Array<{
   regiao: string
   inicial: string
 }> = [
-  { id: 'matheus', nome: 'Matheus',  cargo: 'Comercial',  regiao: 'DF', inicial: 'M' },
-  { id: 'gabriel', nome: 'Gabriel',  cargo: 'Operações',  regiao: 'SP', inicial: 'G' },
-  { id: 'joao',    nome: 'João',     cargo: 'Marketing',  regiao: 'SC', inicial: 'J' },
+  { id: 'matheus', nome: 'Matheus', cargo: 'Comercial',  regiao: 'DF', inicial: 'M' },
+  { id: 'gabriel', nome: 'Gabriel', cargo: 'Operações',  regiao: 'SP', inicial: 'G' },
+  { id: 'joao',    nome: 'João',    cargo: 'Marketing',  regiao: 'SC', inicial: 'J' },
 ]
-
-// ─────────────────────────────────────────────
-// COMPONENTE
-// ─────────────────────────────────────────────
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -72,12 +45,11 @@ export function Sidebar() {
   } = usePurionStore()
 
   const temPedidoExpirado = pedidosExpedicao.some((p) => {
-    if (p.status === 'enviado' || p.status === 'entregue' || p.status === 'cancelado') return false
+    if (['enviado', 'entregue', 'cancelado'].includes(p.status)) return false
     const deadline = new Date(new Date(p.dataPedido).getTime() + p.prazoHoras * 3_600_000)
     return DATA_REF > deadline
   })
 
-  // Alertas de tráfego inline
   const alertasTrafego = useMemo(() => {
     const gastoAds = campanhasAds.reduce((s, c) => s + c.gastoTotal, 0)
     const receitaAds = campanhasAds.reduce((s, c) => s + c.receitaGerada, 0)
@@ -95,70 +67,59 @@ export function Sidebar() {
   [produtosSKU])
 
   const perfilInfo = perfis.find((p) => p.id === perfilAtivo)!
-  const largura = sidebarRecolhida ? 'w-[64px]' : 'w-[260px]'
 
   return (
     <aside
       className={`
-        ${largura} h-screen fixed left-0 top-0 z-50
+        ${sidebarRecolhida ? 'w-16' : 'w-60'} h-screen fixed left-0 top-0 z-50
         flex flex-col
         bg-[var(--sidebar-bg)] border-r border-[var(--border)]
-        transition-all duration-300 ease-in-out
-        overflow-hidden
+        transition-all duration-300 ease-in-out overflow-hidden
       `}
     >
       {/* ── Logo ── */}
-      <div className="flex items-center justify-between px-4 py-5 border-b border-[var(--border)] min-h-[72px]">
-        {!sidebarRecolhida && (
-          <div className="flex flex-col leading-none select-none">
-            <span
-              className="text-xl font-black tracking-[0.3em] text-[#C9A84C]"
-              style={{ fontFamily: 'Montserrat, sans-serif' }}
-            >
-              PURION
-            </span>
-            <span className="text-[10px] font-medium tracking-[0.4em] text-[#6B6B6B] mt-0.5 uppercase">
-              Operating System
-            </span>
+      <div className="flex items-center justify-between px-4 pt-5 pb-4 min-h-[72px]">
+        {!sidebarRecolhida ? (
+          <div className="flex flex-col items-start select-none">
+            <div className="flex items-baseline gap-1.5">
+              <span
+                className="text-[15px] font-semibold text-[#C9A84C]"
+                style={{ letterSpacing: '0.15em' }}
+              >
+                PURION
+              </span>
+              <span className="text-[10px] text-[var(--text-secondary)] font-normal" style={{ letterSpacing: '0.05em' }}>
+                OS
+              </span>
+            </div>
+            {/* Linha dourada */}
+            <div className="w-6 h-px mt-3" style={{ background: 'linear-gradient(90deg, #C9A84C, transparent)' }} />
           </div>
-        )}
-
-        {sidebarRecolhida && (
+        ) : (
           <span
-            className="text-sm font-black tracking-widest text-[#C9A84C] mx-auto"
-            style={{ fontFamily: 'Montserrat, sans-serif' }}
+            className="text-[13px] font-semibold text-[#C9A84C] mx-auto select-none"
+            style={{ letterSpacing: '0.1em' }}
           >
             P
           </span>
         )}
 
-        {/* Botão recolher */}
         <button
           onClick={() => setSidebarRecolhida(!sidebarRecolhida)}
-          className="
-            ml-auto p-1.5 rounded-md
-            text-[#6B6B6B] hover:text-[#C9A84C]
-            hover:bg-[rgba(201,168,76,0.08)]
-            transition-colors duration-150
-          "
+          className="shrink-0 p-1 rounded-md text-[var(--text-secondary)] hover:text-[#C9A84C] hover:bg-[rgba(201,168,76,0.08)] transition-colors duration-150"
           aria-label={sidebarRecolhida ? 'Expandir sidebar' : 'Recolher sidebar'}
         >
-          {sidebarRecolhida ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          {sidebarRecolhida ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
         </button>
       </div>
 
       {/* ── Navegação ── */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2">
+      <nav className="flex-1 overflow-y-auto py-2 px-3">
         <ul className="flex flex-col gap-0.5">
           {navItems.map(({ href, label, icon: Icon }) => {
-            // Verifica rota ativa (exata para '/', prefixo para demais)
-            const ativo =
-              href === '/' ? pathname === '/' : pathname.startsWith(href)
-
-            // Badges por rota
+            const ativo = href === '/' ? pathname === '/' : pathname.startsWith(href)
             const temAlertaTrafego = href === '/trafego' && alertasTrafego > 0
             const temAlertaEstoque = href === '/producao' && alertasEstoque > 0
-            const totalAlertas = href === '/' ? alertasTrafego + alertasEstoque : 0
 
             return (
               <li key={href}>
@@ -166,66 +127,59 @@ export function Sidebar() {
                   href={href}
                   title={sidebarRecolhida ? label : undefined}
                   className={`
-                    flex items-center gap-3 rounded-md px-3 py-2.5
-                    text-sm font-medium transition-all duration-150
+                    flex items-center gap-[10px] rounded-[10px]
+                    h-9 text-[13px] transition-colors duration-150
                     group relative
                     ${ativo
-                      ? 'bg-[rgba(201,168,76,0.10)] text-[#C9A84C] border-l-2 border-[#C9A84C] pl-[10px]'
-                      : 'text-[#8A8A8A] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)] border-l-2 border-transparent pl-[10px]'
+                      ? 'bg-[rgba(201,168,76,0.08)] border-l-2 border-[#C9A84C] text-[#C9A84C] font-[500] pl-[10px] pr-3'
+                      : 'border-l-2 border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-2)] font-[400] pl-[10px] pr-3'
                     }
                   `}
                 >
                   <span className="relative shrink-0">
                     <Icon
-                      size={18}
-                      className={ativo ? 'text-[#C9A84C]' : 'text-[#6B6B6B] group-hover:text-[var(--text-primary)]'}
+                      size={16}
+                      className={ativo
+                        ? 'text-[#C9A84C]'
+                        : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
+                      }
                     />
                     {href === '/producao' && temPedidoExpirado && (
-                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 border border-[#141414]" />
+                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#EF4444]" />
                     )}
                     {temAlertaTrafego && (
-                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-orange-400 border border-[#141414]" />
+                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-orange-400" />
                     )}
                     {temAlertaEstoque && !temPedidoExpirado && (
-                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-yellow-400 border border-[#141414]" />
+                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-yellow-400" />
                     )}
                   </span>
+
                   {!sidebarRecolhida && (
                     <span className="truncate flex-1">{label}</span>
                   )}
+
                   {!sidebarRecolhida && href === '/producao' && temPedidoExpirado && (
-                    <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">
-                      SLA
-                    </span>
+                    <span className="badge badge-danger ml-auto py-0 text-[10px]">SLA</span>
                   )}
                   {!sidebarRecolhida && temAlertaTrafego && (
-                    <span className="text-[10px] font-bold text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded">
-                      {alertasTrafego}
-                    </span>
+                    <span className="badge badge-warning ml-auto py-0 text-[10px]">{alertasTrafego}</span>
                   )}
                   {!sidebarRecolhida && temAlertaEstoque && (
-                    <span className="text-[10px] font-bold text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">
-                      {alertasEstoque}
-                    </span>
-                  )}
-                  {!sidebarRecolhida && totalAlertas > 0 && (
-                    <span className="text-[10px] font-bold text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded">
-                      {totalAlertas}
-                    </span>
+                    <span className="badge badge-warning ml-auto py-0 text-[10px]">{alertasEstoque}</span>
                   )}
 
-                  {/* Tooltip quando recolhida */}
+                  {/* Tooltip recolhida */}
                   {sidebarRecolhida && (
-                    <span
-                      className="
-                        absolute left-full ml-2 px-2 py-1
-                        bg-[var(--bg-surface)] border border-[var(--border)]
-                        text-[var(--text-primary)] text-xs rounded-md
-                        whitespace-nowrap opacity-0 pointer-events-none
-                        group-hover:opacity-100
-                        transition-opacity duration-150 z-50
-                      "
-                    >
+                    <span className="
+                      absolute left-full ml-2.5 px-2.5 py-1.5
+                      bg-[var(--bg-surface)] border border-[var(--border)]
+                      text-[var(--text-primary)] text-[12px] rounded-lg
+                      whitespace-nowrap shadow-lg
+                      opacity-0 pointer-events-none
+                      group-hover:opacity-100
+                      transition-opacity duration-150 z-50
+                    ">
                       {label}
                     </span>
                   )}
@@ -236,81 +190,77 @@ export function Sidebar() {
         </ul>
       </nav>
 
-      {/* ── Seletor de Perfil ── */}
-      <div className="border-t border-[var(--border)] p-3">
+      {/* ── Perfil ── */}
+      <div className="border-t border-[var(--border)] px-3 py-4">
         {!sidebarRecolhida ? (
           <div>
             {/* Perfil ativo */}
-            <div className="flex items-center gap-3 px-2 py-2 rounded-md bg-[rgba(201,168,76,0.06)] mb-2">
+            <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-[10px] bg-[rgba(201,168,76,0.06)] mb-3">
               <div className="
-                w-8 h-8 rounded-full
+                w-7 h-7 rounded-full shrink-0 select-none
                 bg-[#C9A84C] text-[#0D0D0D]
                 flex items-center justify-center
-                text-xs font-black shrink-0
-                select-none
+                text-[10px] font-semibold
               ">
                 {perfilInfo.inicial}
               </div>
               <div className="flex flex-col leading-tight min-w-0">
-                <span className="text-sm font-semibold text-[var(--text-primary)] truncate">
+                <span className="text-[13px] font-[500] text-[var(--text-primary)] truncate">
                   {perfilInfo.nome}
                 </span>
-                <span className="text-[11px] text-[#6B6B6B]">
+                <span className="text-[11px] text-[var(--text-secondary)]">
                   {perfilInfo.cargo} · {perfilInfo.regiao}
                 </span>
               </div>
             </div>
 
-            {/* Troca de perfil */}
-            <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider px-2 mb-1.5">
+            <p className="text-[10px] text-[var(--text-secondary)] uppercase mb-1.5 px-2.5" style={{ letterSpacing: '0.08em' }}>
               Trocar perfil
             </p>
             <div className="flex flex-col gap-0.5">
-              {perfis
-                .filter((p) => p.id !== perfilAtivo)
-                .map((perfil) => (
-                  <button
-                    key={perfil.id}
-                    onClick={() => setPerfilAtivo(perfil.id)}
-                    className="
-                      flex items-center gap-2.5 w-full px-2 py-1.5 rounded-md
-                      text-left text-xs text-[#6B6B6B]
-                      hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)]
-                      transition-colors duration-150
-                    "
-                  >
-                    <div className="
-                      w-6 h-6 rounded-full
-                      bg-[#2A2A2A] text-[#8A8A8A]
-                      flex items-center justify-center
-                      text-[10px] font-bold shrink-0
-                    ">
-                      {perfil.inicial}
-                    </div>
-                    <span className="truncate">
-                      {perfil.nome}
-                      <span className="ml-1 text-[#4A4A4A]">· {perfil.regiao}</span>
-                    </span>
-                  </button>
-                ))}
+              {perfis.filter((p) => p.id !== perfilAtivo).map((perfil) => (
+                <button
+                  key={perfil.id}
+                  onClick={() => setPerfilAtivo(perfil.id)}
+                  className="
+                    flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg
+                    text-left text-[12px] text-[var(--text-secondary)]
+                    hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-2)]
+                    transition-colors duration-150
+                  "
+                >
+                  <div className="
+                    w-5 h-5 rounded-full shrink-0
+                    bg-[var(--bg-surface-2)] border border-[var(--border)]
+                    flex items-center justify-center
+                    text-[9px] font-semibold
+                  ">
+                    {perfil.inicial}
+                  </div>
+                  <span className="truncate">
+                    {perfil.nome}
+                    <span className="opacity-40 ml-1">· {perfil.regiao}</span>
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         ) : (
-          /* Versão compacta — só avatar do perfil ativo */
-          <div className="flex flex-col items-center gap-1">
+          /* Versão compacta */
+          <div className="flex flex-col items-center gap-1.5">
             {perfis.map((perfil) => (
               <button
                 key={perfil.id}
                 onClick={() => setPerfilAtivo(perfil.id)}
                 title={`${perfil.nome} · ${perfil.regiao}`}
                 className={`
-                  w-8 h-8 rounded-full
+                  w-7 h-7 rounded-full select-none
                   flex items-center justify-center
-                  text-[10px] font-black
+                  text-[10px] font-semibold
                   transition-all duration-150
                   ${perfil.id === perfilAtivo
-                    ? 'bg-[#C9A84C] text-[#0D0D0D] ring-2 ring-[#C9A84C] ring-offset-2 ring-offset-[#141414]'
-                    : 'bg-[#2A2A2A] text-[#6B6B6B] hover:bg-[#3A3A3A]'
+                    ? 'bg-[#C9A84C] text-[#0D0D0D] ring-2 ring-[#C9A84C] ring-offset-2 ring-offset-[var(--sidebar-bg)]'
+                    : 'bg-[var(--bg-surface-2)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'
                   }
                 `}
               >

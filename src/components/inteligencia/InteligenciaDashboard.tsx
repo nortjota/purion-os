@@ -190,35 +190,31 @@ export function InteligenciaDashboard() {
   const lotesEmTestes  = lotes.filter((l) => l.status === 'controle_qualidade').length
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-8">
+    <div className="page-content section-gap">
 
       {/* ── Header ── */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">
-            Inteligência Comercial
-          </h1>
-          <p className="text-xs text-[#6B6B6B] mt-0.5">
-            Rankings, análise de canais, mapa B2B e insights automáticos
-          </p>
+          <h1 className="page-title">Inteligência Comercial</h1>
+          <p className="caption mt-1">Rankings, análise de canais, mapa B2B e insights automáticos</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider">Receita Total</p>
-          <p className="text-2xl font-black text-[#C9A84C]">{fmtR(totalReceita)}</p>
+          <p className="kpi-label">Receita Total</p>
+          <p className="kpi-value mt-1">{fmtR(totalReceita)}</p>
         </div>
       </div>
 
       {/* ── KPIs rápidos ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Leads Ativos',      valor: leads.filter((l) => l.status !== 'inativo').length, cor: '#C9A84C' },
           { label: 'Parceiros Fechados',valor: leads.filter((l) => l.status === 'parceiro_ativo').length, cor: '#10B981' },
           { label: 'Lotes Aprovados',   valor: lotesAprovados, cor: '#8B5CF6' },
           { label: 'Lotes Em Testes',   valor: lotesEmTestes,  cor: '#F59E0B' },
         ].map(({ label, valor, cor }) => (
-          <div key={label} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-3">
-            <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wider mb-1">{label}</p>
-            <p className="text-2xl font-black" style={{ color: cor }}>{valor}</p>
+          <div key={label} className="kpi-card">
+            <p className="kpi-label">{label}</p>
+            <p className="text-[28px] font-semibold mt-2" style={{ color: cor, letterSpacing: '-0.02em' }}>{valor}</p>
           </div>
         ))}
       </div>

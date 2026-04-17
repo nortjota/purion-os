@@ -475,15 +475,17 @@ function KPICard({ label, valor, icon: Icon, sub, cor = '#C9A84C' }: {
   label: string; valor: string; icon: React.ElementType; sub?: string; cor?: string
 }) {
   return (
-    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 flex flex-col gap-2 hover:border-[rgba(201,168,76,0.2)] transition-colors">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] text-[#6B6B6B] uppercase tracking-wider font-medium">{label}</span>
-        <Icon size={13} style={{ color: cor }} />
+    <div className="kpi-card flex flex-col gap-4">
+      <div className="flex items-start justify-between">
+        <span className="kpi-label">{label}</span>
+        <div className="w-8 h-8 rounded-lg bg-[var(--bg-surface-2)] flex items-center justify-center shrink-0">
+          <Icon size={16} style={{ color: cor }} className="opacity-60" />
+        </div>
       </div>
-      <span className="text-2xl font-black leading-none" style={{ color: cor, fontFamily: 'Montserrat, sans-serif' }}>
-        {valor}
-      </span>
-      {sub && <span className="text-[10px] text-[#4A4A4A]">{sub}</span>}
+      <div>
+        <span className="kpi-value" style={{ color: cor }}>{valor}</span>
+        {sub && <p className="caption mt-1">{sub}</p>}
+      </div>
     </div>
   )
 }
@@ -617,30 +619,28 @@ export function CRMDashboard() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Conteúdo principal (scrollável) */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5 max-w-[1600px] w-full mx-auto">
+      <div className="flex-1 overflow-y-auto max-w-[1600px] w-full mx-auto">
+        <div className="page-content section-gap">
 
         {/* ── Header ── */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              CRM B2B
-            </h1>
-            <p className="text-sm text-[#6B6B6B] mt-0.5">Pipeline de parceiros · Kanban</p>
+            <h1 className="page-title">CRM B2B</h1>
+            <p className="caption mt-1">Pipeline de parceiros · Kanban</p>
           </div>
-          {/* Meta badge */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(201,168,76,0.08)] border border-[rgba(201,168,76,0.2)]">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.15)]">
             <Target size={14} className="text-[#C9A84C]" />
-            <span className="text-xs text-[#C9A84C] font-semibold">
+            <span className="text-[13px] text-[#C9A84C] font-[500]">
               {kpis.esteticasAtivas} / 15
             </span>
-            <span className="text-[10px] text-[#6B6B6B]">estéticas ativas no mês 1</span>
+            <span className="caption">estéticas ativas</span>
           </div>
         </div>
 
         {/* ── KPIs ── */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
           <KPICard label="Total de Leads"    valor={String(kpis.total)}   icon={Users}       sub="todos os stages" />
-          <KPICard label="Parceiros Ativos"  valor={String(kpis.ativos)}  icon={TrendingUp}  sub="status Fechado" cor="#4CAF7A" />
+          <KPICard label="Parceiros Ativos"  valor={String(kpis.ativos)}  icon={TrendingUp}  sub="status Fechado" cor="#22C55E" />
           <KPICard label="Taxa de Conversão" valor={`${kpis.taxa.toFixed(1)}%`} icon={Target}  sub="ativos / total" />
           <KPICard label="Pipeline Total"    valor={`R$ ${kpis.pipeline.toLocaleString('pt-BR')}`} icon={DollarSign} sub="valor mensal potencial" />
         </div>
@@ -713,6 +713,7 @@ export function CRMDashboard() {
           })}
         </div>
 
+        </div>
       </div>
 
       {/* ── Drawer lateral ── */}

@@ -275,27 +275,21 @@ export function SettingsDashboard() {
   // ─────────────────────────────────────────────
 
   return (
-    <div className="p-6 max-w-[900px] mx-auto">
+    <div className="page-content" style={{ maxWidth: '900px' }}>
 
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-lg font-black tracking-widest text-[var(--text-primary)] uppercase">Configurações</h1>
-        <p className="text-xs text-[#6B6B6B] mt-0.5">Regras financeiras, metas, alertas e integrações</p>
+      <div className="mb-8">
+        <h1 className="page-title">Configurações</h1>
+        <p className="caption mt-1">Regras financeiras, metas, alertas e integrações</p>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[var(--bg-surface-2)] p-1 rounded-xl border border-[var(--border)] mb-6 overflow-x-auto">
+      <div className="tab-nav mb-6">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setAbaAtiva(tab.id)}
-            className={`
-              flex-1 px-3 py-2 text-xs font-semibold rounded-lg whitespace-nowrap transition-all
-              ${abaAtiva === tab.id
-                ? 'bg-[#C9A84C] text-[#0D0D0D]'
-                : 'text-[#6B6B6B] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)]'
-              }
-            `}
+            className={`tab-item ${abaAtiva === tab.id ? 'active' : ''}`}
           >
             {tab.label}
           </button>
@@ -409,7 +403,7 @@ export function SettingsDashboard() {
             <button
               onClick={salvarFinanceiro}
               disabled={!splitOk}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="btn btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save size={13} />
               Salvar regras financeiras
@@ -467,7 +461,7 @@ export function SettingsDashboard() {
             <SalvoToast visivel={toast === 'metas'} />
             <button
               onClick={salvarMetas}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+              className="btn btn-primary"
             >
               <Save size={13} />
               Salvar metas
@@ -527,7 +521,7 @@ export function SettingsDashboard() {
             <SalvoToast visivel={toast === 'alertas'} />
             <button
               onClick={salvarAlertas}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+              className="btn btn-primary"
             >
               <Save size={13} />
               Salvar alertas
@@ -612,7 +606,7 @@ export function SettingsDashboard() {
             <SalvoToast visivel={toast === 'estoque'} />
             <button
               onClick={salvarEstoque}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+              className="btn btn-primary"
             >
               <Save size={13} />
               Salvar estoque
@@ -683,7 +677,7 @@ export function SettingsDashboard() {
             <SalvoToast visivel={toast === 'apis'} />
             <button
               onClick={salvarAPIs}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-lg hover:bg-[#D4B568]"
+              className="btn btn-primary"
             >
               <Save size={13} />
               Salvar credenciais
@@ -702,7 +696,7 @@ export function SettingsDashboard() {
         </div>
         <button
           onClick={exportarJSON}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#C9A84C] border border-[#C9A84C]/30 rounded-lg hover:bg-[rgba(201,168,76,0.08)] transition-colors"
+          className="btn btn-secondary"
         >
           <Download size={13} />
           Exportar todos os dados (JSON)

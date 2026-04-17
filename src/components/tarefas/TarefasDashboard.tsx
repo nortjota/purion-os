@@ -277,37 +277,29 @@ function ModalNovaTarefa({ statusInicial, perfilAtivo, onCriar, onFechar }: Moda
     onFechar()
   }
 
-  const inputCls = `
-    w-full bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg px-3 py-2.5
-    text-sm text-[var(--text-primary)] placeholder-[#4A4A4A]
-    focus:outline-none focus:border-[rgba(201,168,76,0.5)]
-    transition-colors
-  `
+  const inputCls = 'input-purion'
 
   const colLabel = COLUNAS.find((c) => c.id === statusInicial)?.label ?? statusInicial
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onFechar} />
-      <div className="relative z-10 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl w-full max-w-lg shadow-2xl">
+    <div className="modal-backdrop">
+      <div className="modal-container max-w-lg" onClick={(e) => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+        <div className="modal-header">
           <div>
-            <h3 className="font-black text-[var(--text-primary)] text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Nova Tarefa
-            </h3>
-            <p className="text-[10px] text-[#6B6B6B] mt-0.5">
+            <h3 className="modal-title">Nova Tarefa</h3>
+            <p className="caption mt-0.5">
               Coluna: <span className="text-[#C9A84C]">{colLabel}</span>
             </p>
           </div>
-          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onFechar} className="icon-btn border-0">
             <X size={16} />
           </button>
         </div>
 
         {/* Formulário */}
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-3.5">
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
 
           {/* Título */}
           <input
@@ -408,18 +400,11 @@ function ModalNovaTarefa({ statusInicial, perfilAtivo, onCriar, onFechar }: Moda
           {erro && <p className="text-xs text-[#E85238]">{erro}</p>}
 
           {/* Ações */}
-          <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={onFechar}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-[#6B6B6B] border border-[var(--border)] hover:text-[var(--text-primary)] hover:border-[#3A3A3A] transition-colors"
-            >
+          <div className="modal-footer">
+            <button type="button" onClick={onFechar} className="btn btn-secondary btn-sm">
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="flex-1 py-2.5 rounded-lg text-sm font-bold bg-[#C9A84C] text-[#0D0D0D] hover:bg-[#D4B55E] active:scale-[0.99] transition-all"
-            >
+            <button type="submit" className="btn btn-primary btn-sm">
               Criar Tarefa
             </button>
           </div>
@@ -518,14 +503,12 @@ export function TarefasDashboard() {
   const infoAba = SOCIOS.find((s) => s.id === abaAtiva)!
 
   return (
-    <div className="p-6 space-y-5 max-w-[1600px] mx-auto">
+    <div className="page-content section-gap max-w-[1600px]">
 
       {/* ── Header ── */}
       <div>
-        <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-          Tarefas
-        </h1>
-        <p className="text-sm text-[#6B6B6B] mt-0.5">Boards por sócio · A Fazer / Em Andamento / Concluído / Bloqueado</p>
+        <h1 className="page-title">Tarefas</h1>
+        <p className="caption mt-1">Boards por sócio · A Fazer / Em Andamento / Concluído / Bloqueado</p>
       </div>
 
       {/* ── Abas dos sócios ── */}

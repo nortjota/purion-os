@@ -1,30 +1,28 @@
 'use client'
 
-/**
- * PURION OS — AppShell
- * Wrapper client-side que integra Sidebar + conteúdo principal.
- * Necessário pois usePurionStore é um hook de cliente.
- */
-
 import { usePurionStore } from '@/store'
 import { Sidebar } from './Sidebar'
+import { ContentHeader } from './ContentHeader'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { sidebarRecolhida } = usePurionStore()
-  const marginLeft = sidebarRecolhida ? 'ml-[64px]' : 'ml-[260px]'
+  const marginLeft = sidebarRecolhida ? 'ml-16' : 'ml-60'
 
   return (
     <>
       <Sidebar />
-      <main
+      <div
         className={`
-          ${marginLeft} min-h-screen
+          ${marginLeft} min-h-screen flex flex-col
           bg-[var(--bg-primary)]
           transition-all duration-300 ease-in-out
         `}
       >
-        {children}
-      </main>
+        <ContentHeader />
+        <main className="flex-1">
+          {children}
+        </main>
+      </div>
     </>
   )
 }

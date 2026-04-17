@@ -70,15 +70,17 @@ interface KPIFinProps {
 
 function KPIFin({ label, valor, icon: Icon, cor = '#C9A84C', sub }: KPIFinProps) {
   return (
-    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 flex flex-col gap-2 hover:border-[rgba(201,168,76,0.2)] transition-colors">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] text-[#6B6B6B] uppercase tracking-wider font-medium">{label}</span>
-        <Icon size={13} style={{ color: cor }} />
+    <div className="kpi-card flex flex-col gap-4">
+      <div className="flex items-start justify-between">
+        <span className="kpi-label">{label}</span>
+        <div className="w-8 h-8 rounded-lg bg-[var(--bg-surface-2)] flex items-center justify-center shrink-0">
+          <Icon size={16} style={{ color: cor }} className="opacity-60" />
+        </div>
       </div>
-      <span className="text-2xl font-black leading-none" style={{ color: cor, fontFamily: 'Montserrat, sans-serif' }}>
-        {valor}
-      </span>
-      {sub && <span className="text-[10px] text-[#4A4A4A]">{sub}</span>}
+      <div>
+        <span className="kpi-value" style={{ color: cor }}>{valor}</span>
+        {sub && <p className="caption mt-1">{sub}</p>}
+      </div>
     </div>
   )
 }
@@ -231,12 +233,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
     setTimeout(() => setSalvo(false), 2500)
   }
 
-  const inputCls = `
-    w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2.5
-    text-sm text-[var(--text-primary)] placeholder-[#4A4A4A]
-    focus:outline-none focus:border-[rgba(201,168,76,0.5)]
-    transition-colors
-  `
+  const inputCls = 'input-purion'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
@@ -323,15 +320,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
       )}
 
       {/* Botão */}
-      <button
-        type="submit"
-        className="
-          w-full py-2.5 rounded-lg text-sm font-bold
-          bg-[#C9A84C] text-[#0D0D0D]
-          hover:bg-[#D4B55E] active:scale-[0.99]
-          transition-all flex items-center justify-center gap-2
-        "
-      >
+      <button type="submit" className="btn btn-primary w-full justify-center">
         <Plus size={14} />
         Registrar {tipo === 'receita' ? 'Receita' : 'Despesa'}
       </button>
@@ -518,20 +507,15 @@ function TabelaHistorico({ linhas }: TabelaHistoricoProps) {
 
       {/* Tabela */}
       <div className="rounded-xl border border-[var(--border)] overflow-hidden">
-        <table className="w-full text-xs">
+        <table className="table-purion">
           <thead>
-            <tr className="border-b border-[var(--border)] bg-[var(--bg-surface-2)]">
+            <tr>
               {['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor'].map((col) => (
-                <th
-                  key={col}
-                  className="px-4 py-2.5 text-left text-[10px] text-[#4A4A4A] uppercase tracking-wider font-medium"
-                >
-                  {col}
-                </th>
+                <th key={col}>{col}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--bg-surface)]">
+          <tbody>
             {linhasFiltradas.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-[#3A3A3A] text-xs">
@@ -665,57 +649,48 @@ export function FinanceiroDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-8 max-w-[1400px] mx-auto">
+    <div className="page-content section-gap">
 
       {/* ── Header ── */}
       <div>
-        <h1
-          className="text-2xl font-black text-[var(--text-primary)] tracking-tight"
-          style={{ fontFamily: 'Montserrat, sans-serif' }}
-        >
-          Financeiro
-        </h1>
-        <p className="text-sm text-[#6B6B6B] mt-0.5">
-          Controle financeiro · Precificação · Projeções
-        </p>
+        <h1 className="page-title">Financeiro</h1>
+        <p className="caption mt-1">Controle financeiro · Precificação · Projeções</p>
       </div>
 
       {/* ── Seção 1: KPIs ── */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
         {kpiCards.map((card) => (
           <KPIFin key={card.label} {...card} />
         ))}
       </div>
 
       {/* ── Seção 2: Registrar + Calculadora ── */}
-      <div className="grid grid-cols-2 gap-6">
-        {/* Form de movimentação */}
-        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="card-purion card-section">
+          <div className="flex items-center gap-2 mb-5">
             <Plus size={15} className="text-[#C9A84C]" />
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">Registrar Movimentação</h2>
+            <h2 className="section-title text-[15px]">Registrar Movimentação</h2>
           </div>
           <FormMovimentacao onRegistrado={handleRegistrado} />
         </div>
 
-        {/* Calculadora de precificação */}
-        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="card-purion card-section">
+          <div className="flex items-center gap-2 mb-5">
             <Calculator size={15} className="text-[#C9A84C]" />
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">Calculadora de Precificação</h2>
+            <h2 className="section-title text-[15px]">Calculadora de Precificação</h2>
           </div>
           <CalculadoraPrecificacao />
         </div>
       </div>
 
       {/* ── Seção 3: Gráfico de Evolução ── */}
-      <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
+      <div className="card-purion card-section">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <BarChart2 size={15} className="text-[#C9A84C]" />
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">Evolução Financeira — Últimos 6 Meses</h2>
+            <h2 className="section-title text-[15px]">Evolução Financeira — 6 Meses</h2>
           </div>
-          <span className="text-[10px] text-[#4A4A4A] uppercase tracking-wider">
+          <span className="caption uppercase" style={{ letterSpacing: '0.06em' }}>
             Set 2023 → Fev 2024
           </span>
         </div>
@@ -724,10 +699,10 @@ export function FinanceiroDashboard() {
 
       {/* ── Seção 4: Projeção 30/60/90 dias ── */}
       <div>
-        <p className="text-[11px] text-[#6B6B6B] uppercase tracking-wider font-medium mb-3 flex items-center gap-1.5">
-          <TrendingUp size={11} /> Projeção Baseada na Média dos Últimos 30 Dias
+        <p className="kpi-label flex items-center gap-1.5 mb-4">
+          <TrendingUp size={11} /> Projeção — Média dos Últimos 30 Dias
         </p>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
           {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
             <div
               key={dias}
@@ -768,11 +743,11 @@ export function FinanceiroDashboard() {
       </div>
 
       {/* ── Seção 5: Histórico ── */}
-      <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
+      <div className="card-purion card-section">
         <div className="flex items-center gap-2 mb-5">
           <BarChart2 size={15} className="text-[#C9A84C]" />
-          <h2 className="text-sm font-bold text-[var(--text-primary)]">Histórico de Movimentações</h2>
-          <span className="ml-auto text-[10px] text-[#4A4A4A]">{historico.length} registros</span>
+          <h2 className="section-title text-[15px]">Histórico de Movimentações</h2>
+          <span className="caption ml-auto">{historico.length} registros</span>
         </div>
         <TabelaHistorico linhas={historico} />
       </div>
