@@ -5,6 +5,7 @@ import { StoreProvider }  from '@/components/providers/StoreProvider'
 import { ThemeProvider }  from '@/components/providers/ThemeProvider'
 import { AuthProvider }   from '@/components/providers/AuthProvider'
 import { ConditionalShell } from '@/components/layout/ConditionalShell'
+import { ToastProvider } from '@/components/ui/Toast'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -29,9 +30,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ThemeProvider>
           <AuthProvider>
             <StoreProvider>
-              <ConditionalShell>
-                {children}
-              </ConditionalShell>
+              <ToastProvider>
+                <ConditionalShell>
+                  {children}
+                </ConditionalShell>
+              </ToastProvider>
             </StoreProvider>
           </AuthProvider>
         </ThemeProvider>

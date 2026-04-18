@@ -1,26 +1,20 @@
 'use client'
 
-import { usePurionStore } from '@/store'
 import { Sidebar } from './Sidebar'
 import { ContentHeader } from './ContentHeader'
+import { PageTransition } from './PageTransition'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { sidebarRecolhida } = usePurionStore()
-  const marginLeft = sidebarRecolhida ? 'ml-16' : 'ml-60'
-
   return (
     <>
       <Sidebar />
       <div
-        className={`
-          ${marginLeft} min-h-screen flex flex-col
-          bg-[var(--bg-primary)]
-          transition-all duration-300 ease-in-out
-        `}
+        style={{ marginLeft: 224, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+        className="bg-[var(--bg-primary)]"
       >
         <ContentHeader />
-        <main className="flex-1">
-          {children}
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <PageTransition>{children}</PageTransition>
         </main>
       </div>
     </>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Sun, Moon } from 'lucide-react'
+import { Sun, Moon, ChevronRight, Bell } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -38,50 +38,78 @@ export function ContentHeader() {
 
   useEffect(() => setMounted(true), [])
 
-  // Prefix match for nested routes
   const moduleName = Object.entries(MODULE_NAMES)
     .sort((a, b) => b[0].length - a[0].length)
     .find(([key]) => key === '/' ? pathname === '/' : pathname.startsWith(key))?.[1] ?? ''
 
   const isDark = theme === 'dark'
 
-  // Avatar initial: real auth user first, fallback to demo store profile
   const inicial = perfil?.nome?.[0]?.toUpperCase()
     ?? user?.email?.[0]?.toUpperCase()
     ?? PERFIL_INICIAIS[perfilAtivo]
     ?? 'U'
 
+  const displayName = perfil?.nome ?? user?.email?.split('@')[0] ?? 'Usuário'
+
   return (
-    <header className="
-      h-14 flex items-center justify-between px-8
-      border-b border-[var(--border)]
-      bg-[var(--bg-primary)]
-      sticky top-0 z-40
-    ">
+    <header style={{
+      height: 56,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 32px',
+      borderBottom: '1px solid var(--border)',
+      background: 'var(--bg-primary)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 40,
+    }}>
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-[13px] text-[var(--text-secondary)]">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
         <span>PURION OS</span>
         {moduleName && (
           <>
-            <span className="opacity-30 select-none">/</span>
-            <span className="text-[var(--text-primary)]">{moduleName}</span>
+            <ChevronRight size={12} style={{ opacity: 0.4 }} />
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{moduleName}</span>
           </>
         )}
       </div>
 
-      {/* Ações direita */}
-      <div className="flex items-center gap-2">
+      {/* Actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {mounted && (
           <button
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             title={isDark ? 'Modo claro' : 'Modo escuro'}
             className="icon-btn"
+            style={{ width: 32, height: 32 }}
           >
-            {isDark ? <Sun size={14} /> : <Moon size={14} />}
+            {isDark ? <Sun size={15} /> : <Moon size={15} />}
           </button>
         )}
 
-        <div className="w-8 h-8 rounded-full shrink-0 select-none bg-[#C9A84C] text-[#0D0D0D] flex items-center justify-center text-[11px] font-semibold">
+        {/* Separator */}
+        <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 2px' }} />
+
+        {/* Notifications */}
+        <button
+          title="Notificações"
+          className="icon-btn"
+          style={{ width: 32, height: 32, position: 'relative' }}
+        >
+          <Bell size={15} />
+        </button>
+
+        {/* Avatar */}
+        <div
+          title={displayName}
+          style={{
+            width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+            background: '#C9A84C', color: '#0D0D0D',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 12, fontWeight: 600, userSelect: 'none', cursor: 'default',
+          }}
+        >
           {inicial}
         </div>
       </div>
