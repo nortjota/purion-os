@@ -1,4 +1,6 @@
 import type { TrafegoPeriod, TrafegoApiResponse, TrafegoCampanha, TrafegoDaily } from '@/lib/trafego-types'
+import { fetchWithTimeout, TimeoutError } from '@/lib/fetch-with-timeout'
+import { checkRateLimit, getIdentifier } from '@/lib/rate-limit'
 
 function getDateRange(period: TrafegoPeriod): { start: string; end: string } {
   const end = new Date()
@@ -18,6 +20,9 @@ function fmtDiaMes(dateStr: string): string {
 }
 
 export async function GET(request: Request): Promise<Response> {
+  const { success } = await checkRateLimit('ads', getIdentifier(request))
+  if (!success) return Response.json({ error: 'Rate limit excedido' }, { status: 429 })
+
   const token        = process.env.TIKTOK_ACCESS_TOKEN
   const advertiserId = process.env.TIKTOK_ADVERTISER_ID
 
@@ -47,7 +52,7 @@ export async function GET(request: Request): Promise<Response> {
       page_size: 60,
     }
 
-    const totaisRes = await fetch(
+    const totaisRes = await fetchWithTimeout(
       'https://business-api.tiktok.com/open_api/v1.3/report/integrated/get/',
       { method: 'POST', headers, body: JSON.stringify(totaisBody), cache: 'no-store' }
     )
@@ -93,7 +98,7 @@ export async function GET(request: Request): Promise<Response> {
     const roas = roasCount > 0 ? roasSum / roasCount : 0
 
     // 2. Campanhas
-    const campRes = await fetch(
+    const campRes = await fetchWithTimeout(
       `https://business-api.tiktok.com/open_api/v1.3/campaign/get/?advertiser_id=${advertiserId}&page_size=20`,
       { headers, cache: 'no-store' }
     )
@@ -153,6 +158,9 @@ export async function GET(request: Request): Promise<Response> {
     } satisfies TrafegoApiResponse)
 
   } catch (err) {
+    if (err instanceof TimeoutError) {
+      return Response.json({ error: 'API TikTok Ads timeout' }, { status: 504 })
+    }
     return Response.json({
       status: 'api_error',
       gasto: 0, impressoes: 0, cliques: 0, ctr: 0, cpm: 0, cpc: 0, conversoes: 0, cpa: 0, roas: 0,

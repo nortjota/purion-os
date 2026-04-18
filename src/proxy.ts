@@ -49,6 +49,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
+  response.headers.set('X-Request-ID', crypto.randomUUID())
   return response
 }
 

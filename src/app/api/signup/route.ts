@@ -1,18 +1,31 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { signupSchema } from '@/lib/validators'
+import { checkCsrf } from '@/lib/csrf'
+import { checkRateLimit, getIdentifier } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
+  const csrfError = checkCsrf(request)
+  if (csrfError) return csrfError
+
+  const { success: rateLimitOk } = await checkRateLimit('auth', getIdentifier(request))
+  if (!rateLimitOk) return NextResponse.json({ error: 'Muitas tentativas. Tente novamente em 1 minuto.' }, { status: 429 })
+
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   const url        = process.env.NEXT_PUBLIC_SUPABASE_URL
   if (!serviceKey || !url) {
     return NextResponse.json({ error: 'Servidor não configurado.' }, { status: 503 })
   }
 
-  let body: { nomeEmpresa: string; nomeAdmin: string; email: string; password: string }
-  try { body = await request.json() }
+  let raw: unknown
+  try { raw = await request.json() }
   catch { return NextResponse.json({ error: 'Dados inválidos.' }, { status: 400 }) }
 
-  const { nomeEmpresa, nomeAdmin, email, password } = body
+  const parsed = signupSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Dados inválidos.', details: parsed.error.flatten() }, { status: 400 })
+  }
+  const { nomeEmpresa, nomeAdmin, email, password } = parsed.data
   if (!nomeEmpresa || !email || !password || !nomeAdmin) {
     return NextResponse.json({ error: 'Todos os campos são obrigatórios.' }, { status: 400 })
   }

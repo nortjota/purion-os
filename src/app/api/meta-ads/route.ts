@@ -1,4 +1,6 @@
 import type { TrafegoPeriod, TrafegoApiResponse, TrafegoCampanha, TrafegoDaily } from '@/lib/trafego-types'
+import { fetchWithTimeout, TimeoutError } from '@/lib/fetch-with-timeout'
+import { checkRateLimit, getIdentifier } from '@/lib/rate-limit'
 
 // Meta date_preset mapeado por período
 const META_PRESET: Record<TrafegoPeriod, string> = {
@@ -29,8 +31,11 @@ function extrairReceita(actionValues: Array<{ action_type: string; value: string
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const token     = process.env.NEXT_PUBLIC_META_ACCESS_TOKEN
-  const accountId = process.env.NEXT_PUBLIC_META_AD_ACCOUNT_ID
+  const { success } = await checkRateLimit('ads', getIdentifier(request))
+  if (!success) return Response.json({ error: 'Rate limit excedido' }, { status: 429 })
+
+  const token     = process.env.META_ACCESS_TOKEN
+  const accountId = process.env.META_AD_ACCOUNT_ID
 
   if (!token || !accountId) {
     return Response.json({ status: 'no_credentials', gasto: 0, impressoes: 0, cliques: 0, ctr: 0, cpm: 0, cpc: 0, conversoes: 0, cpa: 0, roas: 0, campanhas: [], diario: [], ultimaAtualizacao: new Date().toISOString() } satisfies TrafegoApiResponse)
@@ -43,7 +48,7 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     // 1. Totais da conta
-    const totaisRes = await fetch(
+    const totaisRes = await fetchWithTimeout(
       `${base}/insights?fields=spend,impressions,clicks,ctr,cpm,cpc,actions,action_values&date_preset=${preset}&access_token=${token}`,
       { cache: 'no-store' }
     )
@@ -70,7 +75,7 @@ export async function GET(request: Request): Promise<Response> {
     const roas      = gasto > 0 ? receita / gasto : 0
 
     // 2. Por campanha
-    const campRes = await fetch(
+    const campRes = await fetchWithTimeout(
       `${base}/insights?level=campaign&fields=campaign_id,campaign_name,spend,actions,action_values,effective_status&date_preset=${preset}&limit=20&access_token=${token}`,
       { cache: 'no-store' }
     )
@@ -98,7 +103,7 @@ export async function GET(request: Request): Promise<Response> {
     })
 
     // 3. Gasto diário
-    const diarRes = await fetch(
+    const diarRes = await fetchWithTimeout(
       `${base}/insights?fields=spend&time_increment=1&date_preset=${preset}&access_token=${token}`,
       { cache: 'no-store' }
     )
@@ -116,6 +121,9 @@ export async function GET(request: Request): Promise<Response> {
     } satisfies TrafegoApiResponse)
 
   } catch (err) {
+    if (err instanceof TimeoutError) {
+      return Response.json({ error: 'API Meta Ads timeout' }, { status: 504 })
+    }
     return Response.json({
       status: 'api_error',
       gasto: 0, impressoes: 0, cliques: 0, ctr: 0, cpm: 0, cpc: 0, conversoes: 0, cpa: 0, roas: 0,

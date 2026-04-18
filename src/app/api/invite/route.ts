@@ -1,7 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { inviteSchema } from '@/lib/validators'
+import { checkCsrf } from '@/lib/csrf'
+import { checkRateLimit, getIdentifier } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
+  const csrfError = checkCsrf(request)
+  if (csrfError) return csrfError
+
+  const { success: rateLimitOk } = await checkRateLimit('auth', getIdentifier(request))
+  if (!rateLimitOk) return NextResponse.json({ error: 'Rate limit excedido.' }, { status: 429 })
+
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   const url        = process.env.NEXT_PUBLIC_SUPABASE_URL
 
@@ -9,17 +18,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Supabase service key não configurada.' }, { status: 503 })
   }
 
-  let body: { email: string; cargo?: string; tenant_id: string }
+  let raw: unknown
   try {
-    body = await request.json()
+    raw = await request.json()
   } catch {
     return NextResponse.json({ error: 'Corpo inválido.' }, { status: 400 })
   }
 
-  const { email, cargo, tenant_id } = body
-  if (!email || !tenant_id) {
-    return NextResponse.json({ error: 'E-mail e tenant_id são obrigatórios.' }, { status: 400 })
+  const parsed = inviteSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Dados inválidos.', details: parsed.error.flatten() }, { status: 400 })
   }
+  const { email, cargo, tenant_id } = parsed.data
 
   // Use admin client with service role key
   const adminClient = createClient(url, serviceKey, {

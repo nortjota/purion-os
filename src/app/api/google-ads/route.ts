@@ -1,5 +1,6 @@
 import { GoogleAdsApi } from 'google-ads-api'
 import type { TrafegoPeriod, TrafegoApiResponse, TrafegoCampanha, TrafegoDaily } from '@/lib/trafego-types'
+import { checkRateLimit, getIdentifier } from '@/lib/rate-limit'
 
 const GOOGLE_DATE_CONST: Record<TrafegoPeriod, string> = {
   '7d':    'LAST_7_DAYS',
@@ -19,6 +20,9 @@ function fmtDiaMes(dateStr: string): string {
 }
 
 export async function GET(request: Request): Promise<Response> {
+  const { success } = await checkRateLimit('gads', getIdentifier(request))
+  if (!success) return Response.json({ error: 'Rate limit excedido' }, { status: 429 })
+
   const clientId      = process.env.GOOGLE_ADS_CLIENT_ID
   const clientSecret  = process.env.GOOGLE_ADS_CLIENT_SECRET
   const refreshToken  = process.env.GOOGLE_ADS_REFRESH_TOKEN
