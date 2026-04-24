@@ -86,9 +86,10 @@ function TickPercent({ x, y, payload, fill }: { x?: number; y?: number; payload?
 
 interface GraficoEvolucaoProps {
   dados: MesGrafico[]
+  height?: number
 }
 
-export function GraficoEvolucao({ dados }: GraficoEvolucaoProps) {
+export function GraficoEvolucao({ dados, height = 280 }: GraficoEvolucaoProps) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
@@ -98,7 +99,7 @@ export function GraficoEvolucao({ dados }: GraficoEvolucaoProps) {
   const dotStroke   = isDark ? '#0D0D0D' : '#FAFAF8'
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
+    <ResponsiveContainer width="100%" height={height}>
       <LineChart data={dados} margin={{ top: 4, right: 24, left: 0, bottom: 0 }}>
         <CartesianGrid
           strokeDasharray="3 3"

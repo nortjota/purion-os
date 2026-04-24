@@ -66,6 +66,29 @@
   --color-purion-danger: #EF4444;
 }
 
+/* ── Sidebar width CSS variable (updated by JS on collapse/expand) ── */
+:root { --purion-sidebar-w: 224px; }
+
+/* Desktop: main area margin follows sidebar width with animation */
+@media (min-width: 768px) {
+  .purion-main-area {
+    margin-left: var(--purion-sidebar-w, 224px);
+    transition: margin-left 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Mobile: sidebar hidden by CSS default so there is no SSR hydration flash */
+@media (max-width: 767px) {
+  .purion-sidebar {
+    transform: translateX(-100%) !important;
+    transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  .purion-sidebar[data-open] {
+    transform: translateX(0) !important;
+  }
+  .purion-main-area { margin-left: 0 !important; }
+}
+
 /* ── PURION — Modo Claro ── */
 :root {
   --background: #FAFAF8;
@@ -661,4 +684,102 @@
 /* Exceto animações e transforms */
 *:not([class*="transition-"]):not([class*="animate-"]) {
   transition-property: background-color, border-color, color;
+}
+
+/* ══════════════════════════════════════════════
+   PURION OS — MOBILE RESPONSIVE (max-width 768px)
+   Desktop NOT touched — all changes are additive
+══════════════════════════════════════════════ */
+
+/* Desktop helpers */
+.purion-header-desktop { display: flex; }
+.purion-header-mobile  { display: none !important; }
+.mobile-only     { display: none !important; }
+.desktop-only    { display: block; }
+
+@media (max-width: 767px) {
+  /* Body */
+  body { overflow-x: hidden; }
+
+  /* Header: desktop hidden, mobile shown */
+  .purion-header-desktop { display: none !important; }
+  .purion-header-mobile  { display: flex !important; }
+
+  /* Page content padding — bottom 80px clears bottom nav */
+  .page-content { padding: 16px 16px 80px !important; }
+
+  /* Inputs — min 16px font prevents iOS zoom */
+  input, select, textarea { font-size: 16px !important; }
+
+  /* KPI 2-column grid */
+  .kpi-grid-mobile { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Stacked 1-column */
+  .grid-mobile-1 { grid-template-columns: 1fr !important; }
+
+  /* Smaller KPI values */
+  .kpi-value { font-size: 22px !important; }
+
+  /* Modals → bottom sheets */
+  .modal-backdrop {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .modal-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    animation: bottom-sheet-in 250ms ease !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+
+  /* Mobile visibility helpers */
+  .mobile-only    { display: block !important; }
+  .desktop-only   { display: none !important; }
+  .mobile-hidden  { display: none !important; }
+
+  /* Horizontal scroll tabs */
+  .mobile-tabs-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap !important;
+    white-space: nowrap;
+  }
+  .mobile-tabs-scroll::-webkit-scrollbar { display: none; }
+
+  /* Kanban → hide on mobile */
+  .kanban-desktop { display: none !important; }
+  .mobile-list    { display: flex !important; flex-direction: column; gap: 10px; }
+
+  /* Tables → hide on mobile (convert to cards) */
+  .table-mobile-hide { display: none !important; }
+  .table-mobile-cards { display: flex !important; flex-direction: column; gap: 8px; }
+
+  /* Alert items stacked */
+  .alerts-flex { flex-direction: column !important; }
+
+  /* Touch targets */
+  .touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Card list item for mobile tables */
+  .mobile-card-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+  }
+
+  /* SLA bar mobile */
+  .sla-mobile { width: 100% !important; }
+}
+
+@keyframes bottom-sheet-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }

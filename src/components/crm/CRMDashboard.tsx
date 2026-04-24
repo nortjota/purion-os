@@ -9,10 +9,17 @@
 import { useState, useMemo, useCallback } from 'react'
 import {
   Users, DollarSign, TrendingUp, Target, X, Phone,
-  Mail, MapPin, Clock, Plus, ChevronDown, MessageSquare,
+  Mail, MapPin, Clock, Plus, ChevronDown, MessageSquare, Trash2,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { Lead, StatusLead, TipoEstabelecimento } from '@/store'
+import { useMobile } from '@/hooks/useMobile'
+import { BottomSheet } from '@/components/ui/BottomSheet'
+import { useCRM } from '@/hooks/useCRM'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { ViewToggle } from '@/components/ui/ViewToggle'
+import { AdvancedFilters } from '@/components/ui/AdvancedFilters'
+import type { ViewType } from '@/components/ui/ViewToggle'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -259,11 +266,12 @@ interface DrawerLeadProps {
   onRegistrarContato: (texto: string) => void
   onMoverPara: (status: StatusLead) => void
   onNotasChange: (v: string) => void
+  onDeletar: (lead: Lead) => void
 }
 
 function DrawerLead({
   lead, historicos, notasEdit, onClose,
-  onSalvarNotas, onRegistrarContato, onMoverPara, onNotasChange,
+  onSalvarNotas, onRegistrarContato, onMoverPara, onNotasChange, onDeletar,
 }: DrawerLeadProps) {
   const [textoContato, setTextoContato] = useState('')
   const score = calcularScore(lead)
@@ -303,12 +311,21 @@ function DrawerLead({
           </div>
           <p className="text-[11px] text-[#6B6B6B]">{lead.nomeContato}</p>
         </div>
-        <button
-          onClick={onClose}
-          className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors shrink-0"
-        >
-          <X size={16} />
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            onClick={() => onDeletar(lead)}
+            className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#6B6B6B] hover:text-[#E85238] transition-colors"
+            title="Excluir lead"
+          >
+            <Trash2 size={14} />
+          </button>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Conteúdo scrollável */}
@@ -495,14 +512,26 @@ function KPICard({ label, valor, icon: Icon, sub, cor = '#C9A84C' }: {
 // ─────────────────────────────────────────────
 
 export function CRMDashboard() {
+  const isMobile = useMobile()
   const { leads, atualizarLead } = usePurionStore()
+  const { deletarLead } = useCRM()
+  const [deletandoLead, setDeletandoLead] = useState<Lead | null>(null)
 
   // ── Estado local ──
   const [filtroEstado,  setFiltroEstado]  = useState<'DF' | 'SP' | 'SC' | 'todos'>('todos')
   const [filtroScore,   setFiltroScore]   = useState<'verde' | 'amarelo' | 'vermelho' | 'todos'>('todos')
+  const [viewMode, setViewMode] = useState<ViewType>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('purion:view:crm') as ViewType) ?? 'list'
+    }
+    return 'list'
+  })
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, unknown>>({})
   const [leadSelecionadoId, setLeadSelecionadoId] = useState<string | null>(null)
   const [dragLeadId,    setDragLeadId]    = useState<string | null>(null)
   const [dragOverColId, setDragOverColId] = useState<StatusLead | null>(null)
+  // Mobile-specific state
+  const [mobileColuna, setMobileColuna] = useState<StatusLead>('prospecto')
 
   // Notas e histórico em estado local (persistidos no store via save)
   const [notasMap, setNotasMap]       = useState<Record<string, string>>({})
@@ -616,6 +645,158 @@ export function CRMDashboard() {
 
   const COR_BTN_SCORE: Record<string, string> = { verde: '#4CAF7A', amarelo: '#E8A838', vermelho: '#E85238', todos: '#6B6B6B' }
 
+  // ── MOBILE VIEW ──────────────────────────────
+  if (isMobile) {
+    const leadsColuna = leadsFiltrados.filter((l) => l.status === mobileColuna)
+
+    return (
+      <div className="page-content section-gap">
+        {/* Header */}
+        <div>
+          <h1 className="page-title">CRM B2B</h1>
+          <p className="caption mt-1">Pipeline de parceiros</p>
+        </div>
+
+        {/* KPIs 2-col */}
+        <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+          <KPICard label="Total Leads"    valor={String(kpis.total)}   icon={Users}      />
+          <KPICard label="Ativos"         valor={String(kpis.ativos)}  icon={TrendingUp} cor="#22C55E" />
+          <KPICard label="Conversão"      valor={`${kpis.taxa.toFixed(1)}%`} icon={Target} />
+          <KPICard label="Pipeline"       valor={`R$ ${kpis.pipeline.toLocaleString('pt-BR')}`} icon={DollarSign} />
+        </div>
+
+        {/* Column tabs — horizontal scroll */}
+        <div className="mobile-tabs-scroll" style={{ display: 'flex', gap: 6, paddingBottom: 4 }}>
+          {COLUNAS_KANBAN.map((col) => {
+            const count = leadsFiltrados.filter((l) => l.status === col.id).length
+            const ativo = mobileColuna === col.id
+            return (
+              <button
+                key={col.id}
+                onClick={() => setMobileColuna(col.id)}
+                style={{
+                  flexShrink: 0, padding: '7px 14px',
+                  borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                  border: `1px solid ${ativo ? col.cor : 'var(--border)'}`,
+                  background: ativo ? `${col.cor}15` : 'transparent',
+                  color: ativo ? col.cor : 'var(--text-secondary)',
+                  minHeight: 36,
+                }}
+              >
+                {col.label} <span style={{ opacity: 0.7, marginLeft: 4 }}>{count}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Lead cards list */}
+        {leadsColuna.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)', fontSize: 13 }}>
+            Nenhum lead nesta coluna
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {leadsColuna.map((lead) => {
+              const score = calcularScore(lead)
+              const tipo = lead.tipoEstabelecimento ?? 'estetica'
+              const tipoBadge = TIPO_BADGE[tipo]
+              const diasSem = diasSemContato(lead)
+              return (
+                <div
+                  key={lead.id}
+                  className="mobile-card-item"
+                  style={{ borderRadius: 12, padding: '14px 16px' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: SCORE_COR[score].bg, flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{lead.nomeEmpresa}</span>
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#C9A84C' }}>
+                      R$ {lead.valorMedioMensal.toLocaleString('pt-BR')}/mês
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: tipoBadge.bg, color: tipoBadge.text }}>
+                      {tipoBadge.label}
+                    </span>
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: `${SCORE_COR[score].bg}20`, color: SCORE_COR[score].bg }}>
+                      {SCORE_COR[score].label}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <Clock size={10} />{diasSem === 0 ? 'Hoje' : `${diasSem}d sem contato`}
+                    </span>
+                    <button
+                      onClick={() => abrirDrawer(lead.id)}
+                      style={{
+                        padding: '6px 14px', minHeight: 32, borderRadius: 6, fontSize: 12, fontWeight: 500,
+                        border: '1px solid var(--border)', background: 'transparent',
+                        color: 'var(--text-secondary)', cursor: 'pointer',
+                      }}
+                    >
+                      Ver detalhes
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Lead detail — bottom sheet */}
+        <BottomSheet
+          open={!!leadAtual}
+          onClose={() => setLeadSelecionadoId(null)}
+          title={leadAtual?.nomeEmpresa}
+          footer={
+            leadAtual ? (
+              <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                <select
+                  value={leadAtual.status}
+                  onChange={(e) => handleMoverPara(e.target.value as StatusLead)}
+                  style={{
+                    flex: 1, height: 44, borderRadius: 8, fontSize: 14,
+                    border: '1px solid var(--border)', background: 'var(--bg-surface)',
+                    color: 'var(--text-primary)', padding: '0 12px',
+                  }}
+                >
+                  {COLUNAS_KANBAN.map((c) => (
+                    <option key={c.id} value={c.id}>{c.label}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => handleSalvarNotas(notasAtual)}
+                  style={{
+                    height: 44, padding: '0 20px', borderRadius: 8, background: '#C9A84C',
+                    color: '#0D0D0D', border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer',
+                  }}
+                >
+                  Salvar
+                </button>
+              </div>
+            ) : undefined
+          }
+        >
+          {leadAtual && (
+            <DrawerLead
+              lead={leadAtual}
+              historicos={historicosAtual}
+              notasEdit={notasAtual}
+              onClose={() => setLeadSelecionadoId(null)}
+              onSalvarNotas={handleSalvarNotas}
+              onRegistrarContato={handleRegistrarContato}
+              onMoverPara={handleMoverPara}
+              onNotasChange={(v) => setNotasMap((prev) => ({ ...prev, [leadAtual.id]: v }))}
+              onDeletar={(l) => setDeletandoLead(l)}
+            />
+          )}
+        </BottomSheet>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Conteúdo principal (scrollável) */}
@@ -628,14 +809,46 @@ export function CRMDashboard() {
             <h1 className="page-title">CRM B2B</h1>
             <p className="caption mt-1">Pipeline de parceiros · Kanban</p>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.15)]">
-            <Target size={14} className="text-[#C9A84C]" />
-            <span className="text-[13px] text-[#C9A84C] font-[500]">
-              {kpis.esteticasAtivas} / 15
-            </span>
-            <span className="caption">estéticas ativas</span>
+          <div className="flex items-center gap-3">
+            <ViewToggle module="crm" current={viewMode} onChange={setViewMode} views={['list', 'grid', 'timeline']} />
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.15)]">
+              <Target size={14} className="text-[#C9A84C]" />
+              <span className="text-[13px] text-[#C9A84C] font-[500]">
+                {kpis.esteticasAtivas} / 15
+              </span>
+              <span className="caption">estéticas ativas</span>
+            </div>
           </div>
         </div>
+
+        {/* ── Advanced Filters ── */}
+        <AdvancedFilters
+          moduleKey="crm"
+          filters={[
+            { key: 'status', label: 'Status', type: 'select', options: [
+              { value: 'prospecto', label: 'Prospecto' },
+              { value: 'contato_feito', label: 'Abordagem' },
+              { value: 'proposta_enviada', label: 'Proposta' },
+              { value: 'negociando', label: 'Negociando' },
+              { value: 'parceiro_ativo', label: 'Ativo' },
+              { value: 'inativo', label: 'Inativo' },
+            ]},
+            { key: 'regiao', label: 'Região', type: 'select', options: [
+              { value: 'DF', label: 'DF' },
+              { value: 'SP', label: 'SP' },
+              { value: 'SC', label: 'SC' },
+            ]},
+            { key: 'tier', label: 'Tier', type: 'select', options: [
+              { value: 'A', label: 'A' },
+              { value: 'B', label: 'B' },
+              { value: 'C', label: 'C' },
+            ]},
+            { key: 'valorMin', label: 'Valor Mín.', type: 'range' },
+            { key: 'valorMax', label: 'Valor Máx.', type: 'range' },
+          ]}
+          values={advancedFilters}
+          onChange={setAdvancedFilters}
+        />
 
         {/* ── KPIs ── */}
         <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
@@ -691,27 +904,96 @@ export function CRMDashboard() {
           </span>
         </div>
 
-        {/* ── Kanban ── */}
-        <div className="flex gap-3 overflow-x-auto pb-4">
-          {COLUNAS_KANBAN.map((col) => {
-            const leadsCol = leadsFiltrados.filter((l) => l.status === col.id)
-            return (
-              <KanbanCol
-                key={col.id}
-                coluna={col}
-                leads={leadsCol}
-                isDragOver={dragOverColId === col.id}
-                dragLeadId={dragLeadId}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onVerDetalhes={abrirDrawer}
-              />
-            )
-          })}
-        </div>
+        {/* ── Kanban / Grid / Timeline ── */}
+        {viewMode === 'list' && (
+          <div className="flex gap-3 overflow-x-auto pb-4">
+            {COLUNAS_KANBAN.map((col) => {
+              const leadsCol = leadsFiltrados.filter((l) => l.status === col.id)
+              return (
+                <KanbanCol
+                  key={col.id}
+                  coluna={col}
+                  leads={leadsCol}
+                  isDragOver={dragOverColId === col.id}
+                  dragLeadId={dragLeadId}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onVerDetalhes={abrirDrawer}
+                />
+              )
+            })}
+          </div>
+        )}
+
+        {viewMode === 'grid' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+            {leadsFiltrados.map((lead) => {
+              const score = calcularScore(lead)
+              return (
+                <button
+                  key={lead.id}
+                  onClick={() => abrirDrawer(lead.id)}
+                  style={{
+                    background: 'var(--bg-surface)', border: '1px solid var(--border)',
+                    borderRadius: 12, padding: 14, textAlign: 'left', cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: SCORE_COR[score].bg, flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {lead.nomeEmpresa}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                    <span style={{
+                      padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700,
+                      background: lead.tier === 'A' ? 'rgba(201,168,76,0.15)' : lead.tier === 'B' ? 'rgba(91,143,232,0.15)' : '#2A2A2A',
+                      color: lead.tier === 'A' ? '#C9A84C' : lead.tier === 'B' ? '#5B8FE8' : '#6B6B6B',
+                    }}>
+                      Tier {lead.tier}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 12, color: '#C9A84C', fontWeight: 600 }}>
+                    R$ {lead.valorMedioMensal.toLocaleString('pt-BR')}/mês
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {viewMode === 'timeline' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {[...leadsFiltrados].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((lead, idx) => (
+              <div
+                key={lead.id}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 16,
+                  padding: '14px 0',
+                  borderBottom: idx < leadsFiltrados.length - 1 ? '1px solid var(--border)' : 'none',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#C9A84C' }} />
+                  {idx < leadsFiltrados.length - 1 && (
+                    <div style={{ width: 1, height: 30, background: 'var(--border)' }} />
+                  )}
+                </div>
+                <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => abrirDrawer(lead.id)}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{lead.nomeEmpresa}</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{lead.cidade} · {lead.regiao} · Tier {lead.tier}</p>
+                  <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</p>
+                </div>
+                <span style={{ fontSize: 12, color: '#C9A84C', fontWeight: 600, flexShrink: 0 }}>
+                  R$ {lead.valorMedioMensal.toLocaleString('pt-BR')}/mês
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         </div>
       </div>
@@ -735,10 +1017,26 @@ export function CRMDashboard() {
               onRegistrarContato={handleRegistrarContato}
               onMoverPara={handleMoverPara}
               onNotasChange={(v) => setNotasMap((prev) => ({ ...prev, [leadAtual.id]: v }))}
+              onDeletar={(l) => setDeletandoLead(l)}
             />
           </div>
         </>
       )}
+
+      {/* ── Confirmar delete ── */}
+      <ConfirmModal
+        open={!!deletandoLead}
+        title="Excluir Lead"
+        message={`Deseja excluir "${deletandoLead?.nomeEmpresa}"? Você pode restaurar na Lixeira.`}
+        onConfirm={() => {
+          if (deletandoLead) {
+            deletarLead(deletandoLead.id)
+            setDeletandoLead(null)
+            setLeadSelecionadoId(null)
+          }
+        }}
+        onCancel={() => setDeletandoLead(null)}
+      />
     </div>
   )
 }

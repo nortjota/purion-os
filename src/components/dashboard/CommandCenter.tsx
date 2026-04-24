@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useMobile } from '@/hooks/useMobile'
 import {
   TrendingUp, TrendingDown, DollarSign, Target,
   ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
@@ -19,6 +20,8 @@ import {
   type AtividadeItem,
   type HealthScore,
 } from '@/lib/calculos'
+import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
+import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -144,7 +147,7 @@ function SecaoAlertas({ alertas }: { alertas: Alerta[] }) {
       <p className="kpi-label flex items-center gap-1.5 mb-3">
         <AlertTriangle size={11} /> Alertas Automáticos
       </p>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 alerts-flex">
         {alertas.map((alerta) => {
           const { bg, border, text, icon: Icon } = COR_ALERTA[alerta.tipo]
           return (
@@ -364,11 +367,15 @@ function HealthScoreBadge({ hs }: { hs: HealthScore }) {
 // ─────────────────────────────────────────────
 
 export function CommandCenter() {
+  const isMobile = useMobile()
   const {
     receitas, despesas, campanhasAds,
     tarefas, leads, lotes, reunioes, estoque,
     perfilAtivo, setPerfilAtivo,
+    dashboardWidgets,
   } = usePurionStore()
+
+  const showWidget = (id: string) => dashboardWidgets.includes(id)
 
   const mesAtual     = useMemo(() => getMesAtual(receitas), [receitas])
   const kpis         = useMemo(() => calcularKPIsMes(receitas, despesas, campanhasAds, mesAtual), [receitas, despesas, campanhasAds, mesAtual])
@@ -428,6 +435,9 @@ export function CommandCenter() {
   return (
     <div className="page-content section-gap">
 
+      {/* ── Banner ── */}
+      <DashboardBanner isAdmin={true} />
+
       {/* ── Header ── */}
       <div className="flex items-start justify-between">
         <div>
@@ -436,30 +446,35 @@ export function CommandCenter() {
           </p>
           <h1 className="page-title">Command Center</h1>
         </div>
-        <HealthScoreBadge hs={healthScore} />
+        <div className="flex items-center gap-3">
+          <WidgetCustomizer />
+          {showWidget('health-score') && <HealthScoreBadge hs={healthScore} />}
+        </div>
       </div>
 
       {/* ── KPI Cards ── */}
-      <section>
-        <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {kpiCards.map((card) => (
-            <KPICard key={card.label} {...card} />
-          ))}
-        </div>
-      </section>
+      {showWidget('kpis') && (
+        <section>
+          <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+            {kpiCards.map((card) => (
+              <KPICard key={card.label} {...card} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Meta de Faturamento ── */}
-      <MetaFaturamento receitas={receitas} />
+      {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}
 
       {/* ── Alertas ── */}
-      <SecaoAlertas alertas={alertas} />
+      {showWidget('alertas') && <SecaoAlertas alertas={alertas} />}
 
       {/* ── Status dos Sócios ── */}
       <section>
         <p className="kpi-label flex items-center gap-1.5 mb-4">
           <Activity size={11} /> Status dos Sócios
         </p>
-        <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
           {(['matheus', 'gabriel', 'joao'] as const).map((perfil) => (
             <SocioCard
               key={perfil}
@@ -473,8 +488,10 @@ export function CommandCenter() {
         </div>
       </section>
 
-      {/* ── Feed de Atividade ── */}
-      <FeedAtividade items={feedAtividade} />
+      {/* ── Feed de Atividade — mobile: 5 items max ── */}
+      {showWidget('atividade') && (
+        <FeedAtividade items={isMobile ? feedAtividade.slice(0, 5) : feedAtividade} />
+      )}
 
     </div>
   )

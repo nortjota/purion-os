@@ -493,6 +493,16 @@ interface PurionState {
   // UI
   sidebarRecolhida: boolean
   setSidebarRecolhida: (recolhida: boolean) => void
+  mobileSidebarAberta: boolean
+  setMobileSidebarAberta: (v: boolean) => void
+
+  // Focus Mode
+  focusMode: boolean
+  setFocusMode: (v: boolean) => void
+
+  // Dashboard Widgets
+  dashboardWidgets: string[]
+  setDashboardWidgets: (ids: string[]) => void
 }
 
 // ─────────────────────────────────────────────
@@ -694,6 +704,20 @@ export const usePurionStore = create<PurionState>()(
         // ── UI ──
         sidebarRecolhida: false,
         setSidebarRecolhida: (recolhida) => set({ sidebarRecolhida: recolhida }),
+        mobileSidebarAberta: false,
+        setMobileSidebarAberta: (v) => set({ mobileSidebarAberta: v }),
+
+        // ── Focus Mode ──
+        focusMode: false,
+        setFocusMode: (v) => set({ focusMode: v }),
+
+        // ── Dashboard Widgets ──
+        dashboardWidgets: [
+          'kpis', 'health-score', 'atividade', 'tarefas-board', 'pipeline-top5',
+          'estoque', 'creators-top5', 'grafico-financeiro', 'metas-progress',
+          'decisoes', 'alertas', 'notas-fixadas',
+        ],
+        setDashboardWidgets: (ids) => set({ dashboardWidgets: ids }),
       }),
       {
         name: 'purion-os-storage',
@@ -703,6 +727,7 @@ export const usePurionStore = create<PurionState>()(
           configuracoes: state.configuracoes,
           sidebarRecolhida: state.sidebarRecolhida,
           leads: state.leads,
+          dashboardWidgets: state.dashboardWidgets,
         }),
         // Garante que campos novos adicionados ao configPadrao sempre existam
         // mesmo que o localStorage tenha sido gravado por uma versão anterior.

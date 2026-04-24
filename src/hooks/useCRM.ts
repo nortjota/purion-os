@@ -42,7 +42,8 @@ export function useCRM() {
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb.from('leads_crm').select('*').order('created_at', { ascending: false })
+      const q = sb.from('leads_crm').select('*').order('created_at', { ascending: false })
+      const { data } = await q.is('deleted_at', null)
       if (data) usePurionStore.getState().setLeads(data.map(toLead))
     }
 
@@ -77,19 +78,46 @@ export function useCRM() {
         historico_interacoes: lead.historicoInteracoes ?? [],
         tags:                 lead.tags,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarLead({ ...lead, id: String(data.id), createdAt: now, updatedAt: now })
+      if (data) usePurionStore.getState().adicionarLead({
+        ...lead, id: String(data.id), createdAt: now, updatedAt: now,
+      })
     },
 
     atualizarLead: async (id: string, dados: Partial<Lead>) => {
       const sb = supabase
-      if (!sb) return
+      if (!sb) {
+        usePurionStore.getState().atualizarLead(id, dados)
+        return
+      }
       await sb.from('leads_crm').update({
-        ...(dados.status            !== undefined && { status:             dados.status }),
-        ...(dados.notas             !== undefined && { notas:              dados.notas }),
-        ...(dados.valorMedioMensal  !== undefined && { valor_medio_mensal: dados.valorMedioMensal }),
+        ...(dados.nomeEmpresa         !== undefined && { nome_empresa:         dados.nomeEmpresa }),
+        ...(dados.nomeContato         !== undefined && { nome_contato:         dados.nomeContato }),
+        ...(dados.telefone            !== undefined && { telefone:             dados.telefone }),
+        ...(dados.email               !== undefined && { email:                dados.email }),
+        ...(dados.regiao              !== undefined && { regiao:               dados.regiao }),
+        ...(dados.cidade              !== undefined && { cidade:               dados.cidade }),
+        ...(dados.responsavel         !== undefined && { responsavel:          dados.responsavel }),
+        ...(dados.tier                !== undefined && { tier:                 dados.tier }),
+        ...(dados.status              !== undefined && { status:               dados.status }),
+        ...(dados.valorMedioMensal    !== undefined && { valor_medio_mensal:   dados.valorMedioMensal }),
+        ...(dados.notas               !== undefined && { notas:                dados.notas }),
+        ...(dados.tipoEstabelecimento !== undefined && { tipo_estabelecimento: dados.tipoEstabelecimento }),
+        ...(dados.historicoInteracoes !== undefined && { historico_interacoes: dados.historicoInteracoes }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       usePurionStore.getState().atualizarLead(id, dados)
+    },
+
+    deletarLead: async (id: string) => {
+      const sb = supabase
+      if (sb) await sb.from('leads_crm').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      usePurionStore.getState().removerLead(id)
+    },
+
+    restaurarLead: async (lead: Lead) => {
+      const sb = supabase
+      if (sb) await sb.from('leads_crm').update({ deleted_at: null }).eq('id', lead.id)
+      usePurionStore.getState().adicionarLead(lead)
     },
   }
 }

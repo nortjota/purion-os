@@ -43,12 +43,20 @@ export function useProducao() {
     if (!sb) return
 
     const loadLotes = async () => {
-      const { data } = await sb.from('lotes_producao').select('*').order('data_inicio', { ascending: false })
+      const { data } = await sb
+        .from('lotes_producao')
+        .select('*')
+        .is('deleted_at', null)
+        .order('data_inicio', { ascending: false })
       if (data) usePurionStore.getState().setLotes(data.map(toLote))
     }
 
     const loadPedidos = async () => {
-      const { data } = await sb.from('expedicao').select('*').order('data_pedido', { ascending: false })
+      const { data } = await sb
+        .from('expedicao')
+        .select('*')
+        .is('deleted_at', null)
+        .order('data_pedido', { ascending: false })
       if (data) usePurionStore.getState().setPedidosExpedicao(data.map(toPedido))
     }
 
@@ -70,27 +78,59 @@ export function useProducao() {
   }, [])
 
   return {
-    atualizarLote: async (id: string, dados: Partial<Lote>) => {
+    adicionarLote: async (l: Omit<Lote, 'id'>) => {
       const sb = supabase
       if (!sb) return
+      const { data } = await sb.from('lotes_producao').insert({
+        codigo:              l.codigo,
+        produto:             l.produto,
+        quantidade_produzida: l.quantidadeProduzida,
+        quantidade_aprovada:  l.quantidadeAprovada,
+        status:              l.status,
+        data_inicio:         l.dataInicio,
+        data_conclusao:      l.dataConclusao ?? null,
+        responsavel:         l.responsavel,
+        testes:              l.testes,
+        insumos:             l.insumos,
+        notas:               l.notas,
+      }).select().single()
+      if (data) usePurionStore.getState().adicionarLote({ ...l, id: String(data.id) })
+    },
+
+    atualizarLote: async (id: string, dados: Partial<Lote>) => {
+      const sb = supabase
+      if (!sb) {
+        usePurionStore.getState().atualizarLote(id, dados)
+        return
+      }
       await sb.from('lotes_producao').update({
-        ...(dados.status             !== undefined && { status:              dados.status }),
-        ...(dados.quantidadeAprovada !== undefined && { quantidade_aprovada: dados.quantidadeAprovada }),
-        ...(dados.testes             !== undefined && { testes:              dados.testes }),
-        ...(dados.dataConclusao      !== undefined && { data_conclusao:      dados.dataConclusao }),
-        ...(dados.notas              !== undefined && { notas:               dados.notas }),
+        ...(dados.codigo              !== undefined && { codigo:              dados.codigo }),
+        ...(dados.produto             !== undefined && { produto:             dados.produto }),
+        ...(dados.quantidadeProduzida !== undefined && { quantidade_produzida: dados.quantidadeProduzida }),
+        ...(dados.quantidadeAprovada  !== undefined && { quantidade_aprovada: dados.quantidadeAprovada }),
+        ...(dados.status              !== undefined && { status:              dados.status }),
+        ...(dados.dataInicio          !== undefined && { data_inicio:         dados.dataInicio }),
+        ...(dados.dataConclusao       !== undefined && { data_conclusao:      dados.dataConclusao }),
+        ...(dados.responsavel         !== undefined && { responsavel:         dados.responsavel }),
+        ...(dados.testes              !== undefined && { testes:              dados.testes }),
+        ...(dados.insumos             !== undefined && { insumos:             dados.insumos }),
+        ...(dados.notas               !== undefined && { notas:               dados.notas }),
+        updated_at: new Date().toISOString(),
       }).eq('id', id)
       usePurionStore.getState().atualizarLote(id, dados)
     },
 
-    atualizarPedido: async (id: string, dados: Partial<PedidoExpedicao>) => {
+    deletarLote: async (id: string) => {
       const sb = supabase
-      if (!sb) return
-      await sb.from('expedicao').update({
-        ...(dados.status      !== undefined && { status:      dados.status }),
-        ...(dados.observacoes !== undefined && { observacoes: dados.observacoes }),
-      }).eq('id', id)
-      usePurionStore.getState().atualizarPedidoExpedicao(id, dados)
+      if (sb) await sb.from('lotes_producao').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      const store = usePurionStore.getState()
+      store.setLotes(store.lotes.filter((l) => l.id !== id))
+    },
+
+    restaurarLote: async (lote: Lote) => {
+      const sb = supabase
+      if (sb) await sb.from('lotes_producao').update({ deleted_at: null }).eq('id', lote.id)
+      usePurionStore.getState().adicionarLote(lote)
     },
 
     adicionarPedido: async (p: Omit<PedidoExpedicao, 'id'>) => {
@@ -106,6 +146,38 @@ export function useProducao() {
         observacoes:   p.observacoes,
       }).select().single()
       if (data) usePurionStore.getState().adicionarPedidoExpedicao({ ...p, id: String(data.id) })
+    },
+
+    atualizarPedido: async (id: string, dados: Partial<PedidoExpedicao>) => {
+      const sb = supabase
+      if (!sb) {
+        usePurionStore.getState().atualizarPedidoExpedicao(id, dados)
+        return
+      }
+      await sb.from('expedicao').update({
+        ...(dados.numeroPedido !== undefined && { numero_pedido: dados.numeroPedido }),
+        ...(dados.destinatario !== undefined && { destinatario:  dados.destinatario }),
+        ...(dados.dataPedido   !== undefined && { data_pedido:   dados.dataPedido }),
+        ...(dados.prazoHoras   !== undefined && { prazo_horas:   dados.prazoHoras }),
+        ...(dados.status       !== undefined && { status:        dados.status }),
+        ...(dados.itens        !== undefined && { itens:         dados.itens }),
+        ...(dados.observacoes  !== undefined && { observacoes:   dados.observacoes }),
+        updated_at: new Date().toISOString(),
+      }).eq('id', id)
+      usePurionStore.getState().atualizarPedidoExpedicao(id, dados)
+    },
+
+    deletarPedido: async (id: string) => {
+      const sb = supabase
+      if (sb) await sb.from('expedicao').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      const store = usePurionStore.getState()
+      store.setPedidosExpedicao(store.pedidosExpedicao.filter((p) => p.id !== id))
+    },
+
+    restaurarPedido: async (pedido: PedidoExpedicao) => {
+      const sb = supabase
+      if (sb) await sb.from('expedicao').update({ deleted_at: null }).eq('id', pedido.id)
+      usePurionStore.getState().adicionarPedidoExpedicao(pedido)
     },
   }
 }

@@ -1,8 +1,5 @@
-import type { Metadata } from 'next'
-import { SettingsDashboard } from '@/components/settings/SettingsDashboard'
-
-export const metadata: Metadata = { title: 'Configurações' }
+import { redirect } from 'next/navigation'
 
 export default function SettingsPage() {
-  return <SettingsDashboard />
+  redirect('/settings/geral')
 }

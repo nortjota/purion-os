@@ -18,10 +18,10 @@ function toReuniao(r: Row): ReuniaoItem {
     status:         String(r.status  ?? 'agendada')    as StatusReuniaoItem,
     data:           String(r.data),
     duracao:        Number(r.duracao ?? 60),
-    participantes:  Array.isArray(r.participantes)   ? (r.participantes   as PerfilUsuario[])          : [],
-    pauta:          Array.isArray(r.pauta)            ? (r.pauta           as string[])                 : [],
+    participantes:  Array.isArray(r.participantes)   ? (r.participantes   as PerfilUsuario[])              : [],
+    pauta:          Array.isArray(r.pauta)            ? (r.pauta           as string[])                     : [],
     ata:            String(r.ata ?? ''),
-    decisoes:       Array.isArray(r.decisoes)         ? (r.decisoes        as string[])                 : [],
+    decisoes:       Array.isArray(r.decisoes)         ? (r.decisoes        as string[])                     : [],
     proximosPassos: Array.isArray(r.proximos_passos)  ? (r.proximos_passos as ReuniaoItem['proximosPassos']) : [],
     createdAt:      String(r.created_at ?? new Date().toISOString()),
   }
@@ -64,15 +64,27 @@ export function useReunioes() {
     if (!sb) return
 
     const loadR = async () => {
-      const { data } = await sb.from('reunioes').select('*').order('data', { ascending: false })
+      const { data } = await sb
+        .from('reunioes')
+        .select('*')
+        .is('deleted_at', null)
+        .order('data', { ascending: false })
       if (data) usePurionStore.getState().setReunioes(data.map(toReuniao))
     }
     const loadD = async () => {
-      const { data } = await sb.from('daily_async').select('*').order('created_at', { ascending: false })
+      const { data } = await sb
+        .from('daily_async')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
       if (data) usePurionStore.getState().setDailyEntries(data.map(toDaily))
     }
     const loadDec = async () => {
-      const { data } = await sb.from('decisoes').select('*').order('created_at', { ascending: false })
+      const { data } = await sb
+        .from('decisoes')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
       if (data) usePurionStore.getState().setDecisoes(data.map(toDecisao))
     }
 
@@ -86,6 +98,99 @@ export function useReunioes() {
   }, [])
 
   return {
+    adicionarReuniao: async (r: Omit<ReuniaoItem, 'id' | 'createdAt'>) => {
+      const sb = supabase
+      if (!sb) return
+      const { data } = await sb.from('reunioes').insert({
+        titulo: r.titulo, tipo: r.tipo, status: r.status,
+        data: r.data, duracao: r.duracao, participantes: r.participantes,
+        pauta: r.pauta, ata: r.ata, decisoes: r.decisoes, proximos_passos: r.proximosPassos,
+      }).select().single()
+      if (data) usePurionStore.getState().adicionarReuniao({ ...r, id: String(data.id), createdAt: String(data.created_at) })
+    },
+
+    atualizarReuniao: async (id: string, dados: Partial<ReuniaoItem>) => {
+      const sb = supabase
+      if (!sb) {
+        usePurionStore.getState().atualizarReuniao(id, dados)
+        return
+      }
+      await sb.from('reunioes').update({
+        ...(dados.titulo          !== undefined && { titulo:          dados.titulo }),
+        ...(dados.tipo            !== undefined && { tipo:            dados.tipo }),
+        ...(dados.status          !== undefined && { status:          dados.status }),
+        ...(dados.data            !== undefined && { data:            dados.data }),
+        ...(dados.duracao         !== undefined && { duracao:         dados.duracao }),
+        ...(dados.participantes   !== undefined && { participantes:   dados.participantes }),
+        ...(dados.pauta           !== undefined && { pauta:           dados.pauta }),
+        ...(dados.ata             !== undefined && { ata:             dados.ata }),
+        ...(dados.decisoes        !== undefined && { decisoes:        dados.decisoes }),
+        ...(dados.proximosPassos  !== undefined && { proximos_passos: dados.proximosPassos }),
+        updated_at: new Date().toISOString(),
+      }).eq('id', id)
+      usePurionStore.getState().atualizarReuniao(id, dados)
+    },
+
+    deletarReuniao: async (id: string) => {
+      const sb = supabase
+      if (sb) await sb.from('reunioes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      const store = usePurionStore.getState()
+      store.setReunioes(store.reunioes.filter((r) => r.id !== id))
+    },
+
+    restaurarReuniao: async (reuniao: ReuniaoItem) => {
+      const sb = supabase
+      if (sb) await sb.from('reunioes').update({ deleted_at: null }).eq('id', reuniao.id)
+      usePurionStore.getState().adicionarReuniao(reuniao)
+    },
+
+    adicionarDecisao: async (d: Omit<DecisaoEstrategica, 'id' | 'createdAt'>) => {
+      const sb = supabase
+      if (!sb) return
+      const { data } = await sb.from('decisoes').insert({
+        titulo:        d.titulo,
+        descricao:     d.descricao,
+        proposto_por:  d.propostoPor,
+        data:          d.data,
+        prazo_votacao: d.prazoVotacao,
+        votos:         d.votos,
+        status:        d.status,
+      }).select().single()
+      if (data) usePurionStore.getState().adicionarDecisao({ ...d, id: String(data.id), createdAt: String(data.created_at) })
+    },
+
+    atualizarDecisao: async (id: string, dados: Partial<DecisaoEstrategica>) => {
+      const sb = supabase
+      if (!sb) {
+        usePurionStore.getState().atualizarDecisao(id, dados)
+        return
+      }
+      await sb.from('decisoes').update({
+        ...(dados.titulo        !== undefined && { titulo:        dados.titulo }),
+        ...(dados.descricao     !== undefined && { descricao:     dados.descricao }),
+        ...(dados.propostoPor   !== undefined && { proposto_por:  dados.propostoPor }),
+        ...(dados.data          !== undefined && { data:          dados.data }),
+        ...(dados.prazoVotacao  !== undefined && { prazo_votacao: dados.prazoVotacao }),
+        ...(dados.votos         !== undefined && { votos:         dados.votos }),
+        ...(dados.status        !== undefined && { status:        dados.status }),
+        updated_at: new Date().toISOString(),
+      }).eq('id', id)
+      usePurionStore.getState().atualizarDecisao(id, dados)
+    },
+
+    deletarDecisao: async (id: string) => {
+      const sb = supabase
+      if (sb) await sb.from('decisoes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      const store = usePurionStore.getState()
+      store.setDecisoes(store.decisoes.filter((d) => d.id !== id))
+    },
+
+    restaurarDecisao: async (decisao: DecisaoEstrategica) => {
+      const sb = supabase
+      if (sb) await sb.from('decisoes').update({ deleted_at: null }).eq('id', decisao.id)
+      usePurionStore.getState().adicionarDecisao(decisao)
+    },
+
     adicionarDaily: async (entry: Omit<DailyEntry, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
@@ -96,25 +201,31 @@ export function useReunioes() {
       if (data) usePurionStore.getState().adicionarDailyEntry({ ...entry, id: String(data.id), createdAt: String(data.created_at) })
     },
 
-    atualizarDecisao: async (id: string, dados: Partial<DecisaoEstrategica>) => {
+    atualizarDaily: async (id: string, dados: Partial<DailyEntry>) => {
       const sb = supabase
-      if (!sb) return
-      await sb.from('decisoes').update({
-        ...(dados.votos  !== undefined && { votos:  dados.votos }),
-        ...(dados.status !== undefined && { status: dados.status }),
-      }).eq('id', id)
-      usePurionStore.getState().atualizarDecisao(id, dados)
+      if (sb) {
+        await sb.from('daily_async').update({
+          ...(dados.ontemFiz    !== undefined && { ontem_fiz:    dados.ontemFiz }),
+          ...(dados.hojeFarei   !== undefined && { hoje_farei:   dados.hojeFarei }),
+          ...(dados.bloqueadoEm !== undefined && { bloqueado_em: dados.bloqueadoEm }),
+          updated_at: new Date().toISOString(),
+        }).eq('id', id)
+      }
+      const store = usePurionStore.getState()
+      store.setDailyEntries(store.dailyEntries.map((d) => d.id === id ? { ...d, ...dados } : d))
     },
 
-    adicionarReuniao: async (r: Omit<ReuniaoItem, 'id' | 'createdAt'>) => {
+    deletarDaily: async (id: string) => {
       const sb = supabase
-      if (!sb) return
-      const { data } = await sb.from('reunioes').insert({
-        titulo: r.titulo, tipo: r.tipo, status: r.status,
-        data: r.data, duracao: r.duracao, participantes: r.participantes,
-        pauta: r.pauta, ata: r.ata, decisoes: r.decisoes, proximos_passos: r.proximosPassos,
-      }).select().single()
-      if (data) usePurionStore.getState().adicionarReuniao({ ...r, id: String(data.id), createdAt: String(data.created_at) })
+      if (sb) await sb.from('daily_async').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      const store = usePurionStore.getState()
+      store.setDailyEntries(store.dailyEntries.filter((d) => d.id !== id))
+    },
+
+    restaurarDaily: async (entry: DailyEntry) => {
+      const sb = supabase
+      if (sb) await sb.from('daily_async').update({ deleted_at: null }).eq('id', entry.id)
+      usePurionStore.getState().adicionarDailyEntry(entry)
     },
   }
 }

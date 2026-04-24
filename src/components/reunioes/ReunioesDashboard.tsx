@@ -6,7 +6,10 @@
  */
 
 import { useState, useMemo } from 'react'
-import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock } from 'lucide-react'
+import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Trash2 } from 'lucide-react'
+import { useMobile } from '@/hooks/useMobile'
+import { useReunioes } from '@/hooks/useReunioes'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import {
   usePurionStore,
   type PerfilUsuario,
@@ -487,6 +490,10 @@ export function ReunioesDashboard() {
     perfilAtivo,
   } = usePurionStore()
 
+  const isMobile = useMobile()
+  const { deletarReuniao, deletarDecisao } = useReunioes()
+  const [deletandoReuniao, setDeletandoReuniao] = useState<ReuniaoItem | null>(null)
+  const [deletandoDecisao, setDeletandoDecisao] = useState<DecisaoEstrategica | null>(null)
   const [modalReuniao, setModalReuniao] = useState(false)
   const [modalDecisao, setModalDecisao] = useState(false)
   const [reuniaoExpandida, setReuniaoExpandida] = useState<string | null>(null)
@@ -585,7 +592,13 @@ export function ReunioesDashboard() {
                       {reuniao.participantes.map((p) => SOCIO_NOME[p]).join(', ')}
                     </p>
                   </div>
-                  {expandida ? <ChevronUp size={14} className="text-[#6B6B6B] shrink-0" /> : <ChevronDown size={14} className="text-[#6B6B6B] shrink-0" />}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span
+                      onClick={(e) => { e.stopPropagation(); setDeletandoReuniao(reuniao) }}
+                      className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#4A4A4A] hover:text-[#E85238] transition-colors cursor-pointer"
+                    ><Trash2 size={12} /></span>
+                    {expandida ? <ChevronUp size={14} className="text-[#6B6B6B]" /> : <ChevronDown size={14} className="text-[#6B6B6B]" />}
+                  </div>
                 </button>
 
                 {expandida && (
@@ -648,12 +661,14 @@ export function ReunioesDashboard() {
         </div>
 
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-          {/* Cabeçalho */}
-          <div className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
-            {['Decisão', 'Proposto por', 'Data', 'Votos M · J · G', 'Status'].map((h) => (
-              <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
-            ))}
-          </div>
+          {/* Cabeçalho — desktop only */}
+          {!isMobile && (
+            <div className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr_32px] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
+              {['Decisão', 'Proposto por', 'Data', 'Votos M · J · G', 'Status', ''].map((h) => (
+                <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+              ))}
+            </div>
+          )}
 
           {decisoes.length === 0 && (
             <div className="px-4 py-8 text-center text-xs text-[#4A4A4A]">Nenhuma decisão registrada</div>
@@ -675,10 +690,19 @@ export function ReunioesDashboard() {
               const podevotar = decisao.status === 'aberta' && voto === 'pendente'
               if (podevotar && socio === perfilAtivo) {
                 return (
-                  <div key={socio} className="flex gap-0.5">
-                    <button onClick={() => handleVotar(decisao.id, 'sim')} className="p-0.5 rounded hover:bg-emerald-400/20 text-emerald-400"><Check size={11} /></button>
-                    <button onClick={() => handleVotar(decisao.id, 'nao')} className="p-0.5 rounded hover:bg-red-400/20 text-red-400"><X size={11} /></button>
-                    <button onClick={() => handleVotar(decisao.id, 'abstencao')} className="p-0.5 rounded hover:bg-[#3A3A3A] text-[#6B6B6B]"><Minus size={11} /></button>
+                  <div key={socio} className={`flex gap-1 ${isMobile ? 'flex-1' : ''}`}>
+                    <button
+                      onClick={() => handleVotar(decisao.id, 'sim')}
+                      className={`rounded hover:bg-emerald-400/20 text-emerald-400 ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-emerald-400/30' : 'p-0.5'}`}
+                    ><Check size={isMobile ? 16 : 11} /></button>
+                    <button
+                      onClick={() => handleVotar(decisao.id, 'nao')}
+                      className={`rounded hover:bg-red-400/20 text-red-400 ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-red-400/30' : 'p-0.5'}`}
+                    ><X size={isMobile ? 16 : 11} /></button>
+                    <button
+                      onClick={() => handleVotar(decisao.id, 'abstencao')}
+                      className={`rounded hover:bg-[#3A3A3A] text-[#6B6B6B] ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-[var(--border)]' : 'p-0.5'}`}
+                    ><Minus size={isMobile ? 16 : 11} /></button>
                   </div>
                 )
               }
@@ -696,10 +720,49 @@ export function ReunioesDashboard() {
               )
             }
 
+            if (isMobile) {
+              return (
+                <div key={decisao.id} className="px-4 py-3 border-b border-[var(--border)] last:border-0">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-[var(--text-primary)] leading-snug">{decisao.titulo}</p>
+                      {decisao.descricao && (
+                        <p className="text-[10px] text-[#4A4A4A] mt-0.5 line-clamp-2">{decisao.descricao}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black ${SOCIO_COLOR[decisao.propostoPor]}`}>
+                          {SOCIO_INICIAL[decisao.propostoPor]}
+                        </div>
+                        <span className="caption text-[10px]">{fmtDataSimples(decisao.data)}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {statusBadge}
+                      <span
+                        onClick={() => setDeletandoDecisao(decisao)}
+                        className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#4A4A4A] hover:text-[#E85238] transition-colors cursor-pointer"
+                      ><Trash2 size={11} /></span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="caption text-[10px] shrink-0">Votos:</span>
+                    <div className="flex gap-2 flex-1">
+                      {(['matheus', 'joao', 'gabriel'] as PerfilUsuario[]).map((s) => (
+                        <div key={s} className="flex-1">
+                          <p className="caption text-[9px] text-center mb-1">{SOCIO_INICIAL[s]}</p>
+                          {renderVoto(decisao.votos[s], s)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
             return (
               <div
                 key={decisao.id}
-                className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr] gap-4 px-4 py-3.5 border-b border-[var(--border)] last:border-0 items-start hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+                className="group/dec grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr_32px] gap-4 px-4 py-3.5 border-b border-[var(--border)] last:border-0 items-start hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               >
                 {/* Decisão */}
                 <div>
@@ -729,6 +792,14 @@ export function ReunioesDashboard() {
 
                 {/* Status */}
                 <div>{statusBadge}</div>
+
+                {/* Ações */}
+                <div className="flex items-center justify-center opacity-0 group-hover/dec:opacity-100 transition-opacity">
+                  <span
+                    onClick={() => setDeletandoDecisao(decisao)}
+                    className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#4A4A4A] hover:text-[#E85238] transition-colors cursor-pointer"
+                  ><Trash2 size={12} /></span>
+                </div>
               </div>
             )
           })}
@@ -749,6 +820,21 @@ export function ReunioesDashboard() {
           onFechar={() => setModalDecisao(false)}
         />
       )}
+
+      <ConfirmModal
+        open={!!deletandoReuniao}
+        title="Excluir Reunião"
+        message={`Deseja excluir "${deletandoReuniao?.titulo}"? Você pode restaurar na Lixeira.`}
+        onConfirm={() => { if (deletandoReuniao) { deletarReuniao(deletandoReuniao.id); setDeletandoReuniao(null) } }}
+        onCancel={() => setDeletandoReuniao(null)}
+      />
+      <ConfirmModal
+        open={!!deletandoDecisao}
+        title="Excluir Decisão"
+        message={`Deseja excluir "${deletandoDecisao?.titulo}"? Você pode restaurar na Lixeira.`}
+        onConfirm={() => { if (deletandoDecisao) { deletarDecisao(deletandoDecisao.id); setDeletandoDecisao(null) } }}
+        onCancel={() => setDeletandoDecisao(null)}
+      />
     </div>
   )
 }

@@ -40,7 +40,11 @@ export function useFinanceiro() {
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb.from('financeiro').select('*').order('data', { ascending: false })
+      const { data } = await sb
+        .from('financeiro')
+        .select('*')
+        .is('deleted_at', null)
+        .order('data', { ascending: false })
       if (!data) return
       const { setReceitas, setDespesas } = usePurionStore.getState()
       setReceitas(data.filter((r) => r.tipo === 'receita').map(toReceita))
@@ -78,6 +82,42 @@ export function useFinanceiro() {
         fornecedor: d.fornecedor ?? null, nota_fiscal: d.notaFiscal ?? null,
       }).select().single()
       if (data) usePurionStore.getState().adicionarDespesa({ ...d, id: String(data.id) })
+    },
+
+    atualizarFinanceiro: async (id: string, tipo: 'receita' | 'despesa', dados: Partial<Receita | Despesa>) => {
+      const sb = supabase
+      if (!sb) {
+        if (tipo === 'receita') usePurionStore.getState().atualizarReceita(id, dados as Partial<Receita>)
+        else usePurionStore.getState().atualizarDespesa(id, dados as Partial<Despesa>)
+        return
+      }
+      await sb.from('financeiro').update({
+        ...(dados.descricao   !== undefined && { descricao:   dados.descricao }),
+        ...(dados.valor       !== undefined && { valor:       dados.valor }),
+        ...(dados.categoria   !== undefined && { categoria:   dados.categoria }),
+        ...(dados.data        !== undefined && { data:        dados.data }),
+        ...(dados.regiao      !== undefined && { regiao:      dados.regiao }),
+        ...(dados.responsavel !== undefined && { responsavel: dados.responsavel }),
+        updated_at: new Date().toISOString(),
+      }).eq('id', id)
+      if (tipo === 'receita') usePurionStore.getState().atualizarReceita(id, dados as Partial<Receita>)
+      else usePurionStore.getState().atualizarDespesa(id, dados as Partial<Despesa>)
+    },
+
+    deletarFinanceiro: async (id: string, tipo: 'receita' | 'despesa') => {
+      const sb = supabase
+      if (sb) await sb.from('financeiro').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      const store = usePurionStore.getState()
+      if (tipo === 'receita') store.setReceitas(store.receitas.filter((r) => r.id !== id))
+      else store.setDespesas(store.despesas.filter((d) => d.id !== id))
+    },
+
+    restaurarFinanceiro: async (id: string, tipo: 'receita' | 'despesa', record: Receita | Despesa) => {
+      const sb = supabase
+      if (sb) await sb.from('financeiro').update({ deleted_at: null }).eq('id', id)
+      const store = usePurionStore.getState()
+      if (tipo === 'receita') store.adicionarReceita(record as Receita)
+      else store.adicionarDespesa(record as Despesa)
     },
   }
 }

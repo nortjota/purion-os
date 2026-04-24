@@ -32,7 +32,11 @@ export function useMarketing() {
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb.from('creators').select('*').order('created_at', { ascending: false })
+      const { data } = await sb
+        .from('creators')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
       if (data) usePurionStore.getState().setCreators(data.map(toCreator))
     }
 
@@ -68,14 +72,39 @@ export function useMarketing() {
 
     atualizarCreator: async (id: string, dados: Partial<Creator>) => {
       const sb = supabase
-      if (!sb) return
+      if (!sb) {
+        usePurionStore.getState().atualizarCreator(id, dados)
+        return
+      }
       await sb.from('creators').update({
-        ...(dados.status    !== undefined && { status:    dados.status }),
-        ...(dados.postagens !== undefined && { postagens: dados.postagens }),
-        ...(dados.roi       !== undefined && { roi:       dados.roi }),
-        ...(dados.notas     !== undefined && { notas:     dados.notas }),
+        ...(dados.nome             !== undefined && { nome:              dados.nome }),
+        ...(dados.instagram        !== undefined && { instagram:         dados.instagram }),
+        ...(dados.tiktok           !== undefined && { tiktok:            dados.tiktok }),
+        ...(dados.seguidores       !== undefined && { seguidores:        dados.seguidores }),
+        ...(dados.nichoPrincipal   !== undefined && { nicho:             dados.nichoPrincipal }),
+        ...(dados.status           !== undefined && { status:            dados.status }),
+        ...(dados.cacheCombinado   !== undefined && { cache_combinado:   dados.cacheCombinado }),
+        ...(dados.produtosEnviados !== undefined && { produtos_enviados: dados.produtosEnviados }),
+        ...(dados.postagens        !== undefined && { postagens:         dados.postagens }),
+        ...(dados.roi              !== undefined && { roi:               dados.roi }),
+        ...(dados.responsavel      !== undefined && { responsavel:       dados.responsavel }),
+        ...(dados.notas            !== undefined && { notas:             dados.notas }),
+        updated_at: new Date().toISOString(),
       }).eq('id', id)
       usePurionStore.getState().atualizarCreator(id, dados)
+    },
+
+    deletarCreator: async (id: string) => {
+      const sb = supabase
+      if (sb) await sb.from('creators').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      const store = usePurionStore.getState()
+      store.setCreators(store.creators.filter((c) => c.id !== id))
+    },
+
+    restaurarCreator: async (creator: Creator) => {
+      const sb = supabase
+      if (sb) await sb.from('creators').update({ deleted_at: null }).eq('id', creator.id)
+      usePurionStore.getState().adicionarCreator(creator)
     },
   }
 }

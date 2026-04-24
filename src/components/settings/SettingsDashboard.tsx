@@ -7,8 +7,9 @@
  */
 
 import { useState, useEffect, useMemo } from 'react'
-import { Save, Download, Eye, EyeOff, AlertTriangle, Check } from 'lucide-react'
+import { Save, Download, Eye, EyeOff, AlertTriangle, Check, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react'
 import { usePurionStore } from '@/store'
+import { useMobile } from '@/hooks/useMobile'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -122,8 +123,15 @@ export function SettingsDashboard() {
     dailyEntries, decisoes, atualizarProdutoSKU,
   } = usePurionStore()
 
-  const [abaAtiva, setAbaAtiva] = useState<TabId>('financeiro')
+  const isMobile = useMobile()
+  const [abaAtiva, setAbaAtiva] = useState<TabId | null>('financeiro')
   const [toast, setToast] = useState<TabId | null>(null)
+
+  // On mobile, start with no tab selected (list view)
+  useEffect(() => {
+    if (isMobile) setAbaAtiva(null)
+    else setAbaAtiva((prev) => prev ?? 'financeiro')
+  }, [isMobile])
 
   const showToast = (tab: TabId) => {
     setToast(tab)
@@ -283,18 +291,44 @@ export function SettingsDashboard() {
         <p className="caption mt-1">Regras financeiras, metas, alertas e integrações</p>
       </div>
 
-      {/* Tab bar */}
-      <div className="tab-nav mb-6">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setAbaAtiva(tab.id)}
-            className={`tab-item ${abaAtiva === tab.id ? 'active' : ''}`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Tab bar — desktop only, or mobile back header */}
+      {isMobile && abaAtiva ? (
+        <button
+          onClick={() => setAbaAtiva(null)}
+          className="flex items-center gap-2 text-sm text-[#C9A84C] mb-6"
+        >
+          <ChevronLeft size={16} />
+          {TABS.find((t) => t.id === abaAtiva)?.label}
+        </button>
+      ) : !isMobile ? (
+        <div className="tab-nav mb-6">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setAbaAtiva(tab.id)}
+              className={`tab-item ${abaAtiva === tab.id ? 'active' : ''}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {/* Mobile list menu — shown when no tab selected */}
+      {isMobile && !abaAtiva && (
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-6">
+          {TABS.map((tab, i) => (
+            <button
+              key={tab.id}
+              onClick={() => setAbaAtiva(tab.id)}
+              className={`w-full flex items-center justify-between px-4 py-4 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors ${i > 0 ? 'border-t border-[var(--border)]' : ''}`}
+            >
+              <span className="text-sm text-[var(--text-primary)]">{tab.label}</span>
+              <ChevronRightIcon size={16} className="text-[#4A4A4A]" />
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ════════════════════════════════════
           TAB 1 — REGRAS FINANCEIRAS

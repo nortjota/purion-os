@@ -30,7 +30,11 @@ export function useTarefas() {
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb.from('tarefas').select('*').order('created_at', { ascending: false })
+      const { data } = await sb
+        .from('tarefas')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
       if (data) usePurionStore.getState().setTarefas(data.map(toTarefa))
     }
 
@@ -59,18 +63,42 @@ export function useTarefas() {
         motivo_bloqueio: t.motivoBloqueio ?? null,
         tags:            t.tags,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarTarefa({ ...t, id: String(data.id), createdAt: String(data.created_at) })
+      if (data) usePurionStore.getState().adicionarTarefa({
+        ...t, id: String(data.id), createdAt: String(data.created_at),
+      })
     },
 
     atualizarTarefa: async (id: string, dados: Partial<Tarefa>) => {
       const sb = supabase
-      if (!sb) return
+      if (!sb) {
+        usePurionStore.getState().atualizarTarefa(id, dados)
+        return
+      }
       await sb.from('tarefas').update({
+        ...(dados.titulo         !== undefined && { titulo:          dados.titulo }),
+        ...(dados.descricao      !== undefined && { descricao:       dados.descricao }),
         ...(dados.status         !== undefined && { status:          dados.status }),
+        ...(dados.prioridade     !== undefined && { prioridade:      dados.prioridade }),
+        ...(dados.responsavel    !== undefined && { responsavel:     dados.responsavel }),
+        ...(dados.modulo         !== undefined && { modulo:          dados.modulo }),
+        ...(dados.dueDate        !== undefined && { due_date:        dados.dueDate }),
         ...(dados.completedAt    !== undefined && { completed_at:    dados.completedAt }),
         ...(dados.motivoBloqueio !== undefined && { motivo_bloqueio: dados.motivoBloqueio }),
+        updated_at: new Date().toISOString(),
       }).eq('id', id)
       usePurionStore.getState().atualizarTarefa(id, dados)
+    },
+
+    deletarTarefa: async (id: string) => {
+      const sb = supabase
+      if (sb) await sb.from('tarefas').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      usePurionStore.getState().removerTarefa(id)
+    },
+
+    restaurarTarefa: async (tarefa: Tarefa) => {
+      const sb = supabase
+      if (sb) await sb.from('tarefas').update({ deleted_at: null }).eq('id', tarefa.id)
+      usePurionStore.getState().adicionarTarefa(tarefa)
     },
   }
 }

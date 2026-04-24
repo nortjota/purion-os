@@ -6,8 +6,11 @@
  */
 
 import { useState, useCallback } from 'react'
-import { Package, Plus, ChevronDown, ChevronUp, AlertTriangle, Clock, CheckCircle, XCircle, Truck } from 'lucide-react'
+import { Package, Plus, ChevronDown, ChevronUp, AlertTriangle, Clock, CheckCircle, XCircle, Truck, Trash2 } from 'lucide-react'
 import { usePurionStore, type Lote, type PedidoExpedicao, type SKUProduto } from '@/store'
+import { useMobile } from '@/hooks/useMobile'
+import { useProducao } from '@/hooks/useProducao'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 // DATA_REF = 2024-02-12 (demo reference)
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
@@ -227,6 +230,10 @@ export function ProducaoDashboard() {
     pedidosExpedicao, atualizarPedidoExpedicao,
   } = usePurionStore()
 
+  const isMobile = useMobile()
+  const { deletarLote, deletarPedido } = useProducao()
+  const [deletandoLote, setDeletandoLote] = useState<Lote | null>(null)
+  const [deletandoPedido, setDeletandoPedido] = useState<PedidoExpedicao | null>(null)
   const [ajusteModal, setAjusteModal] = useState<{ id: string; nome: string; unidades: number } | null>(null)
   const [novoLoteModal, setNovoLoteModal] = useState(false)
   const [loteExpandido, setLoteExpandido] = useState<string | null>(null)
@@ -347,13 +354,15 @@ export function ProducaoDashboard() {
         </div>
 
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-          {/* Cabeçalho tabela */}
-          <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
-            {['Nº Lote', 'Fragrância', 'Data Prod.', 'Qtd', 'Status'].map((h) => (
-              <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
-            ))}
-            <span />
-          </div>
+          {/* Cabeçalho tabela — desktop only */}
+          {!isMobile && (
+            <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
+              {['Nº Lote', 'Fragrância', 'Data Prod.', 'Qtd', 'Status'].map((h) => (
+                <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+              ))}
+              <span />
+            </div>
+          )}
 
           {lotes.length === 0 && (
             <div className="px-4 py-8 text-center text-xs text-[#4A4A4A]">Nenhum lote cadastrado</div>
@@ -362,6 +371,7 @@ export function ProducaoDashboard() {
           {lotes.map((lote) => {
             const statusGeral = calcularStatusLote(lote)
             const expandido = loteExpandido === lote.id
+            const loteRef = lote
             const statusColor = {
               em_testes: 'text-amber-400 bg-amber-400/10',
               aprovado: 'text-emerald-400 bg-emerald-400/10',
@@ -378,18 +388,40 @@ export function ProducaoDashboard() {
                 {/* Linha principal */}
                 <button
                   onClick={() => toggleLote(lote.id)}
-                  className="w-full grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4 px-4 py-3 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+                  className={`w-full px-4 py-3 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors ${isMobile ? 'flex items-center justify-between gap-3' : 'grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4'}`}
                 >
-                  <span className="text-xs font-mono text-[#C9A84C]">{lote.codigo}</span>
-                  <span className="text-xs text-[var(--text-primary)]">{lote.produto}</span>
-                  <span className="text-xs text-[#8A8A8A]">{fmt(lote.dataInicio)}</span>
-                  <span className="text-xs text-[var(--text-primary)] font-bold">{lote.quantidadeProduzida}</span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full self-center ${statusColor}`}>
-                    {statusLabel}
-                  </span>
-                  <span className="flex items-center justify-center text-[#6B6B6B]">
-                    {expandido ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                  </span>
+                  {isMobile ? (
+                    <>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-mono text-[#C9A84C]">{lote.codigo}</p>
+                        <p className="text-xs text-[var(--text-primary)] truncate">{lote.produto}</p>
+                        <p className="text-[10px] text-[#6B6B6B]">{fmt(lote.dataInicio)} · {lote.quantidadeProduzida} un</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColor}`}>
+                          {statusLabel}
+                        </span>
+                        {expandido ? <ChevronUp size={14} className="text-[#6B6B6B]" /> : <ChevronDown size={14} className="text-[#6B6B6B]" />}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs font-mono text-[#C9A84C]">{lote.codigo}</span>
+                      <span className="text-xs text-[var(--text-primary)]">{lote.produto}</span>
+                      <span className="text-xs text-[#8A8A8A]">{fmt(lote.dataInicio)}</span>
+                      <span className="text-xs text-[var(--text-primary)] font-bold">{lote.quantidadeProduzida}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full self-center ${statusColor}`}>
+                        {statusLabel}
+                      </span>
+                      <span className="flex items-center justify-center gap-1 text-[#6B6B6B]">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDeletandoLote(loteRef) }}
+                          className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] hover:text-[#E85238] transition-colors"
+                        ><Trash2 size={11} /></button>
+                        {expandido ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </span>
+                    </>
+                  )}
                 </button>
 
                 {/* Checklist expandida */}
@@ -496,11 +528,13 @@ export function ProducaoDashboard() {
         </div>
 
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-          <div className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
-            {['Pedido', 'Destinatário', 'Data', 'SLA 48h', 'Status'].map((h) => (
-              <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
-            ))}
-          </div>
+          {!isMobile && (
+            <div className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
+              {['Pedido', 'Destinatário', 'Data', 'SLA 48h', 'Status'].map((h) => (
+                <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+              ))}
+            </div>
+          )}
 
           {pedidosExpedicao.length === 0 && (
             <div className="px-4 py-8 text-center text-xs text-[#4A4A4A]">Nenhum pedido registrado</div>
@@ -511,10 +545,54 @@ export function ProducaoDashboard() {
             const concluido = pedido.status === 'entregue' || pedido.status === 'cancelado'
             const barColor = concluido ? '#3A3A3A' : expirado ? '#EF4444' : percentual > 75 ? '#F59E0B' : '#C9A84C'
 
+            if (isMobile) {
+              return (
+                <div key={pedido.id} className="px-4 py-3 border-b border-[var(--border)] last:border-0">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="text-xs font-mono text-[#C9A84C]">{pedido.numeroPedido}</p>
+                      <p className="text-xs text-[var(--text-primary)]">{pedido.destinatario}</p>
+                      <p className="text-[10px] text-[#4A4A4A]">
+                        {pedido.itens.map((i) => `${i.quantidade}× ${SKU_LABEL[i.sku]}`).join(', ')} · {fmt(pedido.dataPedido)}
+                      </p>
+                    </div>
+                    <select
+                      value={pedido.status}
+                      onChange={(e) => atualizarPedidoExpedicao(pedido.id, { status: e.target.value as PedidoExpedicao['status'] })}
+                      className={`text-[10px] font-bold px-2 py-1 rounded-lg border-0 outline-none cursor-pointer ${STATUS_PEDIDO_COLOR[pedido.status]}`}
+                      style={{ backgroundColor: 'transparent' }}
+                    >
+                      {Object.entries(STATUS_PEDIDO_LABEL).map(([val, label]) => (
+                        <option key={val} value={val} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">{label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                      {concluido ? (
+                        <span className="text-[10px] text-[#6B6B6B]">Concluído</span>
+                      ) : expirado ? (
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-red-400">
+                          <AlertTriangle size={10} /> EXPIRADO
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-[#8A8A8A] flex items-center gap-1">
+                          <Clock size={10} /> {horasRestantes}h restantes
+                        </span>
+                      )}
+                    </div>
+                    <div className="h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${concluido ? 100 : percentual}%`, backgroundColor: barColor }} />
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
             return (
               <div
                 key={pedido.id}
-                className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+                className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr_32px] gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)] transition-colors group/ped"
               >
                 <span className="text-xs font-mono text-[#C9A84C]">{pedido.numeroPedido}</span>
                 <div>
@@ -563,6 +641,12 @@ export function ProducaoDashboard() {
                     <option key={val} value={val} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">{label}</option>
                   ))}
                 </select>
+
+                {/* Delete */}
+                <button
+                  onClick={() => setDeletandoPedido(pedido)}
+                  className="opacity-0 group-hover/ped:opacity-100 p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#6B6B6B] hover:text-[#E85238] transition-all"
+                ><Trash2 size={12} /></button>
               </div>
             )
           })}
@@ -591,6 +675,21 @@ export function ProducaoDashboard() {
           onFechar={() => setNovoLoteModal(false)}
         />
       )}
+
+      <ConfirmModal
+        open={!!deletandoLote}
+        title="Excluir Lote"
+        message={`Deseja excluir o lote "${deletandoLote?.codigo}"? Você pode restaurar na Lixeira.`}
+        onConfirm={() => { if (deletandoLote) { deletarLote(deletandoLote.id); setDeletandoLote(null) } }}
+        onCancel={() => setDeletandoLote(null)}
+      />
+      <ConfirmModal
+        open={!!deletandoPedido}
+        title="Excluir Pedido"
+        message={`Deseja excluir o pedido "${deletandoPedido?.numeroPedido}"? Você pode restaurar na Lixeira.`}
+        onConfirm={() => { if (deletandoPedido) { deletarPedido(deletandoPedido.id); setDeletandoPedido(null) } }}
+        onCancel={() => setDeletandoPedido(null)}
+      />
     </div>
   )
 }

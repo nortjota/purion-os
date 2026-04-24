@@ -6,10 +6,13 @@
  */
 
 import { useState, useMemo } from 'react'
+import { useMobile } from '@/hooks/useMobile'
 import dynamic from 'next/dynamic'
+import { useFinanceiro } from '@/hooks/useFinanceiro'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import {
   TrendingUp, TrendingDown, DollarSign, BarChart2,
-  Plus, X, Calculator, ChevronDown, Filter,
+  Plus, X, Calculator, ChevronDown, Filter, Pencil, Trash2,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { Receita, Despesa, CategoriaReceita, CategoriaDespesa } from '@/store'
@@ -405,12 +408,16 @@ const COR_TIPO = { receita: '#4CAF7A', despesa: '#E85238' }
 
 interface TabelaHistoricoProps {
   linhas: LinhaHistorico[]
+  isMobile?: boolean
+  onDeletar?: (id: string, tipo: 'receita' | 'despesa') => void
+  onEditar?: (linha: LinhaHistorico) => void
 }
 
-function TabelaHistorico({ linhas }: TabelaHistoricoProps) {
+function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistoricoProps) {
   const [filtroMes, setFiltroMes]       = useState<string>('')
   const [filtroCategoria, setFiltroCategoria] = useState<string>('')
   const [filtroTipo, setFiltroTipo]     = useState<string>('')
+  const [expandedId, setExpandedId]     = useState<string | null>(null)
 
   // Meses únicos para o select
   const mesesUnicos = useMemo(() => {
@@ -510,50 +517,95 @@ function TabelaHistorico({ linhas }: TabelaHistoricoProps) {
         <table className="table-purion">
           <thead>
             <tr>
-              {['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor'].map((col) => (
-                <th key={col}>{col}</th>
-              ))}
+              <th>Data</th>
+              <th>Tipo</th>
+              {!isMobile && <th>Categoria</th>}
+              {!isMobile && <th>Descrição</th>}
+              <th style={{ textAlign: 'right' }}>Valor</th>
+              {(onDeletar || onEditar) && <th style={{ width: 64 }} />}
             </tr>
           </thead>
           <tbody>
             {linhasFiltradas.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-[#3A3A3A] text-xs">
+                <td colSpan={isMobile ? 3 : 5} className="px-4 py-8 text-center text-[#3A3A3A] text-xs">
                   Nenhum registro encontrado
                 </td>
               </tr>
             ) : (
               linhasFiltradas.map((linha) => (
-                <tr
-                  key={linha.id}
-                  className="bg-[var(--bg-primary)] hover:bg-[rgba(255,255,255,0.02)] transition-colors"
-                >
-                  <td className="px-4 py-2.5 text-[#6B6B6B] whitespace-nowrap">
-                    {linha.data}
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <span
-                      className="inline-block px-2 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider"
-                      style={{
-                        backgroundColor: `${COR_TIPO[linha.tipo]}15`,
-                        color: COR_TIPO[linha.tipo],
-                        border: `1px solid ${COR_TIPO[linha.tipo]}30`,
-                      }}
-                    >
-                      {linha.tipo === 'receita' ? '↑ Receita' : '↓ Despesa'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2.5 text-[#6B6B6B]">
-                    {LABEL_CATEGORIA_RECEITA[linha.categoria] ?? LABEL_CATEGORIA_DESPESA[linha.categoria] ?? linha.categoria}
-                  </td>
-                  <td className="px-4 py-2.5 text-[#8A8A8A] max-w-[240px] truncate">
-                    {linha.descricao}
-                  </td>
-                  <td className={`px-4 py-2.5 font-semibold whitespace-nowrap text-right`}
-                    style={{ color: COR_TIPO[linha.tipo] }}>
-                    {linha.tipo === 'receita' ? '+' : '-'} {formatarMoeda(linha.valor)}
-                  </td>
-                </tr>
+                <>
+                  <tr
+                    key={linha.id}
+                    onClick={() => isMobile && setExpandedId(expandedId === linha.id ? null : linha.id)}
+                    className="bg-[var(--bg-primary)] hover:bg-[rgba(255,255,255,0.02)] transition-colors group/row"
+                    style={isMobile ? { cursor: 'pointer' } : {}}
+                  >
+                    <td className="px-4 py-2.5 text-[#6B6B6B] whitespace-nowrap">
+                      {linha.data}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <span
+                        className="inline-block px-2 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider"
+                        style={{
+                          backgroundColor: `${COR_TIPO[linha.tipo]}15`,
+                          color: COR_TIPO[linha.tipo],
+                          border: `1px solid ${COR_TIPO[linha.tipo]}30`,
+                        }}
+                      >
+                        {linha.tipo === 'receita' ? '↑' : '↓'}
+                      </span>
+                    </td>
+                    {!isMobile && (
+                      <td className="px-4 py-2.5 text-[#6B6B6B]">
+                        {LABEL_CATEGORIA_RECEITA[linha.categoria] ?? LABEL_CATEGORIA_DESPESA[linha.categoria] ?? linha.categoria}
+                      </td>
+                    )}
+                    {!isMobile && (
+                      <td className="px-4 py-2.5 text-[#8A8A8A] max-w-[240px] truncate">
+                        {linha.descricao}
+                      </td>
+                    )}
+                    <td className="px-4 py-2.5 font-semibold whitespace-nowrap text-right"
+                      style={{ color: COR_TIPO[linha.tipo] }}>
+                      {linha.tipo === 'receita' ? '+' : '-'} {formatarMoeda(linha.valor)}
+                    </td>
+                    {(onDeletar || onEditar) && (
+                      <td className="px-2 py-2.5">
+                        <div className="flex items-center gap-0.5 justify-end opacity-0 group-hover/row:opacity-100 transition-opacity">
+                          {onEditar && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onEditar(linha) }}
+                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[#5B8FE8]"
+                            ><Pencil size={11} /></button>
+                          )}
+                          {onDeletar && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onDeletar(linha.id, linha.tipo) }}
+                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[#E85238]"
+                            ><Trash2 size={11} /></button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                  {isMobile && expandedId === linha.id && (
+                    <tr key={`${linha.id}-detail`} className="bg-[var(--bg-surface-2)]">
+                      <td colSpan={3} className="px-4 py-3">
+                        <div className="space-y-1">
+                          <p className="text-[11px] text-[#6B6B6B]">
+                            <span className="text-[#4A4A4A] font-medium">Categoria:</span>{' '}
+                            {LABEL_CATEGORIA_RECEITA[linha.categoria] ?? LABEL_CATEGORIA_DESPESA[linha.categoria] ?? linha.categoria}
+                          </p>
+                          <p className="text-[11px] text-[#6B6B6B]">
+                            <span className="text-[#4A4A4A] font-medium">Descrição:</span>{' '}
+                            {linha.descricao}
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))
             )}
           </tbody>
@@ -569,6 +621,10 @@ function TabelaHistorico({ linhas }: TabelaHistoricoProps) {
 
 export function FinanceiroDashboard() {
   const { receitas, despesas, configuracoes } = usePurionStore()
+  const isMobile = useMobile()
+  const { deletarFinanceiro } = useFinanceiro()
+
+  const [deletandoFin, setDeletandoFin] = useState<{ id: string; tipo: 'receita' | 'despesa'; descricao: string } | null>(null)
 
   // Estado do modal split
   const [showModalSplit, setShowModalSplit] = useState(false)
@@ -658,14 +714,14 @@ export function FinanceiroDashboard() {
       </div>
 
       {/* ── Seção 1: KPIs ── */}
-      <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
+      <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
         {kpiCards.map((card) => (
           <KPIFin key={card.label} {...card} />
         ))}
       </div>
 
       {/* ── Seção 2: Registrar + Calculadora ── */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 grid-mobile-1">
         <div className="card-purion card-section">
           <div className="flex items-center gap-2 mb-5">
             <Plus size={15} className="text-[#C9A84C]" />
@@ -694,7 +750,7 @@ export function FinanceiroDashboard() {
             Set 2023 → Fev 2024
           </span>
         </div>
-        <GraficoEvolucao dados={dadosGrafico} />
+        <GraficoEvolucao dados={dadosGrafico} height={isMobile ? 200 : 280} />
       </div>
 
       {/* ── Seção 4: Projeção 30/60/90 dias ── */}
@@ -702,7 +758,7 @@ export function FinanceiroDashboard() {
         <p className="kpi-label flex items-center gap-1.5 mb-4">
           <TrendingUp size={11} /> Projeção — Média dos Últimos 30 Dias
         </p>
-        <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
+        <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
           {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
             <div
               key={dias}
@@ -749,7 +805,14 @@ export function FinanceiroDashboard() {
           <h2 className="section-title text-[15px]">Histórico de Movimentações</h2>
           <span className="caption ml-auto">{historico.length} registros</span>
         </div>
-        <TabelaHistorico linhas={historico} />
+        <TabelaHistorico
+          linhas={historico}
+          isMobile={isMobile}
+          onDeletar={(id, tipo) => {
+            const item = historico.find((l) => l.id === id)
+            setDeletandoFin({ id, tipo, descricao: item?.descricao ?? id })
+          }}
+        />
       </div>
 
       {/* ── Modal de Split ── */}
@@ -760,6 +823,20 @@ export function FinanceiroDashboard() {
           onClose={() => setShowModalSplit(false)}
         />
       )}
+
+      {/* ── Confirmar delete financeiro ── */}
+      <ConfirmModal
+        open={!!deletandoFin}
+        title={`Excluir ${deletandoFin?.tipo === 'receita' ? 'Receita' : 'Despesa'}`}
+        message={`Deseja excluir "${deletandoFin?.descricao}"? Você pode restaurar na Lixeira.`}
+        onConfirm={() => {
+          if (deletandoFin) {
+            deletarFinanceiro(deletandoFin.id, deletandoFin.tipo)
+            setDeletandoFin(null)
+          }
+        }}
+        onCancel={() => setDeletandoFin(null)}
+      />
     </div>
   )
 }

@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { useMobile } from '@/hooks/useMobile'
 import dynamic from 'next/dynamic'
 import {
   Plus, X, ChevronRight, ExternalLink, Copy, Check,
-  AtSign, Users, Star, MessageSquare,
+  AtSign, Users, Star, MessageSquare, Trash2,
 } from 'lucide-react'
+import { useMarketing } from '@/hooks/useMarketing'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import {
   usePurionStore,
   type Creator,
@@ -420,7 +423,7 @@ function ModalCampanha({ onSalvar, onFechar }: {
 // DRAWER PERFIL
 // ─────────────────────────────────────────────
 
-function DrawerPerfil({ creatorId, onClose }: { creatorId: string; onClose: () => void }) {
+function DrawerPerfil({ creatorId, onClose, onDeletar }: { creatorId: string; onClose: () => void; onDeletar: (c: Creator) => void }) {
   const { creators, atualizarCreator } = usePurionStore()
   const creator = creators.find((c) => c.id === creatorId)
   const [notas, setNotas] = useState(creator?.notas ?? '')
@@ -499,7 +502,14 @@ function DrawerPerfil({ creatorId, onClose }: { creatorId: string; onClose: () =
               {creator.cidade && <span className="caption">{creator.cidade}</span>}
             </div>
           </div>
-          <button onClick={onClose} className="icon-btn ml-3 shrink-0"><X size={14} /></button>
+          <div className="flex items-center gap-1 ml-3 shrink-0">
+            <button
+              onClick={() => onDeletar(creator)}
+              className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#6B6B6B] hover:text-[#E85238] transition-colors"
+              title="Excluir creator"
+            ><Trash2 size={13} /></button>
+            <button onClick={onClose} className="icon-btn"><X size={14} /></button>
+          </div>
         </div>
 
         {/* Body — scrollable */}
@@ -680,6 +690,7 @@ function DrawerPerfil({ creatorId, onClose }: { creatorId: string; onClose: () =
 
 function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => void }) {
   const { creators } = usePurionStore()
+  const isMobile = useMobile()
   const [sort, setSort] = useState<'score' | 'roi' | 'seguidores'>('score')
 
   const hoje = DATA_REF
@@ -743,7 +754,7 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
         ))}
       </div>
 
-      {/* Tabela */}
+      {/* Creators list — table on desktop, cards on mobile */}
       <div className="card-purion overflow-hidden">
         <div className="card-header">
           <p className="section-title">Creators</p>
@@ -760,46 +771,82 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
             ))}
           </div>
         </div>
-        <table className="table-purion">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Plataforma</th>
-              <th>Seguidores</th>
-              <th>Nicho</th>
-              <th>Score</th>
-              <th>Status</th>
-              <th>Última pub.</th>
-              <th>ROI</th>
-            </tr>
-          </thead>
-          <tbody>
+
+        {isMobile ? (
+          <div className="divide-y divide-[var(--border)]">
             {creatorsOrdenados.length === 0 && (
-              <tr><td colSpan={8} className="text-center py-12"><div className="empty-state"><Users size={28} className="mx-auto mb-3 opacity-30" /><p>Nenhum creator cadastrado</p></div></td></tr>
+              <div className="empty-state py-12">
+                <Users size={28} className="mx-auto mb-3 opacity-30" />
+                <p>Nenhum creator cadastrado</p>
+              </div>
             )}
             {creatorsOrdenados.map((c) => {
               const score = calcularScore(c)
               const roi = calcularROI(c)
               const plats = [c.instagram && 'instagram', c.tiktok && 'tiktok', c.youtube && 'youtube'].filter(Boolean) as string[]
               return (
-                <tr key={c.id} className="cursor-pointer" onClick={() => onSelectCreator(c.id)}>
-                  <td className="font-medium">{c.nome}</td>
-                  <td>
-                    <div className="flex gap-1 flex-wrap">
-                      {plats.map((p) => <span key={p} className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase ${PLAT_COLOR[p]}`}>{p.slice(0, 2).toUpperCase()}</span>)}
+                <div key={c.id} className="px-4 py-3 flex items-center gap-3 cursor-pointer" onClick={() => onSelectCreator(c.id)}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-medium text-[var(--text-primary)]">{c.nome}</p>
+                      <span className={`badge text-[9px] ${SCORE_COLOR[score]}`}>{score}</span>
+                      <span className={`badge text-[9px] ${STATUS_BADGE[c.status]}`}>{STATUS_LABEL[c.status]}</span>
                     </div>
-                  </td>
-                  <td>{fmtSeg(c.seguidores)}</td>
-                  <td className="caption">{c.nichoPrincipal}</td>
-                  <td><span className={`badge ${SCORE_COLOR[score]}`}>{score}</span></td>
-                  <td><span className={`badge ${STATUS_BADGE[c.status]}`}>{STATUS_LABEL[c.status]}</span></td>
-                  <td className="caption">{ultimaPost(c)}</td>
-                  <td className="td-mono">{roi > 0 ? `${roi.toFixed(1)}×` : '—'}</td>
-                </tr>
+                    <div className="flex items-center gap-2 mt-1">
+                      {plats.map((p) => <span key={p} className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase ${PLAT_COLOR[p]}`}>{p.slice(0, 2).toUpperCase()}</span>)}
+                      <span className="caption text-[10px]">{fmtSeg(c.seguidores)} · {c.nichoPrincipal}</span>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs font-semibold text-emerald-400">{roi > 0 ? `${roi.toFixed(1)}×` : '—'}</p>
+                    <p className="caption text-[10px]">{ultimaPost(c)}</p>
+                  </div>
+                </div>
               )
             })}
-          </tbody>
-        </table>
+          </div>
+        ) : (
+          <table className="table-purion">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Plataforma</th>
+                <th>Seguidores</th>
+                <th>Nicho</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Última pub.</th>
+                <th>ROI</th>
+              </tr>
+            </thead>
+            <tbody>
+              {creatorsOrdenados.length === 0 && (
+                <tr><td colSpan={8} className="text-center py-12"><div className="empty-state"><Users size={28} className="mx-auto mb-3 opacity-30" /><p>Nenhum creator cadastrado</p></div></td></tr>
+              )}
+              {creatorsOrdenados.map((c) => {
+                const score = calcularScore(c)
+                const roi = calcularROI(c)
+                const plats = [c.instagram && 'instagram', c.tiktok && 'tiktok', c.youtube && 'youtube'].filter(Boolean) as string[]
+                return (
+                  <tr key={c.id} className="cursor-pointer" onClick={() => onSelectCreator(c.id)}>
+                    <td className="font-medium">{c.nome}</td>
+                    <td>
+                      <div className="flex gap-1 flex-wrap">
+                        {plats.map((p) => <span key={p} className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase ${PLAT_COLOR[p]}`}>{p.slice(0, 2).toUpperCase()}</span>)}
+                      </div>
+                    </td>
+                    <td>{fmtSeg(c.seguidores)}</td>
+                    <td className="caption">{c.nichoPrincipal}</td>
+                    <td><span className={`badge ${SCORE_COLOR[score]}`}>{score}</span></td>
+                    <td><span className={`badge ${STATUS_BADGE[c.status]}`}>{STATUS_LABEL[c.status]}</span></td>
+                    <td className="caption">{ultimaPost(c)}</td>
+                    <td className="td-mono">{roi > 0 ? `${roi.toFixed(1)}×` : '—'}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
@@ -1218,9 +1265,11 @@ function AbaAnalise() {
 
 export function CreatorsDashboard() {
   const { adicionarCreator } = usePurionStore()
+  const { deletarCreator } = useMarketing()
   const [activeTab, setActiveTab] = useState<TabId>('overview')
   const [drawerCreatorId, setDrawerCreatorId] = useState<string | null>(null)
   const [showModalCreator, setShowModalCreator] = useState(false)
+  const [deletandoCreator, setDeletandoCreator] = useState<Creator | null>(null)
 
   return (
     <div className="page-content section-gap">
@@ -1239,7 +1288,7 @@ export function CreatorsDashboard() {
       </div>
 
       {/* Tabs */}
-      <div className="tab-nav">
+      <div className="tab-nav mobile-tabs-scroll">
         {TABS.map(({ id, label }) => (
           <button
             key={id}
@@ -1259,7 +1308,11 @@ export function CreatorsDashboard() {
 
       {/* Drawer */}
       {drawerCreatorId && (
-        <DrawerPerfil creatorId={drawerCreatorId} onClose={() => setDrawerCreatorId(null)} />
+        <DrawerPerfil
+          creatorId={drawerCreatorId}
+          onClose={() => setDrawerCreatorId(null)}
+          onDeletar={(c) => { setDeletandoCreator(c); setDrawerCreatorId(null) }}
+        />
       )}
 
       {/* Modal novo creator */}
@@ -1269,6 +1322,14 @@ export function CreatorsDashboard() {
           onFechar={() => setShowModalCreator(false)}
         />
       )}
+
+      <ConfirmModal
+        open={!!deletandoCreator}
+        title="Excluir Creator"
+        message={`Deseja excluir "${deletandoCreator?.nome}"? Você pode restaurar na Lixeira.`}
+        onConfirm={() => { if (deletandoCreator) { deletarCreator(deletandoCreator.id); setDeletandoCreator(null) } }}
+        onCancel={() => setDeletandoCreator(null)}
+      />
     </div>
   )
 }
