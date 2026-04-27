@@ -8,6 +8,7 @@ import { MobileNav } from './MobileNav'
 import { CommandPalette } from '@/components/ui/CommandPalette'
 import { KeyboardShortcuts } from '@/components/ui/KeyboardShortcuts'
 import { QuickNotes } from '@/components/ui/QuickNotes'
+import { TrialBanner } from '@/components/billing/TrialBanner'
 import { usePurionStore } from '@/store'
 import { X } from 'lucide-react'
 
@@ -80,6 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
       <KeyboardShortcuts />
       <QuickNotes />
+      <TrialBanner />
     </>
   )
 }

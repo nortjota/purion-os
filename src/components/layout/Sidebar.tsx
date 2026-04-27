@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Zap, Settings,
-  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2,
+  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
@@ -52,6 +52,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: '/creators',  label: 'Creators',  icon: Users2 },
       { href: '/afiliados', label: 'Afiliados', icon: Link2 },
+      { href: '/sac',       label: 'SAC',       icon: Headphones },
       { href: '/marketing', label: 'Marketing', icon: Megaphone },
       { href: '/trafego',   label: 'Tráfego',   icon: Zap },
     ],
@@ -171,7 +172,7 @@ export function Sidebar() {
         Desktop: CSS does not apply; width animates via inline style.
       */}
       <aside
-        className="purion-sidebar"
+        className="purion-sidebar hidden md:flex"
         data-open={isMobile && mobileSidebarAberta ? '' : undefined}
         style={{
           width: sidebarWidth,

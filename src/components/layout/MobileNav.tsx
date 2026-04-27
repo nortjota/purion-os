@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
-  Zap, BarChart2, Settings, Calendar, Megaphone, X,
+  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones,
 } from 'lucide-react'
 
 const MAIN_ITEMS = [
@@ -18,14 +18,16 @@ const MAIN_ITEMS = [
 ]
 
 const DRAWER_ITEMS = [
-  { href: '/producao',     label: 'Produção',     icon: Package    },
-  { href: '/creators',     label: 'Creators',     icon: Users2     },
-  { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen },
-  { href: '/marketing',    label: 'Marketing',    icon: Megaphone  },
-  { href: '/trafego',      label: 'Tráfego',      icon: Zap        },
-  { href: '/inteligencia', label: 'Inteligência', icon: BarChart2  },
-  { href: '/reunioes',     label: 'Reuniões',     icon: Calendar   },
-  { href: '/settings',     label: 'Configurações', icon: Settings  },
+  { href: '/producao',      label: 'Produção',      icon: Package     },
+  { href: '/creators',      label: 'Creators',      icon: Users2      },
+  { href: '/afiliados',     label: 'Afiliados',     icon: Link2       },
+  { href: '/sac',           label: 'SAC',           icon: Headphones  },
+  { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen    },
+  { href: '/marketing',     label: 'Marketing',     icon: Megaphone   },
+  { href: '/trafego',       label: 'Tráfego',       icon: Zap         },
+  { href: '/inteligencia',  label: 'Inteligência',  icon: BarChart2   },
+  { href: '/reunioes',      label: 'Reuniões',      icon: Calendar    },
+  { href: '/settings',      label: 'Configurações', icon: Settings    },
 ]
 
 export function MobileNav() {

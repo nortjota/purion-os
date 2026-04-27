@@ -3,7 +3,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Sun, Moon, ChevronRight, Bell, Search, Maximize2, X, Activity, DollarSign, Users, CheckSquare, Menu } from 'lucide-react'
+import { Sun, Moon, ChevronRight, Search, Maximize2, X, Activity, DollarSign, Users, CheckSquare } from 'lucide-react'
+import { NotificationBell } from '@/components/layout/NotificationBell'
 import { usePurionStore } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -22,6 +23,9 @@ const MODULE_NAMES: Record<string, string> = {
   '/settings':         'Configurações',
   '/settings/empresa': 'Empresa',
   '/minha-atividade':  'Minha Atividade',
+  '/afiliados':        'Afiliados',
+  '/sac':              'SAC',
+  '/planos':           'Planos',
 }
 
 const PERFIL_INICIAIS: Record<string, string> = {
@@ -42,7 +46,7 @@ export function ContentHeader() {
   const pathname  = usePathname()
   const router    = useRouter()
   const { theme, setTheme } = useTheme()
-  const { perfilAtivo, leads, tarefas, creators, receitas, despesas, focusMode, setFocusMode, setMobileSidebarAberta } = usePurionStore()
+  const { perfilAtivo, leads, tarefas, creators, receitas, despesas, focusMode, setFocusMode } = usePurionStore()
   const { user, perfil } = useAuth()
   const [mounted, setMounted] = useState(false)
 
@@ -238,9 +242,7 @@ export function ContentHeader() {
             </button>
           )}
           <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 2px' }} />
-          <button title="Notificações" className="icon-btn" style={{ width: 32, height: 32 }}>
-            <Bell size={15} />
-          </button>
+          <NotificationBell />
 
           {/* Avatar with dropdown */}
           <div style={{ position: 'relative' }}>
@@ -310,31 +312,20 @@ export function ContentHeader() {
         height: 52, display: 'none', alignItems: 'center',
         justifyContent: 'space-between', padding: '0 16px',
       }}>
-        {/* Left: Hamburger */}
-        <button
-          onClick={() => setMobileSidebarAberta(true)}
-          title="Abrir menu"
-          style={{
-            width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-            border: 'none', background: 'transparent', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--text-secondary)',
-          }}
-        >
-          <Menu size={20} />
-        </button>
-
-        {/* Center: Logo */}
+        {/* Left: Module name (replaces hamburger — nav is via bottom MobileNav) */}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, userSelect: 'none' }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: '#C9A84C', letterSpacing: '0.12em' }}>PURION</span>
           <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>OS</span>
         </div>
 
+        {/* Center: current module */}
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+          {moduleName}
+        </span>
+
         {/* Right: Bell + Theme */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <button title="Notificações" className="icon-btn" style={{ width: 32, height: 32, border: 'none' }}>
-            <Bell size={18} />
-          </button>
+          <NotificationBell />
           {mounted && (
             <button
               onClick={() => setTheme(isDark ? 'light' : 'dark')}

@@ -22,6 +22,8 @@ import {
 } from '@/lib/calculos'
 import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
+import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -434,6 +436,10 @@ export function CommandCenter() {
 
   return (
     <div className="page-content section-gap">
+
+      {/* ── Onboarding ── */}
+      <OnboardingChecklist />
+      <OnboardingTour />
 
       {/* ── Banner ── */}
       <DashboardBanner isAdmin={true} />

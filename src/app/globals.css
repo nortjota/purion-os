@@ -783,3 +783,27 @@
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
+
+/* ══════════════════════════════════════════════
+   PURION OS — GARANTIA ABSOLUTA MOBILE SIDEBAR
+   Sidebar is FULLY HIDDEN on mobile < 768px.
+   All navigation handled by bottom MobileNav.
+══════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .purion-sidebar,
+  aside.purion-sidebar {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden !important;
+    transform: none !important;
+    pointer-events: none !important;
+  }
+  .purion-main-area {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+}
