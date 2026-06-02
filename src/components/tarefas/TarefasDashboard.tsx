@@ -623,8 +623,8 @@ function BoardSocio({ perfilId, tarefas, onCriarTarefa, onMoverTarefa, onEditar,
 
 export function TarefasDashboard() {
   const isMobile = useMobile()
-  const { tarefas, adicionarTarefa, perfilAtivo } = usePurionStore()
-  const { atualizarTarefa: atualizarTarefaDB, deletarTarefa } = useTarefas()
+  const { tarefas, perfilAtivo } = usePurionStore()
+  const { adicionarTarefa: adicionarTarefaDB, atualizarTarefa: atualizarTarefaDB, deletarTarefa } = useTarefas()
 
   const [abaAtiva, setAbaAtiva]   = useState<PerfilUsuario>(perfilAtivo)
   const [modal, setModal]         = useState<{ aberto: boolean; colunaId: ColunaTarefa }>({
@@ -659,10 +659,8 @@ export function TarefasDashboard() {
   }
 
   function handleCriarNovoItem(dados: Omit<Tarefa, 'id' | 'createdAt' | 'completedAt' | 'tags'>) {
-    adicionarTarefa({
+    adicionarTarefaDB({
       ...dados,
-      id: `tar-${Date.now()}`,
-      createdAt: new Date().toISOString(),
       completedAt: dados.status === 'concluida' ? new Date().toISOString() : null,
       tags: [],
     })
