@@ -484,14 +484,17 @@ function DailyCard({
 
 export function ReunioesDashboard() {
   const {
-    dailyEntries, adicionarDailyEntry,
-    reunioes, adicionarReuniao,
-    decisoes, adicionarDecisao, atualizarDecisao,
+    dailyEntries,
+    reunioes,
+    decisoes,
     perfilAtivo,
   } = usePurionStore()
 
   const isMobile = useMobile()
-  const { deletarReuniao, deletarDecisao } = useReunioes()
+  const {
+    adicionarReuniao, adicionarDecisao, atualizarDecisao, adicionarDaily,
+    deletarReuniao, deletarDecisao,
+  } = useReunioes()
   const [deletandoReuniao, setDeletandoReuniao] = useState<ReuniaoItem | null>(null)
   const [deletandoDecisao, setDeletandoDecisao] = useState<DecisaoEstrategica | null>(null)
   const [modalReuniao, setModalReuniao] = useState(false)
@@ -534,7 +537,7 @@ export function ReunioesDashboard() {
               key={socio}
               socio={socio}
               entries={dailyEntries}
-              onSalvar={adicionarDailyEntry}
+              onSalvar={adicionarDaily}
             />
           ))}
         </div>

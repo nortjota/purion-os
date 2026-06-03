@@ -1264,8 +1264,7 @@ function AbaAnalise() {
 // ─────────────────────────────────────────────
 
 export function CreatorsDashboard() {
-  const { adicionarCreator } = usePurionStore()
-  const { deletarCreator } = useMarketing()
+  const { adicionarCreator, deletarCreator } = useMarketing()
   const [activeTab, setActiveTab] = useState<TabId>('overview')
   const [drawerCreatorId, setDrawerCreatorId] = useState<string | null>(null)
   const [showModalCreator, setShowModalCreator] = useState(false)

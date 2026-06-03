@@ -513,8 +513,8 @@ function KPICard({ label, valor, icon: Icon, sub, cor = '#C9A84C' }: {
 
 export function CRMDashboard() {
   const isMobile = useMobile()
-  const { leads, atualizarLead } = usePurionStore()
-  const { deletarLead } = useCRM()
+  const { leads } = usePurionStore()
+  const { atualizarLead, deletarLead } = useCRM()
   const [deletandoLead, setDeletandoLead] = useState<Lead | null>(null)
 
   // ── Estado local ──

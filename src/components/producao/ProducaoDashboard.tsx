@@ -226,12 +226,12 @@ function ModalNovoLote({ onSalvar, onFechar }: { onSalvar: (lote: Lote) => void;
 export function ProducaoDashboard() {
   const {
     produtosSKU, atualizarProdutoSKU,
-    lotes, adicionarLote, atualizarLote,
-    pedidosExpedicao, atualizarPedidoExpedicao,
+    lotes,
+    pedidosExpedicao,
   } = usePurionStore()
 
   const isMobile = useMobile()
-  const { deletarLote, deletarPedido } = useProducao()
+  const { adicionarLote, atualizarLote, atualizarPedido, deletarLote, deletarPedido } = useProducao()
   const [deletandoLote, setDeletandoLote] = useState<Lote | null>(null)
   const [deletandoPedido, setDeletandoPedido] = useState<PedidoExpedicao | null>(null)
   const [ajusteModal, setAjusteModal] = useState<{ id: string; nome: string; unidades: number } | null>(null)
@@ -558,7 +558,7 @@ export function ProducaoDashboard() {
                     </div>
                     <select
                       value={pedido.status}
-                      onChange={(e) => atualizarPedidoExpedicao(pedido.id, { status: e.target.value as PedidoExpedicao['status'] })}
+                      onChange={(e) => atualizarPedido(pedido.id, { status: e.target.value as PedidoExpedicao['status'] })}
                       className={`text-[10px] font-bold px-2 py-1 rounded-lg border-0 outline-none cursor-pointer ${STATUS_PEDIDO_COLOR[pedido.status]}`}
                       style={{ backgroundColor: 'transparent' }}
                     >
@@ -629,7 +629,7 @@ export function ProducaoDashboard() {
                 {/* Status dropdown */}
                 <select
                   value={pedido.status}
-                  onChange={(e) => atualizarPedidoExpedicao(pedido.id, { status: e.target.value as PedidoExpedicao['status'] })}
+                  onChange={(e) => atualizarPedido(pedido.id, { status: e.target.value as PedidoExpedicao['status'] })}
                   className={`
                     text-[10px] font-bold px-2 py-1 rounded-lg border-0 outline-none cursor-pointer
                     ${STATUS_PEDIDO_COLOR[pedido.status]}

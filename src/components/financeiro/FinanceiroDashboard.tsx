@@ -176,7 +176,8 @@ interface FormMovProps {
 }
 
 function FormMovimentacao({ onRegistrado }: FormMovProps) {
-  const { adicionarReceita, adicionarDespesa, perfilAtivo } = usePurionStore()
+  const { perfilAtivo } = usePurionStore()
+  const { adicionarReceita, adicionarDespesa } = useFinanceiro()
 
   const [tipo, setTipo]           = useState<TipoMovimentacao>('receita')
   const [categoria, setCategoria] = useState<string>('')
@@ -200,11 +201,8 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
     if (!categoria)                  { setErro('Selecione uma categoria.'); return }
     if (!descricao.trim())           { setErro('Informe uma descrição.'); return }
 
-    const id = `manual-${Date.now()}`
-
     if (tipo === 'receita') {
-      const nova: Receita = {
-        id,
+      const nova: Omit<Receita, 'id'> = {
         descricao: descricao.trim(),
         valor: valorNum,
         categoria: categoria as CategoriaReceita,
@@ -214,8 +212,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
       }
       adicionarReceita(nova)
     } else {
-      const nova: Despesa = {
-        id,
+      const nova: Omit<Despesa, 'id'> = {
         descricao: descricao.trim(),
         valor: valorNum,
         categoria: categoria as CategoriaDespesa,

@@ -15,6 +15,7 @@ import {
   type FormatoConteudo,
   type StatusConteudo,
 } from '@/store'
+import { useMarketing } from '@/hooks/useMarketing'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -335,7 +336,8 @@ function ModalConteudo({
 // ─────────────────────────────────────────────
 
 export function MarketingDashboard() {
-  const { creators, adicionarCreator, conteudosCalendario, adicionarConteudo } = usePurionStore()
+  const { creators, conteudosCalendario, adicionarConteudo } = usePurionStore()
+  const { adicionarCreator } = useMarketing()
 
   // KPI calculations
   const kitsEnviados = creators.filter(
