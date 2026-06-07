@@ -17,9 +17,6 @@ import { useMobile } from '@/hooks/useMobile'
 import { BottomSheet } from '@/components/ui/BottomSheet'
 import { useTarefas } from '@/hooks/useTarefas'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
-import { ViewToggle } from '@/components/ui/ViewToggle'
-import { AdvancedFilters } from '@/components/ui/AdvancedFilters'
-import type { ViewType } from '@/components/ui/ViewToggle'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -636,13 +633,6 @@ export function TarefasDashboard() {
   // Mobile-specific state
   const [mobileColunaAtiva, setMobileColunaAtiva] = useState<ColunaTarefa>('pendente')
   const [mobileTarefaId, setMobileTarefaId] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<ViewType>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('purion:view:tarefas') as ViewType) ?? 'list'
-    }
-    return 'list'
-  })
-  const [advancedFilters, setAdvancedFilters] = useState<Record<string, unknown>>({})
 
   // Tarefas do perfil ativo (exclui canceladas)
   const tarefasAba = useMemo(
