@@ -34,7 +34,8 @@ function toDaily(r: Row): DailyEntry {
     data:        String(r.data),
     ontemFiz:    String(r.ontem_fiz    ?? ''),
     hojeFarei:   String(r.hoje_farei   ?? ''),
-    bloqueadoEm: String(r.bloqueado_em ?? ''),
+    // DB column is 'bloqueado'; mapped back to app field 'bloqueadoEm'
+    bloqueadoEm: String(r.bloqueado_em ?? r.bloqueado ?? ''),
     createdAt:   String(r.created_at   ?? new Date().toISOString()),
   }
 }
@@ -75,7 +76,6 @@ export function useReunioes() {
       const { data } = await sb
         .from('daily_async')
         .select('*')
-        .is('deleted_at', null)
         .order('created_at', { ascending: false })
       if (data) usePurionStore.getState().setDailyEntries(data.map(toDaily))
     }
@@ -196,7 +196,7 @@ export function useReunioes() {
       if (!sb) return
       const { data } = await sb.from('daily_async').insert({
         socio: entry.socio, data: entry.data,
-        ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado_em: entry.bloqueadoEm,
+        ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado: entry.bloqueadoEm,
       }).select().single()
       if (data) usePurionStore.getState().adicionarDailyEntry({ ...entry, id: String(data.id), createdAt: String(data.created_at) })
     },
@@ -205,10 +205,9 @@ export function useReunioes() {
       const sb = supabase
       if (sb) {
         await sb.from('daily_async').update({
-          ...(dados.ontemFiz    !== undefined && { ontem_fiz:    dados.ontemFiz }),
-          ...(dados.hojeFarei   !== undefined && { hoje_farei:   dados.hojeFarei }),
-          ...(dados.bloqueadoEm !== undefined && { bloqueado_em: dados.bloqueadoEm }),
-          updated_at: new Date().toISOString(),
+          ...(dados.ontemFiz    !== undefined && { ontem_fiz:  dados.ontemFiz }),
+          ...(dados.hojeFarei   !== undefined && { hoje_farei: dados.hojeFarei }),
+          ...(dados.bloqueadoEm !== undefined && { bloqueado:  dados.bloqueadoEm }),
         }).eq('id', id)
       }
       const store = usePurionStore.getState()
@@ -217,14 +216,17 @@ export function useReunioes() {
 
     deletarDaily: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('daily_async').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) await sb.from('daily_async').delete().eq('id', id)
       const store = usePurionStore.getState()
       store.setDailyEntries(store.dailyEntries.filter((d) => d.id !== id))
     },
 
     restaurarDaily: async (entry: DailyEntry) => {
       const sb = supabase
-      if (sb) await sb.from('daily_async').update({ deleted_at: null }).eq('id', entry.id)
+      if (sb) await sb.from('daily_async').insert({
+        socio: entry.socio, data: entry.data,
+        ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado: entry.bloqueadoEm,
+      })
       usePurionStore.getState().adicionarDailyEntry(entry)
     },
   }
