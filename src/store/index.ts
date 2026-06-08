@@ -721,7 +721,8 @@ export const usePurionStore = create<PurionState>()(
       }),
       {
         name: 'purion-os-storage',
-        // Persiste perfil, configurações e leads (fallback sem Supabase)
+        // skipHydration prevents SSR/client mismatch; StoreProvider calls rehydrate() on mount
+        skipHydration: true,
         partialize: (state) => ({
           perfilAtivo: state.perfilAtivo,
           configuracoes: state.configuracoes,
@@ -729,8 +730,6 @@ export const usePurionStore = create<PurionState>()(
           leads: state.leads,
           dashboardWidgets: state.dashboardWidgets,
         }),
-        // Garante que campos novos adicionados ao configPadrao sempre existam
-        // mesmo que o localStorage tenha sido gravado por uma versão anterior.
         merge: (persisted, current) => ({
           ...current,
           ...(persisted as object),

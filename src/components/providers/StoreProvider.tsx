@@ -46,6 +46,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     leads,
   } = usePurionStore()
 
+  // Rehydrate localStorage after mount to avoid SSR/client hydration mismatch
+  useEffect(() => {
+    usePurionStore.persist.rehydrate()
+  }, [])
+
   useEffect(() => {
     // Seed apenas se: Supabase não configurado E store ainda vazio
     if (supabase) return
