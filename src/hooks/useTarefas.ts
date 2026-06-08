@@ -67,16 +67,38 @@ function toTarefa(r: Row): Tarefa {
   }
 }
 
+function dbLog(op: string, table: string, error: unknown, data?: unknown) {
+  if (error) {
+    const msg = `[PURION DB] ${op} ${table} FALHOU: ${JSON.stringify(error)}`
+    console.error(msg)
+    // Show visible alert so user knows something went wrong
+    if (typeof window !== 'undefined') {
+      const existing = document.getElementById('purion-db-error')
+      if (!existing) {
+        const el = document.createElement('div')
+        el.id = 'purion-db-error'
+        el.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;z-index:99999;background:#E85238;color:#fff;padding:12px 16px;border-radius:8px;font-size:12px;font-family:monospace;max-height:120px;overflow:auto'
+        el.textContent = msg
+        document.body.appendChild(el)
+        setTimeout(() => el.remove(), 15000)
+      }
+    }
+  } else {
+    console.log(`[PURION DB] ${op} ${table} OK`, data ?? '')
+  }
+}
+
 export function useTarefas() {
   useEffect(() => {
     const sb = supabase
-    if (!sb) return
+    if (!sb) { console.warn('[useTarefas] supabase não configurado'); return }
 
     const load = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('tarefas')
         .select('*')
         .order('created_at', { ascending: false })
+      dbLog('SELECT', 'tarefas', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setTarefas(data.map(toTarefa))
     }
 
@@ -93,7 +115,7 @@ export function useTarefas() {
     adicionarTarefa: async (t: Omit<Tarefa, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('tarefas').insert({
+      const payload = {
         titulo:          t.titulo,
         descricao:       t.descricao,
         status:          STATUS_APP_TO_DB[t.status],
@@ -104,7 +126,10 @@ export function useTarefas() {
         completed_at:    t.completedAt    ?? null,
         motivo_bloqueio: t.motivoBloqueio ?? null,
         tags:            t.tags,
-      }).select().single()
+      }
+      console.log('[useTarefas] INSERT payload:', payload)
+      const { data, error } = await sb.from('tarefas').insert(payload).select().single()
+      dbLog('INSERT', 'tarefas', error, data?.id)
       if (data) usePurionStore.getState().adicionarTarefa({
         ...t, id: String(data.id), createdAt: String(data.created_at),
       })
@@ -116,7 +141,7 @@ export function useTarefas() {
         usePurionStore.getState().atualizarTarefa(id, dados)
         return
       }
-      await sb.from('tarefas').update({
+      const { error: upErr } = await sb.from('tarefas').update({
         ...(dados.titulo         !== undefined && { titulo:          dados.titulo }),
         ...(dados.descricao      !== undefined && { descricao:       dados.descricao }),
         ...(dados.status         !== undefined && { status:          STATUS_APP_TO_DB[dados.status] }),
@@ -127,6 +152,7 @@ export function useTarefas() {
         ...(dados.completedAt    !== undefined && { completed_at:    dados.completedAt }),
         ...(dados.motivoBloqueio !== undefined && { motivo_bloqueio: dados.motivoBloqueio }),
       }).eq('id', id)
+      dbLog('UPDATE', 'tarefas', upErr, id)
       usePurionStore.getState().atualizarTarefa(id, dados)
     },
 
