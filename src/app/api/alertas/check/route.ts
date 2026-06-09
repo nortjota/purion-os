@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
-// Called every 30 min by Vercel cron
+// Called once daily by Vercel cron (0 11 * * * UTC)
 export async function GET() {
   const db = supabaseAdmin()
   const alertas: { titulo: string; mensagem: string; canal: string[]; link?: string }[] = []
