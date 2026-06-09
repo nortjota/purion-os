@@ -18,7 +18,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://graph.facebook.com https://business-api.tiktok.com https://googleads.googleapis.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://jqvghvttgydptksgpvcc.supabase.co wss://jqvghvttgydptksgpvcc.supabase.co https://graph.facebook.com https://business-api.tiktok.com https://googleads.googleapis.com",
       "frame-ancestors 'none'",
     ].join('; '),
   },
