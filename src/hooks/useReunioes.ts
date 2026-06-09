@@ -90,9 +90,9 @@ export function useReunioes() {
 
     loadR(); loadD(); loadDec()
 
-    const chR   = sb.channel('reunioes-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'reunioes'    }, loadR  ).subscribe()
-    const chD   = sb.channel('daily-sync')   .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_async' }, loadD  ).subscribe()
-    const chDec = sb.channel('decisoes-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'decisoes'    }, loadDec).subscribe()
+    const chR   = sb.channel(`reunioes-sync-${Math.random().toString(36).slice(2)}`).on('postgres_changes', { event: '*', schema: 'public', table: 'reunioes'    }, loadR  ).subscribe()
+    const chD   = sb.channel(`daily-sync-${Math.random().toString(36).slice(2)}`).on('postgres_changes', { event: '*', schema: 'public', table: 'daily_async' }, loadD  ).subscribe()
+    const chDec = sb.channel(`decisoes-sync-${Math.random().toString(36).slice(2)}`).on('postgres_changes', { event: '*', schema: 'public', table: 'decisoes'    }, loadDec).subscribe()
 
     return () => { sb.removeChannel(chR); sb.removeChannel(chD); sb.removeChannel(chDec) }
   }, [])

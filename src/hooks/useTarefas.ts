@@ -104,7 +104,7 @@ export function useTarefas() {
 
     load()
 
-    const ch = sb.channel('tarefas-sync')
+    const ch = sb.channel(`tarefas-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tarefas' }, load)
       .subscribe()
 

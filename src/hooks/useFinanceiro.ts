@@ -53,7 +53,7 @@ export function useFinanceiro() {
 
     load()
 
-    const ch = sb.channel('financeiro-sync')
+    const ch = sb.channel(`financeiro-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'financeiro' }, load)
       .subscribe()
 

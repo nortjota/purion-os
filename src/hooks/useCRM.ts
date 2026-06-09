@@ -49,7 +49,7 @@ export function useCRM() {
 
     load()
 
-    const ch = sb.channel('leads-sync')
+    const ch = sb.channel(`leads-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'leads_crm' }, load)
       .subscribe()
 

@@ -42,7 +42,7 @@ export function useMarketing() {
 
     load()
 
-    const ch = sb.channel('creators-sync')
+    const ch = sb.channel(`creators-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'creators' }, load)
       .subscribe()
 

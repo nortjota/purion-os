@@ -23,7 +23,7 @@ export function useConfiguracoes() {
 
     load()
 
-    const ch = sb.channel('config-sync')
+    const ch = sb.channel(`config-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'configuracoes' }, load)
       .subscribe()
 

@@ -63,11 +63,11 @@ export function useProducao() {
     loadLotes()
     loadPedidos()
 
-    const chL = sb.channel('lotes-sync')
+    const chL = sb.channel(`lotes-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'lotes_producao' }, loadLotes)
       .subscribe()
 
-    const chP = sb.channel('expedicao-sync')
+    const chP = sb.channel(`expedicao-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'expedicao' }, loadPedidos)
       .subscribe()
 

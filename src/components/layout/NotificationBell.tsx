@@ -46,7 +46,7 @@ export function NotificationBell() {
   useEffect(() => {
     if (!supabase) return
     const channel = supabase
-      .channel('notificacoes-realtime')
+      .channel(`notificacoes-realtime-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, () => {
         carregar()
       })
