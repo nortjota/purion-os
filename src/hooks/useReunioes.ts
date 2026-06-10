@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import type {
   ReuniaoItem, DailyEntry, DecisaoEstrategica,
@@ -65,26 +66,29 @@ export function useReunioes() {
     if (!sb) return
 
     const loadR = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('reunioes')
         .select('*')
         .is('deleted_at', null)
         .order('data', { ascending: false })
+      dbLog('SELECT', 'reunioes', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setReunioes(data.map(toReuniao))
     }
     const loadD = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('daily_async')
         .select('*')
         .order('created_at', { ascending: false })
+      dbLog('SELECT', 'daily_async', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setDailyEntries(data.map(toDaily))
     }
     const loadDec = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('decisoes')
         .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
+      dbLog('SELECT', 'decisoes', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setDecisoes(data.map(toDecisao))
     }
 
@@ -101,11 +105,12 @@ export function useReunioes() {
     adicionarReuniao: async (r: Omit<ReuniaoItem, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('reunioes').insert({
+      const { data, error } = await sb.from('reunioes').insert({
         titulo: r.titulo, tipo: r.tipo, status: r.status,
         data: r.data, duracao: r.duracao, participantes: r.participantes,
         pauta: r.pauta, ata: r.ata, decisoes: r.decisoes, proximos_passos: r.proximosPassos,
       }).select().single()
+      dbLog('INSERT', 'reunioes', error, data?.id)
       if (data) usePurionStore.getState().adicionarReuniao({ ...r, id: String(data.id), createdAt: String(data.created_at) })
     },
 
@@ -115,7 +120,7 @@ export function useReunioes() {
         usePurionStore.getState().atualizarReuniao(id, dados)
         return
       }
-      await sb.from('reunioes').update({
+      const { error } = await sb.from('reunioes').update({
         ...(dados.titulo          !== undefined && { titulo:          dados.titulo }),
         ...(dados.tipo            !== undefined && { tipo:            dados.tipo }),
         ...(dados.status          !== undefined && { status:          dados.status }),
@@ -128,26 +133,33 @@ export function useReunioes() {
         ...(dados.proximosPassos  !== undefined && { proximos_passos: dados.proximosPassos }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'reunioes', error, id)
       usePurionStore.getState().atualizarReuniao(id, dados)
     },
 
     deletarReuniao: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('reunioes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('reunioes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'reunioes', error, id)
+      }
       const store = usePurionStore.getState()
       store.setReunioes(store.reunioes.filter((r) => r.id !== id))
     },
 
     restaurarReuniao: async (reuniao: ReuniaoItem) => {
       const sb = supabase
-      if (sb) await sb.from('reunioes').update({ deleted_at: null }).eq('id', reuniao.id)
+      if (sb) {
+        const { error } = await sb.from('reunioes').update({ deleted_at: null }).eq('id', reuniao.id)
+        dbLog('UPDATE', 'reunioes', error, reuniao.id)
+      }
       usePurionStore.getState().adicionarReuniao(reuniao)
     },
 
     adicionarDecisao: async (d: Omit<DecisaoEstrategica, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('decisoes').insert({
+      const { data, error } = await sb.from('decisoes').insert({
         titulo:        d.titulo,
         descricao:     d.descricao,
         proposto_por:  d.propostoPor,
@@ -156,6 +168,7 @@ export function useReunioes() {
         votos:         d.votos,
         status:        d.status,
       }).select().single()
+      dbLog('INSERT', 'decisoes', error, data?.id)
       if (data) usePurionStore.getState().adicionarDecisao({ ...d, id: String(data.id), createdAt: String(data.created_at) })
     },
 
@@ -165,7 +178,7 @@ export function useReunioes() {
         usePurionStore.getState().atualizarDecisao(id, dados)
         return
       }
-      await sb.from('decisoes').update({
+      const { error } = await sb.from('decisoes').update({
         ...(dados.titulo        !== undefined && { titulo:        dados.titulo }),
         ...(dados.descricao     !== undefined && { descricao:     dados.descricao }),
         ...(dados.propostoPor   !== undefined && { proposto_por:  dados.propostoPor }),
@@ -175,40 +188,53 @@ export function useReunioes() {
         ...(dados.status        !== undefined && { status:        dados.status }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'decisoes', error, id)
       usePurionStore.getState().atualizarDecisao(id, dados)
     },
 
     deletarDecisao: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('decisoes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('decisoes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'decisoes', error, id)
+      }
       const store = usePurionStore.getState()
       store.setDecisoes(store.decisoes.filter((d) => d.id !== id))
     },
 
     restaurarDecisao: async (decisao: DecisaoEstrategica) => {
       const sb = supabase
-      if (sb) await sb.from('decisoes').update({ deleted_at: null }).eq('id', decisao.id)
+      if (sb) {
+        const { error } = await sb.from('decisoes').update({ deleted_at: null }).eq('id', decisao.id)
+        dbLog('UPDATE', 'decisoes', error, decisao.id)
+      }
       usePurionStore.getState().adicionarDecisao(decisao)
     },
 
-    adicionarDaily: async (entry: Omit<DailyEntry, 'id' | 'createdAt'>) => {
+    adicionarDaily: async (entry: Omit<DailyEntry, 'id' | 'createdAt'>): Promise<boolean> => {
       const sb = supabase
-      if (!sb) return
-      const { data } = await sb.from('daily_async').insert({
+      if (!sb) return false
+      const { data, error } = await sb.from('daily_async').upsert({
         socio: entry.socio, data: entry.data,
-        ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado: entry.bloqueadoEm,
-      }).select().single()
-      if (data) usePurionStore.getState().adicionarDailyEntry({ ...entry, id: String(data.id), createdAt: String(data.created_at) })
+        ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado_em: entry.bloqueadoEm,
+      }, { onConflict: 'socio,data' }).select().single()
+      dbLog('UPSERT', 'daily_async', error, data?.id)
+      if (data) {
+        usePurionStore.getState().adicionarDailyEntry({ ...entry, id: String(data.id), createdAt: String(data.created_at) })
+        return true
+      }
+      return false
     },
 
     atualizarDaily: async (id: string, dados: Partial<DailyEntry>) => {
       const sb = supabase
       if (sb) {
-        await sb.from('daily_async').update({
-          ...(dados.ontemFiz    !== undefined && { ontem_fiz:  dados.ontemFiz }),
-          ...(dados.hojeFarei   !== undefined && { hoje_farei: dados.hojeFarei }),
-          ...(dados.bloqueadoEm !== undefined && { bloqueado:  dados.bloqueadoEm }),
+        const { error } = await sb.from('daily_async').update({
+          ...(dados.ontemFiz    !== undefined && { ontem_fiz:    dados.ontemFiz }),
+          ...(dados.hojeFarei   !== undefined && { hoje_farei:   dados.hojeFarei }),
+          ...(dados.bloqueadoEm !== undefined && { bloqueado_em: dados.bloqueadoEm }),
         }).eq('id', id)
+        dbLog('UPDATE', 'daily_async', error, id)
       }
       const store = usePurionStore.getState()
       store.setDailyEntries(store.dailyEntries.map((d) => d.id === id ? { ...d, ...dados } : d))
@@ -216,17 +242,23 @@ export function useReunioes() {
 
     deletarDaily: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('daily_async').delete().eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('daily_async').delete().eq('id', id)
+        dbLog('DELETE', 'daily_async', error, id)
+      }
       const store = usePurionStore.getState()
       store.setDailyEntries(store.dailyEntries.filter((d) => d.id !== id))
     },
 
     restaurarDaily: async (entry: DailyEntry) => {
       const sb = supabase
-      if (sb) await sb.from('daily_async').insert({
-        socio: entry.socio, data: entry.data,
-        ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado: entry.bloqueadoEm,
-      })
+      if (sb) {
+        const { error } = await sb.from('daily_async').insert({
+          socio: entry.socio, data: entry.data,
+          ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado_em: entry.bloqueadoEm,
+        })
+        dbLog('INSERT', 'daily_async', error, entry.id)
+      }
       usePurionStore.getState().adicionarDailyEntry(entry)
     },
   }

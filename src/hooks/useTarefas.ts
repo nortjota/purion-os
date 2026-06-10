@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import type { Tarefa, PerfilUsuario, StatusTarefa, PrioridadeTarefa } from '@/store'
 
@@ -64,27 +65,6 @@ function toTarefa(r: Row): Tarefa {
     completedAt:    r.completed_at  ? String(r.completed_at)  : null,
     motivoBloqueio: r.motivo_bloqueio ? String(r.motivo_bloqueio) : undefined,
     tags:           Array.isArray(r.tags) ? (r.tags as string[]) : [],
-  }
-}
-
-function dbLog(op: string, table: string, error: unknown, data?: unknown) {
-  if (error) {
-    const msg = `[PURION DB] ${op} ${table} FALHOU: ${JSON.stringify(error)}`
-    console.error(msg)
-    // Show visible alert so user knows something went wrong
-    if (typeof window !== 'undefined') {
-      const existing = document.getElementById('purion-db-error')
-      if (!existing) {
-        const el = document.createElement('div')
-        el.id = 'purion-db-error'
-        el.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;z-index:99999;background:#E85238;color:#fff;padding:12px 16px;border-radius:8px;font-size:12px;font-family:monospace;max-height:120px;overflow:auto'
-        el.textContent = msg
-        document.body.appendChild(el)
-        setTimeout(() => el.remove(), 15000)
-      }
-    }
-  } else {
-    console.log(`[PURION DB] ${op} ${table} OK`, data ?? '')
   }
 }
 
@@ -158,7 +138,10 @@ export function useTarefas() {
 
     deletarTarefa: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('tarefas').delete().eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('tarefas').delete().eq('id', id)
+        dbLog('DELETE', 'tarefas', error, id)
+      }
       usePurionStore.getState().removerTarefa(id)
     },
 
@@ -166,7 +149,7 @@ export function useTarefas() {
       // Hard-delete schema: restore not available; re-insert as new row.
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('tarefas').insert({
+      const { data, error } = await sb.from('tarefas').insert({
         titulo:          tarefa.titulo,
         descricao:       tarefa.descricao,
         status:          STATUS_APP_TO_DB[tarefa.status],
@@ -178,6 +161,7 @@ export function useTarefas() {
         motivo_bloqueio: tarefa.motivoBloqueio ?? null,
         tags:            tarefa.tags,
       }).select().single()
+      dbLog('INSERT', 'tarefas', error, data?.id)
       if (data) usePurionStore.getState().adicionarTarefa({
         ...tarefa, id: String(data.id), createdAt: String(data.created_at),
       })

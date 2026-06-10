@@ -327,10 +327,12 @@ function DailyCard({
 }: {
   socio: PerfilUsuario
   entries: DailyEntry[]
-  onSalvar: (entry: DailyEntry) => void
+  onSalvar: (entry: DailyEntry) => Promise<boolean>
 }) {
   const [historico, setHistorico] = useState(false)
   const [form, setForm] = useState({ ontemFiz: '', hojeFarei: '', bloqueadoEm: '' })
+  const [salvando, setSalvando] = useState(false)
+  const [salvo, setSalvo] = useState(false)
 
   // Último entry do sócio
   const ultimaEntry = useMemo(() =>
@@ -346,7 +348,7 @@ function DailyCard({
       .slice(0, 7),
   [entries, socio])
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
     if (!form.ontemFiz && !form.hojeFarei) return
     const entry: DailyEntry = {
       id: `day-${Date.now()}`,
@@ -357,8 +359,15 @@ function DailyCard({
       bloqueadoEm: form.bloqueadoEm,
       createdAt: DATA_REF.toISOString(),
     }
-    onSalvar(entry)
-    setForm({ ontemFiz: '', hojeFarei: '', bloqueadoEm: '' })
+    setSalvando(true)
+    setSalvo(false)
+    const ok = await onSalvar(entry)
+    setSalvando(false)
+    if (ok) {
+      setForm({ ontemFiz: '', hojeFarei: '', bloqueadoEm: '' })
+      setSalvo(true)
+      setTimeout(() => setSalvo(false), 3000)
+    }
   }
 
   const temBloqueio = ultimaEntry?.bloqueadoEm
@@ -444,10 +453,17 @@ function DailyCard({
         </div>
         <button
           onClick={handleSalvar}
-          className="w-full py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-md hover:bg-[#D4B568] transition-colors"
+          disabled={salvando}
+          className="w-full py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-md hover:bg-[#D4B568] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Salvar update
+          {salvando ? 'Salvando...' : 'Salvar update'}
         </button>
+        {salvo && (
+          <p className="flex items-center gap-1 text-[10px] font-bold text-emerald-400">
+            <Check size={11} />
+            Update salvo com sucesso!
+          </p>
+        )}
       </div>
 
       {/* Histórico */}

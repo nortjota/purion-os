@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import type { Lead, Regiao, PerfilUsuario, TierLead, StatusLead, TipoEstabelecimento } from '@/store'
 
@@ -43,7 +44,8 @@ export function useCRM() {
 
     const load = async () => {
       const q = sb.from('leads_crm').select('*').order('created_at', { ascending: false })
-      const { data } = await q.is('deleted_at', null)
+      const { data, error } = await q.is('deleted_at', null)
+      dbLog('SELECT', 'leads_crm', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setLeads(data.map(toLead))
     }
 
@@ -61,7 +63,7 @@ export function useCRM() {
       const sb = supabase
       if (!sb) return
       const now = new Date().toISOString()
-      const { data } = await sb.from('leads_crm').insert({
+      const { data, error } = await sb.from('leads_crm').insert({
         nome_empresa:         lead.nomeEmpresa,
         nome_contato:         lead.nomeContato,
         telefone:             lead.telefone,
@@ -78,6 +80,7 @@ export function useCRM() {
         historico_interacoes: lead.historicoInteracoes ?? [],
         tags:                 lead.tags,
       }).select().single()
+      dbLog('INSERT', 'leads_crm', error, data?.id)
       if (data) usePurionStore.getState().adicionarLead({
         ...lead, id: String(data.id), createdAt: now, updatedAt: now,
       })
@@ -89,7 +92,7 @@ export function useCRM() {
         usePurionStore.getState().atualizarLead(id, dados)
         return
       }
-      await sb.from('leads_crm').update({
+      const { error } = await sb.from('leads_crm').update({
         ...(dados.nomeEmpresa         !== undefined && { nome_empresa:         dados.nomeEmpresa }),
         ...(dados.nomeContato         !== undefined && { nome_contato:         dados.nomeContato }),
         ...(dados.telefone            !== undefined && { telefone:             dados.telefone }),
@@ -105,18 +108,25 @@ export function useCRM() {
         ...(dados.historicoInteracoes !== undefined && { historico_interacoes: dados.historicoInteracoes }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'leads_crm', error, id)
       usePurionStore.getState().atualizarLead(id, dados)
     },
 
     deletarLead: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('leads_crm').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('leads_crm').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'leads_crm', error, id)
+      }
       usePurionStore.getState().removerLead(id)
     },
 
     restaurarLead: async (lead: Lead) => {
       const sb = supabase
-      if (sb) await sb.from('leads_crm').update({ deleted_at: null }).eq('id', lead.id)
+      if (sb) {
+        const { error } = await sb.from('leads_crm').update({ deleted_at: null }).eq('id', lead.id)
+        dbLog('UPDATE', 'leads_crm', error, lead.id)
+      }
       usePurionStore.getState().adicionarLead(lead)
     },
   }

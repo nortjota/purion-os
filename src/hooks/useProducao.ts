@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import type { Lote, PedidoExpedicao, PerfilUsuario, StatusLote, StatusPedidoExpedicao } from '@/store'
 
@@ -43,20 +44,22 @@ export function useProducao() {
     if (!sb) return
 
     const loadLotes = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('lotes_producao')
         .select('*')
         .is('deleted_at', null)
         .order('data_inicio', { ascending: false })
+      dbLog('SELECT', 'lotes_producao', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setLotes(data.map(toLote))
     }
 
     const loadPedidos = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('expedicao')
         .select('*')
         .is('deleted_at', null)
         .order('data_pedido', { ascending: false })
+      dbLog('SELECT', 'expedicao', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setPedidosExpedicao(data.map(toPedido))
     }
 
@@ -81,7 +84,7 @@ export function useProducao() {
     adicionarLote: async (l: Omit<Lote, 'id'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('lotes_producao').insert({
+      const { data, error } = await sb.from('lotes_producao').insert({
         codigo:              l.codigo,
         produto:             l.produto,
         quantidade_produzida: l.quantidadeProduzida,
@@ -94,6 +97,7 @@ export function useProducao() {
         insumos:             l.insumos,
         notas:               l.notas,
       }).select().single()
+      dbLog('INSERT', 'lotes_producao', error, data?.id)
       if (data) usePurionStore.getState().adicionarLote({ ...l, id: String(data.id) })
     },
 
@@ -103,7 +107,7 @@ export function useProducao() {
         usePurionStore.getState().atualizarLote(id, dados)
         return
       }
-      await sb.from('lotes_producao').update({
+      const { error } = await sb.from('lotes_producao').update({
         ...(dados.codigo              !== undefined && { codigo:              dados.codigo }),
         ...(dados.produto             !== undefined && { produto:             dados.produto }),
         ...(dados.quantidadeProduzida !== undefined && { quantidade_produzida: dados.quantidadeProduzida }),
@@ -117,26 +121,33 @@ export function useProducao() {
         ...(dados.notas               !== undefined && { notas:               dados.notas }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'lotes_producao', error, id)
       usePurionStore.getState().atualizarLote(id, dados)
     },
 
     deletarLote: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('lotes_producao').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('lotes_producao').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'lotes_producao', error, id)
+      }
       const store = usePurionStore.getState()
       store.setLotes(store.lotes.filter((l) => l.id !== id))
     },
 
     restaurarLote: async (lote: Lote) => {
       const sb = supabase
-      if (sb) await sb.from('lotes_producao').update({ deleted_at: null }).eq('id', lote.id)
+      if (sb) {
+        const { error } = await sb.from('lotes_producao').update({ deleted_at: null }).eq('id', lote.id)
+        dbLog('UPDATE', 'lotes_producao', error, lote.id)
+      }
       usePurionStore.getState().adicionarLote(lote)
     },
 
     adicionarPedido: async (p: Omit<PedidoExpedicao, 'id'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('expedicao').insert({
+      const { data, error } = await sb.from('expedicao').insert({
         numero_pedido: p.numeroPedido,
         destinatario:  p.destinatario,
         data_pedido:   p.dataPedido,
@@ -145,6 +156,7 @@ export function useProducao() {
         itens:         p.itens,
         observacoes:   p.observacoes,
       }).select().single()
+      dbLog('INSERT', 'expedicao', error, data?.id)
       if (data) usePurionStore.getState().adicionarPedidoExpedicao({ ...p, id: String(data.id) })
     },
 
@@ -154,7 +166,7 @@ export function useProducao() {
         usePurionStore.getState().atualizarPedidoExpedicao(id, dados)
         return
       }
-      await sb.from('expedicao').update({
+      const { error } = await sb.from('expedicao').update({
         ...(dados.numeroPedido !== undefined && { numero_pedido: dados.numeroPedido }),
         ...(dados.destinatario !== undefined && { destinatario:  dados.destinatario }),
         ...(dados.dataPedido   !== undefined && { data_pedido:   dados.dataPedido }),
@@ -164,19 +176,26 @@ export function useProducao() {
         ...(dados.observacoes  !== undefined && { observacoes:   dados.observacoes }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'expedicao', error, id)
       usePurionStore.getState().atualizarPedidoExpedicao(id, dados)
     },
 
     deletarPedido: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('expedicao').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('expedicao').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'expedicao', error, id)
+      }
       const store = usePurionStore.getState()
       store.setPedidosExpedicao(store.pedidosExpedicao.filter((p) => p.id !== id))
     },
 
     restaurarPedido: async (pedido: PedidoExpedicao) => {
       const sb = supabase
-      if (sb) await sb.from('expedicao').update({ deleted_at: null }).eq('id', pedido.id)
+      if (sb) {
+        const { error } = await sb.from('expedicao').update({ deleted_at: null }).eq('id', pedido.id)
+        dbLog('UPDATE', 'expedicao', error, pedido.id)
+      }
       usePurionStore.getState().adicionarPedidoExpedicao(pedido)
     },
   }

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import type { Creator, PerfilUsuario, StatusCreator } from '@/store'
 
@@ -32,11 +33,12 @@ export function useMarketing() {
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('creators')
         .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
+      dbLog('SELECT', 'creators', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setCreators(data.map(toCreator))
     }
 
@@ -53,7 +55,7 @@ export function useMarketing() {
     adicionarCreator: async (c: Omit<Creator, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('creators').insert({
+      const { data, error } = await sb.from('creators').insert({
         nome:              c.nome,
         instagram:         c.instagram,
         tiktok:            c.tiktok ?? null,
@@ -67,6 +69,7 @@ export function useMarketing() {
         responsavel:       c.responsavel,
         notas:             c.notas,
       }).select().single()
+      dbLog('INSERT', 'creators', error, data?.id)
       if (data) usePurionStore.getState().adicionarCreator({ ...c, id: String(data.id), createdAt: String(data.created_at) })
     },
 
@@ -76,7 +79,7 @@ export function useMarketing() {
         usePurionStore.getState().atualizarCreator(id, dados)
         return
       }
-      await sb.from('creators').update({
+      const { error } = await sb.from('creators').update({
         ...(dados.nome             !== undefined && { nome:              dados.nome }),
         ...(dados.instagram        !== undefined && { instagram:         dados.instagram }),
         ...(dados.tiktok           !== undefined && { tiktok:            dados.tiktok }),
@@ -91,19 +94,26 @@ export function useMarketing() {
         ...(dados.notas            !== undefined && { notas:             dados.notas }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'creators', error, id)
       usePurionStore.getState().atualizarCreator(id, dados)
     },
 
     deletarCreator: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('creators').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('creators').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'creators', error, id)
+      }
       const store = usePurionStore.getState()
       store.setCreators(store.creators.filter((c) => c.id !== id))
     },
 
     restaurarCreator: async (creator: Creator) => {
       const sb = supabase
-      if (sb) await sb.from('creators').update({ deleted_at: null }).eq('id', creator.id)
+      if (sb) {
+        const { error } = await sb.from('creators').update({ deleted_at: null }).eq('id', creator.id)
+        dbLog('UPDATE', 'creators', error, creator.id)
+      }
       usePurionStore.getState().adicionarCreator(creator)
     },
   }

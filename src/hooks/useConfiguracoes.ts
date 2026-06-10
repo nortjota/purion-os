@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import type { Configuracoes } from '@/store'
 
@@ -11,7 +12,8 @@ export function useConfiguracoes() {
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb.from('configuracoes').select('chave, valor')
+      const { data, error } = await sb.from('configuracoes').select('chave, valor')
+      dbLog('SELECT', 'configuracoes', error, `${data?.length ?? 0} rows`)
       if (!data || !data.length) return
       const patch = data.reduce<Partial<Configuracoes>>((acc, row) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +46,8 @@ export function useConfiguracoes() {
       const upserts = Object.entries(config).map(([chave, valor]) => ({
         chave, valor, updated_at: new Date().toISOString(),
       }))
-      await sb.from('configuracoes').upsert(upserts, { onConflict: 'chave' })
+      const { error } = await sb.from('configuracoes').upsert(upserts, { onConflict: 'chave' })
+      dbLog('UPSERT', 'configuracoes', error, Object.keys(config))
       usePurionStore.getState().setConfiguracoes(config)
     },
   }
