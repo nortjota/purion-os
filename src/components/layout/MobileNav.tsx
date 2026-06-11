@@ -9,6 +9,7 @@ import {
   MoreHorizontal, Package, Users2, BookOpen,
   Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones,
 } from 'lucide-react'
+import { useIsMaster } from '@/hooks/useIsMaster'
 
 const MAIN_ITEMS = [
   { href: '/',          label: 'Início',    icon: LayoutDashboard },
@@ -33,9 +34,12 @@ const DRAWER_ITEMS = [
 export function MobileNav() {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { isMaster } = useIsMaster()
+
+  const drawerItems = isMaster ? DRAWER_ITEMS : DRAWER_ITEMS.filter((item) => item.href !== '/settings')
 
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
-  const isDrawerActive = DRAWER_ITEMS.some((item) => isActive(item.href))
+  const isDrawerActive = drawerItems.some((item) => isActive(item.href))
 
   function closeDrawer() { setDrawerOpen(false) }
 
@@ -147,7 +151,7 @@ export function MobileNav() {
 
               {/* Items list */}
               <div style={{ overflowY: 'auto', maxHeight: 'calc(70vh - 80px)' }}>
-                {DRAWER_ITEMS.map(({ href, label, icon: Icon }) => {
+                {drawerItems.map(({ href, label, icon: Icon }) => {
                   const active = isActive(href)
                   return (
                     <Link

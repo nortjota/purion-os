@@ -11,6 +11,7 @@ import {
 import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
 import { useMobile } from '@/hooks/useMobile'
+import { useIsMaster } from '@/hooks/useIsMaster'
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
 
@@ -81,6 +82,7 @@ export function Sidebar() {
   const isMobile = useMobile()
   const pathname = usePathname()
   const { user, perfil: authPerfil, signOut } = useAuth()
+  const { isMaster } = useIsMaster()
   const {
     perfilAtivo, setPerfilAtivo,
     pedidosExpedicao, campanhasAds, produtosSKU, configuracoes,
@@ -141,6 +143,11 @@ export function Sidebar() {
   const alertasEstoque = useMemo(
     () => produtosSKU.filter((s) => s.unidades < s.threshold).length,
     [produtosSKU],
+  )
+
+  const visibleNavGroups = useMemo(
+    () => isMaster ? navGroups : navGroups.filter((g) => g.label !== 'Sistema'),
+    [isMaster],
   )
 
   function getBadge(href: string) {
@@ -231,7 +238,7 @@ export function Sidebar() {
 
         {/* ── NAV ── */}
         <nav style={{ flex: 1, overflowY: 'auto', padding: recolhida ? '0 4px' : '0 8px' }}>
-          {navGroups.map((group, gi) => (
+          {visibleNavGroups.map((group, gi) => (
             <div key={gi} style={{ marginBottom: 4 }}>
               {/* Group label — hidden when collapsed, divider line instead */}
               {group.label && !recolhida && (

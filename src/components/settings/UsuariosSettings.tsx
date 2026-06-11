@@ -12,7 +12,7 @@ interface DemoUser {
   nome: string
   email: string
   cargo: string
-  role: 'admin' | 'membro'
+  role: 'master' | 'admin' | 'membro'
   ativo: boolean
   ultima_atividade: string | null
 }
@@ -71,7 +71,7 @@ export function UsuariosSettings() {
   const openEdit = (u: DemoUser) => {
     setEditNome(u.nome)
     setEditCargo(u.cargo)
-    setEditRole(u.role)
+    setEditRole(u.role === 'master' ? 'admin' : u.role)
     setEditDisponibilidade('')
     setEditModal({ open: true, user: u })
   }
