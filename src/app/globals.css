@@ -129,7 +129,7 @@
   --bg-surface:     #F0EFED;
   --bg-surface-2:   #E8E7E4;
   --text-primary:   #0D0D0D;
-  --text-secondary: #777770;
+  --text-secondary: #595955;
   --border-purion:  #D4D3CF;
   --sidebar-bg:     #F5F4F0;
   --gold:           #C9A84C;
@@ -292,6 +292,16 @@
   .btn-danger:hover {
     background-color: rgba(239, 68, 68, 0.18);
   }
+  .btn:disabled,
+  .btn[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .btn-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.35);
+  }
 
   /* INPUTS */
   .input-purion {
@@ -425,6 +435,7 @@
     border-radius: 12px;
     background-color: var(--bg-surface);
     border: 1px solid var(--border);
+    transition: border-color 150ms ease;
   }
   .card-section {
     padding: 20px 24px;

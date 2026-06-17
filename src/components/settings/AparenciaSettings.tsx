@@ -19,7 +19,7 @@ function OptionGroup<T extends string>({
 }) {
   return (
     <div>
-      <label className="text-xs text-[#8A8A8A] block mb-2">{label}</label>
+      <label className="text-xs text-[var(--text-secondary)] block mb-2">{label}</label>
       <div className="flex gap-2 flex-wrap">
         {options.map(opt => (
           <button
@@ -72,7 +72,7 @@ export function AparenciaSettings() {
         />
 
         <div>
-          <label className="text-xs text-[#8A8A8A] block mb-2">Cor de destaque</label>
+          <label className="text-xs text-[var(--text-secondary)] block mb-2">Cor de destaque</label>
           <div className="flex items-center gap-3">
             <input
               type="color"

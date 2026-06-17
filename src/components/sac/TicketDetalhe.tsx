@@ -126,8 +126,7 @@ export function TicketDetalhe({ ticket, onAtualizado, onFechar }: Props) {
               </button>
             ))}
           </div>
-          <button onClick={salvarAlteracoes} disabled={salvando}
-            style={{ padding: '6px 14px', borderRadius: 7, border: 'none', background: '#C9A84C', color: '#0D0D0D', fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: salvando ? 0.7 : 1 }}>
+          <button onClick={salvarAlteracoes} disabled={salvando} className="btn btn-primary btn-sm">
             {salvando ? 'Salvando…' : 'Salvar'}
           </button>
         </div>
@@ -180,8 +179,7 @@ export function TicketDetalhe({ ticket, onAtualizado, onFechar }: Props) {
             rows={2}
             style={{ flex: 1, padding: '9px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface-2)', color: 'var(--text-primary)', fontSize: 13, outline: 'none', resize: 'none' }}
           />
-          <button onClick={enviarMsg} disabled={enviando || !novaMsg.trim()}
-            style={{ padding: '0 16px', borderRadius: 8, border: 'none', background: '#C9A84C', color: '#0D0D0D', cursor: 'pointer', opacity: enviando || !novaMsg.trim() ? 0.5 : 1 }}>
+          <button onClick={enviarMsg} disabled={enviando || !novaMsg.trim()} className="btn btn-primary" style={{ padding: '0 16px' }}>
             <Send size={16} />
           </button>
         </div>

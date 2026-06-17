@@ -2,6 +2,10 @@ import { SacDashboard } from '@/components/sac/SacDashboard'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import type { Ticket } from '@/components/sac/SacDashboard'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = { title: 'SAC & Suporte' }
+
 export const revalidate = 0
 
 export default async function Page() {

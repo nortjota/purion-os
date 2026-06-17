@@ -131,9 +131,9 @@ export function LixeiraSettings() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--border)]">
-                <th className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">Nome/Título</th>
-                <th className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">Excluído em</th>
-                <th className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">Ações</th>
+                <th className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">Nome/Título</th>
+                <th className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">Excluído em</th>
+                <th className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">Ações</th>
               </tr>
             </thead>
             <tbody>

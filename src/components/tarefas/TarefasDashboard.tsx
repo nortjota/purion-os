@@ -132,7 +132,7 @@ function TarefaCard({ tarefa, onMover, onEditar, onDeletar }: TarefaCardProps) {
                   <button
                     key={c.id}
                     onClick={() => { onMover(tarefa.id, c.id); setShowMenu(false) }}
-                    className="w-full px-3 py-1.5 text-left text-xs text-[#8A8A8A] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+                    className="w-full px-3 py-1.5 text-left text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
                   >
                     → {c.label}
                   </button>
@@ -208,7 +208,7 @@ function ColunaBoard({ coluna, tarefas, onAbrirModal, onMover, onEditar, onDelet
       {/* Header */}
       <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center gap-2 shrink-0">
         <Icon size={13} style={{ color: coluna.cor }} />
-        <span className="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-wider flex-1">
+        <span className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex-1">
           {coluna.label}
         </span>
         <span

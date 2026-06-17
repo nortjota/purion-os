@@ -130,19 +130,19 @@ export function UsuariosSettings() {
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Convidar membro</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">E-mail</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">E-mail</label>
               <input className="input-purion w-full" type="email" value={invEmail} onChange={e => setInvEmail(e.target.value)} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Nome</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Nome</label>
               <input className="input-purion w-full" value={invNome} onChange={e => setInvNome(e.target.value)} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Cargo</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Cargo</label>
               <input className="input-purion w-full" value={invCargo} onChange={e => setInvCargo(e.target.value)} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Role</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Role</label>
               <select className="input-purion w-full" value={invRole} onChange={e => setInvRole(e.target.value as 'admin' | 'membro')}>
                 <option value="membro">Membro</option>
                 <option value="admin">Admin</option>
@@ -161,7 +161,7 @@ export function UsuariosSettings() {
           <thead>
             <tr className="border-b border-[var(--border)]">
               {['Avatar', 'Nome', 'E-mail', 'Cargo', 'Role', 'Status', 'Última atividade', 'Ações'].map(h => (
-                <th key={h} className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">{h}</th>
+                <th key={h} className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">{h}</th>
               ))}
             </tr>
           </thead>
@@ -218,22 +218,22 @@ export function UsuariosSettings() {
             <h3 className="text-sm font-bold text-[var(--text-primary)] mb-4">Editar usuário</h3>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[#8A8A8A] block mb-1">Nome</label>
+                <label className="text-xs text-[var(--text-secondary)] block mb-1">Nome</label>
                 <input className="input-purion w-full" value={editNome} onChange={e => setEditNome(e.target.value)} />
               </div>
               <div>
-                <label className="text-xs text-[#8A8A8A] block mb-1">Cargo</label>
+                <label className="text-xs text-[var(--text-secondary)] block mb-1">Cargo</label>
                 <input className="input-purion w-full" value={editCargo} onChange={e => setEditCargo(e.target.value)} />
               </div>
               <div>
-                <label className="text-xs text-[#8A8A8A] block mb-1">Role</label>
+                <label className="text-xs text-[var(--text-secondary)] block mb-1">Role</label>
                 <select className="input-purion w-full" value={editRole} onChange={e => setEditRole(e.target.value as 'admin' | 'membro')}>
                   <option value="membro">Membro</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs text-[#8A8A8A] block mb-1">Disponibilidade</label>
+                <label className="text-xs text-[var(--text-secondary)] block mb-1">Disponibilidade</label>
                 <input className="input-purion w-full" value={editDisponibilidade} onChange={e => setEditDisponibilidade(e.target.value)} />
               </div>
             </div>

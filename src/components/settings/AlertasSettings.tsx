@@ -70,7 +70,7 @@ export function AlertasSettings() {
 
   const Field = ({ label, value, onChange, step }: { label: string; value: number; onChange: (v: number) => void; step?: number }) => (
     <div>
-      <label className="text-xs text-[#8A8A8A] block mb-1">{label}</label>
+      <label className="text-xs text-[var(--text-secondary)] block mb-1">{label}</label>
       <input type="number" step={step} className="input-purion w-full" value={value}
         onChange={e => onChange(Number(e.target.value))} />
     </div>

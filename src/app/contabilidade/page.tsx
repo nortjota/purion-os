@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import ContabilidadeDashboard from '@/components/contabilidade/ContabilidadeDashboard'
 
 export const metadata: Metadata = {
-  title: 'Contabilidade — PURION OS',
+  title: 'Contabilidade',
 }
 
 export default function ContabilidadePage() {

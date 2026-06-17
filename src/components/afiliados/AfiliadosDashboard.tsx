@@ -149,29 +149,25 @@ export function AfiliadosDashboard() {
   }
 
   return (
-    <div className="page-content">
+    <div className="page-content section-gap">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+      <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Afiliados</h1>
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '4px 0 0' }}>
+          <h1 className="page-title">Afiliados</h1>
+          <p className="caption mt-1">
             {afiliados.length} afiliado{afiliados.length !== 1 ? 's' : ''} cadastrado{afiliados.length !== 1 ? 's' : ''}
           </p>
         </div>
         <button
           onClick={() => { setEditando(null); setModalAberto(true) }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 18px', borderRadius: 8, border: 'none',
-            background: '#C9A84C', color: '#0D0D0D', fontWeight: 600, fontSize: 13, cursor: 'pointer',
-          }}
+          className="btn btn-primary"
         >
           <Plus size={15} /> Novo afiliado
         </button>
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
         {KPI_CARDS.map(({ label, value, icon: Icon, cor, sub }) => (
           <div key={label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
@@ -187,7 +183,7 @@ export function AfiliadosDashboard() {
       </div>
 
       {/* Gráficos */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }} className="grid-mobile-1">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="grid-mobile-1">
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 20 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 16px' }}>Vendas via afiliados — últimos 30 dias</p>
           <GraficoVendasDiarias dados={dadosVendasDiarias} />
@@ -202,7 +198,7 @@ export function AfiliadosDashboard() {
       </div>
 
       {/* Filtros */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
           <Search size={14} color="var(--text-secondary)" />
           <input
@@ -213,7 +209,7 @@ export function AfiliadosDashboard() {
         </div>
         <select
           value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}
-          style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface)', color: 'var(--text-primary)', fontSize: 13, cursor: 'pointer' }}
+          className="select-purion" style={{ width: 'auto' }}
         >
           <option value="todos">Todos os status</option>
           <option value="ativo">Ativo</option>
@@ -223,7 +219,7 @@ export function AfiliadosDashboard() {
         </select>
         <select
           value={filtroPlataforma} onChange={e => setFiltroPlataforma(e.target.value)}
-          style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface)', color: 'var(--text-primary)', fontSize: 13, cursor: 'pointer' }}
+          className="select-purion" style={{ width: 'auto' }}
         >
           <option value="todos">Todas as plataformas</option>
           <option value="TikTok">TikTok</option>

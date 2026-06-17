@@ -456,7 +456,7 @@ export function MarketingDashboard() {
               <select
                 value={filtroPlatforma}
                 onChange={(e) => setFiltroPlatforma(e.target.value)}
-                className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[#8A8A8A] outline-none focus:border-[#C9A84C]"
+                className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[#C9A84C]"
               >
                 <option value="todos">Todas plataformas</option>
                 <option value="instagram">Instagram</option>
@@ -467,7 +467,7 @@ export function MarketingDashboard() {
             <select
               value={filtroStatus}
               onChange={(e) => setFiltroStatus(e.target.value)}
-              className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[#8A8A8A] outline-none focus:border-[#C9A84C]"
+              className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[#C9A84C]"
             >
               <option value="todos">Todos os status</option>
               <option value="Não enviado">Não enviado</option>
@@ -542,7 +542,7 @@ export function MarketingDashboard() {
                 </span>
 
                 {/* Data envio */}
-                <span className="text-xs text-[#8A8A8A]">
+                <span className="text-xs text-[var(--text-secondary)]">
                   {dataEnvio
                     ? new Date(dataEnvio + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
                     : '—'
@@ -586,7 +586,7 @@ export function MarketingDashboard() {
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-xs text-[#8A8A8A] min-w-[130px] text-center">
+            <span className="text-xs text-[var(--text-secondary)] min-w-[130px] text-center">
               {fmtDia(diasSemanaAtual[0])} — {fmtDia(diasSemanaAtual[6])}
             </span>
             <button
@@ -615,7 +615,7 @@ export function MarketingDashboard() {
                 {/* Header do dia */}
                 <div className="text-center">
                   <p className="text-[10px] font-bold text-[#6B6B6B] uppercase">{DIAS_SEMANA[idx]}</p>
-                  <p className="text-xs text-[#8A8A8A]">{fmtDia(dia)}</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{fmtDia(dia)}</p>
                 </div>
 
                 {/* Coluna do dia */}
@@ -632,7 +632,7 @@ export function MarketingDashboard() {
                         {c.formato}
                       </span>
                       {/* Descrição */}
-                      <p className="text-[10px] text-[#8A8A8A] leading-tight line-clamp-2">{c.descricao}</p>
+                      <p className="text-[10px] text-[var(--text-secondary)] leading-tight line-clamp-2">{c.descricao}</p>
                       {/* Footer: status + responsável */}
                       <div className="flex items-center justify-between mt-0.5">
                         <span className={`text-[9px] font-semibold ${STATUS_CONTEUDO_COLOR[c.status]}`}>

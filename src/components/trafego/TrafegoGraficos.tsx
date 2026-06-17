@@ -82,7 +82,7 @@ export default function TrafegoGraficos({ tipo, empilhadoData = [], linhaData = 
   const isDark = theme === 'dark'
 
   const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
-  const tickFill   = isDark ? '#4A4A4A' : '#888880'
+  const tickFill   = isDark ? '#4A4A4A' : '#6B6B66'
 
   if (tipo === 'empilhado') {
     return (
@@ -101,7 +101,7 @@ export default function TrafegoGraficos({ tipo, empilhadoData = [], linhaData = 
             axisLine={false} tickLine={false} width={40}
           />
           <Tooltip content={<TooltipEmpilhado />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-          <Legend formatter={(v) => <span style={{ color: '#8A8A8A', fontSize: 10 }}>{v}</span>} />
+          <Legend formatter={(v) => <span style={{ color: tickFill, fontSize: 10 }}>{v}</span>} />
           <Bar dataKey="meta"   name="Meta"   stackId="a" fill="#1877F2" radius={[0, 0, 0, 0]} />
           <Bar dataKey="google" name="Google" stackId="a" fill="#34A853" radius={[0, 0, 0, 0]} />
           <Bar dataKey="tiktok" name="TikTok" stackId="a" fill="#EE1D52" radius={[4, 4, 0, 0]} />

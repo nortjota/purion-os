@@ -400,13 +400,13 @@ function DailyCard({
           {ultimaEntry.ontemFiz && (
             <div>
               <span className="text-[10px] text-[#6B6B6B]">Ontem fiz: </span>
-              <span className="text-xs text-[#8A8A8A]">{ultimaEntry.ontemFiz}</span>
+              <span className="text-xs text-[var(--text-secondary)]">{ultimaEntry.ontemFiz}</span>
             </div>
           )}
           {ultimaEntry.hojeFarei && (
             <div>
               <span className="text-[10px] text-[#6B6B6B]">Hoje farei: </span>
-              <span className="text-xs text-[#8A8A8A]">{ultimaEntry.hojeFarei}</span>
+              <span className="text-xs text-[var(--text-secondary)]">{ultimaEntry.hojeFarei}</span>
             </div>
           )}
           {ultimaEntry.bloqueadoEm && (
@@ -471,7 +471,7 @@ function DailyCard({
         <div className="border-t border-[var(--border)]">
           <button
             onClick={() => setHistorico((h) => !h)}
-            className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-[#6B6B6B] hover:text-[#8A8A8A]"
+            className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-[#6B6B6B] hover:text-[var(--text-secondary)]"
           >
             <span>Histórico ({historicoEntries.length} entradas)</span>
             {historico ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -627,7 +627,7 @@ export function ReunioesDashboard() {
                         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Pauta</p>
                         <ul className="space-y-1">
                           {reuniao.pauta.map((item, i) => (
-                            <li key={i} className="flex items-start gap-2 text-xs text-[#8A8A8A]">
+                            <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
                               <span className="text-[#4A4A4A] shrink-0">{i + 1}.</span>
                               {item}
                             </li>
@@ -640,7 +640,7 @@ export function ReunioesDashboard() {
                         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Decisões</p>
                         <ul className="space-y-1">
                           {reuniao.decisoes.map((d, i) => (
-                            <li key={i} className="flex items-start gap-2 text-xs text-[#8A8A8A]">
+                            <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
                               <Check size={11} className="text-emerald-400 shrink-0 mt-0.5" />
                               {d}
                             </li>
@@ -651,7 +651,7 @@ export function ReunioesDashboard() {
                     {reuniao.ata && (
                       <div className="md:col-span-2">
                         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Ata</p>
-                        <p className="text-xs text-[#8A8A8A] leading-relaxed">{reuniao.ata}</p>
+                        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{reuniao.ata}</p>
                       </div>
                     )}
                   </div>
@@ -796,11 +796,11 @@ export function ReunioesDashboard() {
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${SOCIO_COLOR[decisao.propostoPor]}`}>
                     {SOCIO_INICIAL[decisao.propostoPor]}
                   </div>
-                  <span className="text-xs text-[#8A8A8A]">{SOCIO_NOME[decisao.propostoPor]}</span>
+                  <span className="text-xs text-[var(--text-secondary)]">{SOCIO_NOME[decisao.propostoPor]}</span>
                 </div>
 
                 {/* Data */}
-                <span className="text-xs text-[#8A8A8A]">{fmtDataSimples(decisao.data)}</span>
+                <span className="text-xs text-[var(--text-secondary)]">{fmtDataSimples(decisao.data)}</span>
 
                 {/* Votos M · J · G */}
                 <div className="flex items-center gap-2">

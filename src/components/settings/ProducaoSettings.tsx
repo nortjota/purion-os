@@ -101,27 +101,27 @@ export function ProducaoSettings() {
                 <div className="p-3 border-t border-[var(--border)] space-y-3 bg-[var(--bg-surface-2)]">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-[#8A8A8A] block mb-1">Nome</label>
+                      <label className="text-xs text-[var(--text-secondary)] block mb-1">Nome</label>
                       <input className="input-purion w-full" value={sku.nome}
                         onChange={e => setSkus(prev => prev.map(s => s.id === sku.id ? { ...s, nome: e.target.value } : s))} />
                     </div>
                     <div>
-                      <label className="text-xs text-[#8A8A8A] block mb-1">Concentração</label>
+                      <label className="text-xs text-[var(--text-secondary)] block mb-1">Concentração</label>
                       <input className="input-purion w-full" value={sku.concentracao}
                         onChange={e => setSkus(prev => prev.map(s => s.id === sku.id ? { ...s, concentracao: e.target.value } : s))} />
                     </div>
                     <div>
-                      <label className="text-xs text-[#8A8A8A] block mb-1">Volume (ml)</label>
+                      <label className="text-xs text-[var(--text-secondary)] block mb-1">Volume (ml)</label>
                       <input type="number" className="input-purion w-full" value={sku.volumeMl}
                         onChange={e => setSkus(prev => prev.map(s => s.id === sku.id ? { ...s, volumeMl: Number(e.target.value) } : s))} />
                     </div>
                     <div>
-                      <label className="text-xs text-[#8A8A8A] block mb-1">Descrição</label>
+                      <label className="text-xs text-[var(--text-secondary)] block mb-1">Descrição</label>
                       <input className="input-purion w-full" value={sku.descricao}
                         onChange={e => setSkus(prev => prev.map(s => s.id === sku.id ? { ...s, descricao: e.target.value } : s))} />
                     </div>
                     <div className="col-span-2">
-                      <label className="text-xs text-[#8A8A8A] block mb-1">Notas Olfativas</label>
+                      <label className="text-xs text-[var(--text-secondary)] block mb-1">Notas Olfativas</label>
                       <input className="input-purion w-full" value={sku.notasOlfativas}
                         onChange={e => setSkus(prev => prev.map(s => s.id === sku.id ? { ...s, notasOlfativas: e.target.value } : s))} />
                     </div>
@@ -138,7 +138,7 @@ export function ProducaoSettings() {
         <h2 className="text-sm font-bold text-[var(--text-primary)] mb-4">Formato de Lote</h2>
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Formato</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Formato</label>
             <input className="input-purion w-full" value={formatoLote}
               onChange={e => setFormatoLote(e.target.value)} />
           </div>
@@ -214,27 +214,27 @@ export function ProducaoSettings() {
           <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Novo fornecedor</p>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Nome</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Nome</label>
               <input className="input-purion w-full" value={novoForn.nome}
                 onChange={e => setNovoForn(p => ({ ...p, nome: e.target.value }))} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Contato</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Contato</label>
               <input className="input-purion w-full" value={novoForn.contato}
                 onChange={e => setNovoForn(p => ({ ...p, contato: e.target.value }))} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Produtos</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Produtos</label>
               <input className="input-purion w-full" value={novoForn.produtos}
                 onChange={e => setNovoForn(p => ({ ...p, produtos: e.target.value }))} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Prazo médio (dias)</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Prazo médio (dias)</label>
               <input type="number" className="input-purion w-full" value={novoForn.prazoMedio}
                 onChange={e => setNovoForn(p => ({ ...p, prazoMedio: Number(e.target.value) }))} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Avaliação (1-5)</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Avaliação (1-5)</label>
               <input type="number" min={1} max={5} className="input-purion w-full" value={novoForn.avaliacao}
                 onChange={e => setNovoForn(p => ({ ...p, avaliacao: Number(e.target.value) }))} />
             </div>

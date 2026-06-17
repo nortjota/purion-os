@@ -198,11 +198,11 @@ export function AuditoriaSettings() {
             <option value="DELETE">DELETE</option>
           </select>
           <div className="flex items-center gap-1">
-            <label className="text-xs text-[#8A8A8A]">De</label>
+            <label className="text-xs text-[var(--text-secondary)]">De</label>
             <input type="date" className="input-purion" value={filterInicio} onChange={e => setFilterInicio(e.target.value)} />
           </div>
           <div className="flex items-center gap-1">
-            <label className="text-xs text-[#8A8A8A]">Até</label>
+            <label className="text-xs text-[var(--text-secondary)]">Até</label>
             <input type="date" className="input-purion" value={filterFim} onChange={e => setFilterFim(e.target.value)} />
           </div>
           <button className="btn btn-sm btn-secondary" onClick={loadLogs}>Filtrar</button>
@@ -220,7 +220,7 @@ export function AuditoriaSettings() {
             <thead>
               <tr className="border-b border-[var(--border)]">
                 {['', 'Data/Hora', 'Usuário', 'Ação', 'Módulo', 'Resumo'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">{h}</th>
+                  <th key={h} className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">{h}</th>
                 ))}
               </tr>
             </thead>

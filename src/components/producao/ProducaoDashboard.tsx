@@ -288,7 +288,7 @@ export function ProducaoDashboard() {
                     <span className="text-[10px] font-bold text-[#6B6B6B] tracking-widest uppercase">
                       {SKU_LABEL[sku.sku]}
                     </span>
-                    <p className="text-xs text-[#8A8A8A]">{SKU_SUB[sku.sku]}</p>
+                    <p className="text-xs text-[var(--text-secondary)]">{SKU_SUB[sku.sku]}</p>
                   </div>
                   {alerta && (
                     <span className="flex items-center gap-1 text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full">
@@ -408,7 +408,7 @@ export function ProducaoDashboard() {
                     <>
                       <span className="text-xs font-mono text-[#C9A84C]">{lote.codigo}</span>
                       <span className="text-xs text-[var(--text-primary)]">{lote.produto}</span>
-                      <span className="text-xs text-[#8A8A8A]">{fmt(lote.dataInicio)}</span>
+                      <span className="text-xs text-[var(--text-secondary)]">{fmt(lote.dataInicio)}</span>
                       <span className="text-xs text-[var(--text-primary)] font-bold">{lote.quantidadeProduzida}</span>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full self-center ${statusColor}`}>
                         {statusLabel}
@@ -576,7 +576,7 @@ export function ProducaoDashboard() {
                           <AlertTriangle size={10} /> EXPIRADO
                         </span>
                       ) : (
-                        <span className="text-[10px] text-[#8A8A8A] flex items-center gap-1">
+                        <span className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
                           <Clock size={10} /> {horasRestantes}h restantes
                         </span>
                       )}
@@ -601,7 +601,7 @@ export function ProducaoDashboard() {
                     {pedido.itens.map((i) => `${i.quantidade}× ${SKU_LABEL[i.sku]}`).join(', ')}
                   </p>
                 </div>
-                <span className="text-xs text-[#8A8A8A]">{fmt(pedido.dataPedido)}</span>
+                <span className="text-xs text-[var(--text-secondary)]">{fmt(pedido.dataPedido)}</span>
 
                 {/* SLA bar */}
                 <div className="flex flex-col gap-1">
@@ -613,7 +613,7 @@ export function ProducaoDashboard() {
                         <AlertTriangle size={10} /> EXPIRADO
                       </span>
                     ) : (
-                      <span className="text-[10px] text-[#8A8A8A] flex items-center gap-1">
+                      <span className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
                         <Clock size={10} /> {horasRestantes}h restantes
                       </span>
                     )}

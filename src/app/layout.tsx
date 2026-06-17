@@ -16,11 +16,14 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s — PURION OS',
+    template: 'PURION OS — %s',
     default: 'PURION OS',
   },
   description: 'Sistema operacional para marcas DTC',
-  icons: { icon: '/favicon.ico' },
+  icons: [
+    { rel: 'icon', url: '/favicon.svg', type: 'image/svg+xml' },
+    { rel: 'icon', url: '/favicon.ico', sizes: '32x32' },
+  ],
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

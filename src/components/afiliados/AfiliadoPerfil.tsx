@@ -203,13 +203,13 @@ export function AfiliadoPerfil({ id }: { id: string }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button onClick={copiarLink} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface-2)', cursor: 'pointer', fontSize: 12, color: copiado ? '#10B981' : 'var(--text-secondary)' }}>
+            <button onClick={copiarLink} className="btn btn-secondary btn-sm" style={copiado ? { color: '#22C55E', borderColor: 'rgba(34,197,94,0.3)' } : {}}>
               {copiado ? <Check size={13} /> : <Copy size={13} />} {copiado ? 'Copiado' : 'Copiar link'}
             </button>
-            <button onClick={() => setModalEditar(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface-2)', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)' }}>
+            <button onClick={() => setModalEditar(true)} className="btn btn-secondary btn-sm">
               <Pencil size={13} /> Editar
             </button>
-            <button onClick={() => setModalPagar(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: 'none', background: '#C9A84C', cursor: 'pointer', fontSize: 12, color: '#0D0D0D', fontWeight: 600 }}>
+            <button onClick={() => setModalPagar(true)} className="btn btn-primary btn-sm">
               <DollarSign size={13} /> Pagar comissão
             </button>
           </div>

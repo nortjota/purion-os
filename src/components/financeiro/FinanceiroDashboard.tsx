@@ -442,7 +442,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
 
   const selectCls = `
     bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-1.5
-    text-xs text-[#8A8A8A] focus:outline-none focus:border-[rgba(201,168,76,0.4)]
+    text-xs text-[var(--text-secondary)] focus:outline-none focus:border-[rgba(201,168,76,0.4)]
     cursor-pointer transition-colors
   `
 
@@ -557,7 +557,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                       </td>
                     )}
                     {!isMobile && (
-                      <td className="px-4 py-2.5 text-[#8A8A8A] max-w-[240px] truncate">
+                      <td className="px-4 py-2.5 text-[var(--text-secondary)] max-w-[240px] truncate">
                         {linha.descricao}
                       </td>
                     )}

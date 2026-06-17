@@ -80,23 +80,23 @@ export function FinanceiroSettings() {
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Markup %</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Markup %</label>
               <input type="number" className="input-purion w-full" value={markup}
                 onChange={e => setMarkup(Number(e.target.value))} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Margem mínima alvo %</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Margem mínima alvo %</label>
               <input type="number" className="input-purion w-full" value={margemMinima}
                 onChange={e => setMargemMinima(Number(e.target.value))} />
             </div>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Alerta margem abaixo de %</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Alerta margem abaixo de %</label>
               <input type="number" className="input-purion w-full" value={alertaMargem}
                 onChange={e => setAlertaMargem(Number(e.target.value))} />
             </div>
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Fórmula de precificação</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Fórmula de precificação</label>
             <select className="input-purion w-full" value={formula}
               onChange={e => setFormula(e.target.value as 'margem' | 'markup')}>
               <option value="margem">Custo / (1 - margem)</option>
@@ -105,12 +105,12 @@ export function FinanceiroSettings() {
           </div>
           <div className="bg-[var(--bg-surface-2)] rounded-lg p-4 flex items-end gap-4">
             <div className="flex-1">
-              <label className="text-xs text-[#8A8A8A] block mb-1">Custo do produto R$</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Custo do produto R$</label>
               <input type="number" className="input-purion w-full" value={custoProduto}
                 onChange={e => setCustoProduto(Number(e.target.value))} />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-[#8A8A8A] mb-1">Preço sugerido</p>
+              <p className="text-xs text-[var(--text-secondary)] mb-1">Preço sugerido</p>
               <p className="text-xl font-bold text-[#C9A84C]">
                 R$ {precoSugerido.toFixed(2)}
               </p>

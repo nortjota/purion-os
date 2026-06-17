@@ -45,7 +45,7 @@ function CustomTooltip({ active, payload, label }: {
               className="w-2 h-2 rounded-full shrink-0"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-[#8A8A8A]">{LABELS[entry.name] ?? entry.name}</span>
+            <span className="text-[var(--text-secondary)]">{LABELS[entry.name] ?? entry.name}</span>
           </div>
           <span className="font-semibold" style={{ color: entry.color }}>
             {entry.name === 'margem'

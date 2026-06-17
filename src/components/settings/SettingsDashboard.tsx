@@ -44,7 +44,7 @@ function InputNum({
 }) {
   return (
     <div>
-      <label className="text-xs text-[#8A8A8A] block mb-1">{label}</label>
+      <label className="text-xs text-[var(--text-secondary)] block mb-1">{label}</label>
       <div className="flex items-center bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C] transition-colors">
         {prefix && (
           <span className="px-2.5 py-2 text-xs text-[#4A4A4A] border-r border-[#3A3A3A] bg-[var(--bg-surface-2)]">
@@ -79,7 +79,7 @@ function InputPwd({
   const [visible, setVisible] = useState(false)
   return (
     <div>
-      <label className="text-xs text-[#8A8A8A] block mb-1">{label}</label>
+      <label className="text-xs text-[var(--text-secondary)] block mb-1">{label}</label>
       <div className="flex items-center bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C]">
         <input
           type={visible ? 'text' : 'password'}
@@ -338,7 +338,7 @@ export function SettingsDashboard() {
 
           {/* Precificação */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Precificação</h3>
+            <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Precificação</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
                 label="Markup padrão %"
@@ -365,7 +365,7 @@ export function SettingsDashboard() {
           {/* Reinvestimento */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                 Reinvestimento do Lucro
               </h3>
               <div className="flex items-center gap-2">
@@ -452,7 +452,7 @@ export function SettingsDashboard() {
       {abaAtiva === 'metas' && (
         <div className="space-y-4">
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Faturamento</h3>
+            <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputNum
                 label="Meta faturamento 90 dias"
@@ -469,7 +469,7 @@ export function SettingsDashboard() {
             </div>
           </div>
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Crescimento Mensal</h3>
+            <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Crescimento Mensal</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
                 label="Meta leads B2B / mês"
@@ -510,7 +510,7 @@ export function SettingsDashboard() {
       {abaAtiva === 'alertas' && (
         <div className="space-y-4">
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Limites de Performance</h3>
+            <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Limites de Performance</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputNum
                 label="ROAS mínimo"
@@ -529,7 +529,7 @@ export function SettingsDashboard() {
             </div>
           </div>
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Orçamento Diário Máximo</h3>
+            <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Orçamento Diário Máximo</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
                 label="Meta Ads (por dia)"
@@ -570,7 +570,7 @@ export function SettingsDashboard() {
       {abaAtiva === 'estoque' && (
         <div className="space-y-4">
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Thresholds de Alerta por SKU</h3>
+            <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Thresholds de Alerta por SKU</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputNum
                 label="Threshold NOIR (un)"
@@ -625,7 +625,7 @@ export function SettingsDashboard() {
             </div>
           </div>
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider mb-4">Expedição</h3>
+            <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Expedição</h3>
             <div className="max-w-xs">
               <InputNum
                 label="Prazo máximo de expedição (horas)"
@@ -668,7 +668,7 @@ export function SettingsDashboard() {
               <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center">
                 <span className="text-[8px] font-black text-white">f</span>
               </div>
-              <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider">Meta Ads</h3>
+              <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Meta Ads</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputPwd label="Access Token" value={getApi('metaToken')} onChange={(v) => setApi('metaToken', v)} />
@@ -682,7 +682,7 @@ export function SettingsDashboard() {
               <div className="w-5 h-5 rounded bg-red-500 flex items-center justify-center">
                 <span className="text-[8px] font-black text-white">G</span>
               </div>
-              <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider">Google Ads</h3>
+              <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Google Ads</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputPwd label="Client ID" value={getApi('googleClientId')} onChange={(v) => setApi('googleClientId', v)} />
@@ -699,7 +699,7 @@ export function SettingsDashboard() {
               <div className="w-5 h-5 rounded bg-[var(--bg-surface)] border border-[#3A3A3A] flex items-center justify-center">
                 <span className="text-[8px] font-black text-[var(--text-primary)]">TT</span>
               </div>
-              <h3 className="text-xs font-bold text-[#8A8A8A] uppercase tracking-wider">TikTok Ads</h3>
+              <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">TikTok Ads</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputPwd label="Access Token" value={getApi('tiktokToken')} onChange={(v) => setApi('tiktokToken', v)} />
