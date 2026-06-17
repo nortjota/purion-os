@@ -82,16 +82,20 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
   }
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 200,
-      background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 16,
-    }}>
-      <div style={{
-        background: 'var(--bg-primary)', borderRadius: 12, border: '1px solid var(--border)',
-        width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto',
-        display: 'flex', flexDirection: 'column',
+    <div
+      onClick={onFechar}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 16,
       }}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: 'var(--bg-primary)', borderRadius: 12, border: '1px solid var(--border)',
+          width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto',
+          display: 'flex', flexDirection: 'column',
+        }}>
         {/* Header */}
         <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>

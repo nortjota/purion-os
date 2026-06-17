@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/components/ui/Toast'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import type { Perfil } from '@/lib/auth-types'
 import { Pencil, UserX, ChevronDown, ChevronUp, UserPlus } from 'lucide-react'
 
@@ -52,7 +53,8 @@ export function UsuariosSettings() {
     if (!supabase) return
     const sb = supabase
     const load = async () => {
-      const { data } = await sb.from('perfis').select('*')
+      const { data, error: loadErr } = await sb.from('perfis').select('*')
+      dbLog('SELECT', 'perfis', loadErr, `${data?.length ?? 0} rows`)
       if (data && data.length > 0) {
         setUsers(data.map((p: Perfil) => ({
           id: p.id,

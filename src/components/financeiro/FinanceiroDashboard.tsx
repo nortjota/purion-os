@@ -25,6 +25,7 @@ import {
   calcularPrecificacao,
   formatarMoeda,
   formatarPercentual,
+  formatarDataBR,
   LABEL_CATEGORIA_RECEITA,
   LABEL_CATEGORIA_DESPESA,
 } from '@/lib/calculos'
@@ -100,14 +101,8 @@ interface ModalSplitProps {
 
 function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      {/* Card */}
-      <div className="relative z-10 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-md shadow-2xl">
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div>
@@ -192,7 +187,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
       ? Object.entries(LABEL_CATEGORIA_RECEITA)
       : Object.entries(LABEL_CATEGORIA_DESPESA)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setErro('')
 
@@ -201,6 +196,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
     if (!categoria)                  { setErro('Selecione uma categoria.'); return }
     if (!descricao.trim())           { setErro('Informe uma descrição.'); return }
 
+    let ok = false
     if (tipo === 'receita') {
       const nova: Omit<Receita, 'id'> = {
         descricao: descricao.trim(),
@@ -210,7 +206,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
         regiao: perfilAtivo === 'matheus' ? 'DF' : perfilAtivo === 'gabriel' ? 'SP' : 'SC',
         responsavel: perfilAtivo,
       }
-      adicionarReceita(nova)
+      ok = await adicionarReceita(nova)
     } else {
       const nova: Omit<Despesa, 'id'> = {
         descricao: descricao.trim(),
@@ -220,8 +216,10 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
         regiao: perfilAtivo === 'matheus' ? 'DF' : perfilAtivo === 'gabriel' ? 'SP' : 'SC',
         responsavel: perfilAtivo,
       }
-      adicionarDespesa(nova)
+      ok = await adicionarDespesa(nova)
     }
+
+    if (!ok) return
 
     onRegistrado(tipo, valorNum)
     // Resetar form
@@ -384,12 +382,12 @@ function CalculadoraPrecificacao() {
               </span>
             </div>
           ))}
-          <p className="text-[10px] text-[#3A3A3A] text-center pt-1">
+          <p className="text-[10px] text-[var(--text-secondary)] text-center pt-1">
             Fórmula: Preço = Custo ÷ 0,35 (margem 65%)
           </p>
         </div>
       ) : (
-        <div className="py-6 text-center text-[#3A3A3A] text-xs">
+        <div className="py-6 text-center text-[var(--text-secondary)] text-xs">
           Digite o custo para ver o preço sugerido
         </div>
       )}
@@ -525,7 +523,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
           <tbody>
             {linhasFiltradas.length === 0 ? (
               <tr>
-                <td colSpan={isMobile ? 3 : 5} className="px-4 py-8 text-center text-[#3A3A3A] text-xs">
+                <td colSpan={isMobile ? 3 : 5} className="px-4 py-8 text-center text-[var(--text-secondary)] text-xs">
                   Nenhum registro encontrado
                 </td>
               </tr>
@@ -539,7 +537,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                     style={isMobile ? { cursor: 'pointer' } : {}}
                   >
                     <td className="px-4 py-2.5 text-[#6B6B6B] whitespace-nowrap">
-                      {linha.data}
+                      {formatarDataBR(linha.data)}
                     </td>
                     <td className="px-4 py-2.5">
                       <span

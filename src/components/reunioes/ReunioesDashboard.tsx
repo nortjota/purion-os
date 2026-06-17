@@ -10,6 +10,7 @@ import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Tr
 import { useMobile } from '@/hooks/useMobile'
 import { useReunioes } from '@/hooks/useReunioes'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { useToast } from '@/components/ui/Toast'
 import {
   usePurionStore,
   type PerfilUsuario,
@@ -511,6 +512,7 @@ export function ReunioesDashboard() {
     adicionarReuniao, adicionarDecisao, atualizarDecisao, adicionarDaily,
     deletarReuniao, deletarDecisao,
   } = useReunioes()
+  const { success } = useToast()
   const [deletandoReuniao, setDeletandoReuniao] = useState<ReuniaoItem | null>(null)
   const [deletandoDecisao, setDeletandoDecisao] = useState<DecisaoEstrategica | null>(null)
   const [modalReuniao, setModalReuniao] = useState(false)
@@ -828,14 +830,14 @@ export function ReunioesDashboard() {
       {/* ── Modais ── */}
       {modalReuniao && (
         <ModalReuniao
-          onSalvar={(r) => { adicionarReuniao(r); setModalReuniao(false) }}
+          onSalvar={(r) => { adicionarReuniao(r); setModalReuniao(false); success('Reunião criada') }}
           onFechar={() => setModalReuniao(false)}
         />
       )}
       {modalDecisao && (
         <ModalDecisao
           propostoPor={perfilAtivo}
-          onSalvar={(d) => { adicionarDecisao(d); setModalDecisao(false) }}
+          onSalvar={(d) => { adicionarDecisao(d); setModalDecisao(false); success('Decisão registrada') }}
           onFechar={() => setModalDecisao(false)}
         />
       )}

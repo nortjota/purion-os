@@ -17,6 +17,7 @@ import { useMobile } from '@/hooks/useMobile'
 import { BottomSheet } from '@/components/ui/BottomSheet'
 import { useTarefas } from '@/hooks/useTarefas'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { formatarDataBR } from '@/lib/calculos'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -176,7 +177,7 @@ function TarefaCard({ tarefa, onMover, onEditar, onDeletar }: TarefaCardProps) {
           `}>
             <Calendar size={8} />
             {vencida && '⚠ '}
-            {tarefa.dueDate}
+            {formatarDataBR(tarefa.dueDate)}
           </div>
         ) : (
           <span />
@@ -306,7 +307,7 @@ function ModalNovaTarefa({ statusInicial, perfilAtivo, onCriar, onFechar }: Moda
   const colLabel = COLUNAS.find((c) => c.id === statusInicial)?.label ?? statusInicial
 
   return (
-    <div className="modal-backdrop">
+    <div className="modal-backdrop" onClick={onFechar}>
       <div className="modal-container max-w-lg" onClick={(e) => e.stopPropagation()}>
 
         {/* Header */}
@@ -486,7 +487,7 @@ function ModalEditarTarefa({ tarefa, onSalvar, onFechar }: ModalEditarTarefaProp
   const inputCls = 'input-purion'
 
   return (
-    <div className="modal-backdrop">
+    <div className="modal-backdrop" onClick={onFechar}>
       <div className="modal-container max-w-lg" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div>
@@ -773,7 +774,7 @@ export function TarefasDashboard() {
                         background: vencida ? 'rgba(232,82,56,0.15)' : 'var(--bg-surface-2)',
                         color: vencida ? '#E85238' : 'var(--text-secondary)',
                       }}>
-                        {t.dueDate}
+                        {formatarDataBR(t.dueDate)}
                       </span>
                     )}
                   </div>
@@ -822,7 +823,7 @@ export function TarefasDashboard() {
                 {[
                   { label: 'Prioridade', valor: PRIORIDADE_CONFIG[mobileTarefaAtual.prioridade].label },
                   { label: 'Módulo', valor: mobileTarefaAtual.modulo },
-                  { label: 'Prazo', valor: mobileTarefaAtual.dueDate ?? 'Sem prazo' },
+                  { label: 'Prazo', valor: mobileTarefaAtual.dueDate ? formatarDataBR(mobileTarefaAtual.dueDate) : 'Sem prazo' },
                   { label: 'Status', valor: COLUNAS.find((c) => c.id === mobileTarefaAtual.status)?.label ?? '' },
                 ].map(({ label, valor }) => (
                   <div key={label} style={{ background: 'var(--bg-surface-2)', borderRadius: 8, padding: '10px 12px', border: '1px solid var(--border)' }}>

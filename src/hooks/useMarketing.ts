@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type { Creator, PerfilUsuario, StatusCreator } from '@/store'
 
 type Row = Record<string, unknown>
@@ -28,6 +29,8 @@ function toCreator(r: Row): Creator {
 }
 
 export function useMarketing() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) return
@@ -70,7 +73,11 @@ export function useMarketing() {
         notas:             c.notas,
       }).select().single()
       dbLog('INSERT', 'creators', error, data?.id)
-      if (data) usePurionStore.getState().adicionarCreator({ ...c, id: String(data.id), createdAt: String(data.created_at) })
+      if (error) { toastError('Erro ao cadastrar creator', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarCreator({ ...c, id: String(data.id), createdAt: String(data.created_at) })
+        success('Creator cadastrado')
+      }
     },
 
     atualizarCreator: async (id: string, dados: Partial<Creator>) => {
@@ -95,7 +102,9 @@ export function useMarketing() {
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       dbLog('UPDATE', 'creators', error, id)
+      if (error) { toastError('Erro ao salvar creator', error.message); return }
       usePurionStore.getState().atualizarCreator(id, dados)
+      success('Creator atualizado')
     },
 
     deletarCreator: async (id: string) => {
@@ -103,9 +112,11 @@ export function useMarketing() {
       if (sb) {
         const { error } = await sb.from('creators').update({ deleted_at: new Date().toISOString() }).eq('id', id)
         dbLog('DELETE', 'creators', error, id)
+        if (error) { toastError('Erro ao excluir creator', error.message); return }
       }
       const store = usePurionStore.getState()
       store.setCreators(store.creators.filter((c) => c.id !== id))
+      success('Creator excluído', 'Você pode restaurar na Lixeira')
     },
 
     restaurarCreator: async (creator: Creator) => {

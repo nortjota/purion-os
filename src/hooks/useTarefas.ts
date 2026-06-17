@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type { Tarefa, PerfilUsuario, StatusTarefa, PrioridadeTarefa } from '@/store'
 
 // ─── Schema compat: DB uses old values, app uses new values ───────────────────
@@ -69,6 +70,8 @@ function toTarefa(r: Row): Tarefa {
 }
 
 export function useTarefas() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) { console.warn('[useTarefas] supabase não configurado'); return }
@@ -77,6 +80,7 @@ export function useTarefas() {
       const { data, error } = await sb
         .from('tarefas')
         .select('*')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
       dbLog('SELECT', 'tarefas', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setTarefas(data.map(toTarefa))
@@ -110,9 +114,13 @@ export function useTarefas() {
       console.log('[useTarefas] INSERT payload:', payload)
       const { data, error } = await sb.from('tarefas').insert(payload).select().single()
       dbLog('INSERT', 'tarefas', error, data?.id)
-      if (data) usePurionStore.getState().adicionarTarefa({
-        ...t, id: String(data.id), createdAt: String(data.created_at),
-      })
+      if (error) { toastError('Erro ao criar tarefa', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarTarefa({
+          ...t, id: String(data.id), createdAt: String(data.created_at),
+        })
+        success('Tarefa criada')
+      }
     },
 
     atualizarTarefa: async (id: string, dados: Partial<Tarefa>) => {
@@ -133,38 +141,22 @@ export function useTarefas() {
         ...(dados.motivoBloqueio !== undefined && { motivo_bloqueio: dados.motivoBloqueio }),
       }).eq('id', id)
       dbLog('UPDATE', 'tarefas', upErr, id)
+      if (upErr) { toastError('Erro ao salvar tarefa', upErr.message); return }
       usePurionStore.getState().atualizarTarefa(id, dados)
+      if (dados.titulo !== undefined || dados.descricao !== undefined || dados.prioridade !== undefined || dados.dueDate !== undefined || dados.modulo !== undefined || dados.responsavel !== undefined || dados.motivoBloqueio !== undefined) {
+        success('Tarefa atualizada')
+      }
     },
 
     deletarTarefa: async (id: string) => {
       const sb = supabase
       if (sb) {
-        const { error } = await sb.from('tarefas').delete().eq('id', id)
+        const { error } = await sb.from('tarefas').update({ deleted_at: new Date().toISOString() }).eq('id', id)
         dbLog('DELETE', 'tarefas', error, id)
+        if (error) { toastError('Erro ao excluir tarefa', error.message); return }
       }
       usePurionStore.getState().removerTarefa(id)
-    },
-
-    restaurarTarefa: async (tarefa: Tarefa) => {
-      // Hard-delete schema: restore not available; re-insert as new row.
-      const sb = supabase
-      if (!sb) return
-      const { data, error } = await sb.from('tarefas').insert({
-        titulo:          tarefa.titulo,
-        descricao:       tarefa.descricao,
-        status:          STATUS_APP_TO_DB[tarefa.status],
-        prioridade:      PRIO_APP_TO_DB[tarefa.prioridade],
-        responsavel:     tarefa.responsavel,
-        modulo:          tarefa.modulo,
-        due_date:        tarefa.dueDate        ?? null,
-        completed_at:    tarefa.completedAt    ?? null,
-        motivo_bloqueio: tarefa.motivoBloqueio ?? null,
-        tags:            tarefa.tags,
-      }).select().single()
-      dbLog('INSERT', 'tarefas', error, data?.id)
-      if (data) usePurionStore.getState().adicionarTarefa({
-        ...tarefa, id: String(data.id), createdAt: String(data.created_at),
-      })
+      success('Tarefa excluída', 'Você pode restaurar na Lixeira')
     },
   }
 }

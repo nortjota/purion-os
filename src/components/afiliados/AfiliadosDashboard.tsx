@@ -10,6 +10,7 @@ import {
 import { useAfiliados } from '@/hooks/useAfiliados'
 import { AfiliadoModal } from './AfiliadoModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { useToast } from '@/components/ui/Toast'
 import type { Afiliado } from '@/hooks/useAfiliados'
 
 const GraficoVendasDiarias = dynamic(
@@ -41,6 +42,7 @@ function plataformaPrincipal(a: Afiliado) {
 export function AfiliadosDashboard() {
   const router = useRouter()
   const { afiliados, vendas, cliques, carregando, tenantId, criarAfiliado, atualizarAfiliado, deletarAfiliado, pausarAfiliado } = useAfiliados()
+  const { success, error: toastError } = useToast()
 
   const [modalAberto, setModalAberto]         = useState(false)
   const [editando, setEditando]               = useState<Afiliado | null>(null)
@@ -251,7 +253,10 @@ export function AfiliadosDashboard() {
             <tbody>
               {afiliadosFiltrados.length === 0 ? (
                 <tr><td colSpan={9} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)', fontSize: 13 }}>
-                  Nenhum afiliado encontrado
+                  <p style={{ marginBottom: 12 }}>Nenhum afiliado encontrado</p>
+                  <button className="btn btn-primary" onClick={() => setModalAberto(true)} style={{ fontSize: 13 }}>
+                    <Plus size={14} /> Novo afiliado
+                  </button>
                 </td></tr>
               ) : afiliadosFiltrados.map(a => {
                 const m  = metricasPorAfiliado[a.id] ?? { totalCliques: 0, totalVendas: 0, receita: 0, comPendente: 0 }
@@ -333,8 +338,14 @@ export function AfiliadosDashboard() {
           afiliado={editando ?? undefined}
           tenantId={tenantId}
           onSalvar={async dados => {
-            if (editando) await atualizarAfiliado(editando.id, dados)
-            else await criarAfiliado(dados)
+            if (editando) {
+              await atualizarAfiliado(editando.id, dados)
+              success('Afiliado atualizado')
+            } else {
+              const novo = await criarAfiliado(dados)
+              if (novo) success('Afiliado cadastrado')
+              else toastError('Erro ao cadastrar afiliado')
+            }
           }}
           onFechar={() => { setModalAberto(false); setEditando(null) }}
         />

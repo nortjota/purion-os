@@ -8,6 +8,7 @@ import {
   Camera, Play, Link2,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { useAfiliados } from '@/hooks/useAfiliados'
 import { AfiliadoModal } from './AfiliadoModal'
 import { PagamentoModal } from './PagamentoModal'
@@ -66,12 +67,21 @@ export function AfiliadoPerfil({ id }: { id: string }) {
     if (!supabase || !id) return
     ;(async () => {
       setCarregando(true)
-      const [{ data: af }, { data: vd }, { data: cl }, { data: pg }] = await Promise.all([
+      const [
+        { data: af, error: afErr },
+        { data: vd, error: vdErr },
+        { data: cl, error: clErr },
+        { data: pg, error: pgErr },
+      ] = await Promise.all([
         supabase.from('afiliados').select('*').eq('id', id).single(),
         supabase.from('afiliado_vendas').select('*').eq('afiliado_id', id).order('data_venda', { ascending: false }),
         supabase.from('afiliado_cliques').select('*').eq('afiliado_id', id).order('criado_em', { ascending: false }).limit(500),
         supabase.from('afiliado_pagamentos').select('*').eq('afiliado_id', id).order('criado_em', { ascending: false }),
       ])
+      dbLog('SELECT', 'afiliados', afErr, id)
+      dbLog('SELECT', 'afiliado_vendas', vdErr, `afiliado ${id}`)
+      dbLog('SELECT', 'afiliado_cliques', clErr, `afiliado ${id}`)
+      dbLog('SELECT', 'afiliado_pagamentos', pgErr, `afiliado ${id}`)
       if (af) setAfiliado(af as Afiliado)
       setVendas((vd as AfiliadoVenda[]) ?? [])
       setCliques((cl as AfiliadoClique[]) ?? [])

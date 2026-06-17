@@ -20,6 +20,8 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { ViewToggle } from '@/components/ui/ViewToggle'
 import { AdvancedFilters } from '@/components/ui/AdvancedFilters'
 import type { ViewType } from '@/components/ui/ViewToggle'
+import { useToast } from '@/components/ui/Toast'
+import { formatarDataBR } from '@/lib/calculos'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -151,7 +153,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: L
           {diasSem === 0 ? 'Hoje' : `${diasSem}d sem contato`}
         </span>
         {lead.ultimoPedido && (
-          <span className="text-[#3A3A3A]"> · último pedido {lead.ultimoPedido}</span>
+          <span className="text-[#3A3A3A]"> · último pedido {formatarDataBR(lead.ultimoPedido)}</span>
         )}
       </div>
 
@@ -353,8 +355,8 @@ function DrawerLead({
           {[
             { label: 'Ticket médio', valor: formatarMoedaR(lead.valorMedioMensal) + '/mês' },
             { label: 'Tier', valor: `Tier ${lead.tier}` },
-            { label: 'Último pedido', valor: lead.ultimoPedido ?? 'Sem pedido' },
-            { label: 'Cadastrado', valor: lead.createdAt.substring(0, 10) },
+            { label: 'Último pedido', valor: lead.ultimoPedido ? formatarDataBR(lead.ultimoPedido) : 'Sem pedido' },
+            { label: 'Cadastrado', valor: formatarDataBR(lead.createdAt) },
           ].map(({ label, valor }) => (
             <div key={label} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-2.5">
               <p className="text-[9px] text-[#4A4A4A] uppercase tracking-wider mb-1">{label}</p>
@@ -515,6 +517,7 @@ export function CRMDashboard() {
   const isMobile = useMobile()
   const { leads } = usePurionStore()
   const { atualizarLead, deletarLead } = useCRM()
+  const { success } = useToast()
   const [deletandoLead, setDeletandoLead] = useState<Lead | null>(null)
 
   // ── Estado local ──
@@ -614,6 +617,7 @@ export function CRMDashboard() {
     if (!leadSelecionadoId) return
     setNotasMap((prev) => ({ ...prev, [leadSelecionadoId]: notas }))
     atualizarLead(leadSelecionadoId, { notas })
+    success('Notas salvas')
   }
 
   function handleRegistrarContato(texto: string) {
@@ -627,7 +631,12 @@ export function CRMDashboard() {
       ...prev,
       [leadSelecionadoId]: [...(prev[leadSelecionadoId] ?? []), interacao],
     }))
-    atualizarLead(leadSelecionadoId, { updatedAt: new Date().toISOString() })
+    const historicoAtual = leadAtual?.historicoInteracoes ?? []
+    atualizarLead(leadSelecionadoId, {
+      historicoInteracoes: [...historicoAtual, interacao],
+      updatedAt: new Date().toISOString(),
+    })
+    success('Contato registrado')
   }
 
   function handleMoverPara(status: StatusLead) {

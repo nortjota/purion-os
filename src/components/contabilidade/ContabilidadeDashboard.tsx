@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { FileText, AlertTriangle, CheckCircle, ChevronRight } from 'lucide-react'
 import { usePurionStore } from '@/store'
+import { useFinanceiro } from '@/hooks/useFinanceiro'
+import { useToast } from '@/components/ui/Toast'
 import type { FluxoSemanaData, CentroCustoData } from './ContabilidadeGraficos'
 
 const GraficoFluxoCaixa  = dynamic(() => import('./ContabilidadeGraficos').then((m) => ({ default: m.GraficoFluxoCaixa })),  { ssr: false })
@@ -59,7 +61,9 @@ function VarBadgeCusto({ v }: { v: number | null }) {
 }
 
 export default function ContabilidadeDashboard() {
-  const { receitas, despesas, configuracoes, atualizarDespesa } = usePurionStore()
+  const { receitas, despesas, configuracoes } = usePurionStore()
+  const { atualizarFinanceiro } = useFinanceiro()
+  const { success } = useToast()
   const [categorizando, setCategorizando] = useState<string | null>(null)
   const [novaCategoria, setNovaCategoria] = useState<string>('insumos')
 
@@ -314,8 +318,9 @@ export default function ContabilidadeDashboard() {
                           <button
                             className="btn btn-primary btn-sm py-1 text-[11px]"
                             onClick={() => {
-                              atualizarDespesa(d.id, { categoria: novaCategoria as any })
+                              atualizarFinanceiro(d.id, 'despesa', { categoria: novaCategoria as any })
                               setCategorizando(null)
+                              success('Categoria atualizada')
                             }}
                           >
                             Salvar

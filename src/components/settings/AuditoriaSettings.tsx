@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '@/components/ui/Toast'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { Download, ChevronDown, ChevronRight } from 'lucide-react'
 
 interface AuditLog {
@@ -66,7 +67,8 @@ export function AuditoriaSettings() {
       if (filterInicio)  q = q.gte('created_at', filterInicio)
       if (filterFim)     q = q.lte('created_at', filterFim + 'T23:59:59')
 
-      const { data } = await q
+      const { data, error } = await q
+      dbLog('SELECT', 'audit_log', error, `${data?.length ?? 0} rows`)
       if (data) {
         setLogs(data as AuditLog[])
         // counts
@@ -93,10 +95,12 @@ export function AuditoriaSettings() {
   useEffect(() => {
     if (!supabase) return
     const loadMeta = async () => {
-      const [{ data: perfis }, { data: mods }] = await Promise.all([
+      const [{ data: perfis, error: perfisErr }, { data: mods, error: modsErr }] = await Promise.all([
         supabase!.from('perfis').select('id, nome'),
         supabase!.from('audit_log').select('modulo').limit(500),
       ])
+      dbLog('SELECT', 'perfis', perfisErr, `${perfis?.length ?? 0} rows`)
+      dbLog('SELECT', 'audit_log', modsErr, `${mods?.length ?? 0} rows`)
       if (perfis) setUsuarios(perfis.map((p: { id: string; nome: string }) => p.id))
       if (mods) {
         const uniq = [...new Set(mods.map((m: { modulo: string }) => m.modulo).filter(Boolean))] as string[]

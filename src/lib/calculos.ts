@@ -43,6 +43,15 @@ export function formatarDataCurta(iso: string): string {
   }
 }
 
+export function formatarDataBR(data: string | null | undefined): string {
+  if (!data) return '—'
+  try {
+    return format(parseISO(data), 'dd/MM/yyyy', { locale: ptBR })
+  } catch {
+    return data
+  }
+}
+
 export function formatarMesLabel(mesKey: string): string {
   const MESES: Record<string, string> = {
     '01': 'Jan', '02': 'Fev', '03': 'Mar', '04': 'Abr',
