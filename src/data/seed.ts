@@ -239,7 +239,11 @@ export const seedDespesas: Despesa[] = [
 // TAREFAS — 3 por sócio
 // ─────────────────────────────────────────────
 
-export const seedTarefas: Tarefa[] = [
+type SeedTarefaBase = Omit<Tarefa,
+  'startDate' | 'lembreteEm' | 'recorrencia' | 'recorrenciaAte' | 'ordem' | 'estimativaMin' | 'subtarefas' | 'comentarios' | 'anexos'
+>
+
+const seedTarefasBase: SeedTarefaBase[] = [
   // Matheus (DF / CRM)
   {
     id: 'tar-001',
@@ -485,6 +489,19 @@ export const seedTarefas: Tarefa[] = [
     tags: ['estoque', 'sku', 'planilha'],
   },
 ]
+
+export const seedTarefas: Tarefa[] = seedTarefasBase.map((t, idx) => ({
+  ...t,
+  startDate: null,
+  lembreteEm: null,
+  recorrencia: 'nenhuma',
+  recorrenciaAte: null,
+  ordem: idx,
+  estimativaMin: null,
+  subtarefas: [],
+  comentarios: [],
+  anexos: [],
+}))
 
 // ─────────────────────────────────────────────
 // LOTE 001 — Checklist parcialmente aprovado

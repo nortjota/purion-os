@@ -28,6 +28,7 @@ export type TierLead = 'A' | 'B' | 'C'
 
 export type StatusTarefa = 'pendente' | 'em_andamento' | 'concluida' | 'cancelada' | 'bloqueada'
 export type PrioridadeTarefa = 'baixa' | 'media' | 'alta' | 'urgente'
+export type RecorrenciaTarefa = 'nenhuma' | 'diaria' | 'semanal' | 'mensal'
 export type TipoEstabelecimento = 'estetica' | 'detailer' | 'concessionaria'
 
 export type StatusLote = 'em_producao' | 'controle_qualidade' | 'aprovado' | 'reprovado' | 'estoque'
@@ -126,6 +127,33 @@ export interface Despesa {
 // INTERFACES — TAREFAS
 // ─────────────────────────────────────────────
 
+export interface Subtarefa {
+  id: string
+  tarefaId: string
+  titulo: string
+  concluida: boolean
+  ordem: number
+  createdAt: string
+}
+
+export interface Comentario {
+  id: string
+  tarefaId: string
+  autor: string
+  texto: string
+  createdAt: string
+}
+
+export interface Anexo {
+  id: string
+  tarefaId: string
+  nome: string
+  url: string
+  tipo: string
+  tamanhoKb: number
+  createdAt: string
+}
+
 export interface Tarefa {
   id: string
   titulo: string
@@ -139,6 +167,15 @@ export interface Tarefa {
   completedAt: string | null
   motivoBloqueio?: string
   tags: string[]
+  startDate: string | null         // ISO date
+  lembreteEm: string | null        // ISO datetime
+  recorrencia: RecorrenciaTarefa
+  recorrenciaAte: string | null    // ISO date
+  ordem: number
+  estimativaMin: number | null
+  subtarefas: Subtarefa[]
+  comentarios: Comentario[]
+  anexos: Anexo[]
 }
 
 // ─────────────────────────────────────────────
