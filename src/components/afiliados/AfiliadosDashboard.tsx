@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import {
   Plus, Copy, Check, Pencil, Trash2, Pause, Play, ExternalLink,
-  Search, Filter, TrendingUp, Users, DollarSign, Award, BarChart2, Link2,
+  Search, Filter, TrendingUp, Users, DollarSign, Award, BarChart2,
 } from 'lucide-react'
 import { useAfiliados } from '@/hooks/useAfiliados'
 import { AfiliadoModal } from './AfiliadoModal'
@@ -356,7 +356,7 @@ export function AfiliadosDashboard() {
           open={true}
           title="Excluir afiliado"
           message={`Tem certeza que deseja excluir "${deletando.nome}"? Esta ação não pode ser desfeita.`}
-          onConfirm={async () => { await deletarAfiliado(deletando.id); setDeletando(null) }}
+          onConfirm={async () => { await deletarAfiliado(deletando.id); setDeletando(null); success('Afiliado excluído', 'Você pode restaurar na Lixeira') }}
           onCancel={() => setDeletando(null)}
         />
       )}

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type { Lead, Regiao, PerfilUsuario, TierLead, StatusLead, TipoEstabelecimento } from '@/store'
 
 type Row = Record<string, unknown>
@@ -38,6 +39,8 @@ function toLead(r: Row): Lead {
 }
 
 export function useCRM() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) return
@@ -81,9 +84,11 @@ export function useCRM() {
         tags:                 lead.tags,
       }).select().single()
       dbLog('INSERT', 'leads_crm', error, data?.id)
-      if (data) usePurionStore.getState().adicionarLead({
-        ...lead, id: String(data.id), createdAt: now, updatedAt: now,
-      })
+      if (error) { toastError('Erro ao cadastrar lead', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarLead({ ...lead, id: String(data.id), createdAt: now, updatedAt: now })
+        success('Lead cadastrado')
+      }
     },
 
     atualizarLead: async (id: string, dados: Partial<Lead>) => {
@@ -109,6 +114,7 @@ export function useCRM() {
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       dbLog('UPDATE', 'leads_crm', error, id)
+      if (error) { toastError('Erro ao salvar lead', error.message); return }
       usePurionStore.getState().atualizarLead(id, dados)
     },
 
@@ -117,8 +123,10 @@ export function useCRM() {
       if (sb) {
         const { error } = await sb.from('leads_crm').update({ deleted_at: new Date().toISOString() }).eq('id', id)
         dbLog('DELETE', 'leads_crm', error, id)
+        if (error) { toastError('Erro ao excluir lead', error.message); return }
       }
       usePurionStore.getState().removerLead(id)
+      success('Lead excluído', 'Você pode restaurar na Lixeira')
     },
 
     restaurarLead: async (lead: Lead) => {
@@ -126,8 +134,10 @@ export function useCRM() {
       if (sb) {
         const { error } = await sb.from('leads_crm').update({ deleted_at: null }).eq('id', lead.id)
         dbLog('UPDATE', 'leads_crm', error, lead.id)
+        if (error) { toastError('Erro ao restaurar lead', error.message); return }
       }
       usePurionStore.getState().adicionarLead(lead)
+      success('Lead restaurado')
     },
   }
 }

@@ -124,8 +124,10 @@ export function useMarketing() {
       if (sb) {
         const { error } = await sb.from('creators').update({ deleted_at: null }).eq('id', creator.id)
         dbLog('UPDATE', 'creators', error, creator.id)
+        if (error) { toastError('Erro ao restaurar creator', error.message); return }
       }
       usePurionStore.getState().adicionarCreator(creator)
+      success('Creator restaurado')
     },
   }
 }

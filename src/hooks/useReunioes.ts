@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type {
   ReuniaoItem, DailyEntry, DecisaoEstrategica,
   PerfilUsuario, StatusReuniaoItem, VotoDecisao,
@@ -61,6 +62,8 @@ function toDecisao(r: Row): DecisaoEstrategica {
 }
 
 export function useReunioes() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) return
@@ -111,7 +114,11 @@ export function useReunioes() {
         pauta: r.pauta, ata: r.ata, decisoes: r.decisoes, proximos_passos: r.proximosPassos,
       }).select().single()
       dbLog('INSERT', 'reunioes', error, data?.id)
-      if (data) usePurionStore.getState().adicionarReuniao({ ...r, id: String(data.id), createdAt: String(data.created_at) })
+      if (error) { toastError('Erro ao criar reunião', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarReuniao({ ...r, id: String(data.id), createdAt: String(data.created_at) })
+        success('Reunião criada')
+      }
     },
 
     atualizarReuniao: async (id: string, dados: Partial<ReuniaoItem>) => {
@@ -134,6 +141,7 @@ export function useReunioes() {
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       dbLog('UPDATE', 'reunioes', error, id)
+      if (error) { toastError('Erro ao salvar reunião', error.message); return }
       usePurionStore.getState().atualizarReuniao(id, dados)
     },
 
@@ -142,9 +150,11 @@ export function useReunioes() {
       if (sb) {
         const { error } = await sb.from('reunioes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
         dbLog('DELETE', 'reunioes', error, id)
+        if (error) { toastError('Erro ao excluir reunião', error.message); return }
       }
       const store = usePurionStore.getState()
       store.setReunioes(store.reunioes.filter((r) => r.id !== id))
+      success('Reunião excluída', 'Você pode restaurar na Lixeira')
     },
 
     restaurarReuniao: async (reuniao: ReuniaoItem) => {
@@ -152,8 +162,10 @@ export function useReunioes() {
       if (sb) {
         const { error } = await sb.from('reunioes').update({ deleted_at: null }).eq('id', reuniao.id)
         dbLog('UPDATE', 'reunioes', error, reuniao.id)
+        if (error) { toastError('Erro ao restaurar reunião', error.message); return }
       }
       usePurionStore.getState().adicionarReuniao(reuniao)
+      success('Reunião restaurada')
     },
 
     adicionarDecisao: async (d: Omit<DecisaoEstrategica, 'id' | 'createdAt'>) => {
@@ -169,7 +181,11 @@ export function useReunioes() {
         status:        d.status,
       }).select().single()
       dbLog('INSERT', 'decisoes', error, data?.id)
-      if (data) usePurionStore.getState().adicionarDecisao({ ...d, id: String(data.id), createdAt: String(data.created_at) })
+      if (error) { toastError('Erro ao registrar decisão', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarDecisao({ ...d, id: String(data.id), createdAt: String(data.created_at) })
+        success('Decisão registrada')
+      }
     },
 
     atualizarDecisao: async (id: string, dados: Partial<DecisaoEstrategica>) => {
@@ -189,6 +205,7 @@ export function useReunioes() {
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       dbLog('UPDATE', 'decisoes', error, id)
+      if (error) { toastError('Erro ao salvar decisão', error.message); return }
       usePurionStore.getState().atualizarDecisao(id, dados)
     },
 
@@ -197,9 +214,11 @@ export function useReunioes() {
       if (sb) {
         const { error } = await sb.from('decisoes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
         dbLog('DELETE', 'decisoes', error, id)
+        if (error) { toastError('Erro ao excluir decisão', error.message); return }
       }
       const store = usePurionStore.getState()
       store.setDecisoes(store.decisoes.filter((d) => d.id !== id))
+      success('Decisão excluída', 'Você pode restaurar na Lixeira')
     },
 
     restaurarDecisao: async (decisao: DecisaoEstrategica) => {
@@ -207,8 +226,10 @@ export function useReunioes() {
       if (sb) {
         const { error } = await sb.from('decisoes').update({ deleted_at: null }).eq('id', decisao.id)
         dbLog('UPDATE', 'decisoes', error, decisao.id)
+        if (error) { toastError('Erro ao restaurar decisão', error.message); return }
       }
       usePurionStore.getState().adicionarDecisao(decisao)
+      success('Decisão restaurada')
     },
 
     adicionarDaily: async (entry: Omit<DailyEntry, 'id' | 'createdAt'>): Promise<boolean> => {
