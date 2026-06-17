@@ -45,7 +45,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const router = useRouter()
-  const { leads, tarefas } = usePurionStore()
+  const { leads, tarefas, creators } = usePurionStore()
   const [query, setQuery] = useState('')
 
   const filteredLeads = leads
@@ -57,6 +57,10 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
 
   const filteredTarefas = tarefas
     .filter((t) => t.titulo.toLowerCase().includes(query.toLowerCase()))
+    .slice(0, 5)
+
+  const filteredCreators = creators
+    .filter((c) => c.nome.toLowerCase().includes(query.toLowerCase()))
     .slice(0, 5)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -148,7 +152,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ))}
           </Command.Group>
 
-          {(filteredLeads.length > 0 || filteredTarefas.length > 0) && (
+          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0) && (
             <Command.Group heading="Registros">
               {filteredLeads.map((lead) => (
                 <Command.Item
@@ -180,6 +184,22 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   <CheckSquare size={15} style={{ color: '#E8A838', flexShrink: 0 }} />
                   <span>{tarefa.titulo}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Tarefa</span>
+                </Command.Item>
+              ))}
+              {filteredCreators.map((creator) => (
+                <Command.Item
+                  key={`creator-${creator.id}`}
+                  value={`creator-${creator.nome}`}
+                  onSelect={() => { router.push('/creators'); onClose() }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                    fontSize: 14, color: 'var(--text-primary)',
+                  }}
+                >
+                  <Video size={15} style={{ color: '#A855F7', flexShrink: 0 }} />
+                  <span>{creator.nome}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Creator</span>
                 </Command.Item>
               ))}
             </Command.Group>
