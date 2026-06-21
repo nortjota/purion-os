@@ -393,6 +393,70 @@ export interface DecisaoEstrategica {
 }
 
 // ─────────────────────────────────────────────
+// INTERFACES — CENTRAL DE CONHECIMENTO
+// ─────────────────────────────────────────────
+
+export type TipoBloco =
+  | 'titulo' | 'subtitulo' | 'paragrafo' | 'lista' | 'checklist'
+  | 'citacao' | 'divisor' | 'tabela' | 'callout' | 'codigo'
+
+export type ConteudoBloco =
+  | { texto: string }                                          // titulo, subtitulo, paragrafo, citacao, codigo
+  | { itens: string[] }                                        // lista
+  | { itens: Array<{ texto: string; feito: boolean }> }        // checklist
+  | { texto: string; emoji: string }                           // callout
+  | { colunas: string[]; linhas: string[][] }                  // tabela
+  | Record<string, never>                                      // divisor
+
+export interface KbCategoria {
+  id: string
+  nome: string
+  icone: string   // nome do ícone lucide-react
+  cor: string
+  ordem: number
+}
+
+export interface KbDocumento {
+  id: string
+  categoriaId: string | null
+  titulo: string
+  emoji: string
+  resumo: string
+  ordem: number
+  favorito: boolean
+  atualizadoPor: string | null
+  updatedAt: string
+}
+
+export interface KbBloco {
+  id: string
+  documentoId: string
+  tipo: TipoBloco
+  conteudo: ConteudoBloco
+  ordem: number
+}
+
+// ─────────────────────────────────────────────
+// INTERFACES — CONTAS & ACESSOS
+// ─────────────────────────────────────────────
+
+export type CategoriaContaAcesso = 'ads' | 'pagamento' | 'social' | 'infra' | 'banco' | 'legal'
+export type StatusContaAcesso = 'ativo' | 'pendente' | 'inativo'
+
+export interface ContaAcesso {
+  id: string
+  plataforma: string
+  categoria: CategoriaContaAcesso
+  identificador: string
+  url: string
+  responsavel: string
+  status: StatusContaAcesso
+  observacoes: string
+  vaultRef: string
+  updatedAt: string
+}
+
+// ─────────────────────────────────────────────
 // INTERFACES — CONFIGURAÇÕES
 // ─────────────────────────────────────────────
 
@@ -522,6 +586,27 @@ interface PurionState {
   adicionarDailyEntry: (entry: DailyEntry) => void
   adicionarDecisao: (decisao: DecisaoEstrategica) => void
   atualizarDecisao: (id: string, dados: Partial<DecisaoEstrategica>) => void
+
+  // Central de Conhecimento
+  kbCategorias: KbCategoria[]
+  kbDocumentos: KbDocumento[]
+  kbBlocos: KbBloco[]
+  setKbCategorias: (categorias: KbCategoria[]) => void
+  setKbDocumentos: (documentos: KbDocumento[]) => void
+  setKbBlocos: (blocos: KbBloco[]) => void
+  adicionarKbDocumento: (doc: KbDocumento) => void
+  atualizarKbDocumento: (id: string, dados: Partial<KbDocumento>) => void
+  removerKbDocumento: (id: string) => void
+  adicionarKbBloco: (bloco: KbBloco) => void
+  atualizarKbBloco: (id: string, dados: Partial<KbBloco>) => void
+  removerKbBloco: (id: string) => void
+
+  // Contas & Acessos
+  contasAcessos: ContaAcesso[]
+  setContasAcessos: (contas: ContaAcesso[]) => void
+  adicionarContaAcesso: (conta: ContaAcesso) => void
+  atualizarContaAcesso: (id: string, dados: Partial<ContaAcesso>) => void
+  removerContaAcesso: (id: string) => void
 
   // Configurações
   configuracoes: Configuracoes
@@ -730,6 +815,42 @@ export const usePurionStore = create<PurionState>()(
           set((s) => ({
             decisoes: s.decisoes.map((d) => (d.id === id ? { ...d, ...dados } : d)),
           })),
+
+        // ── Central de Conhecimento ──
+        kbCategorias: [],
+        kbDocumentos: [],
+        kbBlocos: [],
+        setKbCategorias: (kbCategorias) => set({ kbCategorias }),
+        setKbDocumentos: (kbDocumentos) => set({ kbDocumentos }),
+        setKbBlocos: (kbBlocos) => set({ kbBlocos }),
+        adicionarKbDocumento: (doc) =>
+          set((s) => ({ kbDocumentos: [...s.kbDocumentos, doc] })),
+        atualizarKbDocumento: (id, dados) =>
+          set((s) => ({
+            kbDocumentos: s.kbDocumentos.map((d) => (d.id === id ? { ...d, ...dados } : d)),
+          })),
+        removerKbDocumento: (id) =>
+          set((s) => ({ kbDocumentos: s.kbDocumentos.filter((d) => d.id !== id) })),
+        adicionarKbBloco: (bloco) =>
+          set((s) => ({ kbBlocos: [...s.kbBlocos, bloco] })),
+        atualizarKbBloco: (id, dados) =>
+          set((s) => ({
+            kbBlocos: s.kbBlocos.map((b) => (b.id === id ? { ...b, ...dados } : b)),
+          })),
+        removerKbBloco: (id) =>
+          set((s) => ({ kbBlocos: s.kbBlocos.filter((b) => b.id !== id) })),
+
+        // ── Contas & Acessos ──
+        contasAcessos: [],
+        setContasAcessos: (contasAcessos) => set({ contasAcessos }),
+        adicionarContaAcesso: (conta) =>
+          set((s) => ({ contasAcessos: [...s.contasAcessos, conta] })),
+        atualizarContaAcesso: (id, dados) =>
+          set((s) => ({
+            contasAcessos: s.contasAcessos.map((c) => (c.id === id ? { ...c, ...dados } : c)),
+          })),
+        removerContaAcesso: (id) =>
+          set((s) => ({ contasAcessos: s.contasAcessos.filter((c) => c.id !== id) })),
 
         // ── Configurações ──
         configuracoes: configPadrao,

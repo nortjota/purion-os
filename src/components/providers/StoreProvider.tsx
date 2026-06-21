@@ -22,6 +22,8 @@ import { useProducao }   from '@/hooks/useProducao'
 import { useMarketing }  from '@/hooks/useMarketing'
 import { useReunioes }   from '@/hooks/useReunioes'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
+import { useConhecimento } from '@/hooks/useConhecimento'
+import { useContas }     from '@/hooks/useContas'
 
 // ── Componente interno que chama todos os hooks de sync ──────────────────────
 // Só é renderizado quando Supabase está configurado.
@@ -33,6 +35,8 @@ function SupabaseSync() {
   useMarketing()
   useReunioes()
   useConfiguracoes()
+  useConhecimento()
+  useContas()
   return null
 }
 

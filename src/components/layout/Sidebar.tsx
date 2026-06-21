@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Zap, Settings,
-  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones,
+  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, KeyRound,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
@@ -62,6 +62,13 @@ const navGroups: NavGroup[] = [
     label: 'Análise',
     items: [
       { href: '/inteligencia', label: 'Inteligência', icon: BarChart2 },
+    ],
+  },
+  {
+    label: 'Conhecimento',
+    items: [
+      { href: '/conhecimento', label: 'Central de Conhecimento', icon: BookOpen },
+      { href: '/contas',       label: 'Contas & Acessos',        icon: KeyRound },
     ],
   },
   {
@@ -146,7 +153,11 @@ export function Sidebar() {
   )
 
   const visibleNavGroups = useMemo(
-    () => isMaster ? navGroups : navGroups.filter((g) => g.label !== 'Sistema'),
+    () => isMaster
+      ? navGroups
+      : navGroups
+          .filter((g) => g.label !== 'Sistema')
+          .map((g) => g.label === 'Conhecimento' ? { ...g, items: g.items.filter((i) => i.href !== '/contas') } : g),
     [isMaster],
   )
 

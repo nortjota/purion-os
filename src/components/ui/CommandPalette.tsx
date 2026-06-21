@@ -7,9 +7,10 @@ import {
   LayoutDashboard, Users, CheckSquare, DollarSign,
   Package, Video, BookOpen, BarChart2, Brain,
   Settings, Plus, UserPlus, TrendingUp, TrendingDown,
-  Boxes, UserCog, Calendar,
+  Boxes, UserCog, Calendar, KeyRound, FileText,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
+import { useIsMaster } from '@/hooks/useIsMaster'
 
 const PAGES = [
   { label: 'Dashboard',      href: '/',              icon: LayoutDashboard },
@@ -21,6 +22,8 @@ const PAGES = [
   { label: 'Contabilidade',  href: '/contabilidade', icon: BookOpen        },
   { label: 'Tráfego',        href: '/trafego',       icon: BarChart2       },
   { label: 'Inteligência',   href: '/inteligencia',  icon: Brain           },
+  { label: 'Central de Conhecimento', href: '/conhecimento', icon: BookOpen },
+  { label: 'Contas & Acessos',        href: '/contas',       icon: KeyRound },
   { label: 'Configurações',  href: '/settings',      icon: Settings        },
 ]
 
@@ -45,7 +48,8 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const router = useRouter()
-  const { leads, tarefas, creators } = usePurionStore()
+  const { leads, tarefas, creators, kbDocumentos, contasAcessos } = usePurionStore()
+  const { isMaster } = useIsMaster()
   const [query, setQuery] = useState('')
 
   const filteredLeads = leads
@@ -62,6 +66,14 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const filteredCreators = creators
     .filter((c) => c.nome.toLowerCase().includes(query.toLowerCase()))
     .slice(0, 5)
+
+  const filteredDocumentos = kbDocumentos
+    .filter((d) => d.titulo.toLowerCase().includes(query.toLowerCase()))
+    .slice(0, 5)
+
+  const filteredContas = isMaster
+    ? contasAcessos.filter((c) => c.plataforma.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+    : []
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose()
@@ -152,7 +164,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ))}
           </Command.Group>
 
-          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0) && (
+          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0) && (
             <Command.Group heading="Registros">
               {filteredLeads.map((lead) => (
                 <Command.Item
@@ -200,6 +212,38 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   <Video size={15} style={{ color: '#A855F7', flexShrink: 0 }} />
                   <span>{creator.nome}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Creator</span>
+                </Command.Item>
+              ))}
+              {filteredDocumentos.map((doc) => (
+                <Command.Item
+                  key={`doc-${doc.id}`}
+                  value={`doc-${doc.titulo}`}
+                  onSelect={() => { router.push('/conhecimento'); onClose() }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                    fontSize: 14, color: 'var(--text-primary)',
+                  }}
+                >
+                  <FileText size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <span>{doc.emoji} {doc.titulo}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Documento</span>
+                </Command.Item>
+              ))}
+              {filteredContas.map((conta) => (
+                <Command.Item
+                  key={`conta-${conta.id}`}
+                  value={`conta-${conta.plataforma}`}
+                  onSelect={() => { router.push('/contas'); onClose() }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                    fontSize: 14, color: 'var(--text-primary)',
+                  }}
+                >
+                  <KeyRound size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
+                  <span>{conta.plataforma}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Conta</span>
                 </Command.Item>
               ))}
             </Command.Group>

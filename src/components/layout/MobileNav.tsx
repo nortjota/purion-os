@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
-  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones,
+  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
 
@@ -28,6 +28,8 @@ const DRAWER_ITEMS = [
   { href: '/trafego',       label: 'Tráfego',       icon: Zap         },
   { href: '/inteligencia',  label: 'Inteligência',  icon: BarChart2   },
   { href: '/reunioes',      label: 'Reuniões',      icon: Calendar    },
+  { href: '/conhecimento',  label: 'Central de Conhecimento', icon: BookOpen },
+  { href: '/contas',        label: 'Contas & Acessos',        icon: KeyRound },
   { href: '/settings',      label: 'Configurações', icon: Settings    },
 ]
 
@@ -36,7 +38,7 @@ export function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { isMaster } = useIsMaster()
 
-  const drawerItems = isMaster ? DRAWER_ITEMS : DRAWER_ITEMS.filter((item) => item.href !== '/settings')
+  const drawerItems = isMaster ? DRAWER_ITEMS : DRAWER_ITEMS.filter((item) => item.href !== '/settings' && item.href !== '/contas')
 
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
   const isDrawerActive = drawerItems.some((item) => isActive(item.href))
