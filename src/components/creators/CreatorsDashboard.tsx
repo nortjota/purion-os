@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import { useMobile } from '@/hooks/useMobile'
 import dynamic from 'next/dynamic'
 import {
-  Plus, X, ChevronRight, ExternalLink, Copy, Check,
-  AtSign, Users, Star, MessageSquare, Trash2,
+  Plus, X, ExternalLink, Copy, Check,
+  AtSign, Users, Star, MessageSquare, Trash2, Pencil, GripVertical,
 } from 'lucide-react'
 import { useMarketing } from '@/hooks/useMarketing'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
@@ -53,13 +53,10 @@ const PIPELINE_COLS: { status: StatusCreator[]; label: string; cor: string }[] =
   { status: ['descartado', 'inativo'], label: 'Descartado',      cor: '#EF4444' },
 ]
 
-const PIPELINE_NEXT: Partial<Record<StatusCreator, StatusCreator>> = {
-  contatado:   'negociando',
-  negociando:  'kit_enviado',
-  kit_enviado: 'postado',
-  postado:     'parceiro_recorrente',
-  pago:        'parceiro_recorrente',
-}
+const STATUS_OPTIONS: StatusCreator[] = [
+  'contatado', 'negociando', 'kit_enviado', 'postado',
+  'pago', 'parceiro_recorrente', 'descartado', 'inativo',
+]
 
 const SCORE_COLOR: Record<string, string> = {
   A: 'badge-success',
@@ -296,6 +293,143 @@ function ModalCreator({ onSalvar, onFechar }: {
 }
 
 // ─────────────────────────────────────────────
+// MODAL EDITAR CREATOR — todos os campos
+// ─────────────────────────────────────────────
+
+function ModalEditarCreator({ creator, onSalvar, onFechar }: {
+  creator: Creator
+  onSalvar: (dados: Partial<Creator>) => void
+  onFechar: () => void
+}) {
+  const [f, setF] = useState({
+    nome: creator.nome,
+    instagram: creator.instagram,
+    tiktok: creator.tiktok ?? '',
+    youtube: creator.youtube ?? '',
+    seguidores: String(creator.seguidores),
+    nicho: creator.nichoPrincipal,
+    cidade: creator.cidade ?? '',
+    email: creator.email ?? '',
+    whatsapp: creator.whatsapp ?? '',
+    status: creator.status,
+    cache: String(creator.cacheCombinado),
+    tipoAcordo: creator.tipoAcordo ?? 'permuta' as TipoAcordoCreator,
+    responsavel: creator.responsavel,
+    engajamento: creator.engajamentoMedio ? String(creator.engajamentoMedio) : '',
+    notas: creator.notas,
+  })
+
+  const submit = () => {
+    if (!f.nome || !f.instagram) return
+    onSalvar({
+      nome: f.nome,
+      instagram: f.instagram,
+      tiktok: f.tiktok || undefined,
+      youtube: f.youtube || undefined,
+      email: f.email || undefined,
+      whatsapp: f.whatsapp || undefined,
+      cidade: f.cidade || undefined,
+      seguidores: parseInt(f.seguidores) || 0,
+      nichoPrincipal: f.nicho,
+      status: f.status,
+      cacheCombinado: parseFloat(f.cache) || 0,
+      tipoAcordo: f.tipoAcordo,
+      engajamentoMedio: parseFloat(f.engajamento) || undefined,
+      responsavel: f.responsavel,
+      notas: f.notas,
+    })
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Editar Creator</h3>
+        </div>
+        <div className="p-7 grid grid-cols-2 gap-3">
+          <div className="col-span-2 field-gap">
+            <label className="label-purion">Nome *</label>
+            <input className="input-purion" value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Instagram *</label>
+            <input className="input-purion" value={f.instagram} onChange={(e) => setF({ ...f, instagram: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">TikTok</label>
+            <input className="input-purion" value={f.tiktok} onChange={(e) => setF({ ...f, tiktok: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">YouTube</label>
+            <input className="input-purion" value={f.youtube} onChange={(e) => setF({ ...f, youtube: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Seguidores</label>
+            <input type="number" className="input-purion" value={f.seguidores} onChange={(e) => setF({ ...f, seguidores: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Nicho</label>
+            <input className="input-purion" value={f.nicho} onChange={(e) => setF({ ...f, nicho: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Cidade</label>
+            <input className="input-purion" value={f.cidade} onChange={(e) => setF({ ...f, cidade: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">E-mail</label>
+            <input type="email" className="input-purion" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">WhatsApp</label>
+            <input className="input-purion" value={f.whatsapp} onChange={(e) => setF({ ...f, whatsapp: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Cachê (R$)</label>
+            <input type="number" className="input-purion" value={f.cache} onChange={(e) => setF({ ...f, cache: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Tipo de acordo</label>
+            <select className="select-purion" value={f.tipoAcordo} onChange={(e) => setF({ ...f, tipoAcordo: e.target.value as TipoAcordoCreator })}>
+              <option value="permuta">Permuta</option>
+              <option value="pago">Pago</option>
+              <option value="afiliado">Afiliado</option>
+            </select>
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Status</label>
+            <select className="select-purion" value={f.status} onChange={(e) => setF({ ...f, status: e.target.value as StatusCreator })}>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+              ))}
+            </select>
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Engajamento médio %</label>
+            <input type="number" className="input-purion" value={f.engajamento} onChange={(e) => setF({ ...f, engajamento: e.target.value })} />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Responsável</label>
+            <select className="select-purion" value={f.responsavel} onChange={(e) => setF({ ...f, responsavel: e.target.value as PerfilUsuario })}>
+              <option value="joao">João</option>
+              <option value="matheus">Matheus</option>
+              <option value="gabriel">Gabriel</option>
+            </select>
+          </div>
+          <div className="col-span-2 field-gap">
+            <label className="label-purion">Notas</label>
+            <textarea rows={2} className="textarea-purion" value={f.notas} onChange={(e) => setF({ ...f, notas: e.target.value })} />
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+          <button onClick={submit} className="btn btn-primary btn-sm">Salvar</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
 // MODAL NOVA CAMPANHA
 // ─────────────────────────────────────────────
 
@@ -423,12 +557,18 @@ function ModalCampanha({ onSalvar, onFechar }: {
 // DRAWER PERFIL
 // ─────────────────────────────────────────────
 
-function DrawerPerfil({ creatorId, onClose, onDeletar }: { creatorId: string; onClose: () => void; onDeletar: (c: Creator) => void }) {
-  const { creators, atualizarCreator } = usePurionStore()
+function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
+  creatorId: string
+  atualizarCreator: (id: string, dados: Partial<Creator>) => void
+  onClose: () => void
+  onDeletar: (c: Creator) => void
+}) {
+  const { creators } = usePurionStore()
   const creator = creators.find((c) => c.id === creatorId)
   const [notas, setNotas] = useState(creator?.notas ?? '')
   const [editingNotas, setEditingNotas] = useState(false)
   const [showAddPost, setShowAddPost] = useState(false)
+  const [showEditar, setShowEditar] = useState(false)
   const [copied, setCopied] = useState(false)
   const [postForm, setPostForm] = useState({
     plataforma: 'instagram' as 'instagram' | 'tiktok' | 'youtube',
@@ -493,7 +633,6 @@ function DrawerPerfil({ creatorId, onClose, onDeletar }: { creatorId: string; on
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="section-title">{creator.nome}</h2>
               <span className={`badge ${SCORE_COLOR[score]}`}>Score {score}</span>
-              <span className={`badge ${STATUS_BADGE[creator.status]}`}>{STATUS_LABEL[creator.status]}</span>
             </div>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               {plataformasPrincipais.map((p) => (
@@ -501,8 +640,23 @@ function DrawerPerfil({ creatorId, onClose, onDeletar }: { creatorId: string; on
               ))}
               {creator.cidade && <span className="caption">{creator.cidade}</span>}
             </div>
+            <select
+              value={creator.status}
+              onChange={(e) => atualizarCreator(creator.id, { status: e.target.value as StatusCreator })}
+              className="select-purion mt-2 text-[12px]"
+              style={{ width: 'auto', height: 30, padding: '0 8px' }}
+            >
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+              ))}
+            </select>
           </div>
           <div className="flex items-center gap-1 ml-3 shrink-0">
+            <button
+              onClick={() => setShowEditar(true)}
+              className="p-1.5 rounded-lg hover:bg-[rgba(201,168,76,0.1)] text-[#6B6B6B] hover:text-[#C9A84C] transition-colors"
+              title="Editar creator"
+            ><Pencil size={13} /></button>
             <button
               onClick={() => onDeletar(creator)}
               className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#6B6B6B] hover:text-[#E85238] transition-colors"
@@ -680,6 +834,14 @@ function DrawerPerfil({ creatorId, onClose, onDeletar }: { creatorId: string; on
           </div>
         </div>
       </div>
+
+      {showEditar && (
+        <ModalEditarCreator
+          creator={creator}
+          onSalvar={(dados) => { atualizarCreator(creator.id, dados); setShowEditar(false) }}
+          onFechar={() => setShowEditar(false)}
+        />
+      )}
     </>
   )
 }
@@ -856,10 +1018,15 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
 // ABA PIPELINE
 // ─────────────────────────────────────────────
 
-function AbaPipeline() {
-  const { creators, atualizarCreator } = usePurionStore()
+function AbaPipeline({ atualizarCreator }: { atualizarCreator: (id: string, dados: Partial<Creator>) => void }) {
+  const { creators } = usePurionStore()
   const [contatoCreatorId, setContatoCreatorId] = useState<string | null>(null)
   const [notaContato, setNotaContato] = useState('')
+  const [editandoNomeId, setEditandoNomeId] = useState<string | null>(null)
+  const [nomeTemp, setNomeTemp] = useState('')
+  const [editandoCreator, setEditandoCreator] = useState<Creator | null>(null)
+  const [dragCreatorId, setDragCreatorId] = useState<string | null>(null)
+  const [dragOverCol, setDragOverCol] = useState<string | null>(null)
 
   const registrarContato = () => {
     if (!contatoCreatorId) return
@@ -873,10 +1040,19 @@ function AbaPipeline() {
     setNotaContato('')
   }
 
-  const moverProximaFase = useCallback((creator: Creator) => {
-    const next = PIPELINE_NEXT[creator.status]
-    if (next) atualizarCreator(creator.id, { status: next })
-  }, [atualizarCreator])
+  function salvarNomeInline(id: string) {
+    const nome = nomeTemp.trim()
+    if (nome) atualizarCreator(id, { nome })
+    setEditandoNomeId(null)
+  }
+
+  function handleDragStart(id: string) { setDragCreatorId(id) }
+  function handleDragEnd() { setDragCreatorId(null); setDragOverCol(null) }
+  function handleDrop(col: typeof PIPELINE_COLS[number]) {
+    if (dragCreatorId) atualizarCreator(dragCreatorId, { status: col.status[0] })
+    setDragCreatorId(null)
+    setDragOverCol(null)
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -885,9 +1061,22 @@ function AbaPipeline() {
           {PIPELINE_COLS.map((col) => {
             const cards = creators.filter((c) => col.status.includes(c.status))
             return (
-              <div key={col.label} style={{ width: 220 }} className="flex flex-col gap-2">
+              <div
+                key={col.label}
+                style={{ width: 220 }}
+                className="flex flex-col gap-2"
+                onDragOver={(e) => { e.preventDefault(); setDragOverCol(col.label) }}
+                onDragLeave={() => setDragOverCol((v) => v === col.label ? null : v)}
+                onDrop={(e) => { e.preventDefault(); handleDrop(col) }}
+              >
                 {/* Column header */}
-                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border)]">
+                <div
+                  className="flex items-center justify-between px-3 py-2 rounded-lg border transition-colors"
+                  style={{
+                    background: 'var(--bg-surface)',
+                    borderColor: dragOverCol === col.label ? 'rgba(201,168,76,0.4)' : 'var(--border)',
+                  }}
+                >
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: col.cor }} />
                     <span className="text-[12px] font-medium text-[var(--text-primary)]">{col.label}</span>
@@ -901,11 +1090,35 @@ function AbaPipeline() {
                   const dias = diasDesdeContato(c)
                   const score = calcularScore(c)
                   const tempColor = temp === 'quente' ? '#10B981' : temp === 'morno' ? '#F59E0B' : '#EF4444'
-                  const hasNext = !!PIPELINE_NEXT[c.status]
                   return (
-                    <div key={c.id} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-3 flex flex-col gap-2 hover:border-[#C9A84C]/40 transition-colors">
-                      <div className="flex items-start justify-between">
-                        <p className="text-[13px] font-medium text-[var(--text-primary)] leading-tight">{c.nome}</p>
+                    <div
+                      key={c.id}
+                      draggable
+                      onDragStart={() => handleDragStart(c.id)}
+                      onDragEnd={handleDragEnd}
+                      className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-3 flex flex-col gap-2 hover:border-[#C9A84C]/40 transition-all"
+                      style={{ opacity: dragCreatorId === c.id ? 0.4 : 1, cursor: 'grab' }}
+                    >
+                      <div className="flex items-start justify-between gap-1.5">
+                        <GripVertical size={11} className="text-[var(--text-secondary)] opacity-40 shrink-0 mt-0.5" />
+                        {editandoNomeId === c.id ? (
+                          <input
+                            autoFocus
+                            value={nomeTemp}
+                            onChange={(e) => setNomeTemp(e.target.value)}
+                            onBlur={() => salvarNomeInline(c.id)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') salvarNomeInline(c.id) }}
+                            className="flex-1 bg-transparent border-none outline-none text-[13px] font-medium text-[var(--text-primary)] leading-tight"
+                          />
+                        ) : (
+                          <p
+                            onClick={() => { setEditandoNomeId(c.id); setNomeTemp(c.nome) }}
+                            className="flex-1 text-[13px] font-medium text-[var(--text-primary)] leading-tight cursor-text"
+                            title="Clique para editar o nome"
+                          >
+                            {c.nome}
+                          </p>
+                        )}
                         <div className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: tempColor }} title={`Temperatura: ${temp}`} />
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -919,7 +1132,18 @@ function AbaPipeline() {
                           Último contato: <span style={{ color: tempColor }}>{dias === 0 ? 'hoje' : `${dias}d atrás`}</span>
                         </p>
                       )}
-                      <div className="flex gap-1.5 pt-1">
+                      {/* Status select — controle total, qualquer direção */}
+                      <select
+                        value={c.status}
+                        onChange={(e) => atualizarCreator(c.id, { status: e.target.value as StatusCreator })}
+                        className="select-purion text-[11px]"
+                        style={{ height: 30, padding: '0 8px' }}
+                      >
+                        {STATUS_OPTIONS.map((s) => (
+                          <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                        ))}
+                      </select>
+                      <div className="flex gap-1.5">
                         <button
                           onClick={() => { setContatoCreatorId(c.id); setNotaContato('') }}
                           className="flex-1 text-[10px] py-1 px-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:border-[#C9A84C]/40 hover:text-[#C9A84C] transition-colors"
@@ -927,21 +1151,23 @@ function AbaPipeline() {
                           <MessageSquare size={10} className="inline mr-1" />
                           Contato
                         </button>
-                        {hasNext && (
-                          <button
-                            onClick={() => moverProximaFase(c)}
-                            className="flex-1 text-[10px] py-1 px-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:border-[#C9A84C]/40 hover:text-[#C9A84C] transition-colors"
-                          >
-                            Avançar <ChevronRight size={10} className="inline" />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => setEditandoCreator(c)}
+                          className="text-[10px] py-1 px-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:border-[#C9A84C]/40 hover:text-[#C9A84C] transition-colors"
+                          title="Editar creator"
+                        >
+                          <Pencil size={10} />
+                        </button>
                       </div>
                     </div>
                   )
                 })}
 
                 {cards.length === 0 && (
-                  <div className="rounded-xl border border-dashed border-[var(--border)] p-4 text-center">
+                  <div
+                    className="rounded-xl border border-dashed p-4 text-center transition-colors"
+                    style={{ borderColor: dragOverCol === col.label ? 'rgba(201,168,76,0.4)' : 'var(--border)' }}
+                  >
                     <p className="caption text-[11px]">Vazio</p>
                   </div>
                 )}
@@ -974,6 +1200,15 @@ function AbaPipeline() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal editar creator (completo) */}
+      {editandoCreator && (
+        <ModalEditarCreator
+          creator={editandoCreator}
+          onSalvar={(dados) => { atualizarCreator(editandoCreator.id, dados); setEditandoCreator(null) }}
+          onFechar={() => setEditandoCreator(null)}
+        />
       )}
     </div>
   )
@@ -1264,7 +1499,7 @@ function AbaAnalise() {
 // ─────────────────────────────────────────────
 
 export function CreatorsDashboard() {
-  const { adicionarCreator, deletarCreator } = useMarketing()
+  const { adicionarCreator, atualizarCreator, deletarCreator } = useMarketing()
   const [activeTab, setActiveTab] = useState<TabId>('overview')
   const [drawerCreatorId, setDrawerCreatorId] = useState<string | null>(null)
   const [showModalCreator, setShowModalCreator] = useState(false)
@@ -1301,7 +1536,7 @@ export function CreatorsDashboard() {
 
       {/* Content */}
       {activeTab === 'overview'  && <AbaOverview onSelectCreator={(id) => setDrawerCreatorId(id)} />}
-      {activeTab === 'pipeline'  && <AbaPipeline />}
+      {activeTab === 'pipeline'  && <AbaPipeline atualizarCreator={atualizarCreator} />}
       {activeTab === 'campanhas' && <AbaCampanhas />}
       {activeTab === 'analise'   && <AbaAnalise />}
 
@@ -1309,6 +1544,7 @@ export function CreatorsDashboard() {
       {drawerCreatorId && (
         <DrawerPerfil
           creatorId={drawerCreatorId}
+          atualizarCreator={atualizarCreator}
           onClose={() => setDrawerCreatorId(null)}
           onDeletar={(c) => { setDeletandoCreator(c); setDrawerCreatorId(null) }}
         />
