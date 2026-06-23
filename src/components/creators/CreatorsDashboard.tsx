@@ -35,14 +35,17 @@ const GraficoNicho = dynamic(
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
 
-type TabId = 'overview' | 'pipeline' | 'campanhas' | 'analise'
+type TabId = 'overview' | 'pipeline' | 'campanhas' | 'vendas' | 'analise'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'overview',   label: 'Overview' },
   { id: 'pipeline',   label: 'Pipeline' },
   { id: 'campanhas',  label: 'Campanhas' },
+  { id: 'vendas',     label: 'Vendas & Afiliados' },
   { id: 'analise',    label: 'Análise' },
 ]
+
+const COMISSAO_PADRAO_POR_VENDA = 25
 
 const PIPELINE_COLS: { status: StatusCreator[]; label: string; cor: string }[] = [
   { status: ['contatado'],           label: 'Identificado',      cor: '#6B6B6B' },
@@ -563,7 +566,7 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
   onClose: () => void
   onDeletar: (c: Creator) => void
 }) {
-  const { creators } = usePurionStore()
+  const { creators, vendas } = usePurionStore()
   const creator = creators.find((c) => c.id === creatorId)
   const [notas, setNotas] = useState(creator?.notas ?? '')
   const [editingNotas, setEditingNotas] = useState(false)
@@ -707,6 +710,37 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
               </div>
             )}
           </div>
+
+          {/* Vendas atribuídas (via código de afiliado) */}
+          {creator.codigoDesconto && (
+            <div className="p-6 border-b border-[var(--border)]">
+              <p className="kpi-label mb-3">Vendas atribuídas</p>
+              {(() => {
+                const vendasDoCreator = vendas.filter((v) => v.afiliadoCodigo === creator.codigoDesconto)
+                if (vendasDoCreator.length === 0) {
+                  return <p className="caption">Nenhuma venda atribuída a este código ainda.</p>
+                }
+                return (
+                  <div className="flex flex-col gap-2">
+                    {[...vendasDoCreator].sort((a, b) => b.dataVenda.localeCompare(a.dataVenda)).slice(0, 8).map((v) => (
+                      <div key={v.id} className="flex items-center justify-between bg-[var(--bg-surface-2)] rounded-lg px-3 py-2">
+                        <div>
+                          <p className="text-[12px] text-[var(--text-primary)]">{v.clienteNome || 'Cliente'}</p>
+                          <p className="caption">{v.pedidoAppmax}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[12px] font-semibold" style={{ color: v.status === 'aprovado' ? '#4CAF7A' : 'var(--text-secondary)' }}>
+                            {fmtR(v.valorLiquido)}
+                          </p>
+                          <p className="caption">{v.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+            </div>
+          )}
 
           {/* Contato */}
           <div className="p-6 border-b border-[var(--border)]">
@@ -1495,6 +1529,120 @@ function AbaAnalise() {
 }
 
 // ─────────────────────────────────────────────
+// ABA VENDAS & AFILIADOS — ranking por código de afiliado
+// (codigo_desconto do creator = afiliado_codigo em vendas)
+// ─────────────────────────────────────────────
+
+function AbaVendasAfiliados() {
+  const { creators, vendas } = usePurionStore()
+  const [copiadoId, setCopiadoId] = useState<string | null>(null)
+  const [comissaoPorVenda, setComissaoPorVenda] = useState(COMISSAO_PADRAO_POR_VENDA)
+
+  const ranking = useMemo(() => {
+    return creators
+      .filter((c) => c.codigoDesconto)
+      .map((c) => {
+        const vendasDoCreator = vendas.filter((v) => v.afiliadoCodigo === c.codigoDesconto)
+        const aprovadas = vendasDoCreator.filter((v) => v.status === 'aprovado')
+        const valorTotal = aprovadas.reduce((s, v) => s + v.valorLiquido, 0)
+        const comissao = aprovadas.length * comissaoPorVenda
+        return { creator: c, totalVendas: aprovadas.length, valorTotal, comissao }
+      })
+      .sort((a, b) => b.totalVendas - a.totalVendas)
+  }, [creators, vendas, comissaoPorVenda])
+
+  function copiarLink(creatorId: string, codigo: string) {
+    const link = `https://puriongt.com.br/?ref=${codigo}`
+    navigator.clipboard.writeText(link)
+    setCopiadoId(creatorId)
+    setTimeout(() => setCopiadoId(null), 2000)
+  }
+
+  const totais = useMemo(() => ({
+    vendas: ranking.reduce((s, r) => s + r.totalVendas, 0),
+    valor: ranking.reduce((s, r) => s + r.valorTotal, 0),
+    comissao: ranking.reduce((s, r) => s + r.comissao, 0),
+  }), [ranking])
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
+        <div className="kpi-card">
+          <p className="kpi-label mb-2">Vendas atribuídas</p>
+          <p className="kpi-value">{totais.vendas}</p>
+        </div>
+        <div className="kpi-card">
+          <p className="kpi-label mb-2">Receita gerada</p>
+          <p className="kpi-value">{fmtR(totais.valor)}</p>
+        </div>
+        <div className="kpi-card">
+          <p className="kpi-label mb-2">Comissão total devida</p>
+          <p className="kpi-value" style={{ color: '#C9A84C' }}>{fmtR(totais.comissao)}</p>
+        </div>
+        <div className="kpi-card">
+          <p className="kpi-label mb-2">Comissão por venda (R$)</p>
+          <input
+            type="number"
+            value={comissaoPorVenda}
+            onChange={(e) => setComissaoPorVenda(parseFloat(e.target.value) || 0)}
+            className="input-purion"
+            style={{ height: 32, fontSize: 14, fontWeight: 600 }}
+          />
+        </div>
+      </div>
+
+      <div className="card-purion overflow-hidden">
+        <div className="card-header">
+          <p className="section-title">Ranking de Afiliados</p>
+          <span className="caption">{ranking.length} creators com código ativo</span>
+        </div>
+
+        {ranking.length === 0 ? (
+          <div className="empty-state">
+            <Star size={32} className="empty-state-icon" />
+            <p className="empty-state-title">Nenhum creator com código de afiliado ainda</p>
+            <p className="empty-state-subtitle">Os códigos são gerados automaticamente ao cadastrar um creator.</p>
+          </div>
+        ) : (
+          <table className="table-purion">
+            <thead>
+              <tr>
+                <th>Creator</th>
+                <th>Código</th>
+                <th>Link</th>
+                <th>Vendas</th>
+                <th>Receita gerada</th>
+                <th>Comissão</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ranking.map(({ creator, totalVendas, valorTotal, comissao }) => (
+                <tr key={creator.id}>
+                  <td className="font-medium">{creator.nome}</td>
+                  <td className="caption">{creator.codigoDesconto}</td>
+                  <td>
+                    <button
+                      onClick={() => copiarLink(creator.id, creator.codigoDesconto!)}
+                      className="btn btn-secondary btn-sm"
+                    >
+                      {copiadoId === creator.id ? <Check size={11} /> : <Copy size={11} />}
+                      {copiadoId === creator.id ? 'Copiado' : 'Copiar link'}
+                    </button>
+                  </td>
+                  <td>{totalVendas}</td>
+                  <td className="td-mono">{fmtR(valorTotal)}</td>
+                  <td className="td-mono" style={{ color: '#C9A84C' }}>{fmtR(comissao)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
 // COMPONENTE PRINCIPAL
 // ─────────────────────────────────────────────
 
@@ -1538,6 +1686,7 @@ export function CreatorsDashboard() {
       {activeTab === 'overview'  && <AbaOverview onSelectCreator={(id) => setDrawerCreatorId(id)} />}
       {activeTab === 'pipeline'  && <AbaPipeline atualizarCreator={atualizarCreator} />}
       {activeTab === 'campanhas' && <AbaCampanhas />}
+      {activeTab === 'vendas'    && <AbaVendasAfiliados />}
       {activeTab === 'analise'   && <AbaAnalise />}
 
       {/* Drawer */}

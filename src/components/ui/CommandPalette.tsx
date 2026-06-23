@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, CheckSquare, DollarSign,
   Package, Video, BookOpen, BarChart2, Brain,
   Settings, Plus, UserPlus, TrendingUp, TrendingDown,
-  Boxes, UserCog, Calendar, KeyRound, FileText,
+  Boxes, UserCog, Calendar, KeyRound, FileText, ShoppingCart,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import { useIsMaster } from '@/hooks/useIsMaster'
@@ -17,6 +17,7 @@ const PAGES = [
   { label: 'CRM',            href: '/crm',           icon: Users           },
   { label: 'Tarefas',        href: '/tarefas',       icon: CheckSquare     },
   { label: 'Financeiro',     href: '/financeiro',    icon: DollarSign      },
+  { label: 'Vendas',         href: '/vendas',        icon: ShoppingCart    },
   { label: 'Produção',       href: '/producao',      icon: Package         },
   { label: 'Creators',       href: '/creators',      icon: Video           },
   { label: 'Contabilidade',  href: '/contabilidade', icon: BookOpen        },

@@ -457,6 +457,34 @@ export interface ContaAcesso {
 }
 
 // ─────────────────────────────────────────────
+// INTERFACES — VENDAS (Appmax)
+// ─────────────────────────────────────────────
+
+export type StatusVendaAppmax = 'aprovado' | 'pendente' | 'recusado' | 'estornado' | 'reembolsado'
+export type MetodoPagamentoVenda = 'pix' | 'cartao' | 'boleto' | 'desconhecido'
+export type CanalVenda = 'b2c' | 'b2b'
+
+export interface Venda {
+  id: string
+  pedidoAppmax: string
+  clienteNome: string
+  clienteEmail: string
+  clienteTelefone: string
+  valorBruto: number
+  valorLiquido: number
+  taxa: number
+  status: StatusVendaAppmax
+  metodoPagamento: string
+  parcelas: number
+  canal: CanalVenda
+  afiliadoCodigo: string | null
+  produto: string
+  quantidade: number
+  dataVenda: string
+  createdAt: string
+}
+
+// ─────────────────────────────────────────────
 // INTERFACES — CONFIGURAÇÕES
 // ─────────────────────────────────────────────
 
@@ -607,6 +635,10 @@ interface PurionState {
   adicionarContaAcesso: (conta: ContaAcesso) => void
   atualizarContaAcesso: (id: string, dados: Partial<ContaAcesso>) => void
   removerContaAcesso: (id: string) => void
+
+  // Vendas (Appmax)
+  vendas: Venda[]
+  setVendas: (vendas: Venda[]) => void
 
   // Configurações
   configuracoes: Configuracoes
@@ -851,6 +883,10 @@ export const usePurionStore = create<PurionState>()(
           })),
         removerContaAcesso: (id) =>
           set((s) => ({ contasAcessos: s.contasAcessos.filter((c) => c.id !== id) })),
+
+        // ── Vendas (Appmax) ──
+        vendas: [],
+        setVendas: (vendas) => set({ vendas }),
 
         // ── Configurações ──
         configuracoes: configPadrao,
