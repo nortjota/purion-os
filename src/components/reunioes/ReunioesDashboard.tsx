@@ -5,11 +5,12 @@
  * Daily assíncrono, reuniões semanais, log de decisões estratégicas.
  */
 
-import { useState, useMemo } from 'react'
-import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Trash2, Pencil } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Trash2, Pencil, CalendarCheck2, CalendarOff, CalendarPlus } from 'lucide-react'
 import { useMobile } from '@/hooks/useMobile'
 import { useReunioes } from '@/hooks/useReunioes'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { MiniCalendario } from './MiniCalendario'
 import {
   usePurionStore,
   type PerfilUsuario,
@@ -709,6 +710,15 @@ export function ReunioesDashboard() {
   const [reuniaoExpandida, setReuniaoExpandida] = useState<string | null>(null)
   const [editandoReuniao, setEditandoReuniao] = useState<ReuniaoItem | null>(null)
   const [filtroReuniao, setFiltroReuniao] = useState<'proximas' | 'historico'>('proximas')
+  const [diaSelecionado, setDiaSelecionado] = useState<string | null>(null)
+  const [linkCalendario, setLinkCalendario] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/calendar/link')
+      .then((r) => r.json())
+      .then((j) => setLinkCalendario(j.link ?? null))
+      .catch(() => setLinkCalendario(null))
+  }, [])
 
   // Próximas (agendadas) ordenadas pela mais próxima primeiro; histórico (realizada/cancelada) pela mais recente primeiro
   const reunioesProximas = useMemo(() =>
@@ -717,7 +727,10 @@ export function ReunioesDashboard() {
   const reunioesHistorico = useMemo(() =>
     reunioes.filter((r) => r.status !== 'agendada').sort((a, b) => b.data.localeCompare(a.data)),
   [reunioes])
-  const reunioesExibidas = filtroReuniao === 'proximas' ? reunioesProximas : reunioesHistorico
+  const reunioesBase = filtroReuniao === 'proximas' ? reunioesProximas : reunioesHistorico
+  const reunioesExibidas = diaSelecionado
+    ? reunioesBase.filter((r) => r.data.slice(0, 10) === diaSelecionado)
+    : reunioesBase
 
   const handleVotar = (decisaoId: string, voto: VotoDecisao) => {
     const decisao = decisoes.find((d) => d.id === decisaoId)
@@ -734,9 +747,16 @@ export function ReunioesDashboard() {
     <div className="page-content section-gap">
 
       {/* ── Header ── */}
-      <div>
-        <h1 className="page-title">Reuniões & Decisões</h1>
-        <p className="caption mt-1">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="page-title">Reuniões & Decisões</h1>
+          <p className="caption mt-1">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
+        </div>
+        {linkCalendario && (
+          <a href={linkCalendario} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm">
+            <CalendarPlus size={13} /> Adicionar ao meu Google
+          </a>
+        )}
       </div>
 
       {/* ══════════════════════════════════════
@@ -792,37 +812,50 @@ export function ReunioesDashboard() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-2">
-          {reunioesExibidas.length === 0 && (
-            <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#4A4A4A]">
-              {filtroReuniao === 'proximas' ? 'Nenhuma reunião agendada' : 'Nenhuma reunião no histórico'}
-            </div>
-          )}
-          {reunioesExibidas.map((reuniao) => {
-            const expandida = reuniaoExpandida === reuniao.id
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 items-start">
+          <MiniCalendario reunioes={reunioesBase} diaSelecionado={diaSelecionado} onSelecionarDia={setDiaSelecionado} />
 
-            return (
-              <div key={reuniao.id} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <button
-                    onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}
-                    className="flex-1 min-w-0 flex items-center gap-4 text-left"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{reuniao.titulo}</p>
-                        <span className="text-[10px] text-[#4A4A4A] bg-[#2A2A2A] px-2 py-0.5 rounded-full">
-                          {TIPO_REUNIAO_LABEL[reuniao.tipo]}
-                        </span>
+          <div className="flex flex-col gap-2">
+            {diaSelecionado && (
+              <button onClick={() => setDiaSelecionado(null)} className="text-xs text-[#C9A84C] text-left">
+                ← Limpar filtro de dia ({fmtData(diaSelecionado)})
+              </button>
+            )}
+            {reunioesExibidas.length === 0 && (
+              <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#4A4A4A]">
+                {filtroReuniao === 'proximas' ? 'Nenhuma reunião agendada' : 'Nenhuma reunião no histórico'}
+              </div>
+            )}
+            {reunioesExibidas.map((reuniao) => {
+              const expandida = reuniaoExpandida === reuniao.id
+
+              return (
+                <div key={reuniao.id} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <button
+                      onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}
+                      className="flex-1 min-w-0 flex items-center gap-4 text-left"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{reuniao.titulo}</p>
+                          <span className="text-[10px] text-[#4A4A4A] bg-[#2A2A2A] px-2 py-0.5 rounded-full">
+                            {TIPO_REUNIAO_LABEL[reuniao.tipo]}
+                          </span>
+                          {reuniao.googleEventId ? (
+                            <span title="Sincronizado com o Google Calendar"><CalendarCheck2 size={12} className="text-emerald-500" /></span>
+                          ) : (
+                            <span title="Apenas no CRM (não sincronizado)"><CalendarOff size={12} className="text-[#4A4A4A]" /></span>
+                          )}
+                        </div>
+                        <p className="text-xs text-[#6B6B6B] mt-0.5">
+                          {fmtData(reuniao.data)} · {reuniao.duracao}min ·{' '}
+                          {reuniao.participantes.map((p) => SOCIO_NOME[p]).join(', ')}
+                        </p>
                       </div>
-                      <p className="text-xs text-[#6B6B6B] mt-0.5">
-                        {fmtData(reuniao.data)} · {reuniao.duracao}min ·{' '}
-                        {reuniao.participantes.map((p) => SOCIO_NOME[p]).join(', ')}
-                      </p>
-                    </div>
-                  </button>
+                    </button>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
                     {/* Status — controle total entre agendada/realizada/cancelada */}
                     <select
                       value={reuniao.status}
@@ -897,7 +930,8 @@ export function ReunioesDashboard() {
                 )}
               </div>
             )
-          })}
+            })}
+          </div>
         </div>
       </section>
 

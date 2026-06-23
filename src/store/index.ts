@@ -176,6 +176,7 @@ export interface Tarefa {
   subtarefas: Subtarefa[]
   comentarios: Comentario[]
   anexos: Anexo[]
+  googleEventId?: string | null
 }
 
 // ─────────────────────────────────────────────
@@ -322,6 +323,7 @@ export interface ReuniaoItem {
     prazo: string
   }>
   createdAt: string
+  googleEventId?: string | null
 }
 
 // ─────────────────────────────────────────────

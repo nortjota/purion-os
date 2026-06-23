@@ -76,6 +76,35 @@ function toTarefaBase(r: Row): Omit<Tarefa, 'subtarefas' | 'comentarios' | 'anex
     recorrenciaAte:  r.recorrencia_ate  ? String(r.recorrencia_ate)  : null,
     ordem:           Number(r.ordem ?? 0),
     estimativaMin:   r.estimativa_min != null ? Number(r.estimativa_min) : null,
+    googleEventId:   r.google_event_id ? String(r.google_event_id) : null,
+  }
+}
+
+// ── Sync best-effort com Google Calendar (prazos como all-day) — nunca lança, nunca bloqueia ──
+async function syncCalendarTarefa(body: {
+  acao: 'criar' | 'atualizar' | 'deletar'
+  tarefaId: string
+  titulo?: string
+  descricao?: string
+  inicio?: string
+  googleEventId?: string | null
+}) {
+  try {
+    const res = await fetch('/api/calendar/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...body, tabela: 'tarefas', reuniaoId: body.tarefaId, allDay: true }),
+    })
+    const json = await res.json().catch(() => null)
+    dbLog('SYNC', 'google_calendar (tarefa)', json?.ok ? null : (json?.error ?? json?.msg ?? 'falha desconhecida'), body.tarefaId)
+    if (json?.ok && json?.googleEventId) {
+      usePurionStore.getState().atualizarTarefa(body.tarefaId, { googleEventId: json.googleEventId })
+    }
+    if (body.acao === 'deletar' && json?.ok) {
+      usePurionStore.getState().atualizarTarefa(body.tarefaId, { googleEventId: null })
+    }
+  } catch (err) {
+    dbLog('SYNC', 'google_calendar (tarefa)', err, body.tarefaId)
   }
 }
 
@@ -259,6 +288,12 @@ export function useTarefas() {
           subtarefas: [], comentarios: [], anexos: [],
         })
         success('Tarefa criada')
+        if (t.dueDate) {
+          syncCalendarTarefa({
+            acao: 'criar', tarefaId: String(data.id),
+            titulo: `Prazo: ${t.titulo}`, descricao: t.descricao, inicio: t.dueDate,
+          })
+        }
       }
     },
 
@@ -298,9 +333,23 @@ export function useTarefas() {
       if (dados.titulo !== undefined || dados.descricao !== undefined || dados.prioridade !== undefined || dados.dueDate !== undefined || dados.modulo !== undefined || dados.responsavel !== undefined || dados.motivoBloqueio !== undefined) {
         success('Tarefa atualizada')
       }
+
+      if (tarefaAtual) {
+        const merged = { ...tarefaAtual, ...dados }
+        if (dados.status === 'concluida' || dados.status === 'cancelada') {
+          if (tarefaAtual.googleEventId) syncCalendarTarefa({ acao: 'deletar', tarefaId: id, googleEventId: tarefaAtual.googleEventId })
+        } else if ((dados.dueDate !== undefined || dados.titulo !== undefined) && merged.dueDate) {
+          syncCalendarTarefa({
+            acao: 'atualizar', tarefaId: id,
+            titulo: `Prazo: ${merged.titulo}`, descricao: merged.descricao, inicio: merged.dueDate,
+            googleEventId: tarefaAtual.googleEventId,
+          })
+        }
+      }
     },
 
     deletarTarefa: async (id: string) => {
+      const tarefaAtual = usePurionStore.getState().tarefas.find((t) => t.id === id)
       const sb = supabase
       if (sb) {
         const { error } = await sb.from('tarefas').update({ deleted_at: new Date().toISOString() }).eq('id', id)
@@ -309,6 +358,9 @@ export function useTarefas() {
       }
       usePurionStore.getState().removerTarefa(id)
       success('Tarefa excluída', 'Você pode restaurar na Lixeira')
+      if (tarefaAtual?.googleEventId) {
+        syncCalendarTarefa({ acao: 'deletar', tarefaId: id, googleEventId: tarefaAtual.googleEventId })
+      }
     },
 
     reordenarTarefas: async (atualizacoes: Array<{ id: string; ordem: number; status?: StatusTarefa }>) => {

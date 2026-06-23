@@ -26,7 +26,45 @@ function toReuniao(r: Row): ReuniaoItem {
     decisoes:       Array.isArray(r.decisoes)         ? (r.decisoes        as string[])                     : [],
     proximosPassos: Array.isArray(r.proximos_passos)  ? (r.proximos_passos as ReuniaoItem['proximosPassos']) : [],
     createdAt:      String(r.created_at ?? new Date().toISOString()),
+    googleEventId:  r.google_event_id ? String(r.google_event_id) : null,
   }
+}
+
+// ── Sync best-effort com Google Calendar — nunca lança, nunca bloqueia ──
+async function syncCalendar(body: {
+  acao: 'criar' | 'atualizar' | 'deletar'
+  reuniaoId: string
+  titulo?: string
+  descricao?: string
+  inicio?: string
+  duracaoMin?: number
+  googleEventId?: string | null
+}) {
+  try {
+    const res = await fetch('/api/calendar/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    const json = await res.json().catch(() => null)
+    dbLog('SYNC', 'google_calendar', json?.ok ? null : (json?.error ?? json?.msg ?? 'falha desconhecida'), body.reuniaoId)
+    if (json?.ok && json?.googleEventId) {
+      usePurionStore.getState().atualizarReuniao(body.reuniaoId, { googleEventId: json.googleEventId })
+    }
+    if (body.acao === 'deletar' && json?.ok) {
+      usePurionStore.getState().atualizarReuniao(body.reuniaoId, { googleEventId: null })
+    }
+  } catch (err) {
+    // Best-effort: a reunião já está salva no CRM independentemente disso
+    dbLog('SYNC', 'google_calendar', err, body.reuniaoId)
+  }
+}
+
+function montarDescricaoCalendar(r: { pauta: string[]; tipo: string }): string {
+  const linhas = [`Tipo: ${r.tipo}`]
+  if (r.pauta.length > 0) linhas.push('', 'Pauta:', ...r.pauta.map((p) => `• ${p}`))
+  linhas.push('', 'Criado automaticamente pelo PURION OS')
+  return linhas.join('\n')
 }
 
 function toDaily(r: Row): DailyEntry {
@@ -116,8 +154,19 @@ export function useReunioes() {
       dbLog('INSERT', 'reunioes', error, data?.id)
       if (error) { toastError('Erro ao criar reunião', error.message); return }
       if (data) {
-        usePurionStore.getState().adicionarReuniao({ ...r, id: String(data.id), createdAt: String(data.created_at) })
+        const novaReuniao = { ...r, id: String(data.id), createdAt: String(data.created_at) }
+        usePurionStore.getState().adicionarReuniao(novaReuniao)
         success('Reunião criada')
+        if (r.status !== 'cancelada') {
+          syncCalendar({
+            acao: 'criar',
+            reuniaoId: String(data.id),
+            titulo: r.titulo,
+            descricao: montarDescricaoCalendar(r),
+            inicio: r.data,
+            duracaoMin: r.duracao,
+          })
+        }
       }
     },
 
@@ -127,6 +176,7 @@ export function useReunioes() {
         usePurionStore.getState().atualizarReuniao(id, dados)
         return
       }
+      const reuniaoAtual = usePurionStore.getState().reunioes.find((r) => r.id === id)
       const { error } = await sb.from('reunioes').update({
         ...(dados.titulo          !== undefined && { titulo:          dados.titulo }),
         ...(dados.tipo            !== undefined && { tipo:            dados.tipo }),
@@ -143,9 +193,30 @@ export function useReunioes() {
       dbLog('UPDATE', 'reunioes', error, id)
       if (error) { toastError('Erro ao salvar reunião', error.message); return }
       usePurionStore.getState().atualizarReuniao(id, dados)
+
+      if (reuniaoAtual) {
+        const merged = { ...reuniaoAtual, ...dados }
+        const camposRelevantes = ['titulo', 'data', 'duracao', 'pauta', 'tipo', 'status']
+          .some((campo) => dados[campo as keyof ReuniaoItem] !== undefined)
+
+        if (dados.status === 'cancelada' && reuniaoAtual.googleEventId) {
+          syncCalendar({ acao: 'deletar', reuniaoId: id, googleEventId: reuniaoAtual.googleEventId })
+        } else if (camposRelevantes && merged.status !== 'cancelada') {
+          syncCalendar({
+            acao: 'atualizar',
+            reuniaoId: id,
+            titulo: merged.titulo,
+            descricao: montarDescricaoCalendar(merged),
+            inicio: merged.data,
+            duracaoMin: merged.duracao,
+            googleEventId: reuniaoAtual.googleEventId,
+          })
+        }
+      }
     },
 
     deletarReuniao: async (id: string) => {
+      const reuniaoAtual = usePurionStore.getState().reunioes.find((r) => r.id === id)
       const sb = supabase
       if (sb) {
         const { error } = await sb.from('reunioes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
@@ -155,6 +226,9 @@ export function useReunioes() {
       const store = usePurionStore.getState()
       store.setReunioes(store.reunioes.filter((r) => r.id !== id))
       success('Reunião excluída', 'Você pode restaurar na Lixeira')
+      if (reuniaoAtual?.googleEventId) {
+        syncCalendar({ acao: 'deletar', reuniaoId: id, googleEventId: reuniaoAtual.googleEventId })
+      }
     },
 
     restaurarReuniao: async (reuniao: ReuniaoItem) => {
