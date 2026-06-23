@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# arquivos de origem de importacao (dados ja extraidos p/ imports/sql/*.sql)
+/imports/*.xlsx
