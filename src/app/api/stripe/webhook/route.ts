@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-04-22.dahlia' })
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-05-27.dahlia' })
 }
 
 export async function POST(req: NextRequest) {
