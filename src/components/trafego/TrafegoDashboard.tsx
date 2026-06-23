@@ -252,7 +252,7 @@ function PlataformaTab({ data, loading, plataforma, cor, subLabel, roasMinimo, c
 export function TrafegoDashboard() {
   const { configuracoes } = usePurionStore()
   const roasMinimo = configuracoes.roasMinimo ?? 2.5
-  const cpaMaximo  = configuracoes.cpaMaximo  ?? 30
+  const cpaMaximo  = configuracoes.cpaMaximo  ?? 45
 
   const [activeTab, setActiveTab] = useState<TabId>('painel')
   const [period, setPeriod]       = useState<TrafegoPeriod>('30d')

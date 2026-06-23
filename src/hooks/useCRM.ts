@@ -97,6 +97,7 @@ export function useCRM() {
         usePurionStore.getState().atualizarLead(id, dados)
         return
       }
+      const leadAtual = usePurionStore.getState().leads.find((l) => l.id === id)
       const { error } = await sb.from('leads_crm').update({
         ...(dados.nomeEmpresa         !== undefined && { nome_empresa:         dados.nomeEmpresa }),
         ...(dados.nomeContato         !== undefined && { nome_contato:         dados.nomeContato }),
@@ -116,6 +117,19 @@ export function useCRM() {
       dbLog('UPDATE', 'leads_crm', error, id)
       if (error) { toastError('Erro ao salvar lead', error.message); return }
       usePurionStore.getState().atualizarLead(id, dados)
+
+      if (dados.status !== undefined && leadAtual && dados.status !== leadAtual.status) {
+        fetch('/api/notificacoes/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            papel: 'matheus', tipo: 'lead_status',
+            titulo: '💼 Lead B2B mudou de status',
+            mensagem: `${leadAtual.nomeEmpresa}: ${leadAtual.status} → ${dados.status}`,
+            canal: ['sistema'], link: '/crm',
+          }),
+        }).catch(() => {})
+      }
     },
 
     deletarLead: async (id: string) => {

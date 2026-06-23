@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 import { useMobile } from '@/hooks/useMobile'
+import { ResumoDiario } from './ResumoDiario'
 import {
   TrendingUp, TrendingDown, DollarSign, Target,
   ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
@@ -600,6 +601,9 @@ export function CommandCenter() {
           {showWidget('health-score') && <HealthScoreBadge hs={healthScore} />}
         </div>
       </div>
+
+      {/* ── Resumo de hoje ── */}
+      <ResumoDiario />
 
       {/* ── KPI Cards ── */}
       {showWidget('kpis') && (

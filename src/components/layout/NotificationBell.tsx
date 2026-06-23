@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Bell, X, CheckCheck } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { usePurionStore } from '@/store'
 
 type Notif = {
   id: string
@@ -11,6 +12,7 @@ type Notif = {
   link?: string
   lida: boolean
   criado_em: string
+  papel: string | null
 }
 
 function timeAgo(iso: string) {
@@ -27,6 +29,7 @@ export function NotificationBell() {
   const [open, setOpen]       = useState(false)
   const [notifs, setNotifs]   = useState<Notif[]>([])
   const ref                   = useRef<HTMLDivElement>(null)
+  const perfilAtivo           = usePurionStore((s) => s.perfilAtivo)
 
   const naoLidas = notifs.filter(n => !n.lida).length
 
@@ -34,25 +37,24 @@ export function NotificationBell() {
     if (!supabase) return
     const { data } = await supabase
       .from('notificacoes')
-      .select('id, titulo, mensagem, link, lida, criado_em')
+      .select('id, titulo, mensagem, link, lida, criado_em, papel')
+      .or(`papel.is.null,papel.eq.${perfilAtivo}`)
       .order('criado_em', { ascending: false })
       .limit(10)
     if (data) setNotifs(data as Notif[])
   }
 
-  useEffect(() => { carregar() }, [])
+  useEffect(() => { carregar() }, [perfilAtivo])
 
   // Real-time subscription
   useEffect(() => {
     if (!supabase) return
     const channel = supabase
       .channel(`notificacoes-realtime-${Math.random().toString(36).slice(2)}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, () => {
-        carregar()
-      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, carregar)
       .subscribe()
     return () => { supabase!.removeChannel(channel) }
-  }, [])
+  }, [perfilAtivo])
 
   // Close on outside click
   useEffect(() => {

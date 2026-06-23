@@ -188,6 +188,17 @@ export async function POST(req: NextRequest) {
       pedido_id:   pedidoAppmax,
       tenant_id:   PURION_TENANT_ID,
     })
+
+    // Notificação best-effort — nunca quebra o fluxo do webhook se falhar
+    await db.from('notificacoes').insert({
+      tenant_id: PURION_TENANT_ID,
+      papel: 'matheus',
+      tipo: 'nova_venda',
+      titulo: '💰 Nova venda aprovada',
+      mensagem: `${nomeCliente} — R$${valorLiquido.toFixed(2)} (${canal.toUpperCase()})`,
+      canal: ['sistema'],
+      link: '/vendas',
+    }).then(({ error }) => { if (error) console.error('[webhook/appmax] erro ao notificar:', error.message) })
   }
 
   if (logRow) {

@@ -86,6 +86,7 @@ export function useMarketing() {
         usePurionStore.getState().atualizarCreator(id, dados)
         return
       }
+      const creatorAtual = usePurionStore.getState().creators.find((c) => c.id === id)
       const { error } = await sb.from('creators').update({
         ...(dados.nome             !== undefined && { nome:              dados.nome }),
         ...(dados.instagram        !== undefined && { instagram:         dados.instagram }),
@@ -105,6 +106,19 @@ export function useMarketing() {
       if (error) { toastError('Erro ao salvar creator', error.message); return }
       usePurionStore.getState().atualizarCreator(id, dados)
       success('Creator atualizado')
+
+      if (dados.status !== undefined && creatorAtual?.status === 'contatado' && dados.status !== 'contatado') {
+        fetch('/api/notificacoes/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            papel: 'joao', tipo: 'creator_respondeu',
+            titulo: '📩 Creator respondeu',
+            mensagem: `${creatorAtual.nome} agora está em "${dados.status}".`,
+            canal: ['sistema'], link: '/creators',
+          }),
+        }).catch(() => {})
+      }
     },
 
     deletarCreator: async (id: string) => {
