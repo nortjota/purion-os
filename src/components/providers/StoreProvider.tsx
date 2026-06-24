@@ -22,6 +22,9 @@ import { useProducao }   from '@/hooks/useProducao'
 import { useMarketing }  from '@/hooks/useMarketing'
 import { useReunioes }   from '@/hooks/useReunioes'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
+import { useConhecimento } from '@/hooks/useConhecimento'
+import { useContas }     from '@/hooks/useContas'
+import { useVendas }     from '@/hooks/useVendas'
 
 // ── Componente interno que chama todos os hooks de sync ──────────────────────
 // Só é renderizado quando Supabase está configurado.
@@ -33,6 +36,9 @@ function SupabaseSync() {
   useMarketing()
   useReunioes()
   useConfiguracoes()
+  useConhecimento()
+  useContas()
+  useVendas()
   return null
 }
 
@@ -45,6 +51,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setPedidosExpedicao, setConteudosCalendario, setDailyEntries, setDecisoes,
     leads,
   } = usePurionStore()
+
+  // Rehydrate localStorage after mount to avoid SSR/client hydration mismatch
+  useEffect(() => {
+    usePurionStore.persist.rehydrate()
+  }, [])
 
   useEffect(() => {
     // Seed apenas se: Supabase não configurado E store ainda vazio

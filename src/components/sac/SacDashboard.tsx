@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import { Plus, Search, Filter, Clock, CheckCircle, AlertCircle, MessageSquare, RefreshCw } from 'lucide-react'
+import { Plus, Search, Clock, CheckCircle, AlertCircle, MessageSquare, RefreshCw } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { TicketModal } from './TicketModal'
 import { TicketDetalhe } from './TicketDetalhe'
@@ -111,21 +111,17 @@ export function SacDashboard({ ticketsInicial }: Props) {
   return (
     <div className="page-content">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+      <div className="flex items-start justify-between flex-wrap gap-3" style={{ marginBottom: 24 }}>
         <div>
-          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>
-            Suporte ao Cliente
-          </p>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>SAC</h1>
+          <p className="kpi-label mb-1">Suporte ao Cliente</p>
+          <h1 className="page-title">SAC</h1>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={carregar} disabled={carregando}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface)', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)' }}>
+          <button onClick={carregar} disabled={carregando} className="btn btn-secondary btn-sm">
             <RefreshCw size={13} style={{ animation: carregando ? 'spin 1s linear infinite' : 'none' }} />
             Atualizar
           </button>
-          <button onClick={() => setNovoAberto(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: 'none', background: '#C9A84C', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#0D0D0D' }}>
+          <button onClick={() => setNovoAberto(true)} className="btn btn-primary btn-sm">
             <Plus size={14} /> Novo ticket
           </button>
         </div>

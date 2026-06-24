@@ -132,10 +132,10 @@ export function TicketModal({ onCriado, onFechar }: Props) {
         {erro && <p style={{ fontSize: 12, color: '#EF4444', marginTop: 12 }}>{erro}</p>}
 
         <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-          <button onClick={onFechar} style={{ flex: 1, padding: '10px 0', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface)', color: 'var(--text-secondary)', fontSize: 13, cursor: 'pointer' }}>
+          <button onClick={onFechar} className="btn btn-secondary" style={{ flex: 1 }}>
             Cancelar
           </button>
-          <button onClick={salvar} disabled={salvando} style={{ flex: 2, padding: '10px 0', borderRadius: 8, border: 'none', background: '#C9A84C', color: '#0D0D0D', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: salvando ? 0.7 : 1 }}>
+          <button onClick={salvar} disabled={salvando} className="btn btn-primary" style={{ flex: 2 }}>
             {salvando ? 'Criando…' : 'Criar Ticket'}
           </button>
         </div>

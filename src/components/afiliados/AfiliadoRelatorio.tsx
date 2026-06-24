@@ -179,16 +179,16 @@ export function AfiliadoRelatorio() {
   return (
     <div className="page-content">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+      <div className="flex items-start justify-between flex-wrap gap-3" style={{ marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Relatório de Afiliados</h1>
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '4px 0 0' }}>Análise consolidada de performance</p>
+          <h1 className="page-title">Relatório de Afiliados</h1>
+          <p className="caption mt-1">Análise consolidada de performance</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={exportarCSV} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface)', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)' }}>
+          <button onClick={exportarCSV} className="btn btn-secondary btn-sm">
             <Download size={13} /> CSV
           </button>
-          <button onClick={exportarPDF} disabled={exportando} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 8, border: 'none', background: '#C9A84C', cursor: exportando ? 'not-allowed' : 'pointer', fontSize: 12, color: '#0D0D0D', fontWeight: 600, opacity: exportando ? 0.7 : 1 }}>
+          <button onClick={exportarPDF} disabled={exportando} className="btn btn-primary btn-sm">
             <FileText size={13} /> {exportando ? 'Gerando…' : 'Exportar PDF'}
           </button>
         </div>

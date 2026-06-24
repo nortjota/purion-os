@@ -8,6 +8,7 @@ import {
   Camera, Play, Link2,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { useAfiliados } from '@/hooks/useAfiliados'
 import { AfiliadoModal } from './AfiliadoModal'
 import { PagamentoModal } from './PagamentoModal'
@@ -66,12 +67,21 @@ export function AfiliadoPerfil({ id }: { id: string }) {
     if (!supabase || !id) return
     ;(async () => {
       setCarregando(true)
-      const [{ data: af }, { data: vd }, { data: cl }, { data: pg }] = await Promise.all([
+      const [
+        { data: af, error: afErr },
+        { data: vd, error: vdErr },
+        { data: cl, error: clErr },
+        { data: pg, error: pgErr },
+      ] = await Promise.all([
         supabase.from('afiliados').select('*').eq('id', id).single(),
         supabase.from('afiliado_vendas').select('*').eq('afiliado_id', id).order('data_venda', { ascending: false }),
         supabase.from('afiliado_cliques').select('*').eq('afiliado_id', id).order('criado_em', { ascending: false }).limit(500),
         supabase.from('afiliado_pagamentos').select('*').eq('afiliado_id', id).order('criado_em', { ascending: false }),
       ])
+      dbLog('SELECT', 'afiliados', afErr, id)
+      dbLog('SELECT', 'afiliado_vendas', vdErr, `afiliado ${id}`)
+      dbLog('SELECT', 'afiliado_cliques', clErr, `afiliado ${id}`)
+      dbLog('SELECT', 'afiliado_pagamentos', pgErr, `afiliado ${id}`)
       if (af) setAfiliado(af as Afiliado)
       setVendas((vd as AfiliadoVenda[]) ?? [])
       setCliques((cl as AfiliadoClique[]) ?? [])
@@ -193,13 +203,13 @@ export function AfiliadoPerfil({ id }: { id: string }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button onClick={copiarLink} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface-2)', cursor: 'pointer', fontSize: 12, color: copiado ? '#10B981' : 'var(--text-secondary)' }}>
+            <button onClick={copiarLink} className="btn btn-secondary btn-sm" style={copiado ? { color: '#22C55E', borderColor: 'rgba(34,197,94,0.3)' } : {}}>
               {copiado ? <Check size={13} /> : <Copy size={13} />} {copiado ? 'Copiado' : 'Copiar link'}
             </button>
-            <button onClick={() => setModalEditar(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface-2)', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)' }}>
+            <button onClick={() => setModalEditar(true)} className="btn btn-secondary btn-sm">
               <Pencil size={13} /> Editar
             </button>
-            <button onClick={() => setModalPagar(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: 'none', background: '#C9A84C', cursor: 'pointer', fontSize: 12, color: '#0D0D0D', fontWeight: 600 }}>
+            <button onClick={() => setModalPagar(true)} className="btn btn-primary btn-sm">
               <DollarSign size={13} /> Pagar comissão
             </button>
           </div>

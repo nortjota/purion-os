@@ -2,7 +2,9 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type { Creator, PerfilUsuario, StatusCreator } from '@/store'
 
 type Row = Record<string, unknown>
@@ -27,22 +29,25 @@ function toCreator(r: Row): Creator {
 }
 
 export function useMarketing() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('creators')
         .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
+      dbLog('SELECT', 'creators', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setCreators(data.map(toCreator))
     }
 
     load()
 
-    const ch = sb.channel('creators-sync')
+    const ch = sb.channel(`creators-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'creators' }, load)
       .subscribe()
 
@@ -53,7 +58,7 @@ export function useMarketing() {
     adicionarCreator: async (c: Omit<Creator, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('creators').insert({
+      const { data, error } = await sb.from('creators').insert({
         nome:              c.nome,
         instagram:         c.instagram,
         tiktok:            c.tiktok ?? null,
@@ -67,7 +72,12 @@ export function useMarketing() {
         responsavel:       c.responsavel,
         notas:             c.notas,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarCreator({ ...c, id: String(data.id), createdAt: String(data.created_at) })
+      dbLog('INSERT', 'creators', error, data?.id)
+      if (error) { toastError('Erro ao cadastrar creator', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarCreator({ ...c, id: String(data.id), createdAt: String(data.created_at) })
+        success('Creator cadastrado')
+      }
     },
 
     atualizarCreator: async (id: string, dados: Partial<Creator>) => {
@@ -76,7 +86,8 @@ export function useMarketing() {
         usePurionStore.getState().atualizarCreator(id, dados)
         return
       }
-      await sb.from('creators').update({
+      const creatorAtual = usePurionStore.getState().creators.find((c) => c.id === id)
+      const { error } = await sb.from('creators').update({
         ...(dados.nome             !== undefined && { nome:              dados.nome }),
         ...(dados.instagram        !== undefined && { instagram:         dados.instagram }),
         ...(dados.tiktok           !== undefined && { tiktok:            dados.tiktok }),
@@ -91,20 +102,46 @@ export function useMarketing() {
         ...(dados.notas            !== undefined && { notas:             dados.notas }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'creators', error, id)
+      if (error) { toastError('Erro ao salvar creator', error.message); return }
       usePurionStore.getState().atualizarCreator(id, dados)
+      success('Creator atualizado')
+
+      if (dados.status !== undefined && creatorAtual?.status === 'contatado' && dados.status !== 'contatado') {
+        fetch('/api/notificacoes/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            papel: 'joao', tipo: 'creator_respondeu',
+            titulo: '📩 Creator respondeu',
+            mensagem: `${creatorAtual.nome} agora está em "${dados.status}".`,
+            canal: ['sistema'], link: '/creators',
+          }),
+        }).catch(() => {})
+      }
     },
 
     deletarCreator: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('creators').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('creators').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'creators', error, id)
+        if (error) { toastError('Erro ao excluir creator', error.message); return }
+      }
       const store = usePurionStore.getState()
       store.setCreators(store.creators.filter((c) => c.id !== id))
+      success('Creator excluído', 'Você pode restaurar na Lixeira')
     },
 
     restaurarCreator: async (creator: Creator) => {
       const sb = supabase
-      if (sb) await sb.from('creators').update({ deleted_at: null }).eq('id', creator.id)
+      if (sb) {
+        const { error } = await sb.from('creators').update({ deleted_at: null }).eq('id', creator.id)
+        dbLog('UPDATE', 'creators', error, creator.id)
+        if (error) { toastError('Erro ao restaurar creator', error.message); return }
+      }
       usePurionStore.getState().adicionarCreator(creator)
+      success('Creator restaurado')
     },
   }
 }

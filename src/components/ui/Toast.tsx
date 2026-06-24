@@ -141,11 +141,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={value}>
       {children}
       <div
-        style={{
-          position: 'fixed', bottom: 24, right: 24,
-          display: 'flex', flexDirection: 'column', gap: 8,
-          zIndex: 9999, pointerEvents: 'none',
-        }}
+        className="fixed bottom-20 right-6 md:bottom-6 md:right-6 flex flex-col gap-2 z-[9999]"
+        style={{ pointerEvents: 'none' }}
       >
         <AnimatePresence mode="sync">
           {toasts.map((t) => (
@@ -161,6 +158,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
 export function useToast(): ToastContextValue {
   const ctx = useContext(ToastContext)
-  if (!ctx) throw new Error('useToast must be used within ToastProvider')
+  if (!ctx) {
+    const noop = () => {}
+    return { success: noop, error: noop, warning: noop, info: noop, toast: noop }
+  }
   return ctx
 }

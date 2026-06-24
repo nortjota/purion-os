@@ -20,6 +20,8 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { ViewToggle } from '@/components/ui/ViewToggle'
 import { AdvancedFilters } from '@/components/ui/AdvancedFilters'
 import type { ViewType } from '@/components/ui/ViewToggle'
+import { useToast } from '@/components/ui/Toast'
+import { formatarDataBR } from '@/lib/calculos'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -151,7 +153,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: L
           {diasSem === 0 ? 'Hoje' : `${diasSem}d sem contato`}
         </span>
         {lead.ultimoPedido && (
-          <span className="text-[#3A3A3A]"> · último pedido {lead.ultimoPedido}</span>
+          <span className="text-[#3A3A3A]"> · último pedido {formatarDataBR(lead.ultimoPedido)}</span>
         )}
       </div>
 
@@ -160,7 +162,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: L
         onClick={(e) => { e.stopPropagation(); onVerDetalhes(lead.id) }}
         className="
           w-full py-1.5 rounded-lg text-[10px] font-semibold
-          border border-[var(--border)] text-[#8A8A8A]
+          border border-[var(--border)] text-[var(--text-secondary)]
           hover:border-[rgba(201,168,76,0.3)] hover:text-[#C9A84C]
           hover:bg-[rgba(201,168,76,0.05)]
           transition-all
@@ -213,7 +215,7 @@ function KanbanCol({
           className="w-2 h-2 rounded-full"
           style={{ backgroundColor: coluna.cor }}
         />
-        <span className="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-wider flex-1">
+        <span className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex-1">
           {coluna.label}
         </span>
         <span
@@ -340,7 +342,7 @@ function DrawerLead({
               { icon: Mail,  text: lead.email },
               { icon: MapPin, text: `${lead.cidade} · ${lead.regiao}` },
             ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-2 text-xs text-[#8A8A8A]">
+              <div key={text} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                 <Icon size={11} className="text-[#4A4A4A] shrink-0" />
                 {text}
               </div>
@@ -353,8 +355,8 @@ function DrawerLead({
           {[
             { label: 'Ticket médio', valor: formatarMoedaR(lead.valorMedioMensal) + '/mês' },
             { label: 'Tier', valor: `Tier ${lead.tier}` },
-            { label: 'Último pedido', valor: lead.ultimoPedido ?? 'Sem pedido' },
-            { label: 'Cadastrado', valor: lead.createdAt.substring(0, 10) },
+            { label: 'Último pedido', valor: lead.ultimoPedido ? formatarDataBR(lead.ultimoPedido) : 'Sem pedido' },
+            { label: 'Cadastrado', valor: formatarDataBR(lead.createdAt) },
           ].map(({ label, valor }) => (
             <div key={label} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-2.5">
               <p className="text-[9px] text-[#4A4A4A] uppercase tracking-wider mb-1">{label}</p>
@@ -446,7 +448,7 @@ function DrawerLead({
               {[...historicos].reverse().map((h) => (
                 <li key={h.id} className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-2.5">
                   <p className="text-[10px] text-[#4A4A4A] mb-1">{h.timestamp}</p>
-                  <p className="text-xs text-[#8A8A8A]">{h.texto}</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{h.texto}</p>
                 </li>
               ))}
             </ul>
@@ -464,7 +466,7 @@ function DrawerLead({
               onChange={(e) => onMoverPara(e.target.value as StatusLead)}
               className="
                 w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2
-                text-xs text-[#8A8A8A] cursor-pointer appearance-none
+                text-xs text-[var(--text-secondary)] cursor-pointer appearance-none
                 focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors
               "
             >
@@ -515,6 +517,7 @@ export function CRMDashboard() {
   const isMobile = useMobile()
   const { leads } = usePurionStore()
   const { atualizarLead, deletarLead } = useCRM()
+  const { success } = useToast()
   const [deletandoLead, setDeletandoLead] = useState<Lead | null>(null)
 
   // ── Estado local ──
@@ -614,6 +617,7 @@ export function CRMDashboard() {
     if (!leadSelecionadoId) return
     setNotasMap((prev) => ({ ...prev, [leadSelecionadoId]: notas }))
     atualizarLead(leadSelecionadoId, { notas })
+    success('Notas salvas')
   }
 
   function handleRegistrarContato(texto: string) {
@@ -627,7 +631,12 @@ export function CRMDashboard() {
       ...prev,
       [leadSelecionadoId]: [...(prev[leadSelecionadoId] ?? []), interacao],
     }))
-    atualizarLead(leadSelecionadoId, { updatedAt: new Date().toISOString() })
+    const historicoAtual = leadAtual?.historicoInteracoes ?? []
+    atualizarLead(leadSelecionadoId, {
+      historicoInteracoes: [...historicoAtual, interacao],
+      updatedAt: new Date().toISOString(),
+    })
+    success('Contato registrado')
   }
 
   function handleMoverPara(status: StatusLead) {
@@ -768,10 +777,8 @@ export function CRMDashboard() {
                 </select>
                 <button
                   onClick={() => handleSalvarNotas(notasAtual)}
-                  style={{
-                    height: 44, padding: '0 20px', borderRadius: 8, background: '#C9A84C',
-                    color: '#0D0D0D', border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer',
-                  }}
+                  className="btn btn-primary"
+                  style={{ height: 44 }}
                 >
                   Salvar
                 </button>

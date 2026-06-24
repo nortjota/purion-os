@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 
 export type AfiliadoStatus  = 'ativo' | 'pausado' | 'pendente' | 'bloqueado'
 export type TipoComissao    = 'percentual' | 'fixo'
@@ -109,16 +110,20 @@ export function useAfiliados() {
       const { data: perfil } = await supabase.from('perfis').select('tenant_id').eq('id', user.id).single()
       setTenantId(perfil?.tenant_id ?? null)
     }
-    const [{ data: af }, { data: vd }, { data: cl }, { data: pg }] = await Promise.all([
+    const [r1, r2, r3, r4] = await Promise.all([
       supabase.from('afiliados').select('*').is('deleted_at', null).order('criado_em', { ascending: false }),
       supabase.from('afiliado_vendas').select('*').neq('status_venda', 'cancelada').order('data_venda', { ascending: false }),
       supabase.from('afiliado_cliques').select('afiliado_id, converteu').gte('criado_em', new Date(Date.now() - 90 * 86400000).toISOString()),
       supabase.from('afiliado_pagamentos').select('*').order('criado_em', { ascending: false }),
     ])
-    setAfiliados((af as Afiliado[]) ?? [])
-    setVendas((vd as AfiliadoVenda[]) ?? [])
-    setCliques(cl ?? [])
-    setPagamentos((pg as AfiliadoPagamento[]) ?? [])
+    dbLog('SELECT', 'afiliados', r1.error, `${r1.data?.length ?? 0} rows`)
+    dbLog('SELECT', 'afiliado_vendas', r2.error, `${r2.data?.length ?? 0} rows`)
+    dbLog('SELECT', 'afiliado_cliques', r3.error, `${r3.data?.length ?? 0} rows`)
+    dbLog('SELECT', 'afiliado_pagamentos', r4.error, `${r4.data?.length ?? 0} rows`)
+    setAfiliados((r1.data as Afiliado[]) ?? [])
+    setVendas((r2.data as AfiliadoVenda[]) ?? [])
+    setCliques(r3.data ?? [])
+    setPagamentos((r4.data as AfiliadoPagamento[]) ?? [])
     setCarregando(false)
   }, [])
 
@@ -128,6 +133,7 @@ export function useAfiliados() {
     if (!supabase) return null
     const payload = { ...dados, tenant_id: dados.tenant_id ?? tenantId }
     const { data, error } = await supabase.from('afiliados').insert(payload).select().single()
+    dbLog('INSERT', 'afiliados', error, data?.id)
     if (error || !data) return null
     const novo = data as Afiliado
     setAfiliados(prev => [novo, ...prev])
@@ -137,12 +143,14 @@ export function useAfiliados() {
   const atualizarAfiliado = useCallback(async (id: string, dados: Partial<Afiliado>) => {
     if (!supabase) return
     const { error } = await supabase.from('afiliados').update(dados).eq('id', id)
+    dbLog('UPDATE', 'afiliados', error, id)
     if (!error) setAfiliados(prev => prev.map(a => a.id === id ? { ...a, ...dados } : a))
   }, [])
 
   const deletarAfiliado = useCallback(async (id: string) => {
     if (!supabase) return
-    await supabase.from('afiliados').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+    const { error } = await supabase.from('afiliados').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+    dbLog('DELETE', 'afiliados', error, id)
     setAfiliados(prev => prev.filter(a => a.id !== id))
   }, [])
 
@@ -155,6 +163,7 @@ export function useAfiliados() {
     const { error } = await supabase.from('afiliado_vendas')
       .update({ status_comissao: 'aprovada', data_aprovacao: new Date().toISOString() })
       .eq('id', vendaId)
+    dbLog('UPDATE', 'afiliado_vendas', error, vendaId)
     if (!error) setVendas(prev => prev.map(v => v.id === vendaId ? { ...v, status_comissao: 'aprovada' as StatusComissao } : v))
   }, [])
 
@@ -164,10 +173,12 @@ export function useAfiliados() {
   ): Promise<boolean> => {
     if (!supabase) return false
     const { error: pgError } = await supabase.from('afiliado_pagamentos').insert({ ...dados, tenant_id: tenantId })
+    dbLog('INSERT', 'afiliado_pagamentos', pgError)
     if (pgError) return false
     const { error: vdError } = await supabase.from('afiliado_vendas')
       .update({ status_comissao: 'paga', data_pagamento: new Date().toISOString() })
       .in('id', vendasIds)
+    dbLog('UPDATE', 'afiliado_vendas', vdError, vendasIds)
     if (!vdError) setVendas(prev => prev.map(v => vendasIds.includes(v.id) ? { ...v, status_comissao: 'paga' as StatusComissao } : v))
     return !vdError
   }, [tenantId])

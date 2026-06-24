@@ -2,10 +2,11 @@
 
 import { useMemo } from 'react'
 import { useMobile } from '@/hooks/useMobile'
+import { ResumoDiario } from './ResumoDiario'
 import {
   TrendingUp, TrendingDown, DollarSign, Target,
   ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
-  Info, Activity, Clock,
+  Info, Activity, Clock, Calendar, Users,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import {
@@ -16,6 +17,8 @@ import {
   gerarFeedAtividade,
   formatarMoeda,
   formatarPercentual,
+  formatarDataBR,
+  LABEL_STATUS_LEAD,
   type Alerta,
   type AtividadeItem,
   type HealthScore,
@@ -191,6 +194,10 @@ function SocioCard({
   const abertas      = minhasTarefas.filter((t) => t.status === 'pendente').length
   const emAndamento  = minhasTarefas.filter((t) => t.status === 'em_andamento').length
   const concluidas   = minhasTarefas.filter((t) => t.status === 'concluida').length
+  const hoje         = new Date().toISOString().slice(0, 10)
+  const atrasadas    = minhasTarefas.filter(
+    (t) => t.dueDate && t.dueDate < hoje && t.status !== 'concluida'
+  ).length
   const ultimaConcluida = minhasTarefas
     .filter((t) => t.completedAt)
     .sort((a, b) => b.completedAt!.localeCompare(a.completedAt!))
@@ -230,7 +237,7 @@ function SocioCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-3">
+      <div className="grid grid-cols-3 gap-2 mb-2">
         {[
           { label: 'Abertas',    valor: abertas,    cor: '#C9A84C' },
           { label: 'Andamento',  valor: emAndamento, cor: info.cor  },
@@ -247,6 +254,12 @@ function SocioCard({
         ))}
       </div>
 
+      {atrasadas > 0 && (
+        <div className="mb-2 flex items-center gap-1.5 text-[12px] text-[#EF4444]">
+          <AlertTriangle size={11} />
+          {atrasadas} tarefa{atrasadas > 1 ? 's' : ''} atrasada{atrasadas > 1 ? 's' : ''}
+        </div>
+      )}
       <div className="caption flex flex-col gap-0.5">
         {ultimaConcluida && (
           <span>Última entrega: <span className="text-[var(--text-primary)]">{ultimaConcluida.titulo}</span></span>
@@ -365,6 +378,103 @@ function HealthScoreBadge({ hs }: { hs: HealthScore }) {
 }
 
 // ─────────────────────────────────────────────
+// FUNIL DE LEADS
+// ─────────────────────────────────────────────
+
+function LeadsFunil({ leads }: { leads: import('@/store').Lead[] }) {
+  const ESTAGIOS = Object.entries(LABEL_STATUS_LEAD).filter(([k]) => k !== 'inativo')
+  const ativos = leads.filter((l) => l.status !== 'inativo')
+
+  return (
+    <div className="card-purion">
+      <div className="card-header">
+        <div className="flex items-center gap-2">
+          <Users size={14} className="text-[#C9A84C]" />
+          <span className="section-title text-[15px]">Funil de Leads</span>
+        </div>
+        <span className="caption">{ativos.length} ativos</span>
+      </div>
+      <div className="px-6 pb-6 flex flex-col gap-3">
+        {ESTAGIOS.map(([key, label]) => {
+          const count = leads.filter((l) => l.status === key).length
+          const pct = ativos.length > 0 ? Math.round((count / ativos.length) * 100) : 0
+          return (
+            <div key={key} className="flex items-center gap-3">
+              <span className="text-[12px] text-[var(--text-secondary)] w-36 shrink-0 truncate">{label}</span>
+              <div className="flex-1 h-1.5 bg-[var(--bg-surface-2)] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pct}%`, backgroundColor: '#C9A84C' }}
+                />
+              </div>
+              <span className="text-[13px] font-[500] text-[var(--text-primary)] w-5 text-right">{count}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// ÚLTIMOS DAILY UPDATES
+// ─────────────────────────────────────────────
+
+function UltimosDailies({ entries }: { entries: import('@/store').DailyEntry[] }) {
+  const ultimos = [...entries]
+    .sort((a, b) => b.data.localeCompare(a.data))
+    .slice(0, 5)
+
+  if (ultimos.length === 0) return null
+
+  const COR_SOCIO: Record<string, string> = {
+    matheus: '#C9A84C',
+    gabriel: '#22C55E',
+    joao:    '#5B8FE8',
+  }
+
+  return (
+    <div className="card-purion overflow-hidden">
+      <div className="card-header">
+        <div className="flex items-center gap-2">
+          <Calendar size={14} className="text-[#C9A84C]" />
+          <span className="section-title text-[15px]">Últimos Daily Updates</span>
+        </div>
+      </div>
+      <ul>
+        {ultimos.map((entry) => {
+          const cor = COR_SOCIO[entry.socio] ?? '#6B6B6B'
+          return (
+            <li
+              key={entry.id}
+              className="flex items-start gap-3 px-6 py-3 border-b border-[var(--border)] last:border-0"
+            >
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0 mt-0.5 select-none"
+                style={{
+                  backgroundColor: `${cor}18`,
+                  color: cor,
+                  border: `1px solid ${cor}25`,
+                }}
+              >
+                {entry.socio.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[13px] font-[500] text-[var(--text-primary)] capitalize">{entry.socio}</span>
+                  <span className="caption">— {formatarDataBR(entry.data)}</span>
+                </div>
+                <p className="text-[12px] text-[var(--text-secondary)] line-clamp-2">{entry.hojeFarei}</p>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
 // COMPONENTE PRINCIPAL
 // ─────────────────────────────────────────────
 
@@ -373,6 +483,7 @@ export function CommandCenter() {
   const {
     receitas, despesas, campanhasAds,
     tarefas, leads, lotes, reunioes, estoque,
+    dailyEntries,
     perfilAtivo, setPerfilAtivo,
     dashboardWidgets,
   } = usePurionStore()
@@ -385,6 +496,37 @@ export function CommandCenter() {
   const healthScore  = useMemo(() => calcularHealthScore(receitas, despesas, campanhasAds, estoque), [receitas, despesas, campanhasAds, estoque])
   const feedAtividade = useMemo(() => gerarFeedAtividade(tarefas, leads, lotes, reunioes), [tarefas, leads, lotes, reunioes])
 
+  const mesAnterior = useMemo(() => {
+    const [a, m] = mesAtual.split('-').map(Number)
+    return m === 1 ? `${a - 1}-12` : `${a}-${String(m - 1).padStart(2, '0')}`
+  }, [mesAtual])
+
+  const kpisAnterior = useMemo(
+    () => calcularKPIsMes(receitas, despesas, campanhasAds, mesAnterior),
+    [receitas, despesas, campanhasAds, mesAnterior]
+  )
+
+  const variacaoFaturamento = useMemo(
+    () => kpisAnterior.faturamento > 0
+      ? ((kpis.faturamento - kpisAnterior.faturamento) / kpisAnterior.faturamento) * 100
+      : null,
+    [kpis.faturamento, kpisAnterior.faturamento]
+  )
+
+  const lotesAlerta = useMemo<Alerta[]>(
+    () => lotes
+      .filter((l) => l.status === 'controle_qualidade')
+      .map((l) => ({
+        id: `lote-qc-${l.id}`,
+        tipo: 'warning' as const,
+        mensagem: `Lote em controle de qualidade: ${l.codigo}`,
+        detalhe: l.produto,
+      })),
+    [lotes]
+  )
+
+  const todosAlertas = useMemo(() => [...alertas, ...lotesAlerta], [alertas, lotesAlerta])
+
   const [ano, mes] = mesAtual.split('-')
   const nomeMes    = `${MESES_PT[mes] ?? mes} ${ano}`
 
@@ -392,9 +534,11 @@ export function CommandCenter() {
     {
       label: 'Faturamento do Mês',
       valor: formatarMoeda(kpis.faturamento),
-      subvalor: `${kpis.pedidos} pedidos registrados`,
+      subvalor: variacaoFaturamento !== null
+        ? `${variacaoFaturamento >= 0 ? '+' : ''}${variacaoFaturamento.toFixed(1)}% vs mês anterior`
+        : `${kpis.pedidos} pedidos registrados`,
       icon: DollarSign,
-      tendencia: 'up',
+      tendencia: variacaoFaturamento === null || variacaoFaturamento >= 0 ? 'up' : 'down',
       destaque: true,
     },
     {
@@ -458,6 +602,9 @@ export function CommandCenter() {
         </div>
       </div>
 
+      {/* ── Resumo de hoje ── */}
+      <ResumoDiario />
+
       {/* ── KPI Cards ── */}
       {showWidget('kpis') && (
         <section>
@@ -473,7 +620,7 @@ export function CommandCenter() {
       {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}
 
       {/* ── Alertas ── */}
-      {showWidget('alertas') && <SecaoAlertas alertas={alertas} />}
+      {showWidget('alertas') && <SecaoAlertas alertas={todosAlertas} />}
 
       {/* ── Status dos Sócios ── */}
       <section>
@@ -493,6 +640,12 @@ export function CommandCenter() {
           ))}
         </div>
       </section>
+
+      {/* ── Funil de Leads + Daily Updates ── */}
+      <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+        <LeadsFunil leads={leads} />
+        <UltimosDailies entries={dailyEntries} />
+      </div>
 
       {/* ── Feed de Atividade — mobile: 5 items max ── */}
       {showWidget('atividade') && (

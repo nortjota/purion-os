@@ -28,6 +28,7 @@ export type TierLead = 'A' | 'B' | 'C'
 
 export type StatusTarefa = 'pendente' | 'em_andamento' | 'concluida' | 'cancelada' | 'bloqueada'
 export type PrioridadeTarefa = 'baixa' | 'media' | 'alta' | 'urgente'
+export type RecorrenciaTarefa = 'nenhuma' | 'diaria' | 'semanal' | 'mensal'
 export type TipoEstabelecimento = 'estetica' | 'detailer' | 'concessionaria'
 
 export type StatusLote = 'em_producao' | 'controle_qualidade' | 'aprovado' | 'reprovado' | 'estoque'
@@ -126,6 +127,33 @@ export interface Despesa {
 // INTERFACES — TAREFAS
 // ─────────────────────────────────────────────
 
+export interface Subtarefa {
+  id: string
+  tarefaId: string
+  titulo: string
+  concluida: boolean
+  ordem: number
+  createdAt: string
+}
+
+export interface Comentario {
+  id: string
+  tarefaId: string
+  autor: string
+  texto: string
+  createdAt: string
+}
+
+export interface Anexo {
+  id: string
+  tarefaId: string
+  nome: string
+  url: string
+  tipo: string
+  tamanhoKb: number
+  createdAt: string
+}
+
 export interface Tarefa {
   id: string
   titulo: string
@@ -139,6 +167,16 @@ export interface Tarefa {
   completedAt: string | null
   motivoBloqueio?: string
   tags: string[]
+  startDate: string | null         // ISO date
+  lembreteEm: string | null        // ISO datetime
+  recorrencia: RecorrenciaTarefa
+  recorrenciaAte: string | null    // ISO date
+  ordem: number
+  estimativaMin: number | null
+  subtarefas: Subtarefa[]
+  comentarios: Comentario[]
+  anexos: Anexo[]
+  googleEventId?: string | null
 }
 
 // ─────────────────────────────────────────────
@@ -285,6 +323,7 @@ export interface ReuniaoItem {
     prazo: string
   }>
   createdAt: string
+  googleEventId?: string | null
 }
 
 // ─────────────────────────────────────────────
@@ -352,6 +391,98 @@ export interface DecisaoEstrategica {
     gabriel: VotoDecisao
   }
   status: 'aberta' | 'aprovada' | 'rejeitada'
+  createdAt: string
+}
+
+// ─────────────────────────────────────────────
+// INTERFACES — CENTRAL DE CONHECIMENTO
+// ─────────────────────────────────────────────
+
+export type TipoBloco =
+  | 'titulo' | 'subtitulo' | 'paragrafo' | 'lista' | 'checklist'
+  | 'citacao' | 'divisor' | 'tabela' | 'callout' | 'codigo'
+
+export type ConteudoBloco =
+  | { texto: string }                                          // titulo, subtitulo, paragrafo, citacao, codigo
+  | { itens: string[] }                                        // lista
+  | { itens: Array<{ texto: string; feito: boolean }> }        // checklist
+  | { texto: string; emoji: string }                           // callout
+  | { colunas: string[]; linhas: string[][] }                  // tabela
+  | Record<string, never>                                      // divisor
+
+export interface KbCategoria {
+  id: string
+  nome: string
+  icone: string   // nome do ícone lucide-react
+  cor: string
+  ordem: number
+}
+
+export interface KbDocumento {
+  id: string
+  categoriaId: string | null
+  titulo: string
+  emoji: string
+  resumo: string
+  ordem: number
+  favorito: boolean
+  atualizadoPor: string | null
+  updatedAt: string
+}
+
+export interface KbBloco {
+  id: string
+  documentoId: string
+  tipo: TipoBloco
+  conteudo: ConteudoBloco
+  ordem: number
+}
+
+// ─────────────────────────────────────────────
+// INTERFACES — CONTAS & ACESSOS
+// ─────────────────────────────────────────────
+
+export type CategoriaContaAcesso = 'ads' | 'pagamento' | 'social' | 'infra' | 'banco' | 'legal'
+export type StatusContaAcesso = 'ativo' | 'pendente' | 'inativo'
+
+export interface ContaAcesso {
+  id: string
+  plataforma: string
+  categoria: CategoriaContaAcesso
+  identificador: string
+  url: string
+  responsavel: string
+  status: StatusContaAcesso
+  observacoes: string
+  vaultRef: string
+  updatedAt: string
+}
+
+// ─────────────────────────────────────────────
+// INTERFACES — VENDAS (Appmax)
+// ─────────────────────────────────────────────
+
+export type StatusVendaAppmax = 'aprovado' | 'pendente' | 'recusado' | 'estornado' | 'reembolsado'
+export type MetodoPagamentoVenda = 'pix' | 'cartao' | 'boleto' | 'desconhecido'
+export type CanalVenda = 'b2c' | 'b2b'
+
+export interface Venda {
+  id: string
+  pedidoAppmax: string
+  clienteNome: string
+  clienteEmail: string
+  clienteTelefone: string
+  valorBruto: number
+  valorLiquido: number
+  taxa: number
+  status: StatusVendaAppmax
+  metodoPagamento: string
+  parcelas: number
+  canal: CanalVenda
+  afiliadoCodigo: string | null
+  produto: string
+  quantidade: number
+  dataVenda: string
   createdAt: string
 }
 
@@ -485,6 +616,31 @@ interface PurionState {
   adicionarDailyEntry: (entry: DailyEntry) => void
   adicionarDecisao: (decisao: DecisaoEstrategica) => void
   atualizarDecisao: (id: string, dados: Partial<DecisaoEstrategica>) => void
+
+  // Central de Conhecimento
+  kbCategorias: KbCategoria[]
+  kbDocumentos: KbDocumento[]
+  kbBlocos: KbBloco[]
+  setKbCategorias: (categorias: KbCategoria[]) => void
+  setKbDocumentos: (documentos: KbDocumento[]) => void
+  setKbBlocos: (blocos: KbBloco[]) => void
+  adicionarKbDocumento: (doc: KbDocumento) => void
+  atualizarKbDocumento: (id: string, dados: Partial<KbDocumento>) => void
+  removerKbDocumento: (id: string) => void
+  adicionarKbBloco: (bloco: KbBloco) => void
+  atualizarKbBloco: (id: string, dados: Partial<KbBloco>) => void
+  removerKbBloco: (id: string) => void
+
+  // Contas & Acessos
+  contasAcessos: ContaAcesso[]
+  setContasAcessos: (contas: ContaAcesso[]) => void
+  adicionarContaAcesso: (conta: ContaAcesso) => void
+  atualizarContaAcesso: (id: string, dados: Partial<ContaAcesso>) => void
+  removerContaAcesso: (id: string) => void
+
+  // Vendas (Appmax)
+  vendas: Venda[]
+  setVendas: (vendas: Venda[]) => void
 
   // Configurações
   configuracoes: Configuracoes
@@ -694,6 +850,46 @@ export const usePurionStore = create<PurionState>()(
             decisoes: s.decisoes.map((d) => (d.id === id ? { ...d, ...dados } : d)),
           })),
 
+        // ── Central de Conhecimento ──
+        kbCategorias: [],
+        kbDocumentos: [],
+        kbBlocos: [],
+        setKbCategorias: (kbCategorias) => set({ kbCategorias }),
+        setKbDocumentos: (kbDocumentos) => set({ kbDocumentos }),
+        setKbBlocos: (kbBlocos) => set({ kbBlocos }),
+        adicionarKbDocumento: (doc) =>
+          set((s) => ({ kbDocumentos: [...s.kbDocumentos, doc] })),
+        atualizarKbDocumento: (id, dados) =>
+          set((s) => ({
+            kbDocumentos: s.kbDocumentos.map((d) => (d.id === id ? { ...d, ...dados } : d)),
+          })),
+        removerKbDocumento: (id) =>
+          set((s) => ({ kbDocumentos: s.kbDocumentos.filter((d) => d.id !== id) })),
+        adicionarKbBloco: (bloco) =>
+          set((s) => ({ kbBlocos: [...s.kbBlocos, bloco] })),
+        atualizarKbBloco: (id, dados) =>
+          set((s) => ({
+            kbBlocos: s.kbBlocos.map((b) => (b.id === id ? { ...b, ...dados } : b)),
+          })),
+        removerKbBloco: (id) =>
+          set((s) => ({ kbBlocos: s.kbBlocos.filter((b) => b.id !== id) })),
+
+        // ── Contas & Acessos ──
+        contasAcessos: [],
+        setContasAcessos: (contasAcessos) => set({ contasAcessos }),
+        adicionarContaAcesso: (conta) =>
+          set((s) => ({ contasAcessos: [...s.contasAcessos, conta] })),
+        atualizarContaAcesso: (id, dados) =>
+          set((s) => ({
+            contasAcessos: s.contasAcessos.map((c) => (c.id === id ? { ...c, ...dados } : c)),
+          })),
+        removerContaAcesso: (id) =>
+          set((s) => ({ contasAcessos: s.contasAcessos.filter((c) => c.id !== id) })),
+
+        // ── Vendas (Appmax) ──
+        vendas: [],
+        setVendas: (vendas) => set({ vendas }),
+
         // ── Configurações ──
         configuracoes: configPadrao,
         setConfiguracoes: (config) =>
@@ -721,7 +917,8 @@ export const usePurionStore = create<PurionState>()(
       }),
       {
         name: 'purion-os-storage',
-        // Persiste perfil, configurações e leads (fallback sem Supabase)
+        // skipHydration prevents SSR/client mismatch; StoreProvider calls rehydrate() on mount
+        skipHydration: true,
         partialize: (state) => ({
           perfilAtivo: state.perfilAtivo,
           configuracoes: state.configuracoes,
@@ -729,8 +926,6 @@ export const usePurionStore = create<PurionState>()(
           leads: state.leads,
           dashboardWidgets: state.dashboardWidgets,
         }),
-        // Garante que campos novos adicionados ao configPadrao sempre existam
-        // mesmo que o localStorage tenha sido gravado por uma versão anterior.
         merge: (persisted, current) => ({
           ...current,
           ...(persisted as object),

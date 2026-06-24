@@ -60,7 +60,7 @@ function TooltipProduto({ active, payload, label }: {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="font-bold text-[#C9A84C] mb-2 tracking-widest">{label}</p>
-      <p className="text-[#8A8A8A]">Receita: <span className="text-[var(--text-primary)] font-semibold">{fmtR(d.value)}</span></p>
+      <p className="text-[var(--text-secondary)]">Receita: <span className="text-[var(--text-primary)] font-semibold">{fmtR(d.value)}</span></p>
     </div>
   )
 }
@@ -73,8 +73,8 @@ function TooltipCanal({ active, payload }: {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="font-bold text-[var(--text-primary)] mb-1">{item.name}</p>
-      <p className="text-[#8A8A8A]">Receita: <span className="text-[#C9A84C] font-bold">{fmtR(item.value)}</span></p>
-      <p className="text-[#8A8A8A]">Participação: <span className="text-[var(--text-primary)] font-semibold">{item.payload.percentual}%</span></p>
+      <p className="text-[var(--text-secondary)]">Receita: <span className="text-[#C9A84C] font-bold">{fmtR(item.value)}</span></p>
+      <p className="text-[var(--text-secondary)]">Participação: <span className="text-[var(--text-primary)] font-semibold">{item.payload.percentual}%</span></p>
     </div>
   )
 }
@@ -100,7 +100,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
   const isDark = theme === 'dark'
 
   const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
-  const tickFill   = isDark ? '#4A4A4A' : '#888880'
+  const tickFill   = isDark ? '#4A4A4A' : '#6B6B66'
 
   return (
     <div className="flex flex-col gap-6">
@@ -170,7 +170,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
               <Tooltip content={<TooltipCanal />} />
               <Legend
                 formatter={(value) => (
-                  <span style={{ color: '#8A8A8A', fontSize: 11 }}>{value}</span>
+                  <span style={{ color: tickFill, fontSize: 11 }}>{value}</span>
                 )}
               />
             </PieChart>
@@ -180,7 +180,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
             {canaisData.map((c, i) => (
               <div key={c.nome} className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CANAL_CORES[i] ?? '#3A3A3A' }} />
-                <span className="text-[10px] text-[#8A8A8A] flex-1">{c.nome}</span>
+                <span className="text-[10px] text-[var(--text-secondary)] flex-1">{c.nome}</span>
                 <span className="text-[10px] font-bold text-[var(--text-primary)]">{c.percentual}%</span>
               </div>
             ))}

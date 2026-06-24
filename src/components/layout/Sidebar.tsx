@@ -6,11 +6,12 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Zap, Settings,
-  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, Mail,
+  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, Mail, KeyRound, ShoppingCart,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
 import { useMobile } from '@/hooks/useMobile'
+import { useIsMaster } from '@/hooks/useIsMaster'
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
 
@@ -44,6 +45,7 @@ const navGroups: NavGroup[] = [
     label: 'Financeiro',
     items: [
       { href: '/financeiro',    label: 'Financeiro',    icon: TrendingUp },
+      { href: '/vendas',        label: 'Vendas',        icon: ShoppingCart },
       { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen },
     ],
   },
@@ -65,6 +67,13 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: 'Conhecimento',
+    items: [
+      { href: '/conhecimento', label: 'Central de Conhecimento', icon: BookOpen },
+      { href: '/contas',       label: 'Contas & Acessos',        icon: KeyRound },
+    ],
+  },
+  {
     label: 'Sistema',
     items: [
       { href: '/settings', label: 'Configurações', icon: Settings },
@@ -82,6 +91,7 @@ export function Sidebar() {
   const isMobile = useMobile()
   const pathname = usePathname()
   const { user, perfil: authPerfil, signOut } = useAuth()
+  const { isMaster } = useIsMaster()
   const {
     perfilAtivo, setPerfilAtivo,
     pedidosExpedicao, campanhasAds, produtosSKU, configuracoes,
@@ -142,6 +152,15 @@ export function Sidebar() {
   const alertasEstoque = useMemo(
     () => produtosSKU.filter((s) => s.unidades < s.threshold).length,
     [produtosSKU],
+  )
+
+  const visibleNavGroups = useMemo(
+    () => isMaster
+      ? navGroups
+      : navGroups
+          .filter((g) => g.label !== 'Sistema')
+          .map((g) => g.label === 'Conhecimento' ? { ...g, items: g.items.filter((i) => i.href !== '/contas') } : g),
+    [isMaster],
   )
 
   function getBadge(href: string) {
@@ -232,7 +251,7 @@ export function Sidebar() {
 
         {/* ── NAV ── */}
         <nav style={{ flex: 1, overflowY: 'auto', padding: recolhida ? '0 4px' : '0 8px' }}>
-          {navGroups.map((group, gi) => (
+          {visibleNavGroups.map((group, gi) => (
             <div key={gi} style={{ marginBottom: 4 }}>
               {/* Group label — hidden when collapsed, divider line instead */}
               {group.label && !recolhida && (

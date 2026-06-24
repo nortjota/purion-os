@@ -2,7 +2,9 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type { Receita, Despesa } from '@/store'
 
 type Row = Record<string, unknown>
@@ -35,16 +37,19 @@ function toDespesa(r: Row): Despesa {
 }
 
 export function useFinanceiro() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) return
 
     const load = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('financeiro')
         .select('*')
         .is('deleted_at', null)
         .order('data', { ascending: false })
+      dbLog('SELECT', 'financeiro', error, `${data?.length ?? 0} rows`)
       if (!data) return
       const { setReceitas, setDespesas } = usePurionStore.getState()
       setReceitas(data.filter((r) => r.tipo === 'receita').map(toReceita))
@@ -53,7 +58,7 @@ export function useFinanceiro() {
 
     load()
 
-    const ch = sb.channel('financeiro-sync')
+    const ch = sb.channel(`financeiro-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'financeiro' }, load)
       .subscribe()
 
@@ -61,27 +66,39 @@ export function useFinanceiro() {
   }, [])
 
   return {
-    adicionarReceita: async (r: Omit<Receita, 'id'>) => {
+    adicionarReceita: async (r: Omit<Receita, 'id'>): Promise<boolean> => {
       const sb = supabase
-      if (!sb) return
-      const { data } = await sb.from('financeiro').insert({
+      if (!sb) return false
+      const { data, error } = await sb.from('financeiro').insert({
         tipo: 'receita', categoria: r.categoria, valor: r.valor,
         data: r.data, descricao: r.descricao, regiao: r.regiao,
         responsavel: r.responsavel, pedido_id: r.pedidoId ?? null,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarReceita({ ...r, id: String(data.id) })
+      dbLog('INSERT', 'financeiro', error, data?.id)
+      if (error) { toastError('Erro ao registrar receita', error.message); return false }
+      if (data) {
+        usePurionStore.getState().adicionarReceita({ ...r, id: String(data.id) })
+        success('Receita registrada')
+      }
+      return true
     },
 
-    adicionarDespesa: async (d: Omit<Despesa, 'id'>) => {
+    adicionarDespesa: async (d: Omit<Despesa, 'id'>): Promise<boolean> => {
       const sb = supabase
-      if (!sb) return
-      const { data } = await sb.from('financeiro').insert({
+      if (!sb) return false
+      const { data, error } = await sb.from('financeiro').insert({
         tipo: 'despesa', categoria: d.categoria, valor: d.valor,
         data: d.data, descricao: d.descricao, regiao: d.regiao,
         responsavel: d.responsavel,
         fornecedor: d.fornecedor ?? null, nota_fiscal: d.notaFiscal ?? null,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarDespesa({ ...d, id: String(data.id) })
+      dbLog('INSERT', 'financeiro', error, data?.id)
+      if (error) { toastError('Erro ao registrar despesa', error.message); return false }
+      if (data) {
+        usePurionStore.getState().adicionarDespesa({ ...d, id: String(data.id) })
+        success('Despesa registrada')
+      }
+      return true
     },
 
     atualizarFinanceiro: async (id: string, tipo: 'receita' | 'despesa', dados: Partial<Receita | Despesa>) => {
@@ -91,7 +108,7 @@ export function useFinanceiro() {
         else usePurionStore.getState().atualizarDespesa(id, dados as Partial<Despesa>)
         return
       }
-      await sb.from('financeiro').update({
+      const { error } = await sb.from('financeiro').update({
         ...(dados.descricao   !== undefined && { descricao:   dados.descricao }),
         ...(dados.valor       !== undefined && { valor:       dados.valor }),
         ...(dados.categoria   !== undefined && { categoria:   dados.categoria }),
@@ -100,24 +117,37 @@ export function useFinanceiro() {
         ...(dados.responsavel !== undefined && { responsavel: dados.responsavel }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'financeiro', error, id)
+      if (error) { toastError('Erro ao salvar movimentação', error.message); return }
       if (tipo === 'receita') usePurionStore.getState().atualizarReceita(id, dados as Partial<Receita>)
       else usePurionStore.getState().atualizarDespesa(id, dados as Partial<Despesa>)
+      success('Movimentação atualizada')
     },
 
     deletarFinanceiro: async (id: string, tipo: 'receita' | 'despesa') => {
       const sb = supabase
-      if (sb) await sb.from('financeiro').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('financeiro').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'financeiro', error, id)
+        if (error) { toastError('Erro ao excluir movimentação', error.message); return }
+      }
       const store = usePurionStore.getState()
       if (tipo === 'receita') store.setReceitas(store.receitas.filter((r) => r.id !== id))
       else store.setDespesas(store.despesas.filter((d) => d.id !== id))
+      success('Movimentação excluída', 'Você pode restaurar na Lixeira')
     },
 
     restaurarFinanceiro: async (id: string, tipo: 'receita' | 'despesa', record: Receita | Despesa) => {
       const sb = supabase
-      if (sb) await sb.from('financeiro').update({ deleted_at: null }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('financeiro').update({ deleted_at: null }).eq('id', id)
+        dbLog('UPDATE', 'financeiro', error, id)
+        if (error) { toastError('Erro ao restaurar', error.message); return }
+      }
       const store = usePurionStore.getState()
       if (tipo === 'receita') store.adicionarReceita(record as Receita)
       else store.adicionarDespesa(record as Despesa)
+      success('Movimentação restaurada')
     },
   }
 }

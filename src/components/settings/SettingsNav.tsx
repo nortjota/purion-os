@@ -29,7 +29,7 @@ export function SettingsNav() {
     <>
       {/* Desktop nav */}
       <nav className="hidden md:flex w-[220px] shrink-0 border-r border-[var(--border)] flex-col gap-0.5 p-3 min-h-screen">
-        <p className="text-xs font-semibold text-[#8A8A8A] uppercase tracking-wider px-3 mb-2">
+        <p className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider px-3 mb-2">
           Configurações
         </p>
         {NAV_ITEMS.map(({ icon: Icon, label, href }) => {

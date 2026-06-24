@@ -38,7 +38,7 @@ export function GeralSettings() {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Nome da empresa</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Nome da empresa</label>
             <input
               className="input-purion w-full"
               value={nomeEmpresa}
@@ -46,7 +46,7 @@ export function GeralSettings() {
             />
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Slogan</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Slogan</label>
             <input
               className="input-purion w-full"
               value={slogan}
@@ -54,14 +54,14 @@ export function GeralSettings() {
             />
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Logo</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Logo</label>
             <div className="flex items-center gap-3">
               <input type="file" accept="image/*" className="text-sm text-[var(--text-secondary)]" />
-              <span className="text-xs text-[#8A8A8A]">Armazenado no Supabase Storage — em breve</span>
+              <span className="text-xs text-[var(--text-secondary)]">Armazenado no Supabase Storage — em breve</span>
             </div>
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Cor de destaque</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Cor de destaque</label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -87,7 +87,7 @@ export function GeralSettings() {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Fuso horário</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Fuso horário</label>
             <select
               className="input-purion w-full"
               value={fuso}
@@ -99,7 +99,7 @@ export function GeralSettings() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Moeda</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Moeda</label>
             <select
               className="input-purion w-full"
               value={moeda}
@@ -111,7 +111,7 @@ export function GeralSettings() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Formato de data</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Formato de data</label>
             <select
               className="input-purion w-full"
               value={formatoData}
@@ -123,7 +123,7 @@ export function GeralSettings() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Idioma</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Idioma</label>
             <select
               className="input-purion w-full"
               value={idioma}

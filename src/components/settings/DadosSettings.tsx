@@ -139,13 +139,13 @@ export function DadosSettings() {
             <Download size={14} /> Baixar template CSV (Leads)
           </button>
           <div>
-            <label className="text-xs text-[#8A8A8A] block mb-1">Selecionar arquivo CSV</label>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Selecionar arquivo CSV</label>
             <input type="file" accept=".csv" ref={fileRef} onChange={handleFileChange}
               className="text-sm text-[var(--text-secondary)]" />
           </div>
           {csvPreview.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs text-[#8A8A8A]">Preview (primeiras 5 linhas):</p>
+              <p className="text-xs text-[var(--text-secondary)]">Preview (primeiras 5 linhas):</p>
               <div className="overflow-x-auto">
                 <table className="text-xs w-full border-collapse">
                   <thead>

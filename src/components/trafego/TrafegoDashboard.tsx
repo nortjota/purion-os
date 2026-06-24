@@ -168,7 +168,7 @@ function TabelaCampanhas({ campanhas, roasMinimo, cpaMaximo }: {
               {c.status}
             </span>
             <span className="text-xs text-[var(--text-primary)] font-semibold">{fmtR(c.gasto)}</span>
-            <span className="text-xs text-[#8A8A8A]">{fmtN(Math.round(c.conversoes))}</span>
+            <span className="text-xs text-[var(--text-secondary)]">{fmtN(Math.round(c.conversoes))}</span>
             <span className={`text-xs font-bold ${roasOk ? 'text-emerald-400' : 'text-red-400'}`}>
               {c.roas > 0 ? `${c.roas.toFixed(1)}×` : '—'}
             </span>
@@ -252,7 +252,7 @@ function PlataformaTab({ data, loading, plataforma, cor, subLabel, roasMinimo, c
 export function TrafegoDashboard() {
   const { configuracoes } = usePurionStore()
   const roasMinimo = configuracoes.roasMinimo ?? 2.5
-  const cpaMaximo  = configuracoes.cpaMaximo  ?? 30
+  const cpaMaximo  = configuracoes.cpaMaximo  ?? 45
 
   const [activeTab, setActiveTab] = useState<TabId>('painel')
   const [period, setPeriod]       = useState<TrafegoPeriod>('30d')
@@ -404,7 +404,7 @@ export function TrafegoDashboard() {
                     ) : (
                       <>
                         <span className="text-xs font-bold text-[#C9A84C]">{fmtR(d.gasto)}</span>
-                        <span className="text-xs text-[#8A8A8A]">{fmtN(d.cliques)}</span>
+                        <span className="text-xs text-[var(--text-secondary)]">{fmtN(d.cliques)}</span>
                         <span className={`text-xs font-bold ${d.cpa > cpaMaximo && d.cpa > 0 ? 'text-amber-400' : 'text-[var(--text-primary)]'}`}>
                           {d.cpa > 0 ? fmtR(d.cpa) : '—'}
                         </span>

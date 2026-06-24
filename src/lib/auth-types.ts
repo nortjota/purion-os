@@ -4,7 +4,7 @@ export interface Perfil {
   nome: string
   email: string
   cargo?: string
-  role: 'admin' | 'membro'
+  role: 'master' | 'admin' | 'membro'
   disponibilidade?: string
   criado_em: string
 }

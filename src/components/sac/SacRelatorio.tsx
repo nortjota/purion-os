@@ -69,8 +69,8 @@ export function SacRelatorio() {
   return (
     <div className="page-content">
       <div style={{ marginBottom: 24 }}>
-        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>SAC</p>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Relatório</h1>
+        <p className="kpi-label mb-1">SAC</p>
+        <h1 className="page-title">Relatório</h1>
       </div>
 
       {/* KPIs */}

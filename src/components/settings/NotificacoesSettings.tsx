@@ -67,21 +67,21 @@ export function NotificacoesSettings() {
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 space-y-4">
         <h2 className="text-sm font-bold text-[var(--text-primary)]">Agendamento</h2>
         <div>
-          <label className="text-xs text-[#8A8A8A] block mb-1">Horário resumo diário</label>
+          <label className="text-xs text-[var(--text-secondary)] block mb-1">Horário resumo diário</label>
           <input type="time" className="input-purion" value={horarioResumo}
             onChange={e => setHorarioResumo(e.target.value)} />
         </div>
         <div>
-          <label className="text-xs text-[#8A8A8A] block mb-2">Não perturbar (horário)</label>
+          <label className="text-xs text-[var(--text-secondary)] block mb-2">Não perturbar (horário)</label>
           <div className="flex items-center gap-3">
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Início</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Início</label>
               <input type="time" className="input-purion" value={ndpInicio}
                 onChange={e => setNdpInicio(e.target.value)} />
             </div>
             <span className="text-[var(--text-secondary)] mt-4">–</span>
             <div>
-              <label className="text-xs text-[#8A8A8A] block mb-1">Fim</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Fim</label>
               <input type="time" className="input-purion" value={ndpFim}
                 onChange={e => setNdpFim(e.target.value)} />
             </div>

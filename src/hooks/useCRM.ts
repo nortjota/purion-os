@@ -2,7 +2,9 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type { Lead, Regiao, PerfilUsuario, TierLead, StatusLead, TipoEstabelecimento } from '@/store'
 
 type Row = Record<string, unknown>
@@ -37,19 +39,22 @@ function toLead(r: Row): Lead {
 }
 
 export function useCRM() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) return
 
     const load = async () => {
       const q = sb.from('leads_crm').select('*').order('created_at', { ascending: false })
-      const { data } = await q.is('deleted_at', null)
+      const { data, error } = await q.is('deleted_at', null)
+      dbLog('SELECT', 'leads_crm', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setLeads(data.map(toLead))
     }
 
     load()
 
-    const ch = sb.channel('leads-sync')
+    const ch = sb.channel(`leads-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'leads_crm' }, load)
       .subscribe()
 
@@ -61,7 +66,7 @@ export function useCRM() {
       const sb = supabase
       if (!sb) return
       const now = new Date().toISOString()
-      const { data } = await sb.from('leads_crm').insert({
+      const { data, error } = await sb.from('leads_crm').insert({
         nome_empresa:         lead.nomeEmpresa,
         nome_contato:         lead.nomeContato,
         telefone:             lead.telefone,
@@ -78,9 +83,12 @@ export function useCRM() {
         historico_interacoes: lead.historicoInteracoes ?? [],
         tags:                 lead.tags,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarLead({
-        ...lead, id: String(data.id), createdAt: now, updatedAt: now,
-      })
+      dbLog('INSERT', 'leads_crm', error, data?.id)
+      if (error) { toastError('Erro ao cadastrar lead', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarLead({ ...lead, id: String(data.id), createdAt: now, updatedAt: now })
+        success('Lead cadastrado')
+      }
     },
 
     atualizarLead: async (id: string, dados: Partial<Lead>) => {
@@ -89,7 +97,8 @@ export function useCRM() {
         usePurionStore.getState().atualizarLead(id, dados)
         return
       }
-      await sb.from('leads_crm').update({
+      const leadAtual = usePurionStore.getState().leads.find((l) => l.id === id)
+      const { error } = await sb.from('leads_crm').update({
         ...(dados.nomeEmpresa         !== undefined && { nome_empresa:         dados.nomeEmpresa }),
         ...(dados.nomeContato         !== undefined && { nome_contato:         dados.nomeContato }),
         ...(dados.telefone            !== undefined && { telefone:             dados.telefone }),
@@ -105,19 +114,44 @@ export function useCRM() {
         ...(dados.historicoInteracoes !== undefined && { historico_interacoes: dados.historicoInteracoes }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'leads_crm', error, id)
+      if (error) { toastError('Erro ao salvar lead', error.message); return }
       usePurionStore.getState().atualizarLead(id, dados)
+
+      if (dados.status !== undefined && leadAtual && dados.status !== leadAtual.status) {
+        fetch('/api/notificacoes/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            papel: 'matheus', tipo: 'lead_status',
+            titulo: '💼 Lead B2B mudou de status',
+            mensagem: `${leadAtual.nomeEmpresa}: ${leadAtual.status} → ${dados.status}`,
+            canal: ['sistema'], link: '/crm',
+          }),
+        }).catch(() => {})
+      }
     },
 
     deletarLead: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('leads_crm').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('leads_crm').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'leads_crm', error, id)
+        if (error) { toastError('Erro ao excluir lead', error.message); return }
+      }
       usePurionStore.getState().removerLead(id)
+      success('Lead excluído', 'Você pode restaurar na Lixeira')
     },
 
     restaurarLead: async (lead: Lead) => {
       const sb = supabase
-      if (sb) await sb.from('leads_crm').update({ deleted_at: null }).eq('id', lead.id)
+      if (sb) {
+        const { error } = await sb.from('leads_crm').update({ deleted_at: null }).eq('id', lead.id)
+        dbLog('UPDATE', 'leads_crm', error, lead.id)
+        if (error) { toastError('Erro ao restaurar lead', error.message); return }
+      }
       usePurionStore.getState().adicionarLead(lead)
+      success('Lead restaurado')
     },
   }
 }

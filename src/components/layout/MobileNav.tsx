@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
-  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones,
+  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingCart,
 } from 'lucide-react'
+import { useIsMaster } from '@/hooks/useIsMaster'
 
 const MAIN_ITEMS = [
   { href: '/',          label: 'Início',    icon: LayoutDashboard },
@@ -18,6 +19,7 @@ const MAIN_ITEMS = [
 ]
 
 const DRAWER_ITEMS = [
+  { href: '/vendas',        label: 'Vendas',        icon: ShoppingCart },
   { href: '/producao',      label: 'Produção',      icon: Package     },
   { href: '/creators',      label: 'Creators',      icon: Users2      },
   { href: '/afiliados',     label: 'Afiliados',     icon: Link2       },
@@ -27,15 +29,20 @@ const DRAWER_ITEMS = [
   { href: '/trafego',       label: 'Tráfego',       icon: Zap         },
   { href: '/inteligencia',  label: 'Inteligência',  icon: BarChart2   },
   { href: '/reunioes',      label: 'Reuniões',      icon: Calendar    },
+  { href: '/conhecimento',  label: 'Central de Conhecimento', icon: BookOpen },
+  { href: '/contas',        label: 'Contas & Acessos',        icon: KeyRound },
   { href: '/settings',      label: 'Configurações', icon: Settings    },
 ]
 
 export function MobileNav() {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { isMaster } = useIsMaster()
+
+  const drawerItems = isMaster ? DRAWER_ITEMS : DRAWER_ITEMS.filter((item) => item.href !== '/settings' && item.href !== '/contas')
 
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
-  const isDrawerActive = DRAWER_ITEMS.some((item) => isActive(item.href))
+  const isDrawerActive = drawerItems.some((item) => isActive(item.href))
 
   function closeDrawer() { setDrawerOpen(false) }
 
@@ -147,7 +154,7 @@ export function MobileNav() {
 
               {/* Items list */}
               <div style={{ overflowY: 'auto', maxHeight: 'calc(70vh - 80px)' }}>
-                {DRAWER_ITEMS.map(({ href, label, icon: Icon }) => {
+                {drawerItems.map(({ href, label, icon: Icon }) => {
                   const active = isActive(href)
                   return (
                     <Link

@@ -5,11 +5,12 @@
  * Daily assíncrono, reuniões semanais, log de decisões estratégicas.
  */
 
-import { useState, useMemo } from 'react'
-import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Trash2 } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Trash2, Pencil, CalendarCheck2, CalendarOff, CalendarPlus } from 'lucide-react'
 import { useMobile } from '@/hooks/useMobile'
 import { useReunioes } from '@/hooks/useReunioes'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { MiniCalendario } from './MiniCalendario'
 import {
   usePurionStore,
   type PerfilUsuario,
@@ -58,6 +59,18 @@ const TIPO_REUNIAO_LABEL: Record<ReuniaoItem['tipo'], string> = {
   parceiro:    'Parceiro',
   fornecedor:  'Fornecedor',
   outro:       'Outro',
+}
+
+const STATUS_REUNIAO_LABEL: Record<ReuniaoItem['status'], string> = {
+  agendada:  'Agendada',
+  realizada: 'Realizada',
+  cancelada: 'Cancelada',
+}
+
+const STATUS_REUNIAO_COLOR: Record<ReuniaoItem['status'], string> = {
+  agendada:  'text-blue-400 bg-blue-400/10',
+  realizada: 'text-emerald-400 bg-emerald-400/10',
+  cancelada: 'text-[#6B6B6B] bg-[#2A2A2A]',
 }
 
 // ─────────────────────────────────────────────
@@ -250,6 +263,185 @@ function ModalReuniao({ onSalvar, onFechar }: {
 }
 
 // ─────────────────────────────────────────────
+// MODAL EDITAR REUNIÃO — todos os campos
+// ─────────────────────────────────────────────
+
+function ModalEditarReuniao({ reuniao, onSalvar, onFechar }: {
+  reuniao: ReuniaoItem
+  onSalvar: (dados: Partial<ReuniaoItem>) => void
+  onFechar: () => void
+}) {
+  const [data, hora] = reuniao.data.includes('T')
+    ? reuniao.data.split('T')
+    : [reuniao.data, '12:00']
+  const [form, setForm] = useState({
+    titulo: reuniao.titulo,
+    tipo: reuniao.tipo,
+    status: reuniao.status,
+    data,
+    hora: hora.slice(0, 5),
+    duracao: String(reuniao.duracao),
+    pauta: reuniao.pauta.join('\n'),
+    decisoes: reuniao.decisoes.join('\n'),
+    ata: reuniao.ata,
+    participantes: reuniao.participantes,
+  })
+
+  const toggleParticipante = (socio: PerfilUsuario) => {
+    setForm((f) => ({
+      ...f,
+      participantes: f.participantes.includes(socio)
+        ? f.participantes.filter((p) => p !== socio)
+        : [...f.participantes, socio],
+    }))
+  }
+
+  const handleSubmit = () => {
+    if (!form.titulo) return
+    onSalvar({
+      titulo: form.titulo,
+      tipo: form.tipo,
+      status: form.status,
+      data: `${form.data}T${form.hora}:00Z`,
+      duracao: parseInt(form.duracao, 10) || 60,
+      participantes: form.participantes,
+      pauta: form.pauta.split('\n').filter(Boolean),
+      decisoes: form.decisoes.split('\n').filter(Boolean),
+      ata: form.ata,
+    })
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Editar Reunião</h3>
+        </div>
+        <div className="p-7 flex flex-col gap-3">
+          <div className="field-gap">
+            <label className="label-purion">Título</label>
+            <input
+              value={form.titulo}
+              onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+              className="input-purion"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="field-gap">
+              <label className="label-purion">Tipo</label>
+              <select
+                value={form.tipo}
+                onChange={(e) => setForm({ ...form, tipo: e.target.value as ReuniaoItem['tipo'] })}
+                className="select-purion"
+              >
+                {Object.entries(TIPO_REUNIAO_LABEL).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
+            </div>
+            <div className="field-gap">
+              <label className="label-purion">Status</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as ReuniaoItem['status'] })}
+                className="select-purion"
+              >
+                {Object.entries(STATUS_REUNIAO_LABEL).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="field-gap">
+              <label className="label-purion">Data</label>
+              <input
+                type="date"
+                value={form.data}
+                onChange={(e) => setForm({ ...form, data: e.target.value })}
+                className="input-purion"
+              />
+            </div>
+            <div className="field-gap">
+              <label className="label-purion">Horário</label>
+              <input
+                type="time"
+                value={form.hora}
+                onChange={(e) => setForm({ ...form, hora: e.target.value })}
+                className="input-purion"
+              />
+            </div>
+            <div className="field-gap">
+              <label className="label-purion">Duração (min)</label>
+              <input
+                type="number"
+                value={form.duracao}
+                onChange={(e) => setForm({ ...form, duracao: e.target.value })}
+                className="input-purion"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="label-purion mb-2">Participantes</label>
+            <div className="flex gap-2">
+              {SOCIOS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => toggleParticipante(s)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                    form.participantes.includes(s)
+                      ? 'bg-[rgba(201,168,76,0.15)] text-[#C9A84C] border border-[#C9A84C]/30'
+                      : 'bg-[#2A2A2A] text-[#6B6B6B] border border-transparent'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${SOCIO_COLOR[s]}`}>
+                    {SOCIO_INICIAL[s]}
+                  </div>
+                  {SOCIO_NOME[s]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Pauta (1 item por linha)</label>
+            <textarea
+              rows={3}
+              value={form.pauta}
+              onChange={(e) => setForm({ ...form, pauta: e.target.value })}
+              className="textarea-purion"
+            />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Decisões tomadas (1 por linha)</label>
+            <textarea
+              rows={3}
+              placeholder="Decisão 1&#10;Decisão 2"
+              value={form.decisoes}
+              onChange={(e) => setForm({ ...form, decisoes: e.target.value })}
+              className="textarea-purion"
+            />
+          </div>
+          <div className="field-gap">
+            <label className="label-purion">Ata / Resumo da reunião</label>
+            <textarea
+              rows={4}
+              placeholder="Resumo do que foi discutido e combinado..."
+              value={form.ata}
+              onChange={(e) => setForm({ ...form, ata: e.target.value })}
+              className="textarea-purion"
+            />
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+          <button onClick={handleSubmit} className="btn btn-primary btn-sm">Salvar</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
 // MODAL NOVA DECISÃO
 // ─────────────────────────────────────────────
 
@@ -327,10 +519,12 @@ function DailyCard({
 }: {
   socio: PerfilUsuario
   entries: DailyEntry[]
-  onSalvar: (entry: DailyEntry) => void
+  onSalvar: (entry: DailyEntry) => Promise<boolean>
 }) {
   const [historico, setHistorico] = useState(false)
   const [form, setForm] = useState({ ontemFiz: '', hojeFarei: '', bloqueadoEm: '' })
+  const [salvando, setSalvando] = useState(false)
+  const [salvo, setSalvo] = useState(false)
 
   // Último entry do sócio
   const ultimaEntry = useMemo(() =>
@@ -346,7 +540,7 @@ function DailyCard({
       .slice(0, 7),
   [entries, socio])
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
     if (!form.ontemFiz && !form.hojeFarei) return
     const entry: DailyEntry = {
       id: `day-${Date.now()}`,
@@ -357,8 +551,15 @@ function DailyCard({
       bloqueadoEm: form.bloqueadoEm,
       createdAt: DATA_REF.toISOString(),
     }
-    onSalvar(entry)
-    setForm({ ontemFiz: '', hojeFarei: '', bloqueadoEm: '' })
+    setSalvando(true)
+    setSalvo(false)
+    const ok = await onSalvar(entry)
+    setSalvando(false)
+    if (ok) {
+      setForm({ ontemFiz: '', hojeFarei: '', bloqueadoEm: '' })
+      setSalvo(true)
+      setTimeout(() => setSalvo(false), 3000)
+    }
   }
 
   const temBloqueio = ultimaEntry?.bloqueadoEm
@@ -391,13 +592,13 @@ function DailyCard({
           {ultimaEntry.ontemFiz && (
             <div>
               <span className="text-[10px] text-[#6B6B6B]">Ontem fiz: </span>
-              <span className="text-xs text-[#8A8A8A]">{ultimaEntry.ontemFiz}</span>
+              <span className="text-xs text-[var(--text-secondary)]">{ultimaEntry.ontemFiz}</span>
             </div>
           )}
           {ultimaEntry.hojeFarei && (
             <div>
               <span className="text-[10px] text-[#6B6B6B]">Hoje farei: </span>
-              <span className="text-xs text-[#8A8A8A]">{ultimaEntry.hojeFarei}</span>
+              <span className="text-xs text-[var(--text-secondary)]">{ultimaEntry.hojeFarei}</span>
             </div>
           )}
           {ultimaEntry.bloqueadoEm && (
@@ -444,10 +645,17 @@ function DailyCard({
         </div>
         <button
           onClick={handleSalvar}
-          className="w-full py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-md hover:bg-[#D4B568] transition-colors"
+          disabled={salvando}
+          className="w-full py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-md hover:bg-[#D4B568] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Salvar update
+          {salvando ? 'Salvando...' : 'Salvar update'}
         </button>
+        {salvo && (
+          <p className="flex items-center gap-1 text-[10px] font-bold text-emerald-400">
+            <Check size={11} />
+            Update salvo com sucesso!
+          </p>
+        )}
       </div>
 
       {/* Histórico */}
@@ -455,7 +663,7 @@ function DailyCard({
         <div className="border-t border-[var(--border)]">
           <button
             onClick={() => setHistorico((h) => !h)}
-            className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-[#6B6B6B] hover:text-[#8A8A8A]"
+            className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-[#6B6B6B] hover:text-[var(--text-secondary)]"
           >
             <span>Histórico ({historicoEntries.length} entradas)</span>
             {historico ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -492,7 +700,7 @@ export function ReunioesDashboard() {
 
   const isMobile = useMobile()
   const {
-    adicionarReuniao, adicionarDecisao, atualizarDecisao, adicionarDaily,
+    adicionarReuniao, atualizarReuniao, adicionarDecisao, atualizarDecisao, adicionarDaily,
     deletarReuniao, deletarDecisao,
   } = useReunioes()
   const [deletandoReuniao, setDeletandoReuniao] = useState<ReuniaoItem | null>(null)
@@ -500,11 +708,29 @@ export function ReunioesDashboard() {
   const [modalReuniao, setModalReuniao] = useState(false)
   const [modalDecisao, setModalDecisao] = useState(false)
   const [reuniaoExpandida, setReuniaoExpandida] = useState<string | null>(null)
+  const [editandoReuniao, setEditandoReuniao] = useState<ReuniaoItem | null>(null)
+  const [filtroReuniao, setFiltroReuniao] = useState<'proximas' | 'historico'>('proximas')
+  const [diaSelecionado, setDiaSelecionado] = useState<string | null>(null)
+  const [linkCalendario, setLinkCalendario] = useState<string | null>(null)
 
-  // Ordena reuniões por data decrescente
-  const reunioesOrdenadas = useMemo(() =>
-    [...reunioes].sort((a, b) => b.data.localeCompare(a.data)),
+  useEffect(() => {
+    fetch('/api/calendar/link')
+      .then((r) => r.json())
+      .then((j) => setLinkCalendario(j.link ?? null))
+      .catch(() => setLinkCalendario(null))
+  }, [])
+
+  // Próximas (agendadas) ordenadas pela mais próxima primeiro; histórico (realizada/cancelada) pela mais recente primeiro
+  const reunioesProximas = useMemo(() =>
+    reunioes.filter((r) => r.status === 'agendada').sort((a, b) => a.data.localeCompare(b.data)),
   [reunioes])
+  const reunioesHistorico = useMemo(() =>
+    reunioes.filter((r) => r.status !== 'agendada').sort((a, b) => b.data.localeCompare(a.data)),
+  [reunioes])
+  const reunioesBase = filtroReuniao === 'proximas' ? reunioesProximas : reunioesHistorico
+  const reunioesExibidas = diaSelecionado
+    ? reunioesBase.filter((r) => r.data.slice(0, 10) === diaSelecionado)
+    : reunioesBase
 
   const handleVotar = (decisaoId: string, voto: VotoDecisao) => {
     const decisao = decisoes.find((d) => d.id === decisaoId)
@@ -521,9 +747,16 @@ export function ReunioesDashboard() {
     <div className="page-content section-gap">
 
       {/* ── Header ── */}
-      <div>
-        <h1 className="page-title">Reuniões & Decisões</h1>
-        <p className="caption mt-1">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="page-title">Reuniões & Decisões</h1>
+          <p className="caption mt-1">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
+        </div>
+        {linkCalendario && (
+          <a href={linkCalendario} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm">
+            <CalendarPlus size={13} /> Adicionar ao meu Google
+          </a>
+        )}
       </div>
 
       {/* ══════════════════════════════════════
@@ -547,7 +780,7 @@ export function ReunioesDashboard() {
           SEÇÃO 2 — REUNIÕES SEMANAIS
       ══════════════════════════════════════ */}
       <section>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <p className="kpi-label">
             Reuniões ({reunioes.length})
           </p>
@@ -560,49 +793,97 @@ export function ReunioesDashboard() {
           </button>
         </div>
 
-        <div className="flex flex-col gap-2">
-          {reunioesOrdenadas.length === 0 && (
-            <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#4A4A4A]">
-              Nenhuma reunião registrada
-            </div>
-          )}
-          {reunioesOrdenadas.map((reuniao) => {
-            const expandida = reuniaoExpandida === reuniao.id
-            const statusColor = {
-              agendada: 'text-blue-400 bg-blue-400/10',
-              realizada: 'text-emerald-400 bg-emerald-400/10',
-              cancelada: 'text-[#6B6B6B] bg-[#2A2A2A]',
-            }[reuniao.status]
+        {/* Filtro: Próximas / Histórico */}
+        <div className="flex gap-1 mb-3 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit">
+          {([
+            { id: 'proximas' as const, label: `Próximas (${reunioesProximas.length})` },
+            { id: 'historico' as const, label: `Histórico (${reunioesHistorico.length})` },
+          ]).map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFiltroReuniao(f.id)}
+              className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+              style={filtroReuniao === f.id
+                ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+                : { color: 'var(--text-secondary)' }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
 
-            return (
-              <div key={reuniao.id} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}
-                  className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[rgba(255,255,255,0.02)] transition-colors text-left"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{reuniao.titulo}</p>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${statusColor}`}>
-                        {reuniao.status === 'agendada' ? 'Agendada' : reuniao.status === 'realizada' ? 'Realizada' : 'Cancelada'}
-                      </span>
-                      <span className="text-[10px] text-[#4A4A4A] bg-[#2A2A2A] px-2 py-0.5 rounded-full">
-                        {TIPO_REUNIAO_LABEL[reuniao.tipo]}
-                      </span>
-                    </div>
-                    <p className="text-xs text-[#6B6B6B] mt-0.5">
-                      {fmtData(reuniao.data)} · {reuniao.duracao}min ·{' '}
-                      {reuniao.participantes.map((p) => SOCIO_NOME[p]).join(', ')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 items-start">
+          <MiniCalendario reunioes={reunioesBase} diaSelecionado={diaSelecionado} onSelecionarDia={setDiaSelecionado} />
+
+          <div className="flex flex-col gap-2">
+            {diaSelecionado && (
+              <button onClick={() => setDiaSelecionado(null)} className="text-xs text-[#C9A84C] text-left">
+                ← Limpar filtro de dia ({fmtData(diaSelecionado)})
+              </button>
+            )}
+            {reunioesExibidas.length === 0 && (
+              <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#4A4A4A]">
+                {filtroReuniao === 'proximas' ? 'Nenhuma reunião agendada' : 'Nenhuma reunião no histórico'}
+              </div>
+            )}
+            {reunioesExibidas.map((reuniao) => {
+              const expandida = reuniaoExpandida === reuniao.id
+
+              return (
+                <div key={reuniao.id} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <button
+                      onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}
+                      className="flex-1 min-w-0 flex items-center gap-4 text-left"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{reuniao.titulo}</p>
+                          <span className="text-[10px] text-[#4A4A4A] bg-[#2A2A2A] px-2 py-0.5 rounded-full">
+                            {TIPO_REUNIAO_LABEL[reuniao.tipo]}
+                          </span>
+                          {reuniao.googleEventId ? (
+                            <span title="Sincronizado com o Google Calendar"><CalendarCheck2 size={12} className="text-emerald-500" /></span>
+                          ) : (
+                            <span title="Apenas no CRM (não sincronizado)"><CalendarOff size={12} className="text-[#4A4A4A]" /></span>
+                          )}
+                        </div>
+                        <p className="text-xs text-[#6B6B6B] mt-0.5">
+                          {fmtData(reuniao.data)} · {reuniao.duracao}min ·{' '}
+                          {reuniao.participantes.map((p) => SOCIO_NOME[p]).join(', ')}
+                        </p>
+                      </div>
+                    </button>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                    {/* Status — controle total entre agendada/realizada/cancelada */}
+                    <select
+                      value={reuniao.status}
+                      onChange={(e) => {
+                        const novoStatus = e.target.value as ReuniaoItem['status']
+                        atualizarReuniao(reuniao.id, { status: novoStatus })
+                        if (novoStatus === 'realizada' && !reuniao.ata) setEditandoReuniao({ ...reuniao, status: novoStatus })
+                      }}
+                      className={`text-[10px] font-bold rounded-full px-2 py-1 border-none outline-none cursor-pointer ${STATUS_REUNIAO_COLOR[reuniao.status]}`}
+                    >
+                      {Object.entries(STATUS_REUNIAO_LABEL).map(([v, l]) => (
+                        <option key={v} value={v}>{l}</option>
+                      ))}
+                    </select>
                     <span
-                      onClick={(e) => { e.stopPropagation(); setDeletandoReuniao(reuniao) }}
+                      onClick={() => setEditandoReuniao(reuniao)}
+                      className="p-1 rounded hover:bg-[rgba(201,168,76,0.1)] text-[#4A4A4A] hover:text-[#C9A84C] transition-colors cursor-pointer"
+                      title="Editar reunião"
+                    ><Pencil size={12} /></span>
+                    <span
+                      onClick={() => setDeletandoReuniao(reuniao)}
                       className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#4A4A4A] hover:text-[#E85238] transition-colors cursor-pointer"
                     ><Trash2 size={12} /></span>
-                    {expandida ? <ChevronUp size={14} className="text-[#6B6B6B]" /> : <ChevronDown size={14} className="text-[#6B6B6B]" />}
+                    <button onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}>
+                      {expandida ? <ChevronUp size={14} className="text-[#6B6B6B]" /> : <ChevronDown size={14} className="text-[#6B6B6B]" />}
+                    </button>
                   </div>
-                </button>
+                </div>
 
                 {expandida && (
                   <div className="px-4 pb-4 border-t border-[var(--border)] pt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -611,7 +892,7 @@ export function ReunioesDashboard() {
                         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Pauta</p>
                         <ul className="space-y-1">
                           {reuniao.pauta.map((item, i) => (
-                            <li key={i} className="flex items-start gap-2 text-xs text-[#8A8A8A]">
+                            <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
                               <span className="text-[#4A4A4A] shrink-0">{i + 1}.</span>
                               {item}
                             </li>
@@ -624,7 +905,7 @@ export function ReunioesDashboard() {
                         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Decisões</p>
                         <ul className="space-y-1">
                           {reuniao.decisoes.map((d, i) => (
-                            <li key={i} className="flex items-start gap-2 text-xs text-[#8A8A8A]">
+                            <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
                               <Check size={11} className="text-emerald-400 shrink-0 mt-0.5" />
                               {d}
                             </li>
@@ -635,14 +916,22 @@ export function ReunioesDashboard() {
                     {reuniao.ata && (
                       <div className="md:col-span-2">
                         <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Ata</p>
-                        <p className="text-xs text-[#8A8A8A] leading-relaxed">{reuniao.ata}</p>
+                        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{reuniao.ata}</p>
+                      </div>
+                    )}
+                    {reuniao.status === 'realizada' && !reuniao.ata && reuniao.decisoes.length === 0 && (
+                      <div className="md:col-span-2">
+                        <button onClick={() => setEditandoReuniao(reuniao)} className="btn btn-secondary btn-sm">
+                          <Pencil size={11} /> Registrar ata e decisões
+                        </button>
                       </div>
                     )}
                   </div>
                 )}
               </div>
             )
-          })}
+            })}
+          </div>
         </div>
       </section>
 
@@ -780,11 +1069,11 @@ export function ReunioesDashboard() {
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${SOCIO_COLOR[decisao.propostoPor]}`}>
                     {SOCIO_INICIAL[decisao.propostoPor]}
                   </div>
-                  <span className="text-xs text-[#8A8A8A]">{SOCIO_NOME[decisao.propostoPor]}</span>
+                  <span className="text-xs text-[var(--text-secondary)]">{SOCIO_NOME[decisao.propostoPor]}</span>
                 </div>
 
                 {/* Data */}
-                <span className="text-xs text-[#8A8A8A]">{fmtDataSimples(decisao.data)}</span>
+                <span className="text-xs text-[var(--text-secondary)]">{fmtDataSimples(decisao.data)}</span>
 
                 {/* Votos M · J · G */}
                 <div className="flex items-center gap-2">
@@ -821,6 +1110,13 @@ export function ReunioesDashboard() {
           propostoPor={perfilAtivo}
           onSalvar={(d) => { adicionarDecisao(d); setModalDecisao(false) }}
           onFechar={() => setModalDecisao(false)}
+        />
+      )}
+      {editandoReuniao && (
+        <ModalEditarReuniao
+          reuniao={editandoReuniao}
+          onSalvar={(dados) => { atualizarReuniao(editandoReuniao.id, dados); setEditandoReuniao(null) }}
+          onFechar={() => setEditandoReuniao(null)}
         />
       )}
 

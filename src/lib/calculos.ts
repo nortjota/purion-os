@@ -43,6 +43,36 @@ export function formatarDataCurta(iso: string): string {
   }
 }
 
+export function formatarDataBR(data: string | null | undefined): string {
+  if (!data) return '—'
+  try {
+    return format(parseISO(data), 'dd/MM/yyyy', { locale: ptBR })
+  } catch {
+    return data
+  }
+}
+
+export function formatarDataRelativa(data: string | null | undefined): string {
+  if (!data) return ''
+  try {
+    const alvo = parseISO(data)
+    const hoje = new Date()
+    const alvoDia = new Date(alvo.getFullYear(), alvo.getMonth(), alvo.getDate())
+    const hojeDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())
+    const diffDias = Math.round((alvoDia.getTime() - hojeDia.getTime()) / 86_400_000)
+
+    if (diffDias === 0) return 'hoje'
+    if (diffDias === 1) return 'amanhã'
+    if (diffDias === -1) return 'ontem'
+    if (diffDias > 1 && diffDias <= 6) return `em ${diffDias} dias`
+    if (diffDias < -1 && diffDias >= -6) return `há ${Math.abs(diffDias)} dias`
+    if (diffDias > 6) return `em ${Math.round(diffDias / 7)} semana${Math.round(diffDias / 7) > 1 ? 's' : ''}`
+    return `há ${Math.round(Math.abs(diffDias) / 7)} semana${Math.round(Math.abs(diffDias) / 7) > 1 ? 's' : ''}`
+  } catch {
+    return ''
+  }
+}
+
 export function formatarMesLabel(mesKey: string): string {
   const MESES: Record<string, string> = {
     '01': 'Jan', '02': 'Fev', '03': 'Mar', '04': 'Abr',

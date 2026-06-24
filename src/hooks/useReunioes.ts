@@ -2,7 +2,9 @@
 
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
+import { useToast } from '@/components/ui/Toast'
 import type {
   ReuniaoItem, DailyEntry, DecisaoEstrategica,
   PerfilUsuario, StatusReuniaoItem, VotoDecisao,
@@ -24,7 +26,45 @@ function toReuniao(r: Row): ReuniaoItem {
     decisoes:       Array.isArray(r.decisoes)         ? (r.decisoes        as string[])                     : [],
     proximosPassos: Array.isArray(r.proximos_passos)  ? (r.proximos_passos as ReuniaoItem['proximosPassos']) : [],
     createdAt:      String(r.created_at ?? new Date().toISOString()),
+    googleEventId:  r.google_event_id ? String(r.google_event_id) : null,
   }
+}
+
+// ── Sync best-effort com Google Calendar — nunca lança, nunca bloqueia ──
+async function syncCalendar(body: {
+  acao: 'criar' | 'atualizar' | 'deletar'
+  reuniaoId: string
+  titulo?: string
+  descricao?: string
+  inicio?: string
+  duracaoMin?: number
+  googleEventId?: string | null
+}) {
+  try {
+    const res = await fetch('/api/calendar/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    const json = await res.json().catch(() => null)
+    dbLog('SYNC', 'google_calendar', json?.ok ? null : (json?.error ?? json?.msg ?? 'falha desconhecida'), body.reuniaoId)
+    if (json?.ok && json?.googleEventId) {
+      usePurionStore.getState().atualizarReuniao(body.reuniaoId, { googleEventId: json.googleEventId })
+    }
+    if (body.acao === 'deletar' && json?.ok) {
+      usePurionStore.getState().atualizarReuniao(body.reuniaoId, { googleEventId: null })
+    }
+  } catch (err) {
+    // Best-effort: a reunião já está salva no CRM independentemente disso
+    dbLog('SYNC', 'google_calendar', err, body.reuniaoId)
+  }
+}
+
+function montarDescricaoCalendar(r: { pauta: string[]; tipo: string }): string {
+  const linhas = [`Tipo: ${r.tipo}`]
+  if (r.pauta.length > 0) linhas.push('', 'Pauta:', ...r.pauta.map((p) => `• ${p}`))
+  linhas.push('', 'Criado automaticamente pelo PURION OS')
+  return linhas.join('\n')
 }
 
 function toDaily(r: Row): DailyEntry {
@@ -34,7 +74,8 @@ function toDaily(r: Row): DailyEntry {
     data:        String(r.data),
     ontemFiz:    String(r.ontem_fiz    ?? ''),
     hojeFarei:   String(r.hoje_farei   ?? ''),
-    bloqueadoEm: String(r.bloqueado_em ?? ''),
+    // DB column is 'bloqueado'; mapped back to app field 'bloqueadoEm'
+    bloqueadoEm: String(r.bloqueado_em ?? r.bloqueado ?? ''),
     createdAt:   String(r.created_at   ?? new Date().toISOString()),
   }
 }
@@ -59,40 +100,44 @@ function toDecisao(r: Row): DecisaoEstrategica {
 }
 
 export function useReunioes() {
+  const { success, error: toastError } = useToast()
+
   useEffect(() => {
     const sb = supabase
     if (!sb) return
 
     const loadR = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('reunioes')
         .select('*')
         .is('deleted_at', null)
         .order('data', { ascending: false })
+      dbLog('SELECT', 'reunioes', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setReunioes(data.map(toReuniao))
     }
     const loadD = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('daily_async')
         .select('*')
-        .is('deleted_at', null)
         .order('created_at', { ascending: false })
+      dbLog('SELECT', 'daily_async', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setDailyEntries(data.map(toDaily))
     }
     const loadDec = async () => {
-      const { data } = await sb
+      const { data, error } = await sb
         .from('decisoes')
         .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
+      dbLog('SELECT', 'decisoes', error, `${data?.length ?? 0} rows`)
       if (data) usePurionStore.getState().setDecisoes(data.map(toDecisao))
     }
 
     loadR(); loadD(); loadDec()
 
-    const chR   = sb.channel('reunioes-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'reunioes'    }, loadR  ).subscribe()
-    const chD   = sb.channel('daily-sync')   .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_async' }, loadD  ).subscribe()
-    const chDec = sb.channel('decisoes-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'decisoes'    }, loadDec).subscribe()
+    const chR   = sb.channel(`reunioes-sync-${Math.random().toString(36).slice(2)}`).on('postgres_changes', { event: '*', schema: 'public', table: 'reunioes'    }, loadR  ).subscribe()
+    const chD   = sb.channel(`daily-sync-${Math.random().toString(36).slice(2)}`).on('postgres_changes', { event: '*', schema: 'public', table: 'daily_async' }, loadD  ).subscribe()
+    const chDec = sb.channel(`decisoes-sync-${Math.random().toString(36).slice(2)}`).on('postgres_changes', { event: '*', schema: 'public', table: 'decisoes'    }, loadDec).subscribe()
 
     return () => { sb.removeChannel(chR); sb.removeChannel(chD); sb.removeChannel(chDec) }
   }, [])
@@ -101,12 +146,28 @@ export function useReunioes() {
     adicionarReuniao: async (r: Omit<ReuniaoItem, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('reunioes').insert({
+      const { data, error } = await sb.from('reunioes').insert({
         titulo: r.titulo, tipo: r.tipo, status: r.status,
         data: r.data, duracao: r.duracao, participantes: r.participantes,
         pauta: r.pauta, ata: r.ata, decisoes: r.decisoes, proximos_passos: r.proximosPassos,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarReuniao({ ...r, id: String(data.id), createdAt: String(data.created_at) })
+      dbLog('INSERT', 'reunioes', error, data?.id)
+      if (error) { toastError('Erro ao criar reunião', error.message); return }
+      if (data) {
+        const novaReuniao = { ...r, id: String(data.id), createdAt: String(data.created_at) }
+        usePurionStore.getState().adicionarReuniao(novaReuniao)
+        success('Reunião criada')
+        if (r.status !== 'cancelada') {
+          syncCalendar({
+            acao: 'criar',
+            reuniaoId: String(data.id),
+            titulo: r.titulo,
+            descricao: montarDescricaoCalendar(r),
+            inicio: r.data,
+            duracaoMin: r.duracao,
+          })
+        }
+      }
     },
 
     atualizarReuniao: async (id: string, dados: Partial<ReuniaoItem>) => {
@@ -115,7 +176,8 @@ export function useReunioes() {
         usePurionStore.getState().atualizarReuniao(id, dados)
         return
       }
-      await sb.from('reunioes').update({
+      const reuniaoAtual = usePurionStore.getState().reunioes.find((r) => r.id === id)
+      const { error } = await sb.from('reunioes').update({
         ...(dados.titulo          !== undefined && { titulo:          dados.titulo }),
         ...(dados.tipo            !== undefined && { tipo:            dados.tipo }),
         ...(dados.status          !== undefined && { status:          dados.status }),
@@ -128,26 +190,62 @@ export function useReunioes() {
         ...(dados.proximosPassos  !== undefined && { proximos_passos: dados.proximosPassos }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'reunioes', error, id)
+      if (error) { toastError('Erro ao salvar reunião', error.message); return }
       usePurionStore.getState().atualizarReuniao(id, dados)
+
+      if (reuniaoAtual) {
+        const merged = { ...reuniaoAtual, ...dados }
+        const camposRelevantes = ['titulo', 'data', 'duracao', 'pauta', 'tipo', 'status']
+          .some((campo) => dados[campo as keyof ReuniaoItem] !== undefined)
+
+        if (dados.status === 'cancelada' && reuniaoAtual.googleEventId) {
+          syncCalendar({ acao: 'deletar', reuniaoId: id, googleEventId: reuniaoAtual.googleEventId })
+        } else if (camposRelevantes && merged.status !== 'cancelada') {
+          syncCalendar({
+            acao: 'atualizar',
+            reuniaoId: id,
+            titulo: merged.titulo,
+            descricao: montarDescricaoCalendar(merged),
+            inicio: merged.data,
+            duracaoMin: merged.duracao,
+            googleEventId: reuniaoAtual.googleEventId,
+          })
+        }
+      }
     },
 
     deletarReuniao: async (id: string) => {
+      const reuniaoAtual = usePurionStore.getState().reunioes.find((r) => r.id === id)
       const sb = supabase
-      if (sb) await sb.from('reunioes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('reunioes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'reunioes', error, id)
+        if (error) { toastError('Erro ao excluir reunião', error.message); return }
+      }
       const store = usePurionStore.getState()
       store.setReunioes(store.reunioes.filter((r) => r.id !== id))
+      success('Reunião excluída', 'Você pode restaurar na Lixeira')
+      if (reuniaoAtual?.googleEventId) {
+        syncCalendar({ acao: 'deletar', reuniaoId: id, googleEventId: reuniaoAtual.googleEventId })
+      }
     },
 
     restaurarReuniao: async (reuniao: ReuniaoItem) => {
       const sb = supabase
-      if (sb) await sb.from('reunioes').update({ deleted_at: null }).eq('id', reuniao.id)
+      if (sb) {
+        const { error } = await sb.from('reunioes').update({ deleted_at: null }).eq('id', reuniao.id)
+        dbLog('UPDATE', 'reunioes', error, reuniao.id)
+        if (error) { toastError('Erro ao restaurar reunião', error.message); return }
+      }
       usePurionStore.getState().adicionarReuniao(reuniao)
+      success('Reunião restaurada')
     },
 
     adicionarDecisao: async (d: Omit<DecisaoEstrategica, 'id' | 'createdAt'>) => {
       const sb = supabase
       if (!sb) return
-      const { data } = await sb.from('decisoes').insert({
+      const { data, error } = await sb.from('decisoes').insert({
         titulo:        d.titulo,
         descricao:     d.descricao,
         proposto_por:  d.propostoPor,
@@ -156,7 +254,12 @@ export function useReunioes() {
         votos:         d.votos,
         status:        d.status,
       }).select().single()
-      if (data) usePurionStore.getState().adicionarDecisao({ ...d, id: String(data.id), createdAt: String(data.created_at) })
+      dbLog('INSERT', 'decisoes', error, data?.id)
+      if (error) { toastError('Erro ao registrar decisão', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarDecisao({ ...d, id: String(data.id), createdAt: String(data.created_at) })
+        success('Decisão registrada')
+      }
     },
 
     atualizarDecisao: async (id: string, dados: Partial<DecisaoEstrategica>) => {
@@ -165,7 +268,7 @@ export function useReunioes() {
         usePurionStore.getState().atualizarDecisao(id, dados)
         return
       }
-      await sb.from('decisoes').update({
+      const { error } = await sb.from('decisoes').update({
         ...(dados.titulo        !== undefined && { titulo:        dados.titulo }),
         ...(dados.descricao     !== undefined && { descricao:     dados.descricao }),
         ...(dados.propostoPor   !== undefined && { proposto_por:  dados.propostoPor }),
@@ -175,41 +278,58 @@ export function useReunioes() {
         ...(dados.status        !== undefined && { status:        dados.status }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
+      dbLog('UPDATE', 'decisoes', error, id)
+      if (error) { toastError('Erro ao salvar decisão', error.message); return }
       usePurionStore.getState().atualizarDecisao(id, dados)
     },
 
     deletarDecisao: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('decisoes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('decisoes').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'decisoes', error, id)
+        if (error) { toastError('Erro ao excluir decisão', error.message); return }
+      }
       const store = usePurionStore.getState()
       store.setDecisoes(store.decisoes.filter((d) => d.id !== id))
+      success('Decisão excluída', 'Você pode restaurar na Lixeira')
     },
 
     restaurarDecisao: async (decisao: DecisaoEstrategica) => {
       const sb = supabase
-      if (sb) await sb.from('decisoes').update({ deleted_at: null }).eq('id', decisao.id)
+      if (sb) {
+        const { error } = await sb.from('decisoes').update({ deleted_at: null }).eq('id', decisao.id)
+        dbLog('UPDATE', 'decisoes', error, decisao.id)
+        if (error) { toastError('Erro ao restaurar decisão', error.message); return }
+      }
       usePurionStore.getState().adicionarDecisao(decisao)
+      success('Decisão restaurada')
     },
 
-    adicionarDaily: async (entry: Omit<DailyEntry, 'id' | 'createdAt'>) => {
+    adicionarDaily: async (entry: Omit<DailyEntry, 'id' | 'createdAt'>): Promise<boolean> => {
       const sb = supabase
-      if (!sb) return
-      const { data } = await sb.from('daily_async').insert({
+      if (!sb) return false
+      const { data, error } = await sb.from('daily_async').upsert({
         socio: entry.socio, data: entry.data,
         ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado_em: entry.bloqueadoEm,
-      }).select().single()
-      if (data) usePurionStore.getState().adicionarDailyEntry({ ...entry, id: String(data.id), createdAt: String(data.created_at) })
+      }, { onConflict: 'socio,data' }).select().single()
+      dbLog('UPSERT', 'daily_async', error, data?.id)
+      if (data) {
+        usePurionStore.getState().adicionarDailyEntry({ ...entry, id: String(data.id), createdAt: String(data.created_at) })
+        return true
+      }
+      return false
     },
 
     atualizarDaily: async (id: string, dados: Partial<DailyEntry>) => {
       const sb = supabase
       if (sb) {
-        await sb.from('daily_async').update({
+        const { error } = await sb.from('daily_async').update({
           ...(dados.ontemFiz    !== undefined && { ontem_fiz:    dados.ontemFiz }),
           ...(dados.hojeFarei   !== undefined && { hoje_farei:   dados.hojeFarei }),
           ...(dados.bloqueadoEm !== undefined && { bloqueado_em: dados.bloqueadoEm }),
-          updated_at: new Date().toISOString(),
         }).eq('id', id)
+        dbLog('UPDATE', 'daily_async', error, id)
       }
       const store = usePurionStore.getState()
       store.setDailyEntries(store.dailyEntries.map((d) => d.id === id ? { ...d, ...dados } : d))
@@ -217,14 +337,23 @@ export function useReunioes() {
 
     deletarDaily: async (id: string) => {
       const sb = supabase
-      if (sb) await sb.from('daily_async').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+      if (sb) {
+        const { error } = await sb.from('daily_async').delete().eq('id', id)
+        dbLog('DELETE', 'daily_async', error, id)
+      }
       const store = usePurionStore.getState()
       store.setDailyEntries(store.dailyEntries.filter((d) => d.id !== id))
     },
 
     restaurarDaily: async (entry: DailyEntry) => {
       const sb = supabase
-      if (sb) await sb.from('daily_async').update({ deleted_at: null }).eq('id', entry.id)
+      if (sb) {
+        const { error } = await sb.from('daily_async').insert({
+          socio: entry.socio, data: entry.data,
+          ontem_fiz: entry.ontemFiz, hoje_farei: entry.hojeFarei, bloqueado_em: entry.bloqueadoEm,
+        })
+        dbLog('INSERT', 'daily_async', error, entry.id)
+      }
       usePurionStore.getState().adicionarDailyEntry(entry)
     },
   }

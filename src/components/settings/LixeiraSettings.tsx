@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useToast } from '@/components/ui/Toast'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 import { RotateCcw, Trash2 } from 'lucide-react'
 
 type Tab = 'tarefas' | 'leads' | 'financeiro' | 'lotes' | 'expedicao' | 'creators' | 'reunioes'
@@ -38,11 +39,12 @@ export function LixeiraSettings() {
     const sb = supabase
     const load = async () => {
       setLoading(true)
-      const { data } = await sb
+      const { data, error: loadErr } = await sb
         .from(currentTabConfig.table)
         .select(`id, ${currentTabConfig.titleField}, deleted_at`)
         .not('deleted_at', 'is', null)
         .order('deleted_at', { ascending: false })
+      dbLog('SELECT', currentTabConfig.table, loadErr, `${data?.length ?? 0} rows`)
 
       if (data) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,6 +68,7 @@ export function LixeiraSettings() {
     const { error: err } = await (sb.from(currentTabConfig.table) as any)
       .update({ deleted_at: null })
       .eq('id', id)
+    dbLog('UPDATE', currentTabConfig.table, err, id)
     if (err) { error('Erro ao restaurar'); return }
     setRecords(prev => prev.filter(r => r.id !== id))
     success('Registro restaurado')
@@ -78,6 +81,7 @@ export function LixeiraSettings() {
     const { error: err } = await (sb.from(currentTabConfig.table) as any)
       .delete()
       .eq('id', id)
+    dbLog('DELETE', currentTabConfig.table, err, id)
     if (err) { error('Erro ao excluir'); return }
     setRecords(prev => prev.filter(r => r.id !== id))
     success('Excluído permanentemente')
@@ -127,9 +131,9 @@ export function LixeiraSettings() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--border)]">
-                <th className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">Nome/Título</th>
-                <th className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">Excluído em</th>
-                <th className="text-left px-4 py-3 text-xs text-[#8A8A8A] font-medium">Ações</th>
+                <th className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">Nome/Título</th>
+                <th className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">Excluído em</th>
+                <th className="text-left px-4 py-3 text-xs text-[var(--text-secondary)] font-medium">Ações</th>
               </tr>
             </thead>
             <tbody>

@@ -304,7 +304,7 @@ export function InteligenciaDashboard() {
                   <span className="text-xs font-semibold text-[var(--text-primary)]">{row.canal}</span>
                 </div>
                 <span className="text-xs font-bold text-[#C9A84C]">{fmtR(row.ticketMedio)}</span>
-                <span className="text-xs text-[#8A8A8A]">{row.pedidos}</span>
+                <span className="text-xs text-[var(--text-secondary)]">{row.pedidos}</span>
                 <span className="text-xs font-semibold text-[var(--text-primary)]">{fmtR(row.receita)}</span>
               </div>
             ))}
@@ -367,7 +367,7 @@ export function InteligenciaDashboard() {
                 >
                   {i + 1}
                 </div>
-                <p className="text-sm text-[#8A8A8A] leading-relaxed">{insight.texto}</p>
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{insight.texto}</p>
               </div>
             )
           })}

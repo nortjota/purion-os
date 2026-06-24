@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
+// service_role não dispara o DEFAULT public.meu_tenant_id() — preencher manualmente
+const PURION_TENANT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+
 type Payload = {
   tenant_id?: string
   usuario_id?: string
+  papel?: 'matheus' | 'joao' | 'gabriel'
   tipo: string
   titulo: string
   mensagem: string
@@ -14,13 +18,13 @@ type Payload = {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json() as Payload
-    const { tipo, titulo, mensagem, canal = ['sistema'], link, tenant_id, usuario_id } = body
+    const { tipo, titulo, mensagem, canal = ['sistema'], link, tenant_id, usuario_id, papel } = body
 
     const db = supabaseAdmin()
 
     // 1. Insert into notificacoes table
     const { data: notif, error } = await db.from('notificacoes').insert({
-      tenant_id, usuario_id, tipo, titulo, mensagem, canal, link,
+      tenant_id: tenant_id ?? PURION_TENANT_ID, usuario_id, papel, tipo, titulo, mensagem, canal, link,
     }).select().single()
 
     if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
