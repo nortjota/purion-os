@@ -10,28 +10,26 @@ const PURION_TENANT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
 // ─────────────────────────────────────────────────────────────
 // Mapeamento de eventos Appmax → status interno de vendas
 // A Appmax envia o payload como { event: string, data: {...} }.
-// Os nomes de evento abaixo seguem a convenção pública da Appmax
-// (Order*); ajuste/expanda conforme o que aparecer em webhook_logs
-// nos primeiros testes reais — ver INTEGRACAO_APPMAX.md.
+// Nomes de evento confirmados na documentação oficial (appmax.readme.io/
+// reference/webhooks-en.md) — são snake_case, não PascalCase.
 // ─────────────────────────────────────────────────────────────
 
 const EVENTO_PARA_STATUS: Record<string, string> = {
-  OrderApproved:        'aprovado',
-  OrderAuthorized:      'aprovado',
-  OrderPaid:            'aprovado',
-  OrderPaidByPix:       'aprovado',
-  OrderPixPaid:         'aprovado',
-  OrderIntegration:     'aprovado',
-  OrderPending:         'pendente',
-  OrderPixGenerated:    'pendente',
-  OrderBoletoGenerated: 'pendente',
-  OrderRefused:         'recusado',
-  PaymentNotAuthorized: 'recusado',
-  OrderRefunded:        'reembolsado',
-  OrderRefund:          'reembolsado',
-  ChargeRefunded:       'reembolsado',
-  OrderChargedback:     'estornado',
-  OrderCancelled:       'estornado',
+  order_paid:                     'aprovado',
+  order_paid_by_pix:              'aprovado',
+  order_approved:                 'aprovado',
+  order_authorized:               'aprovado',
+  order_authorized_with_delay:    'aprovado',
+  order_integrated:               'aprovado',
+  order_pending_integration:      'pendente',
+  order_pix_created:              'pendente',
+  order_pix_expired:              'pendente',
+  order_billet_created:           'pendente',
+  order_billet_overdue:           'pendente',
+  payment_authorized_with_delay:  'pendente',
+  payment_not_authorized:         'recusado',
+  order_refund:                   'reembolsado',
+  order_chargeback_in_treatment:  'estornado',
 }
 
 type AppmaxData = Record<string, unknown>
