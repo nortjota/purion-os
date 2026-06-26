@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS leads_site (
   criado_em   timestamptz DEFAULT now()
 );
 ALTER TABLE leads_site ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "leads_site_insert" ON leads_site;
+DROP POLICY IF EXISTS "leads_site_select" ON leads_site;
 CREATE POLICY "leads_site_insert" ON leads_site FOR INSERT WITH CHECK (true);
 CREATE POLICY "leads_site_select" ON leads_site FOR SELECT TO authenticated USING (true);
 
@@ -32,6 +35,10 @@ CREATE TABLE IF NOT EXISTS carrinhos_abandonados (
   atualizado_em timestamptz DEFAULT now()
 );
 ALTER TABLE carrinhos_abandonados ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "carrinhos_abandonados_insert" ON carrinhos_abandonados;
+DROP POLICY IF EXISTS "carrinhos_abandonados_update" ON carrinhos_abandonados;
+DROP POLICY IF EXISTS "carrinhos_abandonados_select" ON carrinhos_abandonados;
 CREATE POLICY "carrinhos_abandonados_insert" ON carrinhos_abandonados FOR INSERT WITH CHECK (true);
 CREATE POLICY "carrinhos_abandonados_update" ON carrinhos_abandonados FOR UPDATE USING (true) WITH CHECK (true);
 CREATE POLICY "carrinhos_abandonados_select" ON carrinhos_abandonados FOR SELECT TO authenticated USING (true);
