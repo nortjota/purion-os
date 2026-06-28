@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Zap, Settings,
-  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, KeyRound, ShoppingCart,
+  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, KeyRound, ShoppingBag,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
@@ -45,7 +45,7 @@ const navGroups: NavGroup[] = [
     label: 'Financeiro',
     items: [
       { href: '/financeiro',    label: 'Financeiro',    icon: TrendingUp },
-      { href: '/vendas',        label: 'Vendas',        icon: ShoppingCart },
+      { href: '/vendas',        label: 'Vendas',        icon: ShoppingBag },
       { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen },
     ],
   },

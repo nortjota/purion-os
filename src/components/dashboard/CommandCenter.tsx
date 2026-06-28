@@ -1,8 +1,11 @@
 'use client'
 
 import { useMemo } from 'react'
+import dynamic from 'next/dynamic'
 import { useMobile } from '@/hooks/useMobile'
 import { ResumoDiario } from './ResumoDiario'
+
+const GraficoVendasDiarias = dynamic(() => import('./GraficoVendasDiarias'), { ssr: false })
 import {
   TrendingUp, TrendingDown, DollarSign, Target,
   ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
@@ -483,7 +486,7 @@ export function CommandCenter() {
   const {
     receitas, despesas, campanhasAds,
     tarefas, leads, lotes, reunioes, estoque,
-    dailyEntries,
+    dailyEntries, vendas,
     perfilAtivo, setPerfilAtivo,
     dashboardWidgets,
   } = usePurionStore()
@@ -495,6 +498,20 @@ export function CommandCenter() {
   const alertas      = useMemo(() => calcularAlertas(kpis, estoque), [kpis, estoque])
   const healthScore  = useMemo(() => calcularHealthScore(receitas, despesas, campanhasAds, estoque), [receitas, despesas, campanhasAds, estoque])
   const feedAtividade = useMemo(() => gerarFeedAtividade(tarefas, leads, lotes, reunioes), [tarefas, leads, lotes, reunioes])
+
+  const vendasDiarias = useMemo(() => {
+    const dias: { data: string; valor: number }[] = []
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      const chave = d.toISOString().slice(0, 10)
+      const valor = vendas
+        .filter((v) => v.statusPagamento === 'pago' && v.dataVenda.slice(0, 10) === chave)
+        .reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
+      dias.push({ data: `${chave.slice(8, 10)}/${chave.slice(5, 7)}`, valor })
+    }
+    return dias
+  }, [vendas])
 
   const mesAnterior = useMemo(() => {
     const [a, m] = mesAtual.split('-').map(Number)
@@ -618,6 +635,12 @@ export function CommandCenter() {
 
       {/* ── Meta de Faturamento ── */}
       {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}
+
+      {/* ── Vendas por dia ── */}
+      <section className="card-purion p-4">
+        <p className="kpi-label flex items-center gap-1.5 mb-3">Vendas pagas — últimos 14 dias</p>
+        <GraficoVendasDiarias data={vendasDiarias} />
+      </section>
 
       {/* ── Alertas ── */}
       {showWidget('alertas') && <SecaoAlertas alertas={todosAlertas} />}

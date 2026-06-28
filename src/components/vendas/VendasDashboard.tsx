@@ -80,12 +80,8 @@ export function VendasDashboard() {
   )
 
   return (
-    <div className="page-content section-gap">
-      {/* Header */}
-      <div>
-        <h1 className="page-title">Vendas</h1>
-        <p className="caption mt-1">Pedidos processados via Appmax — atualização em tempo real</p>
-      </div>
+    <div className="flex flex-col gap-4">
+      <p className="kpi-label">Pedidos processados via Appmax — atualização em tempo real</p>
 
       {/* KPIs */}
       <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))' }}>

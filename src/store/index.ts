@@ -463,15 +463,18 @@ export interface ContaAcesso {
 // ─────────────────────────────────────────────
 
 export type StatusVendaAppmax = 'aprovado' | 'pendente' | 'recusado' | 'estornado' | 'reembolsado'
-export type MetodoPagamentoVenda = 'pix' | 'cartao' | 'boleto' | 'desconhecido'
+export type MetodoPagamentoVenda = 'pix' | 'cartao' | 'boleto' | 'dinheiro' | 'transferencia' | 'desconhecido'
 export type CanalVenda = 'b2c' | 'b2b'
+export type StatusPagamentoVenda = 'pendente' | 'pago' | 'estornado' | 'cancelado'
+export type StatusEntregaVenda = 'aguardando' | 'separando' | 'postado' | 'em_transito' | 'entregue' | 'devolvido'
 
 export interface Venda {
   id: string
-  pedidoAppmax: string
+  pedidoAppmax: string | null
   clienteNome: string
   clienteEmail: string
   clienteTelefone: string
+  clienteDocumento: string | null
   valorBruto: number
   valorLiquido: number
   taxa: number
@@ -484,6 +487,30 @@ export interface Venda {
   quantidade: number
   dataVenda: string
   createdAt: string
+
+  // ── Registro manual B2C/B2B ──
+  leadId: string | null
+  cep: string | null
+  endereco: string | null
+  numero: string | null
+  complemento: string | null
+  bairro: string | null
+  cidade: string | null
+  uf: string | null
+  valorUnitario: number | null
+  desconto: number
+  valorTotal: number | null
+  statusPagamento: StatusPagamentoVenda
+  statusEntrega: StatusEntregaVenda
+  codigoRastreio: string | null
+  transportadora: string | null
+  dataEnvio: string | null
+  dataEntregaPrevista: string | null
+  dataEntregaRealizada: string | null
+  afiliadoCreatorId: string | null
+  responsavel: PerfilUsuario | null
+  observacoes: string | null
+  updatedAt: string
 }
 
 // ─────────────────────────────────────────────
@@ -638,9 +665,12 @@ interface PurionState {
   atualizarContaAcesso: (id: string, dados: Partial<ContaAcesso>) => void
   removerContaAcesso: (id: string) => void
 
-  // Vendas (Appmax)
+  // Vendas (Appmax + registro manual B2C/B2B)
   vendas: Venda[]
   setVendas: (vendas: Venda[]) => void
+  adicionarVenda: (venda: Venda) => void
+  atualizarVenda: (id: string, dados: Partial<Venda>) => void
+  removerVenda: (id: string) => void
 
   // Configurações
   configuracoes: Configuracoes
@@ -886,9 +916,14 @@ export const usePurionStore = create<PurionState>()(
         removerContaAcesso: (id) =>
           set((s) => ({ contasAcessos: s.contasAcessos.filter((c) => c.id !== id) })),
 
-        // ── Vendas (Appmax) ──
+        // ── Vendas (Appmax + registro manual B2C/B2B) ──
         vendas: [],
         setVendas: (vendas) => set({ vendas }),
+        adicionarVenda: (venda) => set((s) => ({ vendas: [venda, ...s.vendas] })),
+        atualizarVenda: (id, dados) => set((s) => ({
+          vendas: s.vendas.map((v) => (v.id === id ? { ...v, ...dados } : v)),
+        })),
+        removerVenda: (id) => set((s) => ({ vendas: s.vendas.filter((v) => v.id !== id) })),
 
         // ── Configurações ──
         configuracoes: configPadrao,

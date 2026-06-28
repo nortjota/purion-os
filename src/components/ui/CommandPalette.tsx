@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, CheckSquare, DollarSign,
   Package, Video, BookOpen, BarChart2, Brain,
   Settings, Plus, UserPlus, TrendingUp, TrendingDown,
-  Boxes, UserCog, Calendar, KeyRound, FileText, ShoppingCart,
+  Boxes, UserCog, Calendar, KeyRound, FileText, ShoppingBag,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import { useIsMaster } from '@/hooks/useIsMaster'
@@ -17,7 +17,7 @@ const PAGES = [
   { label: 'CRM',            href: '/crm',           icon: Users           },
   { label: 'Tarefas',        href: '/tarefas',       icon: CheckSquare     },
   { label: 'Financeiro',     href: '/financeiro',    icon: DollarSign      },
-  { label: 'Vendas',         href: '/vendas',        icon: ShoppingCart    },
+  { label: 'Vendas',         href: '/vendas',        icon: ShoppingBag    },
   { label: 'Produção',       href: '/producao',      icon: Package         },
   { label: 'Creators',       href: '/creators',      icon: Video           },
   { label: 'Contabilidade',  href: '/contabilidade', icon: BookOpen        },
@@ -49,7 +49,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const router = useRouter()
-  const { leads, tarefas, creators, kbDocumentos, contasAcessos } = usePurionStore()
+  const { leads, tarefas, creators, kbDocumentos, contasAcessos, vendas } = usePurionStore()
   const { isMaster } = useIsMaster()
   const [query, setQuery] = useState('')
 
@@ -74,6 +74,10 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
 
   const filteredContas = isMaster
     ? contasAcessos.filter((c) => c.plataforma.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+    : []
+
+  const filteredVendas = query.length >= 2
+    ? vendas.filter((v) => v.clienteNome.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
     : []
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -165,7 +169,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ))}
           </Command.Group>
 
-          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0) && (
+          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0) && (
             <Command.Group heading="Registros">
               {filteredLeads.map((lead) => (
                 <Command.Item
@@ -245,6 +249,22 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   <KeyRound size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
                   <span>{conta.plataforma}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Conta</span>
+                </Command.Item>
+              ))}
+              {filteredVendas.map((venda) => (
+                <Command.Item
+                  key={`venda-${venda.id}`}
+                  value={`venda-${venda.clienteNome}`}
+                  onSelect={() => { router.push('/vendas'); onClose() }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                    fontSize: 14, color: 'var(--text-primary)',
+                  }}
+                >
+                  <ShoppingBag size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <span>{venda.clienteNome}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Venda {venda.canal.toUpperCase()}</span>
                 </Command.Item>
               ))}
             </Command.Group>
