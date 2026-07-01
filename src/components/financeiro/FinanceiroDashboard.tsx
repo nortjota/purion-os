@@ -5,7 +5,7 @@
  * KPIs · Registro de Movimentação · Gráfico · Projeção · Histórico · Calculadora
  */
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useMobile } from '@/hooks/useMobile'
 import dynamic from 'next/dynamic'
 import { useFinanceiro } from '@/hooks/useFinanceiro'
@@ -13,9 +13,10 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import {
   TrendingUp, TrendingDown, DollarSign, BarChart2,
   Plus, X, Calculator, ChevronDown, Filter, Pencil, Trash2,
+  Search, Download,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
-import type { Receita, Despesa, CategoriaReceita, CategoriaDespesa } from '@/store'
+import type { Receita, Despesa, CategoriaReceita, CategoriaDespesa, PerfilUsuario, Regiao } from '@/store'
 import {
   getMesAtual,
   calcularKPIsGlobais,
@@ -30,7 +31,6 @@ import {
   LABEL_CATEGORIA_DESPESA,
 } from '@/lib/calculos'
 
-// Importação dinâmica do gráfico (Recharts precisa de DOM)
 const GraficoEvolucao = dynamic(
   () => import('./GraficoEvolucao').then((m) => ({ default: m.GraficoEvolucao })),
   {
@@ -44,7 +44,7 @@ const GraficoEvolucao = dynamic(
 )
 
 // ─────────────────────────────────────────────
-// TIPOS INTERNOS
+// TIPOS E CONSTANTES INTERNAS
 // ─────────────────────────────────────────────
 
 type TipoMovimentacao = 'receita' | 'despesa'
@@ -58,10 +58,24 @@ interface LinhaHistorico {
   valor: number
   regiao: string
   responsavel: string
+  fornecedor?: string
+  notaFiscal?: string
+}
+
+const REGIAO_POR_RESPONSAVEL: Record<PerfilUsuario, Regiao> = {
+  matheus: 'DF',
+  gabriel: 'SP',
+  joao:    'SC',
+}
+
+const LABEL_RESPONSAVEL: Record<PerfilUsuario, string> = {
+  matheus: 'Matheus',
+  joao:    'João',
+  gabriel: 'Gabriel',
 }
 
 // ─────────────────────────────────────────────
-// COMPONENTE KPICARD FINANCEIRO
+// KPI CARD
 // ─────────────────────────────────────────────
 
 interface KPIFinProps {
@@ -103,7 +117,6 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div>
             <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -113,15 +126,10 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
               Receita registrada: <span className="text-[#C9A84C] font-semibold">{formatarMoeda(valor)}</span>
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors"
-          >
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors">
             <X size={16} />
           </button>
         </div>
-
-        {/* Itens do split */}
         <div className="space-y-2.5">
           {items.map((item) => (
             <div key={item.categoria} className="flex items-center gap-3">
@@ -133,30 +141,198 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
                     {formatarMoeda(item.valor)}
                   </span>
                 </div>
-                {/* Mini barra */}
                 <div className="w-full h-1 bg-[#2A2A2A] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full"
-                    style={{ width: `${item.percentual}%`, backgroundColor: item.cor }}
-                  />
+                  <div className="h-full rounded-full" style={{ width: `${item.percentual}%`, backgroundColor: item.cor }} />
                 </div>
               </div>
-              <span className="text-[10px] text-[#6B6B6B] w-8 text-right shrink-0">
-                {item.percentual}%
-              </span>
+              <span className="text-[10px] text-[#6B6B6B] w-8 text-right shrink-0">{item.percentual}%</span>
             </div>
           ))}
         </div>
-
-        {/* Footer */}
         <div className="mt-5 pt-4 border-t border-[var(--border)] flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-[#C9A84C] text-[#0D0D0D] text-sm font-bold hover:bg-[#D4B55E] transition-colors"
-          >
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-[#C9A84C] text-[#0D0D0D] text-sm font-bold hover:bg-[#D4B55E] transition-colors">
             Entendido
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// MODAL DE EDIÇÃO
+// ─────────────────────────────────────────────
+
+interface ModalEditarProps {
+  linha: LinhaHistorico
+  onFechar: () => void
+  onSalvar: (id: string, tipo: 'receita' | 'despesa', dados: Partial<Receita | Despesa>) => Promise<void>
+}
+
+function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps) {
+  const [categoria, setCategoria]   = useState(linha.categoria)
+  const [valor, setValor]           = useState(String(linha.valor))
+  const [data, setData]             = useState(linha.data)
+  const [descricao, setDescricao]   = useState(linha.descricao)
+  const [responsavel, setResponsavel] = useState<PerfilUsuario>((linha.responsavel as PerfilUsuario) || 'matheus')
+  const [regiao, setRegiao]         = useState<Regiao>((linha.regiao as Regiao) || 'DF')
+  const [fornecedor, setFornecedor] = useState(linha.fornecedor ?? '')
+  const [notaFiscal, setNotaFiscal] = useState(linha.notaFiscal ?? '')
+  const [salvando, setSalvando]     = useState(false)
+  const [erro, setErro]             = useState('')
+
+  const categorias = linha.tipo === 'receita'
+    ? Object.entries(LABEL_CATEGORIA_RECEITA)
+    : Object.entries(LABEL_CATEGORIA_DESPESA)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setErro('')
+    const valorNum = parseFloat(valor.replace(',', '.'))
+    if (!valorNum || valorNum <= 0) { setErro('Informe um valor válido.'); return }
+    if (!categoria)                  { setErro('Selecione uma categoria.'); return }
+    if (!descricao.trim())           { setErro('Informe uma descrição.'); return }
+    setSalvando(true)
+    const dados: Partial<Receita | Despesa> = {
+      categoria: categoria as CategoriaReceita & CategoriaDespesa,
+      valor: valorNum, data,
+      descricao: descricao.trim(),
+      responsavel, regiao,
+      ...(linha.tipo === 'despesa' && { fornecedor: fornecedor.trim(), notaFiscal: notaFiscal.trim() }),
+    }
+    await onSalvar(linha.id, linha.tipo, dados)
+    setSalvando(false)
+    onFechar()
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Editar Movimentação
+            </h3>
+            <p className="text-xs text-[#6B6B6B] mt-0.5">
+              <span style={{ color: linha.tipo === 'receita' ? '#4CAF7A' : '#E85238' }}>
+                {linha.tipo === 'receita' ? '↑ Receita' : '↓ Despesa'}
+              </span>
+              {' '}· ID {linha.id.slice(0, 8)}
+            </p>
+          </div>
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Categoria */}
+          <div>
+            <label className="label-purion">Categoria</label>
+            <div className="relative">
+              <select value={categoria} onChange={(e) => setCategoria(e.target.value)} className="input-purion appearance-none pr-8 cursor-pointer">
+                {categorias.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+              </select>
+              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Valor + Data */}
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="label-purion">Valor</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] text-xs">R$</span>
+                <input
+                  type="number" min="0" step="0.01"
+                  value={valor} onChange={(e) => setValor(e.target.value)}
+                  className="input-purion pl-8"
+                />
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="label-purion">Data</label>
+              <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="input-purion" />
+            </div>
+          </div>
+
+          {/* Descrição */}
+          <div>
+            <label className="label-purion">Descrição</label>
+            <input
+              type="text" value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              className="input-purion" maxLength={120}
+            />
+          </div>
+
+          {/* Responsável + Região */}
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="label-purion">Responsável</label>
+              <div className="relative">
+                <select
+                  value={responsavel}
+                  onChange={(e) => {
+                    const r = e.target.value as PerfilUsuario
+                    setResponsavel(r)
+                    setRegiao(REGIAO_POR_RESPONSAVEL[r])
+                  }}
+                  className="input-purion appearance-none pr-8 cursor-pointer"
+                >
+                  <option value="matheus">Matheus</option>
+                  <option value="joao">João</option>
+                  <option value="gabriel">Gabriel</option>
+                </select>
+                <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+              </div>
+            </div>
+            <div className="w-[90px]">
+              <label className="label-purion">Região</label>
+              <div className="relative">
+                <select value={regiao} onChange={(e) => setRegiao(e.target.value as Regiao)} className="input-purion appearance-none pr-6 cursor-pointer">
+                  <option value="DF">DF</option>
+                  <option value="SP">SP</option>
+                  <option value="SC">SC</option>
+                </select>
+                <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+              </div>
+            </div>
+          </div>
+
+          {/* Despesa: Fornecedor + NF */}
+          {linha.tipo === 'despesa' && (
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="label-purion">Fornecedor</label>
+                <input
+                  type="text" value={fornecedor}
+                  onChange={(e) => setFornecedor(e.target.value)}
+                  placeholder="Nome do fornecedor"
+                  className="input-purion" maxLength={80}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="label-purion">Nota Fiscal</label>
+                <input
+                  type="text" value={notaFiscal}
+                  onChange={(e) => setNotaFiscal(e.target.value)}
+                  placeholder="Nº da NF"
+                  className="input-purion" maxLength={40}
+                />
+              </div>
+            </div>
+          )}
+
+          {erro && <p className="text-xs text-[#E85238] px-1">{erro}</p>}
+
+          <div className="flex gap-2 pt-1">
+            <button type="button" onClick={onFechar} className="btn btn-secondary flex-1 justify-center">Cancelar</button>
+            <button type="submit" disabled={salvando} className="btn btn-primary flex-1 justify-center">
+              {salvando ? 'Salvando…' : 'Salvar alterações'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )
@@ -174,13 +350,19 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
   const { perfilAtivo } = usePurionStore()
   const { adicionarReceita, adicionarDespesa } = useFinanceiro()
 
-  const [tipo, setTipo]           = useState<TipoMovimentacao>('receita')
-  const [categoria, setCategoria] = useState<string>('')
-  const [valor, setValor]         = useState<string>('')
-  const [data, setData]           = useState<string>(new Date().toISOString().slice(0, 10))
-  const [descricao, setDescricao] = useState<string>('')
-  const [erro, setErro]           = useState<string>('')
-  const [salvo, setSalvo]         = useState<boolean>(false)
+  const [tipo, setTipo]             = useState<TipoMovimentacao>('receita')
+  const [categoria, setCategoria]   = useState<string>('')
+  const [valor, setValor]           = useState<string>('')
+  const [data, setData]             = useState<string>(new Date().toISOString().slice(0, 10))
+  const [descricao, setDescricao]   = useState<string>('')
+  const [responsavel, setResponsavel] = useState<PerfilUsuario>(perfilAtivo)
+  const [regiao, setRegiao]         = useState<Regiao>(REGIAO_POR_RESPONSAVEL[perfilAtivo])
+  const [fornecedor, setFornecedor] = useState<string>('')
+  const [notaFiscal, setNotaFiscal] = useState<string>('')
+  const [erro, setErro]             = useState<string>('')
+  const [salvo, setSalvo]           = useState<boolean>(false)
+
+  useEffect(() => { setRegiao(REGIAO_POR_RESPONSAVEL[responsavel]) }, [responsavel])
 
   const categoriasDisponiveis =
     tipo === 'receita'
@@ -190,7 +372,6 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setErro('')
-
     const valorNum = parseFloat(valor.replace(',', '.'))
     if (!valorNum || valorNum <= 0) { setErro('Informe um valor válido.'); return }
     if (!categoria)                  { setErro('Selecione uma categoria.'); return }
@@ -198,59 +379,43 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
 
     let ok = false
     if (tipo === 'receita') {
-      const nova: Omit<Receita, 'id'> = {
-        descricao: descricao.trim(),
-        valor: valorNum,
+      ok = await adicionarReceita({
+        descricao: descricao.trim(), valor: valorNum,
         categoria: categoria as CategoriaReceita,
-        data,
-        regiao: perfilAtivo === 'matheus' ? 'DF' : perfilAtivo === 'gabriel' ? 'SP' : 'SC',
-        responsavel: perfilAtivo,
-      }
-      ok = await adicionarReceita(nova)
+        data, regiao, responsavel,
+      })
     } else {
-      const nova: Omit<Despesa, 'id'> = {
-        descricao: descricao.trim(),
-        valor: valorNum,
+      ok = await adicionarDespesa({
+        descricao: descricao.trim(), valor: valorNum,
         categoria: categoria as CategoriaDespesa,
-        data,
-        regiao: perfilAtivo === 'matheus' ? 'DF' : perfilAtivo === 'gabriel' ? 'SP' : 'SC',
-        responsavel: perfilAtivo,
-      }
-      ok = await adicionarDespesa(nova)
+        data, regiao, responsavel,
+        ...(fornecedor.trim() && { fornecedor: fornecedor.trim() }),
+        ...(notaFiscal.trim() && { notaFiscal: notaFiscal.trim() }),
+      })
     }
-
     if (!ok) return
-
     onRegistrado(tipo, valorNum)
-    // Resetar form
-    setValor('')
-    setCategoria('')
-    setDescricao('')
-    setErro('')
-    setSalvo(true)
+    setValor(''); setCategoria(''); setDescricao('')
+    setFornecedor(''); setNotaFiscal('')
+    setErro(''); setSalvo(true)
     setTimeout(() => setSalvo(false), 2500)
   }
 
-  const inputCls = 'input-purion'
-
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      {/* Tipo: Receita / Despesa */}
+      {/* Tipo toggle */}
       <div className="flex rounded-lg overflow-hidden border border-[var(--border)] p-0.5 gap-0.5 bg-[var(--bg-surface-2)]">
         {(['receita', 'despesa'] as const).map((t) => (
           <button
-            key={t}
-            type="button"
+            key={t} type="button"
             onClick={() => { setTipo(t); setCategoria('') }}
-            className={`
-              flex-1 py-2 text-xs font-semibold rounded-md transition-all
-              ${tipo === t
+            className={`flex-1 py-2 text-xs font-semibold rounded-md transition-all ${
+              tipo === t
                 ? t === 'receita'
                   ? 'bg-[rgba(76,175,122,0.15)] text-[#4CAF7A] border border-[rgba(76,175,122,0.3)]'
                   : 'bg-[rgba(232,82,56,0.15)] text-[#E85238] border border-[rgba(232,82,56,0.3)]'
                 : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'
-              }
-            `}
+            }`}
           >
             {t === 'receita' ? '↑ Receita' : '↓ Despesa'}
           </button>
@@ -259,57 +424,55 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
 
       {/* Categoria */}
       <div className="relative">
-        <select
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          className={`${inputCls} appearance-none pr-8 cursor-pointer`}
-        >
+        <select value={categoria} onChange={(e) => setCategoria(e.target.value)} className="input-purion appearance-none pr-8 cursor-pointer">
           <option value="" disabled>Categoria</option>
-          {categoriasDisponiveis.map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
-          ))}
+          {categoriasDisponiveis.map(([key, label]) => <option key={key} value={key}>{label}</option>)}
         </select>
         <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
       </div>
 
-      {/* Valor + Data (linha) */}
+      {/* Valor + Data */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] text-xs">R$</span>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={valor}
-            onChange={(e) => setValor(e.target.value)}
-            placeholder="0,00"
-            className={`${inputCls} pl-8`}
-          />
+          <input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} placeholder="0,00" className="input-purion pl-8" />
         </div>
-        <input
-          type="date"
-          value={data}
-          onChange={(e) => setData(e.target.value)}
-          className={`${inputCls} w-[140px]`}
-        />
+        <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="input-purion w-[140px]" />
       </div>
 
       {/* Descrição */}
-      <input
-        type="text"
-        value={descricao}
-        onChange={(e) => setDescricao(e.target.value)}
-        placeholder="Descrição da movimentação"
-        className={inputCls}
-        maxLength={120}
-      />
+      <input type="text" value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descrição da movimentação" className="input-purion" maxLength={120} />
 
-      {/* Erro */}
-      {erro && (
-        <p className="text-xs text-[#E85238] px-1">{erro}</p>
+      {/* Responsável + Região */}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <select value={responsavel} onChange={(e) => setResponsavel(e.target.value as PerfilUsuario)} className="input-purion appearance-none pr-8 cursor-pointer">
+            <option value="matheus">Matheus</option>
+            <option value="joao">João</option>
+            <option value="gabriel">Gabriel</option>
+          </select>
+          <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+        </div>
+        <div className="relative w-[90px]">
+          <select value={regiao} onChange={(e) => setRegiao(e.target.value as Regiao)} className="input-purion appearance-none pr-6 cursor-pointer">
+            <option value="DF">DF</option>
+            <option value="SP">SP</option>
+            <option value="SC">SC</option>
+          </select>
+          <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Fornecedor + NF (só para despesa) */}
+      {tipo === 'despesa' && (
+        <div className="flex gap-2">
+          <input type="text" value={fornecedor} onChange={(e) => setFornecedor(e.target.value)} placeholder="Fornecedor (opcional)" className="input-purion flex-1" maxLength={80} />
+          <input type="text" value={notaFiscal} onChange={(e) => setNotaFiscal(e.target.value)} placeholder="Nota Fiscal" className="input-purion w-[120px]" maxLength={40} />
+        </div>
       )}
 
-      {/* Toast de confirmação */}
+      {erro && <p className="text-xs text-[#E85238] px-1">{erro}</p>}
+
       {salvo && (
         <div className="flex items-center gap-1.5 text-xs text-emerald-400">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="6" fill="#10B981"/><path d="M3.5 6l1.8 1.8 3-3.6" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -317,7 +480,6 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
         </div>
       )}
 
-      {/* Botão */}
       <button type="submit" className="btn btn-primary w-full justify-center">
         <Plus size={14} />
         Registrar {tipo === 'receita' ? 'Receita' : 'Despesa'}
@@ -339,47 +501,26 @@ function CalculadoraPrecificacao() {
 
   return (
     <div className="space-y-3">
-      {/* Input */}
       <div className="relative">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] text-xs">R$</span>
         <input
-          type="number"
-          min="0"
-          step="0.01"
-          value={custo}
+          type="number" min="0" step="0.01" value={custo}
           onChange={(e) => setCusto(e.target.value)}
           placeholder="Custo do produto"
-          className="
-            w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2.5 pl-8
-            text-sm text-[var(--text-primary)] placeholder-[#4A4A4A]
-            focus:outline-none focus:border-[rgba(201,168,76,0.5)]
-            transition-colors
-          "
+          className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2.5 pl-8 text-sm text-[var(--text-primary)] placeholder-[#4A4A4A] focus:outline-none focus:border-[rgba(201,168,76,0.5)] transition-colors"
         />
       </div>
-
       {resultado ? (
         <div className="space-y-2">
           {[
-            { label: 'Preço de Venda', valor: formatarMoeda(resultado.precoVenda), cor: '#C9A84C', destaque: true },
-            { label: 'Margem Bruta',   valor: formatarPercentual(resultado.margemBruta), cor: '#4CAF7A' },
-            { label: 'Lucro Líquido',  valor: formatarMoeda(resultado.lucroLiquido), cor: '#5B8FE8' },
-            { label: 'Markup',         valor: `${resultado.markup.toFixed(2)}×`, cor: '#8B5CF6' },
+            { label: 'Preço de Venda', valor: formatarMoeda(resultado.precoVenda),       cor: '#C9A84C', destaque: true  },
+            { label: 'Margem Bruta',   valor: formatarPercentual(resultado.margemBruta), cor: '#4CAF7A', destaque: false },
+            { label: 'Lucro Líquido',  valor: formatarMoeda(resultado.lucroLiquido),      cor: '#5B8FE8', destaque: false },
+            { label: 'Markup',         valor: `${resultado.markup.toFixed(2)}×`,          cor: '#8B5CF6', destaque: false },
           ].map(({ label, valor, cor, destaque }) => (
-            <div
-              key={label}
-              className={`
-                flex items-center justify-between p-3 rounded-lg border
-                ${destaque
-                  ? 'bg-[rgba(201,168,76,0.06)] border-[rgba(201,168,76,0.2)]'
-                  : 'bg-[var(--bg-surface-2)] border-[var(--border)]'
-                }
-              `}
-            >
+            <div key={label} className={`flex items-center justify-between p-3 rounded-lg border ${destaque ? 'bg-[rgba(201,168,76,0.06)] border-[rgba(201,168,76,0.2)]' : 'bg-[var(--bg-surface-2)] border-[var(--border)]'}`}>
               <span className="text-xs text-[#6B6B6B]">{label}</span>
-              <span className="text-sm font-black" style={{ color: cor, fontFamily: 'Montserrat, sans-serif' }}>
-                {valor}
-              </span>
+              <span className="text-sm font-black" style={{ color: cor, fontFamily: 'Montserrat, sans-serif' }}>{valor}</span>
             </div>
           ))}
           <p className="text-[10px] text-[var(--text-secondary)] text-center pt-1">
@@ -396,6 +537,34 @@ function CalculadoraPrecificacao() {
 }
 
 // ─────────────────────────────────────────────
+// EXPORTAR CSV
+// ─────────────────────────────────────────────
+
+function exportarCSV(linhas: LinhaHistorico[]) {
+  const headers = 'Data,Tipo,Categoria,Descrição,Valor,Responsável,Região,Fornecedor,Nota Fiscal'
+  const esc = (s: string) => `"${s.replace(/"/g, '""')}"`
+  const rows = linhas.map((l) => [
+    l.data,
+    l.tipo,
+    LABEL_CATEGORIA_RECEITA[l.categoria as CategoriaReceita] ?? LABEL_CATEGORIA_DESPESA[l.categoria as CategoriaDespesa] ?? l.categoria,
+    esc(l.descricao),
+    l.valor.toFixed(2).replace('.', ','),
+    LABEL_RESPONSAVEL[l.responsavel as PerfilUsuario] ?? l.responsavel,
+    l.regiao,
+    l.fornecedor ? esc(l.fornecedor) : '',
+    l.notaFiscal ?? '',
+  ].join(','))
+  const csv = '﻿' + [headers, ...rows].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `financeiro_${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// ─────────────────────────────────────────────
 // TABELA DE HISTÓRICO
 // ─────────────────────────────────────────────
 
@@ -409,45 +578,81 @@ interface TabelaHistoricoProps {
 }
 
 function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistoricoProps) {
-  const [filtroMes, setFiltroMes]       = useState<string>('')
-  const [filtroCategoria, setFiltroCategoria] = useState<string>('')
-  const [filtroTipo, setFiltroTipo]     = useState<string>('')
-  const [expandedId, setExpandedId]     = useState<string | null>(null)
+  const [filtroMes, setFiltroMes]                   = useState<string>('')
+  const [filtroCategoria, setFiltroCategoria]       = useState<string>('')
+  const [filtroTipo, setFiltroTipo]                 = useState<string>('')
+  const [filtroResponsavel, setFiltroResponsavel]   = useState<string>('')
+  const [busca, setBusca]                           = useState<string>('')
+  const [expandedId, setExpandedId]                 = useState<string | null>(null)
 
-  // Meses únicos para o select
   const mesesUnicos = useMemo(() => {
     const set = new Set(linhas.map((l) => l.data.substring(0, 7)))
     return [...set].sort().reverse()
   }, [linhas])
 
-  // Categorias únicas
   const categoriasUnicas = useMemo(() => {
     const set = new Set(linhas.map((l) => l.categoria))
     return [...set].sort()
   }, [linhas])
 
-  // Linhas filtradas
   const linhasFiltradas = useMemo(() => {
+    const q = busca.toLowerCase().trim()
     return linhas
-      .filter((l) => !filtroMes      || l.data.startsWith(filtroMes))
-      .filter((l) => !filtroCategoria || l.categoria === filtroCategoria)
-      .filter((l) => !filtroTipo     || l.tipo === filtroTipo)
+      .filter((l) => !filtroMes         || l.data.startsWith(filtroMes))
+      .filter((l) => !filtroCategoria   || l.categoria === filtroCategoria)
+      .filter((l) => !filtroTipo        || l.tipo === filtroTipo)
+      .filter((l) => !filtroResponsavel || l.responsavel === filtroResponsavel)
+      .filter((l) => !q || (
+        l.descricao.toLowerCase().includes(q) ||
+        (l.fornecedor?.toLowerCase().includes(q) ?? false) ||
+        (l.notaFiscal?.toLowerCase().includes(q) ?? false)
+      ))
       .sort((a, b) => b.data.localeCompare(a.data))
-  }, [linhas, filtroMes, filtroCategoria, filtroTipo])
+  }, [linhas, filtroMes, filtroCategoria, filtroTipo, filtroResponsavel, busca])
 
   const totalFiltrado = linhasFiltradas.reduce(
     (acc, l) => ({ ...acc, [l.tipo]: (acc[l.tipo] ?? 0) + l.valor }),
     {} as Record<string, number>
   )
 
-  const selectCls = `
-    bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-1.5
-    text-xs text-[var(--text-secondary)] focus:outline-none focus:border-[rgba(201,168,76,0.4)]
-    cursor-pointer transition-colors
-  `
+  const temFiltro = !!(filtroTipo || filtroMes || filtroCategoria || filtroResponsavel || busca)
+
+  function limparFiltros() {
+    setFiltroTipo(''); setFiltroMes(''); setFiltroCategoria('')
+    setFiltroResponsavel(''); setBusca('')
+  }
+
+  const selectCls = 'bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-secondary)] focus:outline-none focus:border-[rgba(201,168,76,0.4)] cursor-pointer transition-colors'
+
+  const labelCat = (cat: string) =>
+    LABEL_CATEGORIA_RECEITA[cat as CategoriaReceita] ?? LABEL_CATEGORIA_DESPESA[cat as CategoriaDespesa] ?? cat
 
   return (
     <div>
+      {/* Busca + CSV */}
+      <div className="flex items-center gap-2 mb-3">
+        <div className="relative flex-1 max-w-xs">
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A]" />
+          <input
+            type="text" value={busca} onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar descrição, fornecedor…"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-xs text-[var(--text-secondary)] placeholder-[#4A4A4A] focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors"
+          />
+          {busca && (
+            <button onClick={() => setBusca('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#4A4A4A] hover:text-[var(--text-primary)]">
+              <X size={10} />
+            </button>
+          )}
+        </div>
+        <button
+          onClick={() => exportarCSV(linhasFiltradas)}
+          title={`Exportar ${linhasFiltradas.length} registros como CSV`}
+          className="p-1.5 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] text-[#6B6B6B] hover:text-[#C9A84C] hover:border-[rgba(201,168,76,0.4)] transition-colors"
+        >
+          <Download size={13} />
+        </button>
+      </div>
+
       {/* Filtros */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <Filter size={13} className="text-[#4A4A4A]" />
@@ -458,49 +663,33 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
         </select>
         <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)} className={selectCls}>
           <option value="">Todos os meses</option>
-          {mesesUnicos.map((m) => (
-            <option key={m} value={m}>{m}</option>
-          ))}
+          {mesesUnicos.map((m) => <option key={m} value={m}>{m}</option>)}
         </select>
         <select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className={selectCls}>
           <option value="">Todas as categorias</option>
-          {categoriasUnicas.map((c) => (
-            <option key={c} value={c}>
-              {LABEL_CATEGORIA_RECEITA[c] ?? LABEL_CATEGORIA_DESPESA[c] ?? c}
-            </option>
-          ))}
+          {categoriasUnicas.map((c) => <option key={c} value={c}>{labelCat(c)}</option>)}
         </select>
-        {(filtroTipo || filtroMes || filtroCategoria) && (
-          <button
-            onClick={() => { setFiltroTipo(''); setFiltroMes(''); setFiltroCategoria('') }}
-            className="text-[10px] text-[#C9A84C] hover:underline flex items-center gap-1"
-          >
+        <select value={filtroResponsavel} onChange={(e) => setFiltroResponsavel(e.target.value)} className={selectCls}>
+          <option value="">Todos os responsáveis</option>
+          <option value="matheus">Matheus</option>
+          <option value="joao">João</option>
+          <option value="gabriel">Gabriel</option>
+        </select>
+        {temFiltro && (
+          <button onClick={limparFiltros} className="text-[10px] text-[#C9A84C] hover:underline flex items-center gap-1">
             <X size={10} /> Limpar
           </button>
         )}
-        <span className="ml-auto text-[10px] text-[#4A4A4A]">
-          {linhasFiltradas.length} registros
-        </span>
+        <span className="ml-auto text-[10px] text-[#4A4A4A]">{linhasFiltradas.length} registros</span>
       </div>
 
       {/* Subtotais */}
       {(totalFiltrado.receita || totalFiltrado.despesa) && (
         <div className="flex gap-3 mb-3">
-          {totalFiltrado.receita && (
-            <span className="text-xs text-[#4CAF7A]">
-              + {formatarMoeda(totalFiltrado.receita)}
-            </span>
-          )}
-          {totalFiltrado.despesa && (
-            <span className="text-xs text-[#E85238]">
-              - {formatarMoeda(totalFiltrado.despesa)}
-            </span>
-          )}
+          {totalFiltrado.receita  && <span className="text-xs text-[#4CAF7A]">+ {formatarMoeda(totalFiltrado.receita)}</span>}
+          {totalFiltrado.despesa  && <span className="text-xs text-[#E85238]">- {formatarMoeda(totalFiltrado.despesa)}</span>}
           {totalFiltrado.receita && totalFiltrado.despesa && (
-            <span className={`text-xs font-semibold ${
-              (totalFiltrado.receita - totalFiltrado.despesa) >= 0
-                ? 'text-[#4CAF7A]' : 'text-[#E85238]'
-            }`}>
+            <span className={`text-xs font-semibold ${(totalFiltrado.receita - totalFiltrado.despesa) >= 0 ? 'text-[#4CAF7A]' : 'text-[#E85238]'}`}>
               = {formatarMoeda(totalFiltrado.receita - totalFiltrado.despesa)}
             </span>
           )}
@@ -516,6 +705,8 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
               <th>Tipo</th>
               {!isMobile && <th>Categoria</th>}
               {!isMobile && <th>Descrição</th>}
+              {!isMobile && <th>Responsável</th>}
+              {!isMobile && <th>Fornecedor / NF</th>}
               <th style={{ textAlign: 'right' }}>Valor</th>
               {(onDeletar || onEditar) && <th style={{ width: 64 }} />}
             </tr>
@@ -523,7 +714,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
           <tbody>
             {linhasFiltradas.length === 0 ? (
               <tr>
-                <td colSpan={isMobile ? 3 : 5} className="px-4 py-8 text-center text-[var(--text-secondary)] text-xs">
+                <td colSpan={isMobile ? 3 : 8} className="px-4 py-8 text-center text-[var(--text-secondary)] text-xs">
                   Nenhum registro encontrado
                 </td>
               </tr>
@@ -551,18 +742,33 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                         {linha.tipo === 'receita' ? '↑' : '↓'}
                       </span>
                     </td>
+                    {!isMobile && <td className="px-4 py-2.5 text-[#6B6B6B]">{labelCat(linha.categoria)}</td>}
                     {!isMobile && (
-                      <td className="px-4 py-2.5 text-[#6B6B6B]">
-                        {LABEL_CATEGORIA_RECEITA[linha.categoria] ?? LABEL_CATEGORIA_DESPESA[linha.categoria] ?? linha.categoria}
-                      </td>
-                    )}
-                    {!isMobile && (
-                      <td className="px-4 py-2.5 text-[var(--text-secondary)] max-w-[240px] truncate">
+                      <td className="px-4 py-2.5 text-[var(--text-secondary)] max-w-[200px] truncate" title={linha.descricao}>
                         {linha.descricao}
                       </td>
                     )}
-                    <td className="px-4 py-2.5 font-semibold whitespace-nowrap text-right"
-                      style={{ color: COR_TIPO[linha.tipo] }}>
+                    {!isMobile && (
+                      <td className="px-4 py-2.5 text-[#6B6B6B]">
+                        {LABEL_RESPONSAVEL[linha.responsavel as PerfilUsuario] ?? linha.responsavel}
+                        <span className="text-[#3A3A3A] ml-1">{linha.regiao}</span>
+                      </td>
+                    )}
+                    {!isMobile && (
+                      <td className="px-4 py-2.5 text-[#4A4A4A] text-xs max-w-[180px] truncate">
+                        {linha.fornecedor ? (
+                          <>
+                            {linha.fornecedor}
+                            {linha.notaFiscal && <span className="text-[#3A3A3A] ml-1">· NF {linha.notaFiscal}</span>}
+                          </>
+                        ) : linha.notaFiscal ? (
+                          <span>NF {linha.notaFiscal}</span>
+                        ) : (
+                          <span className="text-[#2A2A2A]">—</span>
+                        )}
+                      </td>
+                    )}
+                    <td className="px-4 py-2.5 font-semibold whitespace-nowrap text-right" style={{ color: COR_TIPO[linha.tipo] }}>
                       {linha.tipo === 'receita' ? '+' : '-'} {formatarMoeda(linha.valor)}
                     </td>
                     {(onDeletar || onEditar) && (
@@ -587,15 +793,32 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                   {isMobile && expandedId === linha.id && (
                     <tr key={`${linha.id}-detail`} className="bg-[var(--bg-surface-2)]">
                       <td colSpan={3} className="px-4 py-3">
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
+                          <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Categoria:</span> {labelCat(linha.categoria)}</p>
+                          <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Descrição:</span> {linha.descricao}</p>
                           <p className="text-[11px] text-[#6B6B6B]">
-                            <span className="text-[#4A4A4A] font-medium">Categoria:</span>{' '}
-                            {LABEL_CATEGORIA_RECEITA[linha.categoria] ?? LABEL_CATEGORIA_DESPESA[linha.categoria] ?? linha.categoria}
+                            <span className="text-[#4A4A4A] font-medium">Responsável:</span>{' '}
+                            {LABEL_RESPONSAVEL[linha.responsavel as PerfilUsuario] ?? linha.responsavel} · {linha.regiao}
                           </p>
-                          <p className="text-[11px] text-[#6B6B6B]">
-                            <span className="text-[#4A4A4A] font-medium">Descrição:</span>{' '}
-                            {linha.descricao}
-                          </p>
+                          {linha.fornecedor && <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Fornecedor:</span> {linha.fornecedor}</p>}
+                          {linha.notaFiscal  && <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Nota Fiscal:</span> {linha.notaFiscal}</p>}
+                          {(onEditar || onDeletar) && (
+                            <div className="flex gap-2 pt-2">
+                              {onEditar && (
+                                <button onClick={() => onEditar(linha)} className="btn btn-secondary btn-sm flex-1 justify-center">
+                                  <Pencil size={10} /> Editar
+                                </button>
+                              )}
+                              {onDeletar && (
+                                <button
+                                  onClick={() => onDeletar(linha.id, linha.tipo)}
+                                  className="btn btn-sm flex-1 justify-center text-[#E85238] border border-[rgba(232,82,56,0.3)] hover:bg-[rgba(232,82,56,0.1)]"
+                                >
+                                  <Trash2 size={10} /> Excluir
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -617,24 +840,19 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
 export function FinanceiroDashboard() {
   const { receitas, despesas, configuracoes } = usePurionStore()
   const isMobile = useMobile()
-  const { deletarFinanceiro } = useFinanceiro()
+  const { deletarFinanceiro, atualizarFinanceiro } = useFinanceiro()
 
   const [deletandoFin, setDeletandoFin] = useState<{ id: string; tipo: 'receita' | 'despesa'; descricao: string } | null>(null)
+  const [editandoFin, setEditandoFin]   = useState<LinhaHistorico | null>(null)
 
-  // Estado do modal split
   const [showModalSplit, setShowModalSplit] = useState(false)
-  const [splitInfo, setSplitInfo] = useState<{
-    valor: number
-    items: ReturnType<typeof calcularSplit>
-  } | null>(null)
+  const [splitInfo, setSplitInfo] = useState<{ valor: number; items: ReturnType<typeof calcularSplit> } | null>(null)
 
-  // Cálculos memoizados
-  const kpisGlobais = useMemo(() => calcularKPIsGlobais(receitas, despesas), [receitas, despesas])
-  const mesAtual = useMemo(() => getMesAtual(receitas), [receitas])
-  const dadosGrafico = useMemo(() => calcularGrafico6Meses(receitas, despesas), [receitas, despesas])
-  const projecoes = useMemo(() => calcularProjecoes(receitas, despesas), [receitas, despesas])
+  const kpisGlobais  = useMemo(() => calcularKPIsGlobais(receitas, despesas),     [receitas, despesas])
+  const mesAtual     = useMemo(() => getMesAtual(receitas),                        [receitas])
+  const dadosGrafico = useMemo(() => calcularGrafico6Meses(receitas, despesas),   [receitas, despesas])
+  const projecoes    = useMemo(() => calcularProjecoes(receitas, despesas),        [receitas, despesas])
 
-  // Histórico unificado
   const historico: LinhaHistorico[] = useMemo(() => {
     const r: LinhaHistorico[] = receitas.map((rec) => ({
       id: rec.id, tipo: 'receita' as const,
@@ -647,75 +865,41 @@ export function FinanceiroDashboard() {
       data: des.data, categoria: des.categoria,
       descricao: des.descricao, valor: des.valor,
       regiao: des.regiao, responsavel: des.responsavel,
+      fornecedor: des.fornecedor,
+      notaFiscal: des.notaFiscal,
     }))
     return [...r, ...d]
   }, [receitas, despesas])
 
-  // Callback quando uma movimentação é registrada
   function handleRegistrado(tipo: TipoMovimentacao, valor: number) {
     if (tipo === 'receita') {
-      const items = calcularSplit(valor, configuracoes)
-      setSplitInfo({ valor, items })
+      setSplitInfo({ valor, items: calcularSplit(valor, configuracoes) })
       setShowModalSplit(true)
     }
   }
 
-  // KPIs globais (todos os meses)
   const kpiCards = [
-    {
-      label: 'Receita Total',
-      valor: formatarMoeda(kpisGlobais.receitaTotal),
-      icon: TrendingUp,
-      cor: '#4CAF7A',
-      sub: `Mês atual: ${mesAtual}`,
-    },
-    {
-      label: 'Despesa Total',
-      valor: formatarMoeda(kpisGlobais.despesaTotal),
-      icon: TrendingDown,
-      cor: '#E85238',
-      sub: `${formatarPercentual((kpisGlobais.despesaTotal / kpisGlobais.receitaTotal) * 100)} da receita`,
-    },
-    {
-      label: 'Margem Bruta',
-      valor: formatarPercentual(kpisGlobais.margemMedia),
-      icon: BarChart2,
-      cor: '#C9A84C',
-      sub: `Meta: 65%`,
-    },
-    {
-      label: 'Saldo Atual',
-      valor: formatarMoeda(kpisGlobais.saldoTotal),
-      icon: DollarSign,
-      cor: kpisGlobais.saldoTotal >= 0 ? '#4CAF7A' : '#E85238',
-      sub: 'Receita − Despesa',
-    },
+    { label: 'Receita Total', valor: formatarMoeda(kpisGlobais.receitaTotal), icon: TrendingUp,  cor: '#4CAF7A', sub: `Mês atual: ${mesAtual}` },
+    { label: 'Despesa Total', valor: formatarMoeda(kpisGlobais.despesaTotal), icon: TrendingDown, cor: '#E85238', sub: `${formatarPercentual((kpisGlobais.despesaTotal / kpisGlobais.receitaTotal) * 100)} da receita` },
+    { label: 'Margem Bruta',  valor: formatarPercentual(kpisGlobais.margemMedia), icon: BarChart2, cor: '#C9A84C', sub: 'Meta: 65%' },
+    { label: 'Saldo Atual',   valor: formatarMoeda(kpisGlobais.saldoTotal), icon: DollarSign, cor: kpisGlobais.saldoTotal >= 0 ? '#4CAF7A' : '#E85238', sub: 'Receita − Despesa' },
   ]
-
-  // Label do mês por extenso
-  const MESES: Record<string, string> = {
-    '01': 'jan', '02': 'fev', '03': 'mar', '04': 'abr',
-    '05': 'mai', '06': 'jun', '07': 'jul', '08': 'ago',
-    '09': 'set', '10': 'out', '11': 'nov', '12': 'dez',
-  }
 
   return (
     <div className="page-content section-gap">
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div>
         <h1 className="page-title">Financeiro</h1>
         <p className="caption mt-1">Controle financeiro · Precificação · Projeções</p>
       </div>
 
-      {/* ── Seção 1: KPIs ── */}
+      {/* KPIs */}
       <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
-        {kpiCards.map((card) => (
-          <KPIFin key={card.label} {...card} />
-        ))}
+        {kpiCards.map((card) => <KPIFin key={card.label} {...card} />)}
       </div>
 
-      {/* ── Seção 2: Registrar + Calculadora ── */}
+      {/* Registrar + Calculadora */}
       <div className="grid grid-cols-2 gap-4 grid-mobile-1">
         <div className="card-purion card-section">
           <div className="flex items-center gap-2 mb-5">
@@ -724,7 +908,6 @@ export function FinanceiroDashboard() {
           </div>
           <FormMovimentacao onRegistrado={handleRegistrado} />
         </div>
-
         <div className="card-purion card-section">
           <div className="flex items-center gap-2 mb-5">
             <Calculator size={15} className="text-[#C9A84C]" />
@@ -734,58 +917,38 @@ export function FinanceiroDashboard() {
         </div>
       </div>
 
-      {/* ── Seção 3: Gráfico de Evolução ── */}
+      {/* Gráfico */}
       <div className="card-purion card-section">
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <BarChart2 size={15} className="text-[#C9A84C]" />
-            <h2 className="section-title text-[15px]">Evolução Financeira — 6 Meses</h2>
-          </div>
-          <span className="caption uppercase" style={{ letterSpacing: '0.06em' }}>
-            Set 2023 → Fev 2024
-          </span>
+        <div className="flex items-center gap-2 mb-5">
+          <BarChart2 size={15} className="text-[#C9A84C]" />
+          <h2 className="section-title text-[15px]">Evolução Financeira — 6 Meses</h2>
         </div>
         <GraficoEvolucao dados={dadosGrafico} height={isMobile ? 200 : 280} />
       </div>
 
-      {/* ── Seção 4: Projeção 30/60/90 dias ── */}
+      {/* Projeções */}
       <div>
         <p className="kpi-label flex items-center gap-1.5 mb-4">
           <TrendingUp size={11} /> Projeção — Média dos Últimos 30 Dias
         </p>
         <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
           {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
-            <div
-              key={dias}
-              className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 hover:border-[rgba(201,168,76,0.2)] transition-colors"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] text-[#6B6B6B] uppercase tracking-wider font-medium">
-                  {dias} dias
-                </span>
-                <span className="text-[10px] text-[#4A4A4A]">
-                  até {new Date(new Date('2024-02-12').getTime() + dias * 86400000)
-                    .toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                </span>
+            <div key={dias} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 hover:border-[rgba(201,168,76,0.2)] transition-colors">
+              <div className="mb-3">
+                <span className="text-[10px] text-[#6B6B6B] uppercase tracking-wider font-medium">{dias} dias</span>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-[#6B6B6B]">Receita proj.</span>
-                  <span className="text-sm font-black text-[#4CAF7A]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {formatarMoeda(receitaProjetada)}
-                  </span>
+                  <span className="text-sm font-black text-[#4CAF7A]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{formatarMoeda(receitaProjetada)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-[#6B6B6B]">Despesa proj.</span>
-                  <span className="text-sm font-semibold text-[#E85238]">
-                    {formatarMoeda(despesaProjetada)}
-                  </span>
+                  <span className="text-sm font-semibold text-[#E85238]">{formatarMoeda(despesaProjetada)}</span>
                 </div>
                 <div className="pt-1 border-t border-[var(--border)] flex justify-between items-center">
                   <span className="text-xs text-[#6B6B6B]">Margem proj.</span>
-                  <span className="text-sm font-black text-[#C9A84C]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {margemProjetada}%
-                  </span>
+                  <span className="text-sm font-black text-[#C9A84C]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{margemProjetada}%</span>
                 </div>
               </div>
             </div>
@@ -793,7 +956,7 @@ export function FinanceiroDashboard() {
         </div>
       </div>
 
-      {/* ── Seção 5: Histórico ── */}
+      {/* Histórico */}
       <div className="card-purion card-section">
         <div className="flex items-center gap-2 mb-5">
           <BarChart2 size={15} className="text-[#C9A84C]" />
@@ -803,6 +966,7 @@ export function FinanceiroDashboard() {
         <TabelaHistorico
           linhas={historico}
           isMobile={isMobile}
+          onEditar={(linha) => setEditandoFin(linha)}
           onDeletar={(id, tipo) => {
             const item = historico.find((l) => l.id === id)
             setDeletandoFin({ id, tipo, descricao: item?.descricao ?? id })
@@ -810,7 +974,16 @@ export function FinanceiroDashboard() {
         />
       </div>
 
-      {/* ── Modal de Split ── */}
+      {/* Modal Edição */}
+      {editandoFin && (
+        <ModalEditarMovimentacao
+          linha={editandoFin}
+          onFechar={() => setEditandoFin(null)}
+          onSalvar={atualizarFinanceiro}
+        />
+      )}
+
+      {/* Modal Split */}
       {showModalSplit && splitInfo && (
         <ModalSplit
           valor={splitInfo.valor}
@@ -819,7 +992,7 @@ export function FinanceiroDashboard() {
         />
       )}
 
-      {/* ── Confirmar delete financeiro ── */}
+      {/* Confirmar delete */}
       <ConfirmModal
         open={!!deletandoFin}
         title={`Excluir ${deletandoFin?.tipo === 'receita' ? 'Receita' : 'Despesa'}`}

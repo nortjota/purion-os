@@ -108,13 +108,16 @@ export function useFinanceiro() {
         else usePurionStore.getState().atualizarDespesa(id, dados as Partial<Despesa>)
         return
       }
+      const d = dados as Partial<Receita & Despesa>
       const { error } = await sb.from('financeiro').update({
-        ...(dados.descricao   !== undefined && { descricao:   dados.descricao }),
-        ...(dados.valor       !== undefined && { valor:       dados.valor }),
-        ...(dados.categoria   !== undefined && { categoria:   dados.categoria }),
-        ...(dados.data        !== undefined && { data:        dados.data }),
-        ...(dados.regiao      !== undefined && { regiao:      dados.regiao }),
-        ...(dados.responsavel !== undefined && { responsavel: dados.responsavel }),
+        ...(d.descricao   !== undefined && { descricao:   d.descricao }),
+        ...(d.valor       !== undefined && { valor:       d.valor }),
+        ...(d.categoria   !== undefined && { categoria:   d.categoria }),
+        ...(d.data        !== undefined && { data:        d.data }),
+        ...(d.regiao      !== undefined && { regiao:      d.regiao }),
+        ...(d.responsavel !== undefined && { responsavel: d.responsavel }),
+        ...(tipo === 'despesa' && d.fornecedor !== undefined && { fornecedor:  d.fornecedor  || null }),
+        ...(tipo === 'despesa' && d.notaFiscal !== undefined && { nota_fiscal: d.notaFiscal  || null }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       dbLog('UPDATE', 'financeiro', error, id)
