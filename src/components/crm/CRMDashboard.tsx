@@ -9,7 +9,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import {
   Users, DollarSign, TrendingUp, Target, X, Phone,
-  Mail, MapPin, Clock, Plus, ChevronDown, MessageSquare, Trash2,
+  Mail, MapPin, Clock, Plus, ChevronDown, MessageSquare, Trash2, Download,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { Lead, StatusLead, TipoEstabelecimento } from '@/store'
@@ -509,6 +509,27 @@ function KPICard({ label, valor, icon: Icon, sub, cor = '#C9A84C' }: {
   )
 }
 
+function exportarCSVLeads(leads: Lead[]) {
+  const esc = (s: string) => `"${s.replace(/"/g, '""')}"`
+  const headers = 'Empresa,Contato,Telefone,Email,Cidade,Região,Responsável,Status,Tier,Valor Médio Mensal,Último Pedido,Tags,Notas'
+  const rows = leads.map((l) => [
+    esc(l.nomeEmpresa), esc(l.nomeContato), esc(l.telefone), esc(l.email),
+    esc(l.cidade), esc(l.regiao), esc(l.responsavel), esc(l.status), esc(l.tier),
+    esc(l.valorMedioMensal.toFixed(2)),
+    esc(l.ultimoPedido ?? ''),
+    esc(l.tags.join('; ')),
+    esc(l.notas),
+  ].join(','))
+  const csv = '﻿' + [headers, ...rows].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `leads_${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 // ─────────────────────────────────────────────
 // COMPONENTE PRINCIPAL
 // ─────────────────────────────────────────────
@@ -906,9 +927,18 @@ export function CRMDashboard() {
             ))}
           </div>
 
-          <span className="text-[10px] text-[#4A4A4A] ml-auto">
-            {leadsFiltrados.length} leads exibidos
-          </span>
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              onClick={() => exportarCSVLeads(leadsFiltrados)}
+              title="Exportar CSV"
+              className="icon-btn"
+            >
+              <Download size={13} />
+            </button>
+            <span className="text-[10px] text-[#4A4A4A]">
+              {leadsFiltrados.length} leads exibidos
+            </span>
+          </div>
         </div>
 
         {/* ── Kanban / Grid / Timeline ── */}

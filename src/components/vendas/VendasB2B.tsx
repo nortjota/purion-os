@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { DollarSign, Building2, Package, TrendingUp, Plus, ArrowRight, Pencil, Trash2 } from 'lucide-react'
+import { DollarSign, Building2, Package, TrendingUp, Plus, ArrowRight, Pencil, Trash2, Eye } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { StatusPagamentoVenda } from '@/store'
 import { useVendas } from '@/hooks/useVendas'
@@ -12,6 +12,7 @@ import {
   proximoStatusEntrega, fmtR,
 } from '@/lib/vendas-helpers'
 import { ModalVendaB2B } from './ModalVendaB2B'
+import { ModalDetalheVenda } from './ModalDetalheVenda'
 import type { Venda } from '@/store'
 
 const PERIODOS = [
@@ -28,6 +29,7 @@ export function VendasB2B() {
 
   const [modalAberto, setModalAberto] = useState(false)
   const [editando, setEditando] = useState<Venda | undefined>(undefined)
+  const [detalheAberto, setDetalheAberto] = useState<Venda | null>(null)
   const [filtroEstetica, setFiltroEstetica] = useState<string>('todos')
   const [filtroPagamento, setFiltroPagamento] = useState<string>('todos')
   const [filtroPeriodo, setFiltroPeriodo] = useState<typeof PERIODOS[number]['id']>('30d')
@@ -135,6 +137,7 @@ export function VendasB2B() {
                       <ArrowRight size={11} /> {STATUS_ENTREGA_LABEL[proximo]}
                     </button>
                   )}
+                  <button onClick={() => setDetalheAberto(v)} className="icon-btn"><Eye size={12} /></button>
                   <button onClick={() => { setEditando(v); setModalAberto(true) }} className="icon-btn"><Pencil size={12} /></button>
                   <button onClick={() => deletarVenda(v.id)} className="icon-btn"><Trash2 size={12} /></button>
                 </div>
@@ -174,6 +177,7 @@ export function VendasB2B() {
                             <ArrowRight size={12} />
                           </button>
                         )}
+                        <button onClick={() => setDetalheAberto(v)} title="Ver detalhes" className="icon-btn"><Eye size={12} /></button>
                         <button onClick={() => { setEditando(v); setModalAberto(true) }} className="icon-btn"><Pencil size={12} /></button>
                         <button onClick={() => deletarVenda(v.id)} className="icon-btn"><Trash2 size={12} /></button>
                       </div>
@@ -187,6 +191,7 @@ export function VendasB2B() {
       )}
 
       {modalAberto && <ModalVendaB2B venda={editando} onFechar={() => setModalAberto(false)} />}
+      {detalheAberto && <ModalDetalheVenda venda={detalheAberto} onFechar={() => setDetalheAberto(null)} />}
     </div>
   )
 }

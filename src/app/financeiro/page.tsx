@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { FinanceiroDashboard } from '@/components/financeiro/FinanceiroDashboard'
+import { FinanceiroPage } from '@/components/financeiro/FinanceiroPage'
 
 export const metadata: Metadata = { title: 'Financeiro' }
 
-export default function FinanceiroPage() {
-  return <FinanceiroDashboard />
+export default function Page() {
+  return <FinanceiroPage />
 }
