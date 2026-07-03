@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, CheckSquare, DollarSign,
   Package, Video, BookOpen, BarChart2, Brain,
   Settings, Plus, UserPlus, TrendingUp, TrendingDown,
-  Boxes, UserCog, Calendar, KeyRound, FileText, ShoppingBag,
+  Boxes, UserCog, Calendar, KeyRound, FileText, ShoppingBag, Shapes,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import { useIsMaster } from '@/hooks/useIsMaster'
@@ -25,6 +25,7 @@ const PAGES = [
   { label: 'Inteligência',   href: '/inteligencia',  icon: Brain           },
   { label: 'Central de Conhecimento', href: '/conhecimento', icon: BookOpen },
   { label: 'Contas & Acessos',        href: '/contas',       icon: KeyRound },
+  { label: 'Quadros',        href: '/quadros',       icon: Shapes          },
   { label: 'Configurações',  href: '/settings',      icon: Settings        },
 ]
 
@@ -49,7 +50,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const router = useRouter()
-  const { leads, tarefas, creators, kbDocumentos, contasAcessos, vendas } = usePurionStore()
+  const { leads, tarefas, creators, kbDocumentos, contasAcessos, vendas, quadros } = usePurionStore()
   const { isMaster } = useIsMaster()
   const [query, setQuery] = useState('')
 
@@ -78,6 +79,10 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
 
   const filteredVendas = query.length >= 2
     ? vendas.filter((v) => v.clienteNome.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+    : []
+
+  const filteredQuadros = query.length >= 1
+    ? quadros.filter((q) => q.nome.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
     : []
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -169,7 +174,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ))}
           </Command.Group>
 
-          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0) && (
+          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0 || filteredQuadros.length > 0) && (
             <Command.Group heading="Registros">
               {filteredLeads.map((lead) => (
                 <Command.Item
@@ -249,6 +254,18 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   <KeyRound size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
                   <span>{conta.plataforma}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Conta</span>
+                </Command.Item>
+              ))}
+              {filteredQuadros.map((q) => (
+                <Command.Item
+                  key={`quadro-${q.id}`}
+                  value={`quadro-${q.nome}`}
+                  onSelect={() => { router.push(`/quadros/${q.id}`); onClose() }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
+                >
+                  <Shapes size={15} style={{ color: '#8B5CF6', flexShrink: 0 }} />
+                  <span>{q.emoji} {q.nome}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Quadro</span>
                 </Command.Item>
               ))}
               {filteredVendas.map((venda) => (

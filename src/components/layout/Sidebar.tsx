@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Zap, Settings,
-  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, Mail, KeyRound, ShoppingBag, Target,
+  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, Mail, KeyRound, ShoppingBag, Target, Shapes,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
@@ -38,6 +38,7 @@ const navGroups: NavGroup[] = [
       { href: '/crm',       label: 'CRM B2B',          icon: Users },
       { href: '/tarefas',   label: 'Tarefas',          icon: CheckSquare },
       { href: '/metas',     label: 'Metas Diárias',    icon: Target },
+      { href: '/quadros',   label: 'Quadros',          icon: Shapes },
       { href: '/producao',  label: 'Produção',         icon: Package },
       { href: '/reunioes',  label: 'Reuniões',         icon: Calendar },
     ],

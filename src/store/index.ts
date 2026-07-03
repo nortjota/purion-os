@@ -514,6 +514,43 @@ export interface Venda {
 }
 
 // ─────────────────────────────────────────────
+// INTERFACES — QUADROS (Canvas colaborativo)
+// ─────────────────────────────────────────────
+
+export type TipoNo = 'postit' | 'caixa' | 'texto' | 'imagem'
+
+export interface Quadro {
+  id:          string
+  nome:        string
+  descricao:   string | null
+  emoji:       string
+  createdAt:   string
+  updatedAt:   string
+}
+
+export interface QuadroNo {
+  id:        string
+  quadroId:  string
+  tipo:      TipoNo
+  conteudo:  string
+  posX:      number
+  posY:      number
+  largura:   number
+  altura:    number
+  cor:       string
+  autor:     string | null
+  createdAt: string
+}
+
+export interface QuadroConexao {
+  id:        string
+  quadroId:  string
+  origemId:  string
+  destinoId: string
+  label:     string
+}
+
+// ─────────────────────────────────────────────
 // INTERFACES — METAS DIÁRIAS
 // ─────────────────────────────────────────────
 
@@ -705,6 +742,22 @@ interface PurionState {
   adicionarVenda: (venda: Venda) => void
   atualizarVenda: (id: string, dados: Partial<Venda>) => void
   removerVenda: (id: string) => void
+
+  // Quadros (Canvas)
+  quadros: Quadro[]
+  quadroNos: QuadroNo[]
+  quadroConexoes: QuadroConexao[]
+  setQuadros: (q: Quadro[]) => void
+  setQuadroNos: (n: QuadroNo[]) => void
+  setQuadroConexoes: (c: QuadroConexao[]) => void
+  adicionarQuadro: (q: Quadro) => void
+  atualizarQuadro: (id: string, dados: Partial<Quadro>) => void
+  removerQuadro: (id: string) => void
+  adicionarNo: (n: QuadroNo) => void
+  atualizarNo: (id: string, dados: Partial<QuadroNo>) => void
+  removerNo: (id: string) => void
+  adicionarConexao: (c: QuadroConexao) => void
+  removerConexao: (id: string) => void
 
   // Metas Diárias
   metasDiarias: MetaDiaria[]
@@ -970,6 +1023,26 @@ export const usePurionStore = create<PurionState>()(
           vendas: s.vendas.map((v) => (v.id === id ? { ...v, ...dados } : v)),
         })),
         removerVenda: (id) => set((s) => ({ vendas: s.vendas.filter((v) => v.id !== id) })),
+
+        // ── Quadros (Canvas) ──
+        quadros: [],
+        quadroNos: [],
+        quadroConexoes: [],
+        setQuadros: (quadros) => set({ quadros }),
+        setQuadroNos: (quadroNos) => set({ quadroNos }),
+        setQuadroConexoes: (quadroConexoes) => set({ quadroConexoes }),
+        adicionarQuadro: (q) => set((s) => ({ quadros: [q, ...s.quadros] })),
+        atualizarQuadro: (id, dados) => set((s) => ({
+          quadros: s.quadros.map((q) => q.id === id ? { ...q, ...dados } : q),
+        })),
+        removerQuadro: (id) => set((s) => ({ quadros: s.quadros.filter((q) => q.id !== id) })),
+        adicionarNo: (n) => set((s) => ({ quadroNos: [...s.quadroNos, n] })),
+        atualizarNo: (id, dados) => set((s) => ({
+          quadroNos: s.quadroNos.map((n) => n.id === id ? { ...n, ...dados } : n),
+        })),
+        removerNo: (id) => set((s) => ({ quadroNos: s.quadroNos.filter((n) => n.id !== id) })),
+        adicionarConexao: (c) => set((s) => ({ quadroConexoes: [...s.quadroConexoes, c] })),
+        removerConexao: (id) => set((s) => ({ quadroConexoes: s.quadroConexoes.filter((c) => c.id !== id) })),
 
         // ── Metas Diárias ──
         metasDiarias: [],

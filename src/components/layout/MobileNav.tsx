@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
-  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target,
+  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
 
@@ -20,6 +20,7 @@ const MAIN_ITEMS = [
 
 const DRAWER_ITEMS = [
   { href: '/metas',         label: 'Metas Diárias', icon: Target      },
+  { href: '/quadros',       label: 'Quadros',       icon: Shapes      },
   { href: '/vendas',        label: 'Vendas',        icon: ShoppingBag },
   { href: '/producao',      label: 'Produção',      icon: Package     },
   { href: '/creators',      label: 'Creators',      icon: Users2      },
