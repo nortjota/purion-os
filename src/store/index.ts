@@ -514,6 +514,40 @@ export interface Venda {
 }
 
 // ─────────────────────────────────────────────
+// INTERFACES — METAS DIÁRIAS
+// ─────────────────────────────────────────────
+
+export type TipoMeta     = 'numerica' | 'checklist'
+export type EscopoMeta   = 'individual' | 'time'
+export type CategoriaMeta = 'ads' | 'creators' | 'b2b' | 'producao' | 'vendas' | 'geral'
+
+export interface MetaDiaria {
+  id:          string
+  titulo:      string
+  tipo:        TipoMeta
+  escopo:      EscopoMeta
+  responsavel: PerfilUsuario | null
+  categoria:   CategoriaMeta
+  valorAlvo:   number | null
+  valorAtual:  number
+  unidade:     string | null
+  data:        string         // ISO date YYYY-MM-DD
+  recorrente:  boolean
+  concluida:   boolean
+  createdAt:   string
+  updatedAt:   string
+}
+
+export interface MetaChecklistItem {
+  id:        string
+  metaId:    string
+  texto:     string
+  feito:     boolean
+  ordem:     number
+  createdAt: string
+}
+
+// ─────────────────────────────────────────────
 // INTERFACES — CONFIGURAÇÕES
 // ─────────────────────────────────────────────
 
@@ -671,6 +705,18 @@ interface PurionState {
   adicionarVenda: (venda: Venda) => void
   atualizarVenda: (id: string, dados: Partial<Venda>) => void
   removerVenda: (id: string) => void
+
+  // Metas Diárias
+  metasDiarias: MetaDiaria[]
+  metaChecklistItens: MetaChecklistItem[]
+  setMetasDiarias: (metas: MetaDiaria[]) => void
+  setMetaChecklistItens: (itens: MetaChecklistItem[]) => void
+  adicionarMetaDiaria: (meta: MetaDiaria) => void
+  atualizarMetaDiaria: (id: string, dados: Partial<MetaDiaria>) => void
+  removerMetaDiaria: (id: string) => void
+  adicionarChecklistItem: (item: MetaChecklistItem) => void
+  atualizarChecklistItem: (id: string, dados: Partial<MetaChecklistItem>) => void
+  removerChecklistItens: (metaId: string) => void
 
   // Configurações
   configuracoes: Configuracoes
@@ -925,6 +971,28 @@ export const usePurionStore = create<PurionState>()(
         })),
         removerVenda: (id) => set((s) => ({ vendas: s.vendas.filter((v) => v.id !== id) })),
 
+        // ── Metas Diárias ──
+        metasDiarias: [],
+        metaChecklistItens: [],
+        setMetasDiarias: (metasDiarias) => set({ metasDiarias }),
+        setMetaChecklistItens: (metaChecklistItens) => set({ metaChecklistItens }),
+        adicionarMetaDiaria: (meta) => set((s) => ({ metasDiarias: [...s.metasDiarias, meta] })),
+        atualizarMetaDiaria: (id, dados) => set((s) => ({
+          metasDiarias: s.metasDiarias.map((m) => m.id === id ? { ...m, ...dados } : m),
+        })),
+        removerMetaDiaria: (id) => set((s) => ({
+          metasDiarias: s.metasDiarias.filter((m) => m.id !== id),
+        })),
+        adicionarChecklistItem: (item) => set((s) => ({
+          metaChecklistItens: [...s.metaChecklistItens, item],
+        })),
+        atualizarChecklistItem: (id, dados) => set((s) => ({
+          metaChecklistItens: s.metaChecklistItens.map((i) => i.id === id ? { ...i, ...dados } : i),
+        })),
+        removerChecklistItens: (metaId) => set((s) => ({
+          metaChecklistItens: s.metaChecklistItens.filter((i) => i.metaId !== metaId),
+        })),
+
         // ── Configurações ──
         configuracoes: configPadrao,
         setConfiguracoes: (config) =>
@@ -946,7 +1014,7 @@ export const usePurionStore = create<PurionState>()(
         dashboardWidgets: [
           'kpis', 'health-score', 'atividade', 'tarefas-board', 'pipeline-top5',
           'estoque', 'creators-top5', 'grafico-financeiro', 'metas-progress',
-          'decisoes', 'alertas', 'notas-fixadas',
+          'metas-diarias', 'decisoes', 'alertas', 'notas-fixadas',
         ],
         setDashboardWidgets: (ids) => set({ dashboardWidgets: ids }),
       }),

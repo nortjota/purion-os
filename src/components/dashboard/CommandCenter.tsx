@@ -12,6 +12,7 @@ import {
   Info, Activity, Clock, Calendar, Users,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
+import type { MetaDiaria } from '@/store'
 import {
   getMesAtual,
   calcularKPIsMes,
@@ -26,6 +27,7 @@ import {
   type AtividadeItem,
   type HealthScore,
 } from '@/lib/calculos'
+import Link from 'next/link'
 import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
@@ -481,12 +483,73 @@ function UltimosDailies({ entries }: { entries: import('@/store').DailyEntry[] }
 // COMPONENTE PRINCIPAL
 // ─────────────────────────────────────────────
 
+// ─────────────────────────────────────────────
+// WIDGET — METAS DE HOJE
+// ─────────────────────────────────────────────
+
+function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
+  const hj = new Date().toISOString().slice(0, 10)
+  const metasHoje = metas.filter((m) => m.data === hj)
+  const total     = metasHoje.length
+  const conc      = metasHoje.filter((m) => m.concluida).length
+  const pctGeral  = total > 0 ? Math.round((conc / total) * 100) : null
+
+  const socios = [
+    { id: 'matheus' as const, label: 'Matheus', cor: '#C9A84C' },
+    { id: 'gabriel' as const, label: 'Gabriel', cor: '#22C55E' },
+    { id: 'joao'    as const, label: 'João',    cor: '#3B82F6' },
+  ]
+
+  return (
+    <Link href="/metas" className="block no-underline">
+      <section className="card-purion p-4 hover:border-[rgba(201,168,76,0.35)] transition-colors cursor-pointer">
+        <div className="flex items-center justify-between mb-3">
+          <p className="kpi-label flex items-center gap-1.5">
+            <Target size={11} /> Metas de hoje
+          </p>
+          {pctGeral !== null && (
+            <span
+              className="text-[13px] font-black"
+              style={{ fontFamily: 'Montserrat, sans-serif', color: pctGeral === 100 ? '#4CAF7A' : '#C9A84C' }}
+            >
+              {pctGeral}%
+            </span>
+          )}
+        </div>
+        {total === 0 ? (
+          <p className="text-[12px] text-[var(--text-secondary)]">Nenhuma meta configurada para hoje.</p>
+        ) : (
+          <div className="space-y-2">
+            {socios.map(({ id, label, cor }) => {
+              const mine = metasHoje.filter((m) => m.responsavel === id || (m.escopo === 'time'))
+              const mineConc = mine.filter((m) => m.concluida).length
+              const p = mine.length > 0 ? Math.round((mineConc / mine.length) * 100) : null
+              if (p === null) return null
+              return (
+                <div key={id}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-[11px] text-[var(--text-secondary)]">{label}</span>
+                    <span className="text-[11px] font-semibold" style={{ color: p === 100 ? '#4CAF7A' : cor }}>{p}%</span>
+                  </div>
+                  <div className="w-full h-1 bg-[var(--border)] rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${p}%`, background: p === 100 ? '#4CAF7A' : cor }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </section>
+    </Link>
+  )
+}
+
 export function CommandCenter() {
   const isMobile = useMobile()
   const {
     receitas, despesas, campanhasAds,
     tarefas, leads, lotes, reunioes, estoque,
-    dailyEntries, vendas,
+    dailyEntries, vendas, metasDiarias,
     perfilAtivo, setPerfilAtivo,
     dashboardWidgets,
   } = usePurionStore()
@@ -635,6 +698,9 @@ export function CommandCenter() {
 
       {/* ── Meta de Faturamento ── */}
       {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}
+
+      {/* ── Metas de Hoje ── */}
+      {showWidget('metas-diarias') && <CardMetasHoje metas={metasDiarias} />}
 
       {/* ── Vendas por dia ── */}
       <section className="card-purion p-4">

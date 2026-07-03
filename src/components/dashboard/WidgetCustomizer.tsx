@@ -14,6 +14,7 @@ export const WIDGET_LIST: Array<{ id: string; label: string }> = [
   { id: 'creators-top5',      label: 'Top 5 Creators'          },
   { id: 'grafico-financeiro', label: 'Gráfico Financeiro'      },
   { id: 'metas-progress',     label: 'Progresso de Metas'      },
+  { id: 'metas-diarias',     label: 'Metas Diárias de hoje'   },
   { id: 'decisoes',           label: 'Decisões Estratégicas'   },
   { id: 'alertas',            label: 'Alertas Automáticos'     },
   { id: 'notas-fixadas',      label: 'Notas Fixadas'           },
