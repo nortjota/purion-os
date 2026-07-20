@@ -79,6 +79,7 @@ export function PainelMetricasVendas() {
     const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`
     const hojeStr = hoje.toISOString().slice(0, 10)
     return vendas.filter((v) => {
+      if ((v.valorTotal ?? v.valorLiquido) === 0) return false
       if (canal !== 'todos' && v.canal !== canal) return false
       if (periodo === 'hoje') return v.dataVenda.startsWith(hojeStr)
       if (periodo === 'mes') return v.dataVenda.startsWith(mesAtual)

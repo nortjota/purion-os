@@ -13,6 +13,7 @@ import {
 } from '@/lib/vendas-helpers'
 import { ModalVendaB2C } from './ModalVendaB2C'
 import { ModalDetalheVenda } from './ModalDetalheVenda'
+import { useDoacoesUGC } from '@/hooks/useDoacoesUGC'
 import type { Venda } from '@/store'
 
 const PERIODOS = [
@@ -25,7 +26,9 @@ const PERIODOS = [
 export function VendasB2C() {
   const { vendas, creators } = usePurionStore()
   const { mudarStatusEntrega, mudarStatusPagamento, deletarVenda } = useVendas()
+  const { migrarVendasZeroParaUGC } = useDoacoesUGC()
   const isMobile = useMobile()
+  const [migrando, setMigrando] = useState(false)
 
   const [modalAberto, setModalAberto] = useState(false)
   const [editando, setEditando] = useState<Venda | undefined>(undefined)
@@ -36,7 +39,9 @@ export function VendasB2C() {
   const [filtroAfiliado, setFiltroAfiliado] = useState<string>('todos')
   const [filtroPeriodo, setFiltroPeriodo] = useState<typeof PERIODOS[number]['id']>('30d')
 
-  const vendasB2C = useMemo(() => vendas.filter((v) => v.canal === 'b2c'), [vendas])
+  // Separa R$0 (doações registradas como venda) das vendas reais
+  const vendasB2C = useMemo(() => vendas.filter((v) => v.canal === 'b2c' && (v.valorTotal ?? v.valorLiquido) > 0), [vendas])
+  const vendasZeroB2C = useMemo(() => vendas.filter((v) => v.canal === 'b2c' && (v.valorTotal ?? v.valorLiquido) === 0), [vendas])
 
   const vendasFiltradas = useMemo(() => {
     const agora = Date.now()
@@ -69,8 +74,46 @@ export function VendasB2C() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Banner de migração */}
+      {vendasZeroB2C.length > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
+          padding: '12px 16px', borderRadius: 10,
+          background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.3)',
+        }}>
+          <div>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#C9A84C' }}>
+              {vendasZeroB2C.length} venda{vendasZeroB2C.length > 1 ? 's' : ''} de R$0,00 encontrada{vendasZeroB2C.length > 1 ? 's'  : ''}
+            </span>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 8 }}>
+              Essas são doações UGC registradas como venda. Clique para mover para a aba Doações UGC.
+            </span>
+          </div>
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={migrando}
+            onClick={async () => {
+              setMigrando(true)
+              await migrarVendasZeroParaUGC()
+              setMigrando(false)
+            }}
+          >
+            {migrando ? 'Migrando…' : `Migrar ${vendasZeroB2C.length > 1 ? 'todas' : ''} para Doações UGC`}
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="kpi-label">Vendas B2C · {kpis.totalPedidos} pedidos · {kpis.totalFrascos} frascos</p>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600 }}>Vendas B2C</p>
+          <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.1 }}>
+            <span style={{ color: '#C9A84C' }}>{kpis.totalPedidos}</span>
+            <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>pedidos</span>
+            <span style={{ color: 'var(--border)', margin: '0 8px' }}>·</span>
+            <span style={{ color: '#5B8FE8' }}>{kpis.totalFrascos}</span>
+            <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>frascos vendidos</span>
+          </p>
+        </div>
         <button onClick={() => { setEditando(undefined); setModalAberto(true) }} className="btn btn-primary btn-sm">
           <Plus size={12} /> Nova venda
         </button>

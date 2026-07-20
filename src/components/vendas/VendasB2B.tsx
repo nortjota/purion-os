@@ -13,6 +13,7 @@ import {
 } from '@/lib/vendas-helpers'
 import { ModalVendaB2B } from './ModalVendaB2B'
 import { ModalDetalheVenda } from './ModalDetalheVenda'
+import { useDoacoesUGC } from '@/hooks/useDoacoesUGC'
 import type { Venda } from '@/store'
 
 const PERIODOS = [
@@ -25,7 +26,9 @@ const PERIODOS = [
 export function VendasB2B() {
   const { vendas } = usePurionStore()
   const { mudarStatusEntrega, mudarStatusPagamento, deletarVenda } = useVendas()
+  const { migrarVendasZeroParaUGC } = useDoacoesUGC()
   const isMobile = useMobile()
+  const [migrando, setMigrando] = useState(false)
 
   const [modalAberto, setModalAberto] = useState(false)
   const [editando, setEditando] = useState<Venda | undefined>(undefined)
@@ -34,7 +37,8 @@ export function VendasB2B() {
   const [filtroPagamento, setFiltroPagamento] = useState<string>('todos')
   const [filtroPeriodo, setFiltroPeriodo] = useState<typeof PERIODOS[number]['id']>('30d')
 
-  const vendasB2B = useMemo(() => vendas.filter((v) => v.canal === 'b2b'), [vendas])
+  const vendasB2B = useMemo(() => vendas.filter((v) => v.canal === 'b2b' && (v.valorTotal ?? v.valorLiquido) > 0), [vendas])
+  const vendasZeroB2B = useMemo(() => vendas.filter((v) => v.canal === 'b2b' && (v.valorTotal ?? v.valorLiquido) === 0), [vendas])
 
   const esteticas = useMemo(() => {
     const map = new Map<string, string>()
@@ -67,8 +71,40 @@ export function VendasB2B() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="kpi-label">Vendas B2B · {vendasFiltradas.length} pedidos · {kpis.unidades} frascos</p>
+      {vendasZeroB2B.length > 0 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
+            padding: '12px 16px', borderRadius: 10,
+            background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.3)',
+          }}>
+            <div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#C9A84C' }}>
+                {vendasZeroB2B.length} venda{vendasZeroB2B.length > 1 ? 's' : ''} B2B de R$0,00
+              </span>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 8 }}>
+                Doações UGC registradas como venda — clique para migrar.
+              </span>
+            </div>
+            <button
+              className="btn btn-primary btn-sm"
+              disabled={migrando}
+              onClick={async () => { setMigrando(true); await migrarVendasZeroParaUGC(); setMigrando(false) }}
+            >
+              {migrando ? 'Migrando…' : 'Migrar para Doações UGC'}
+            </button>
+          </div>
+        )}
+        <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600 }}>Vendas B2B</p>
+          <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.1 }}>
+            <span style={{ color: '#C9A84C' }}>{vendasFiltradas.length}</span>
+            <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>pedidos</span>
+            <span style={{ color: 'var(--border)', margin: '0 8px' }}>·</span>
+            <span style={{ color: '#5B8FE8' }}>{kpis.unidades}</span>
+            <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>frascos vendidos</span>
+          </p>
+        </div>
         <button onClick={() => { setEditando(undefined); setModalAberto(true) }} className="btn btn-primary btn-sm">
           <Plus size={12} /> Nova venda B2B
         </button>

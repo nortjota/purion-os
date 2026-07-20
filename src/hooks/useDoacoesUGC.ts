@@ -187,5 +187,49 @@ export function useDoacoesUGC() {
       usePurionStore.getState().removerDoacaoUGC(id)
       success('Doação excluída')
     },
+
+    // Migra vendas com valor R$0 (doações registradas errado) para doacoes_ugc
+    migrarVendasZeroParaUGC: async () => {
+      const sb = supabase
+      if (!sb) return
+
+      const vendas = usePurionStore.getState().vendas
+      const vendasZero = vendas.filter(
+        (v) => (v.valorTotal ?? v.valorLiquido) === 0
+      )
+      if (vendasZero.length === 0) { success('Nenhuma venda R$0 encontrada'); return }
+
+      let migradas = 0
+      let erros = 0
+
+      for (const v of vendasZero) {
+        // Mapeia status_entrega → status_envio UGC
+        const statusEnvio: StatusEnvioUGC =
+          ['entregue'].includes(v.statusEntrega) ? 'entregue'
+          : ['postado', 'em_transito'].includes(v.statusEntrega) ? 'postado'
+          : 'aguardando'
+
+        const { data, error } = await sb.from('doacoes_ugc').insert({
+          creator_id:      v.afiliadoCreatorId ?? null,
+          quantidade:      v.quantidade,
+          data_envio:      v.dataEnvio ?? v.dataVenda,
+          status_envio:    statusEnvio,
+          codigo_rastreio: v.codigoRastreio ?? null,
+          observacoes:     [v.observacoes, `Migrado de venda #${v.id.slice(0, 8)}`].filter(Boolean).join(' | '),
+        }).select().single()
+        dbLog('INSERT', 'doacoes_ugc (migracao)', error, v.id)
+
+        if (error) { erros++; continue }
+
+        // Soft-delete a venda original
+        await sb.from('vendas').update({ deleted_at: new Date().toISOString() }).eq('id', v.id)
+        usePurionStore.getState().removerVenda(v.id)
+        if (data) usePurionStore.getState().adicionarDoacaoUGC(toDoacao(data as Row))
+        migradas++
+      }
+
+      if (erros > 0) toastError(`${erros} erro(s) na migração`, 'Veja o console')
+      else success(`${migradas} doação(ões) migrada(s) para UGC`)
+    },
   }
 }
