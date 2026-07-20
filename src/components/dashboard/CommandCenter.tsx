@@ -549,7 +549,7 @@ export function CommandCenter() {
   const {
     receitas, despesas, campanhasAds,
     tarefas, leads, lotes, reunioes, estoque,
-    dailyEntries, vendas, metasDiarias,
+    dailyEntries, vendas, doacoesUGC, metasDiarias,
     perfilAtivo, setPerfilAtivo,
     dashboardWidgets, estoqueProduto,
   } = usePurionStore()
@@ -607,6 +607,15 @@ export function CommandCenter() {
 
   const todosAlertas = useMemo(() => [...alertas, ...lotesAlerta], [alertas, lotesAlerta])
 
+  const resumoFrascosMes = useMemo(() => {
+    const vendasMes = vendas.filter((v) => v.dataVenda.startsWith(mesAtual) && v.statusPagamento === 'pago')
+    const pedidos = vendasMes.length
+    const frascos = vendasMes.reduce((s, v) => s + v.quantidade, 0)
+    const despachados = vendasMes.filter((v) => ['postado', 'em_transito', 'entregue'].includes(v.statusEntrega)).reduce((s, v) => s + v.quantidade, 0)
+    const ugc = doacoesUGC.filter((d) => d.dataEnvio.startsWith(mesAtual) && ['postado', 'entregue'].includes(d.statusEnvio)).reduce((s, d) => s + d.quantidade, 0)
+    return { pedidos, frascos, despachados, ugc }
+  }, [vendas, doacoesUGC, mesAtual])
+
   const [ano, mes] = mesAtual.split('-')
   const nomeMes    = `${MESES_PT[mes] ?? mes} ${ano}`
 
@@ -644,8 +653,8 @@ export function CommandCenter() {
     },
     {
       label: 'Pedidos do Mês',
-      valor: String(kpis.pedidos),
-      subvalor: `Receita: ${formatarMoeda(kpis.faturamento)}`,
+      valor: String(resumoFrascosMes.pedidos),
+      subvalor: `${resumoFrascosMes.frascos} frascos vendidos`,
       icon: Activity,
       tendencia: 'neutral',
     },
@@ -694,6 +703,26 @@ export function CommandCenter() {
             ))}
           </div>
         </section>
+      )}
+
+      {/* ── Resumo Pedidos vs Frascos ── */}
+      {resumoFrascosMes.pedidos > 0 && (
+        <div className="card-purion" style={{ padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center' }}>
+          <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {nomeMes}
+          </span>
+          <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+            <strong>{resumoFrascosMes.pedidos}</strong> pedidos pagos
+            <span style={{ color: 'var(--text-secondary)' }}> = </span>
+            <strong style={{ color: '#5B8FE8' }}>{resumoFrascosMes.frascos}</strong> frascos vendidos
+          </span>
+          <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+            <strong style={{ color: '#22C55E' }}>{resumoFrascosMes.despachados}</strong>
+            <span style={{ color: 'var(--text-secondary)' }}> despachados · </span>
+            <strong style={{ color: '#A855F7' }}>{resumoFrascosMes.ugc}</strong>
+            <span style={{ color: 'var(--text-secondary)' }}> doados UGC</span>
+          </span>
+        </div>
       )}
 
       {/* ── Card Estoque Produto ── */}

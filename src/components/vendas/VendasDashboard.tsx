@@ -101,7 +101,7 @@ export function VendasDashboard() {
         </div>
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Nº de Vendas</span>
+            <span className="kpi-label">Pedidos Appmax</span>
             <ShoppingCart size={14} className="text-[var(--text-secondary)] opacity-60" />
           </div>
           <span className="kpi-value">{kpis.totalVendas}</span>

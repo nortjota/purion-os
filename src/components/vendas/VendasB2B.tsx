@@ -68,7 +68,7 @@ export function VendasB2B() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="kpi-label">Vendas B2B ({vendasFiltradas.length})</p>
+        <p className="kpi-label">Vendas B2B · {vendasFiltradas.length} pedidos · {kpis.unidades} frascos</p>
         <button onClick={() => { setEditando(undefined); setModalAberto(true) }} className="btn btn-primary btn-sm">
           <Plus size={12} /> Nova venda B2B
         </button>
@@ -85,8 +85,9 @@ export function VendasB2B() {
           <span className="kpi-value">{kpis.parceiros}</span>
         </div>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Unidades Vendidas</span><Package size={14} className="text-[var(--text-secondary)] opacity-60" /></div>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Frascos Vendidos</span><Package size={14} className="text-[#5B8FE8] opacity-70" /></div>
           <span className="kpi-value">{kpis.unidades}</span>
+          <span className="caption">unidades (soma das qtds)</span>
         </div>
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2"><span className="kpi-label">Ticket Médio do Lote</span><TrendingUp size={14} className="text-[#4CAF7A] opacity-70" /></div>
@@ -126,7 +127,10 @@ export function VendasB2B() {
                   <p className="text-[13px] font-semibold text-[var(--text-primary)]">{v.clienteNome}</p>
                   <span className={`badge ${STATUS_PAGAMENTO_BADGE[v.statusPagamento]}`}>{STATUS_PAGAMENTO_LABEL[v.statusPagamento]}</span>
                 </div>
-                <p className="caption mb-1">{v.quantidade} un. · {formatarDataBR(v.dataVenda.slice(0, 10))}</p>
+                <p className="caption mb-1">
+                  <span style={{ fontWeight: 700, color: '#5B8FE8' }}>{v.quantidade} frasco{v.quantidade !== 1 ? 's' : ''}</span>
+                  {' · '}{formatarDataBR(v.dataVenda.slice(0, 10))}
+                </p>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[13px] font-semibold" style={{ color: '#C9A84C' }}>{fmtR(v.valorTotal ?? v.valorLiquido)}</span>
                   <span className={`badge ${STATUS_ENTREGA_BADGE[v.statusEntrega]}`}>{STATUS_ENTREGA_LABEL[v.statusEntrega]}</span>
@@ -144,12 +148,17 @@ export function VendasB2B() {
               </div>
             )
           })}
+          <div style={{ padding: '10px 4px', borderTop: '1px solid var(--border)', display: 'flex', gap: 16 }}>
+            <span className="caption"><strong>{vendasFiltradas.length}</strong> pedidos</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C' }}>{kpis.unidades} frascos</span>
+            <span className="caption">{fmtR(kpis.totalLotes)} faturado</span>
+          </div>
         </div>
       ) : (
         <div className="card-purion overflow-hidden">
           <table className="table-purion">
             <thead>
-              <tr><th>Estética</th><th>Unidades</th><th>Valor</th><th>Pagamento</th><th>Entrega</th><th>Data</th><th>Ações</th></tr>
+              <tr><th>Estética</th><th>Frascos</th><th>Valor</th><th>Pagamento</th><th>Entrega</th><th>Data</th><th>Ações</th></tr>
             </thead>
             <tbody>
               {vendasFiltradas.map((v) => {
@@ -157,7 +166,7 @@ export function VendasB2B() {
                 return (
                   <tr key={v.id}>
                     <td>{v.clienteNome}</td>
-                    <td className="caption">{v.quantidade}</td>
+                    <td className="caption" style={{ fontWeight: 600 }}>{v.quantidade}</td>
                     <td className="td-mono">{fmtR(v.valorTotal ?? v.valorLiquido)}</td>
                     <td>
                       <select
@@ -186,6 +195,20 @@ export function VendasB2B() {
                 )
               })}
             </tbody>
+            <tfoot>
+              <tr style={{ borderTop: '2px solid var(--border)' }}>
+                <td style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', paddingTop: 8 }}>
+                  {vendasFiltradas.length} pedidos
+                </td>
+                <td style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C', paddingTop: 8 }}>
+                  {kpis.unidades} frascos
+                </td>
+                <td style={{ fontSize: 12, fontWeight: 600, paddingTop: 8 }}>
+                  {fmtR(kpis.totalLotes)}
+                </td>
+                <td colSpan={4} />
+              </tr>
+            </tfoot>
           </table>
         </div>
       )}

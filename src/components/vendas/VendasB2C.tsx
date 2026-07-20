@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { DollarSign, TrendingUp, ShoppingBag, Truck, Plus, ArrowRight, Pencil, Trash2, Eye } from 'lucide-react'
+import { DollarSign, TrendingUp, ShoppingBag, Truck, Plus, ArrowRight, Pencil, Trash2, Eye, Package } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { StatusPagamentoVenda } from '@/store'
 import { useVendas } from '@/hooks/useVendas'
@@ -61,7 +61,8 @@ export function VendasB2C() {
     const entregues = vendasFiltradas.filter((v) => v.statusEntrega === 'entregue').length
     const pctEntregues = vendasFiltradas.length > 0 ? (entregues / vendasFiltradas.length) * 100 : 0
     const aReceber = vendasFiltradas.filter((v) => v.statusPagamento === 'pendente').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
-    return { faturamento, ticketMedio, totalVendas: vendasFiltradas.length, pctEntregues, aReceber }
+    const totalFrascos = vendasFiltradas.reduce((s, v) => s + v.quantidade, 0)
+    return { faturamento, ticketMedio, totalPedidos: vendasFiltradas.length, pctEntregues, aReceber, totalFrascos }
   }, [vendasFiltradas])
 
   const nomeCreator = (id: string | null) => id ? (creators.find((c) => c.id === id)?.nome ?? '—') : null
@@ -69,7 +70,7 @@ export function VendasB2C() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="kpi-label">Vendas B2C ({vendasFiltradas.length})</p>
+        <p className="kpi-label">Vendas B2C · {kpis.totalPedidos} pedidos · {kpis.totalFrascos} frascos</p>
         <button onClick={() => { setEditando(undefined); setModalAberto(true) }} className="btn btn-primary btn-sm">
           <Plus size={12} /> Nova venda
         </button>
@@ -84,10 +85,17 @@ export function VendasB2C() {
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2"><span className="kpi-label">Ticket Médio</span><TrendingUp size={14} className="text-[var(--text-secondary)] opacity-60" /></div>
           <span className="kpi-value">{fmtR(kpis.ticketMedio)}</span>
+          <span className="caption">por pedido</span>
         </div>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Nº de Vendas</span><ShoppingBag size={14} className="text-[var(--text-secondary)] opacity-60" /></div>
-          <span className="kpi-value">{kpis.totalVendas}</span>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Pedidos</span><ShoppingBag size={14} className="text-[var(--text-secondary)] opacity-60" /></div>
+          <span className="kpi-value">{kpis.totalPedidos}</span>
+          <span className="caption">1 pedido pode ter vários frascos</span>
+        </div>
+        <div className="kpi-card">
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Frascos Vendidos</span><Package size={14} className="text-[#5B8FE8] opacity-70" /></div>
+          <span className="kpi-value">{kpis.totalFrascos}</span>
+          <span className="caption">unidades (soma das qtds)</span>
         </div>
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2"><span className="kpi-label">% Entregues</span><Truck size={14} className="text-[#4CAF7A] opacity-70" /></div>
@@ -139,7 +147,10 @@ export function VendasB2C() {
                   <p className="text-[13px] font-semibold text-[var(--text-primary)]">{v.clienteNome || 'Cliente'}</p>
                   <span className={`badge ${STATUS_PAGAMENTO_BADGE[v.statusPagamento]}`}>{STATUS_PAGAMENTO_LABEL[v.statusPagamento]}</span>
                 </div>
-                <p className="caption mb-1">{v.quantidade}× · {METODO_PAGAMENTO_LABEL[v.metodoPagamento] ?? v.metodoPagamento} · {formatarDataBR(v.dataVenda.slice(0, 10))}</p>
+                <p className="caption mb-1">
+                  <span style={{ fontWeight: 700, color: '#5B8FE8' }}>{v.quantidade} frasco{v.quantidade !== 1 ? 's' : ''}</span>
+                  {' · '}{METODO_PAGAMENTO_LABEL[v.metodoPagamento] ?? v.metodoPagamento} · {formatarDataBR(v.dataVenda.slice(0, 10))}
+                </p>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[13px] font-semibold" style={{ color: '#C9A84C' }}>{fmtR(v.valorTotal ?? v.valorLiquido)}</span>
                   <span className={`badge ${STATUS_ENTREGA_BADGE[v.statusEntrega]}`}>{STATUS_ENTREGA_LABEL[v.statusEntrega]}</span>
@@ -158,13 +169,18 @@ export function VendasB2C() {
               </div>
             )
           })}
+          <div style={{ padding: '10px 4px', borderTop: '1px solid var(--border)', display: 'flex', gap: 16 }}>
+            <span className="caption"><strong>{kpis.totalPedidos}</strong> pedidos</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C' }}>{kpis.totalFrascos} frascos</span>
+            <span className="caption">{fmtR(kpis.faturamento)} faturado</span>
+          </div>
         </div>
       ) : (
         <div className="card-purion overflow-hidden">
           <table className="table-purion">
             <thead>
               <tr>
-                <th>Cliente</th><th>Qtd</th><th>Valor</th><th>Método</th><th>Pagamento</th>
+                <th>Cliente</th><th>Frascos</th><th>Valor</th><th>Método</th><th>Pagamento</th>
                 <th>Entrega</th><th>Afiliado</th><th>Data</th><th>Ações</th>
               </tr>
             </thead>
@@ -174,7 +190,7 @@ export function VendasB2C() {
                 return (
                   <tr key={v.id}>
                     <td>{v.clienteNome || '—'}</td>
-                    <td className="caption">{v.quantidade}</td>
+                    <td className="caption" style={{ fontWeight: 600 }}>{v.quantidade}</td>
                     <td className="td-mono">{fmtR(v.valorTotal ?? v.valorLiquido)}</td>
                     <td className="caption">{METODO_PAGAMENTO_LABEL[v.metodoPagamento] ?? v.metodoPagamento}</td>
                     <td>
@@ -207,6 +223,20 @@ export function VendasB2C() {
                 )
               })}
             </tbody>
+            <tfoot>
+              <tr style={{ borderTop: '2px solid var(--border)' }}>
+                <td style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', paddingTop: 8 }}>
+                  {kpis.totalPedidos} pedidos
+                </td>
+                <td style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C', paddingTop: 8 }}>
+                  {kpis.totalFrascos} frascos
+                </td>
+                <td style={{ fontSize: 12, fontWeight: 600, paddingTop: 8 }}>
+                  {fmtR(vendasFiltradas.reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0))}
+                </td>
+                <td colSpan={6} />
+              </tr>
+            </tfoot>
           </table>
         </div>
       )}

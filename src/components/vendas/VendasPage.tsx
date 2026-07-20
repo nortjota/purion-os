@@ -6,6 +6,7 @@ import { VendasB2C } from './VendasB2C'
 import { VendasB2B } from './VendasB2B'
 import { VendasLogistica } from './VendasLogistica'
 import { PainelDespacho } from './PainelDespacho'
+import { PainelMetricasVendas } from './PainelMetricasVendas'
 
 type TabId = 'b2c' | 'b2b' | 'despacho' | 'logistica' | 'appmax'
 
@@ -26,6 +27,8 @@ export function VendasPage() {
         <h1 className="page-title">Vendas</h1>
         <p className="caption mt-1">Registro manual B2C/B2B, logística de entrega e pedidos automáticos via Appmax</p>
       </div>
+
+      <PainelMetricasVendas />
 
       <div className="flex gap-1 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit overflow-x-auto">
         {TABS.map((t) => (
