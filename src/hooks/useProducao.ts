@@ -131,6 +131,29 @@ export function useProducao() {
       dbLog('UPDATE', 'lotes_producao', error, id)
       if (error) { toastError('Erro ao salvar lote', error.message); return }
       usePurionStore.getState().atualizarLote(id, dados)
+
+      // Entrada automática de estoque quando lote aprovado
+      if (dados.status === 'aprovado') {
+        const lote = usePurionStore.getState().lotes.find((l) => l.id === id)
+        const qty = dados.quantidadeAprovada ?? lote?.quantidadeAprovada ?? 0
+        if (qty > 0) {
+          const { data: estoque } = await sb.from('estoque_produto').select('id, quantidade_atual').order('created_at', { ascending: true }).limit(1).maybeSingle()
+          if (estoque) {
+            const saldo = estoque.quantidade_atual + qty
+            const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
+              tipo: 'entrada', quantidade: qty,
+              motivo: `Lote aprovado ${id}`, origem_tipo: 'lote', origem_id: id,
+              saldo_apos: saldo, autor: dados.responsavel ?? lote?.responsavel ?? 'matheus',
+            })
+            dbLog('INSERT', 'estoque_movimentacoes (entrada_lote)', movErr, id)
+            if (!movErr) {
+              await sb.from('estoque_produto').update({ quantidade_atual: saldo, updated_at: new Date().toISOString() }).eq('id', estoque.id)
+              const ep = usePurionStore.getState().estoqueProduto
+              if (ep) usePurionStore.getState().setEstoqueProduto({ ...ep, quantidadeAtual: saldo })
+            }
+          }
+        }
+      }
     },
 
     deletarLote: async (id: string) => {
