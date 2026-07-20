@@ -55,6 +55,7 @@ const navGroups: NavGroup[] = [
     label: 'Crescimento',
     items: [
       { href: '/creators',   label: 'Creators',      icon: Users2 },
+      { href: '/ugc',        label: 'Doações UGC',   icon: Package },
       { href: '/afiliados',  label: 'Afiliados',     icon: Link2 },
       { href: '/sac',        label: 'SAC',           icon: Headphones },
       { href: '/marketing',  label: 'Marketing',     icon: Megaphone },

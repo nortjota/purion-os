@@ -26,6 +26,7 @@ const PAGES = [
   { label: 'Central de Conhecimento', href: '/conhecimento', icon: BookOpen },
   { label: 'Contas & Acessos',        href: '/contas',       icon: KeyRound },
   { label: 'Quadros',        href: '/quadros',       icon: Shapes          },
+  { label: 'Doações UGC',   href: '/ugc',           icon: Package         },
   { label: 'Configurações',  href: '/settings',      icon: Settings        },
 ]
 
@@ -50,7 +51,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const router = useRouter()
-  const { leads, tarefas, creators, kbDocumentos, contasAcessos, vendas, quadros } = usePurionStore()
+  const { leads, tarefas, creators, kbDocumentos, contasAcessos, vendas, quadros, doacoesUGC } = usePurionStore()
   const { isMaster } = useIsMaster()
   const [query, setQuery] = useState('')
 
@@ -83,6 +84,13 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
 
   const filteredQuadros = query.length >= 1
     ? quadros.filter((q) => q.nome.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+    : []
+
+  const filteredDoacoes = query.length >= 2
+    ? doacoesUGC.filter((d) => {
+        const c = creators.find((cr) => cr.id === d.creatorId)
+        return c?.nome.toLowerCase().includes(query.toLowerCase()) ?? false
+      }).slice(0, 5)
     : []
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -174,7 +182,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ))}
           </Command.Group>
 
-          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0 || filteredQuadros.length > 0) && (
+          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0 || filteredQuadros.length > 0 || filteredDoacoes.length > 0) && (
             <Command.Group heading="Registros">
               {filteredLeads.map((lead) => (
                 <Command.Item
@@ -284,6 +292,21 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Venda {venda.canal.toUpperCase()}</span>
                 </Command.Item>
               ))}
+              {filteredDoacoes.map((d) => {
+                const c = creators.find((cr) => cr.id === d.creatorId)
+                return (
+                  <Command.Item
+                    key={`ugc-${d.id}`}
+                    value={`ugc-${c?.nome ?? d.id}`}
+                    onSelect={() => { router.push('/ugc'); onClose() }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
+                  >
+                    <Package size={15} style={{ color: '#A855F7', flexShrink: 0 }} />
+                    <span>{c?.nome ?? 'Creator'}</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>UGC · {d.quantidade}x</span>
+                  </Command.Item>
+                )
+              })}
             </Command.Group>
           )}
         </Command.List>

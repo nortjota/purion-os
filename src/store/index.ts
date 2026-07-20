@@ -98,6 +98,7 @@ export type CategoriaDespesa =
   | 'taxas_impostos'
   | 'pessoal'
   | 'overhead'
+  | 'ugc_creators'
   | 'outro'
 
 export interface Receita {
@@ -467,6 +468,8 @@ export type MetodoPagamentoVenda = 'pix' | 'cartao' | 'boleto' | 'dinheiro' | 't
 export type CanalVenda = 'b2c' | 'b2b'
 export type StatusPagamentoVenda = 'pendente' | 'pago' | 'estornado' | 'cancelado'
 export type StatusEntregaVenda = 'aguardando' | 'separando' | 'postado' | 'em_transito' | 'entregue' | 'devolvido'
+export type OrigemVenda = 'organico' | 'meta_ads' | 'tiktok' | 'indicacao' | 'b2b_presencial' | 'afiliado'
+export type TipoCliente = 'novo' | 'recompra'
 
 export interface Venda {
   id: string
@@ -511,6 +514,58 @@ export interface Venda {
   responsavel: PerfilUsuario | null
   observacoes: string | null
   updatedAt: string
+
+  // ── Flags e campos extras ──
+  estoqueBaixado: boolean
+  financeiroLancado: boolean
+  origemVenda: OrigemVenda | null
+  cupom: string | null
+  tipoCliente: TipoCliente
+  notaFiscal: string | null
+}
+
+// ─────────────────────────────────────────────
+// INTERFACES — ESTOQUE DE PRODUTO PRONTO
+// ─────────────────────────────────────────────
+
+export type TipoMovimentacao = 'entrada' | 'saida_venda' | 'saida_ugc' | 'ajuste' | 'perda'
+export type StatusEnvioUGC = 'aguardando' | 'postado' | 'entregue'
+
+export interface EstoqueProduto {
+  id: string
+  produto: string
+  quantidadeAtual: number
+  quantidadeMinima: number
+  custoUnitario: number
+  updatedAt: string
+}
+
+export interface EstoqueMovimentacao {
+  id: string
+  tipo: TipoMovimentacao
+  quantidade: number
+  motivo: string | null
+  origemTipo: string | null
+  origemId: string | null
+  saldoApos: number
+  autor: string | null
+  createdAt: string
+}
+
+export interface DoacaoUGC {
+  id: string
+  creatorId: string | null
+  quantidade: number
+  dataEnvio: string
+  statusEnvio: StatusEnvioUGC
+  codigoRastreio: string | null
+  custoTotal: number | null
+  contrapartida: string | null
+  entregueConteudo: boolean
+  estoqueBaixado: boolean
+  financeiroLancado: boolean
+  observacoes: string | null
+  createdAt: string
 }
 
 // ─────────────────────────────────────────────
@@ -742,6 +797,20 @@ interface PurionState {
   adicionarVenda: (venda: Venda) => void
   atualizarVenda: (id: string, dados: Partial<Venda>) => void
   removerVenda: (id: string) => void
+
+  // Estoque de Produto Pronto
+  estoqueProduto: EstoqueProduto | null
+  setEstoqueProduto: (e: EstoqueProduto | null) => void
+  estoqueMovimentacoes: EstoqueMovimentacao[]
+  setEstoqueMovimentacoes: (m: EstoqueMovimentacao[]) => void
+  adicionarMovimentacao: (m: EstoqueMovimentacao) => void
+
+  // UGC — Doações de produto
+  doacoesUGC: DoacaoUGC[]
+  setDoacoesUGC: (d: DoacaoUGC[]) => void
+  adicionarDoacaoUGC: (d: DoacaoUGC) => void
+  atualizarDoacaoUGC: (id: string, dados: Partial<DoacaoUGC>) => void
+  removerDoacaoUGC: (id: string) => void
 
   // Quadros (Canvas)
   quadros: Quadro[]
@@ -1023,6 +1092,22 @@ export const usePurionStore = create<PurionState>()(
           vendas: s.vendas.map((v) => (v.id === id ? { ...v, ...dados } : v)),
         })),
         removerVenda: (id) => set((s) => ({ vendas: s.vendas.filter((v) => v.id !== id) })),
+
+        // ── Estoque Produto ──
+        estoqueProduto: null,
+        setEstoqueProduto: (estoqueProduto) => set({ estoqueProduto }),
+        estoqueMovimentacoes: [],
+        setEstoqueMovimentacoes: (estoqueMovimentacoes) => set({ estoqueMovimentacoes }),
+        adicionarMovimentacao: (m) => set((s) => ({ estoqueMovimentacoes: [m, ...s.estoqueMovimentacoes] })),
+
+        // ── Doações UGC ──
+        doacoesUGC: [],
+        setDoacoesUGC: (doacoesUGC) => set({ doacoesUGC }),
+        adicionarDoacaoUGC: (d) => set((s) => ({ doacoesUGC: [d, ...s.doacoesUGC] })),
+        atualizarDoacaoUGC: (id, dados) => set((s) => ({
+          doacoesUGC: s.doacoesUGC.map((d) => d.id === id ? { ...d, ...dados } : d),
+        })),
+        removerDoacaoUGC: (id) => set((s) => ({ doacoesUGC: s.doacoesUGC.filter((d) => d.id !== id) })),
 
         // ── Quadros (Canvas) ──
         quadros: [],

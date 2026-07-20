@@ -7,6 +7,7 @@ import { usePurionStore } from '@/store'
 import { useToast } from '@/components/ui/Toast'
 import type {
   Venda, StatusVendaAppmax, CanalVenda, StatusPagamentoVenda, StatusEntregaVenda, PerfilUsuario,
+  OrigemVenda, TipoCliente,
 } from '@/store'
 
 type Row = Record<string, unknown>
@@ -54,6 +55,12 @@ function toVenda(r: Row): Venda {
     responsavel:          r.responsavel ? (String(r.responsavel) as PerfilUsuario) : null,
     observacoes:          r.observacoes ? String(r.observacoes) : null,
     updatedAt:            String(r.updated_at ?? r.created_at ?? new Date().toISOString()),
+    estoqueBaixado:       Boolean(r.estoque_baixado ?? false),
+    financeiroLancado:    Boolean(r.financeiro_lancado ?? false),
+    origemVenda:          r.origem_venda ? (String(r.origem_venda) as OrigemVenda) : null,
+    cupom:                r.cupom ? String(r.cupom) : null,
+    tipoCliente:          String(r.tipo_cliente ?? 'novo') as TipoCliente,
+    notaFiscal:           r.nota_fiscal ? String(r.nota_fiscal) : null,
   }
 }
 
@@ -255,6 +262,50 @@ export function useVendas() {
       if (error) { toastError('Erro ao atualizar entrega', error.message); return }
       usePurionStore.getState().atualizarVenda(id, { statusEntrega, ...(extras.data_envio && { dataEnvio: extras.data_envio }), ...(extras.data_entrega_realizada && { dataEntregaRealizada: extras.data_entrega_realizada }) })
       success('Status de entrega atualizado')
+
+      // Baixa estoque quando postado (idempotente via estoque_baixado)
+      if (statusEntrega === 'postado') {
+        const venda = usePurionStore.getState().vendas.find((v) => v.id === id)
+        if (venda && !venda.estoqueBaixado) {
+          const { data: estoque } = await sb.from('estoque_produto').select('quantidade_atual').order('created_at', { ascending: true }).limit(1).maybeSingle()
+          if (estoque) {
+            const saldo = Math.max(0, estoque.quantidade_atual - (venda.quantidade ?? 1))
+            const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
+              tipo: 'saida_venda', quantidade: venda.quantidade ?? 1,
+              motivo: `Venda ${id}`, origem_tipo: 'venda', origem_id: id,
+              saldo_apos: saldo, autor: venda.responsavel ?? 'matheus',
+            })
+            dbLog('INSERT', 'estoque_movimentacoes (saida_venda)', movErr, id)
+            if (!movErr) {
+              await sb.from('estoque_produto').update({ quantidade_atual: saldo, updated_at: new Date().toISOString() }).eq('quantidade_atual', estoque.quantidade_atual)
+              await sb.from('vendas').update({ estoque_baixado: true }).eq('id', id)
+              usePurionStore.getState().atualizarVenda(id, { estoqueBaixado: true })
+            }
+          }
+        }
+      }
+
+      // Reverte estoque quando devolvido
+      if (statusEntrega === 'devolvido') {
+        const venda = usePurionStore.getState().vendas.find((v) => v.id === id)
+        if (venda && venda.estoqueBaixado) {
+          const { data: estoque } = await sb.from('estoque_produto').select('quantidade_atual').order('created_at', { ascending: true }).limit(1).maybeSingle()
+          if (estoque) {
+            const saldo = estoque.quantidade_atual + (venda.quantidade ?? 1)
+            const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
+              tipo: 'ajuste', quantidade: venda.quantidade ?? 1,
+              motivo: `Devolução venda ${id}`, origem_tipo: 'venda', origem_id: id,
+              saldo_apos: saldo, autor: venda.responsavel ?? 'matheus',
+            })
+            dbLog('INSERT', 'estoque_movimentacoes (devolucao)', movErr, id)
+            if (!movErr) {
+              await sb.from('estoque_produto').update({ quantidade_atual: saldo, updated_at: new Date().toISOString() }).eq('quantidade_atual', estoque.quantidade_atual)
+              await sb.from('vendas').update({ estoque_baixado: false }).eq('id', id)
+              usePurionStore.getState().atualizarVenda(id, { estoqueBaixado: false })
+            }
+          }
+        }
+      }
     },
 
     deletarVenda: async (id: string) => {

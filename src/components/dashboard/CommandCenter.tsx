@@ -551,7 +551,7 @@ export function CommandCenter() {
     tarefas, leads, lotes, reunioes, estoque,
     dailyEntries, vendas, metasDiarias,
     perfilAtivo, setPerfilAtivo,
-    dashboardWidgets,
+    dashboardWidgets, estoqueProduto,
   } = usePurionStore()
 
   const showWidget = (id: string) => dashboardWidgets.includes(id)
@@ -695,6 +695,38 @@ export function CommandCenter() {
           </div>
         </section>
       )}
+
+      {/* ── Card Estoque Produto ── */}
+      {estoqueProduto && (() => {
+        const alerta = estoqueProduto.quantidadeAtual < estoqueProduto.quantidadeMinima
+        return (
+          <Link href="/vendas" style={{ textDecoration: 'none' }}>
+            <div className="card-purion" style={{
+              padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14,
+              border: alerta ? '1px solid rgba(239,68,68,0.35)' : undefined,
+              background: alerta ? 'rgba(239,68,68,0.04)' : undefined,
+            }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: alerta ? 'rgba(239,68,68,0.12)' : 'rgba(34,197,94,0.12)',
+                color: alerta ? '#EF4444' : '#22C55E',
+              }}>
+                <AlertTriangle size={18} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block' }}>Estoque Produto Pronto</span>
+                <span style={{ fontSize: 20, fontWeight: 700, color: alerta ? '#EF4444' : '#22C55E' }}>
+                  {estoqueProduto.quantidadeAtual} unidades
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+                  {alerta ? `⚠️ Abaixo do mínimo (${estoqueProduto.quantidadeMinima})` : `Mínimo: ${estoqueProduto.quantidadeMinima} · OK`}
+                </span>
+              </div>
+            </div>
+          </Link>
+        )
+      })()}
 
       {/* ── Meta de Faturamento ── */}
       {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}

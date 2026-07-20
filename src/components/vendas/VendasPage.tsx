@@ -5,12 +5,14 @@ import { VendasDashboard } from './VendasDashboard'
 import { VendasB2C } from './VendasB2C'
 import { VendasB2B } from './VendasB2B'
 import { VendasLogistica } from './VendasLogistica'
+import { PainelDespacho } from './PainelDespacho'
 
-type TabId = 'b2c' | 'b2b' | 'logistica' | 'appmax'
+type TabId = 'b2c' | 'b2b' | 'despacho' | 'logistica' | 'appmax'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'b2c', label: 'B2C' },
   { id: 'b2b', label: 'B2B' },
+  { id: 'despacho', label: 'Despacho' },
   { id: 'logistica', label: 'Logística' },
   { id: 'appmax', label: 'Appmax (site)' },
 ]
@@ -42,6 +44,7 @@ export function VendasPage() {
 
       {activeTab === 'b2c' && <VendasB2C />}
       {activeTab === 'b2b' && <VendasB2B />}
+      {activeTab === 'despacho' && <PainelDespacho />}
       {activeTab === 'logistica' && <VendasLogistica />}
       {activeTab === 'appmax' && <VendasDashboard />}
     </div>

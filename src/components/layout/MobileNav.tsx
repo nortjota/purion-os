@@ -24,6 +24,7 @@ const DRAWER_ITEMS = [
   { href: '/vendas',        label: 'Vendas',        icon: ShoppingBag },
   { href: '/producao',      label: 'Produção',      icon: Package     },
   { href: '/creators',      label: 'Creators',      icon: Users2      },
+  { href: '/ugc',           label: 'Doações UGC',   icon: Package     },
   { href: '/afiliados',     label: 'Afiliados',     icon: Link2       },
   { href: '/sac',           label: 'SAC',           icon: Headphones  },
   { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen    },
