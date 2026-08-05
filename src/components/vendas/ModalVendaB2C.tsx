@@ -6,7 +6,7 @@ import type { Venda, PerfilUsuario, StatusPagamentoVenda, StatusEntregaVenda } f
 import { useVendas, type NovaVendaManual } from '@/hooks/useVendas'
 import { SelectBuscavel } from '@/components/ui/SelectBuscavel'
 
-const VALOR_UNITARIO_PADRAO = 119.90
+const VALOR_UNITARIO_PADRAO = 109.90
 
 function nowLocalInput() {
   const d = new Date()

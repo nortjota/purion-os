@@ -9,7 +9,7 @@ const GraficoVendasDiarias = dynamic(() => import('./GraficoVendasDiarias'), { s
 import {
   TrendingUp, TrendingDown, DollarSign, Target,
   ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
-  Info, Activity, Clock, Calendar, Users,
+  Info, Activity, Clock, Calendar, Users, FlaskConical,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { MetaDiaria } from '@/store'
@@ -29,6 +29,7 @@ import {
 } from '@/lib/calculos'
 import Link from 'next/link'
 import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
+import { useGrowth } from '@/hooks/useGrowth'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
@@ -553,6 +554,7 @@ export function CommandCenter() {
     perfilAtivo, setPerfilAtivo,
     dashboardWidgets, estoqueProduto,
   } = usePurionStore()
+  const { experimentos } = useGrowth()
 
   const showWidget = (id: string) => dashboardWidgets.includes(id)
 
@@ -724,6 +726,49 @@ export function CommandCenter() {
           </span>
         </div>
       )}
+
+      {/* ── Growth: North Star + próximo ICE + funil B2B ── */}
+      {(() => {
+        const proxICE = experimentos.filter((e) => e.status === 'backlog').sort((a, b) => b.score - a.score)[0]
+        const rodando = experimentos.filter((e) => e.status === 'rodando').length
+        const parceiros = leads.filter((l) => ['parceiro_ativo', 'pago', 'parceiro_recorrente'].includes(l.status)).length
+        const reposicoes = leads.filter((l) => {
+          if (!['parceiro_ativo', 'pago'].includes(l.status)) return false
+          const dias = Math.floor((Date.now() - new Date(l.updatedAt).getTime()) / 86_400_000)
+          return dias >= 14 && dias <= 35
+        }).length
+        return (
+          <Link href="/growth" style={{ textDecoration: 'none' }}>
+            <div className="card-purion" style={{ padding: '14px 16px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)' }}>
+                <FlaskConical size={16} style={{ color: '#C9A84C' }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>⭐ North Star · recompra</span>
+                <span style={{ fontSize: 13, fontWeight: 700 }}>
+                  {parceiros} parceiro{parceiros !== 1 ? 's' : ''} ativo{parceiros !== 1 ? 's' : ''}
+                  {reposicoes > 0 && <span style={{ color: '#E8A838', marginLeft: 8 }}>{reposicoes} reposição D+21</span>}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                {proxICE && (
+                  <div>
+                    <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>Próximo ICE</span>
+                    <span style={{ fontSize: 12, fontWeight: 600 }}>{proxICE.nome.slice(0, 30)}{proxICE.nome.length > 30 ? '…' : ''}</span>
+                    <span style={{ fontSize: 10, color: '#C9A84C', marginLeft: 6 }}>score {proxICE.score.toFixed(1)}</span>
+                  </div>
+                )}
+                {rodando > 0 && (
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>Rodando</span>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: '#5B8FE8' }}>{rodando}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Link>
+        )
+      })()}
 
       {/* ── Card Estoque Produto ── */}
       {estoqueProduto && (() => {
