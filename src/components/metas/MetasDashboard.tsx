@@ -1,324 +1,215 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
-import {
-  Target, Plus, X, Check, ChevronDown, Flame,
-  Megaphone, Users2, Building2, Package, ShoppingBag, Zap,
-  Pencil, Trash2,
-} from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight, Flame, Plus, Settings2, Sparkles, Target, TrendingUp } from 'lucide-react'
 import { usePurionStore } from '@/store'
-import type { MetaDiaria, MetaChecklistItem, TipoMeta, EscopoMeta, CategoriaMeta, PerfilUsuario } from '@/store'
+import type { PerfilUsuario, CategoriaMeta, MetaDiaria } from '@/store'
 import { useMetas } from '@/hooks/useMetas'
-import { formatarDataBR } from '@/lib/calculos'
+import { useMobile } from '@/hooks/useMobile'
+import { MetaCard } from './MetaCard'
+import { MetaHeatmap } from './MetaHeatmap'
+import { ModalMetaCompleta, type NovaMetaCompleta } from './ModalMetaCompleta'
+import { ModalTemplates } from './ModalTemplates'
+import {
+  SOCIOS, CATEGORIAS, corSocio,
+  hojeISO, deslocarData, formatarDataExtensa,
+  metasDoDia, metasPorEscopo, calcularStreak, calcularResumoSemanal,
+  TEMPLATES_POR_SOCIO,
+  type EscopoFiltro,
+} from './metasHelpers'
 
 // ─────────────────────────────────────────────
-// CONSTANTES
+// Saudação + anel de progresso
 // ─────────────────────────────────────────────
 
-const SOCIOS: PerfilUsuario[] = ['joao', 'gabriel', 'matheus']
-
-const LABEL_SOCIO: Record<PerfilUsuario, string> = {
-  joao: 'João', gabriel: 'Gabriel', matheus: 'Matheus',
+function saudacao(): string {
+  const h = new Date().getHours()
+  if (h < 12) return 'Bom dia'
+  if (h < 18) return 'Boa tarde'
+  return 'Boa noite'
 }
 
-const COR_SOCIO: Record<PerfilUsuario, string> = {
-  joao: '#3B82F6', gabriel: '#22C55E', matheus: '#C9A84C',
-}
-
-const LABEL_CATEGORIA: Record<CategoriaMeta, string> = {
-  ads: 'Ads', creators: 'Creators', b2b: 'B2B',
-  producao: 'Produção', vendas: 'Vendas', geral: 'Geral',
-}
-
-const ICONE_CATEGORIA: Record<CategoriaMeta, React.ElementType> = {
-  ads: Zap, creators: Users2, b2b: Building2,
-  producao: Package, vendas: ShoppingBag, geral: Target,
-}
-
-const COR_CATEGORIA: Record<CategoriaMeta, string> = {
-  ads: '#8B5CF6', creators: '#EC4899', b2b: '#3B82F6',
-  producao: '#F59E0B', vendas: '#C9A84C', geral: '#B8B8B8',
-}
-
-const BADGE_CATEGORIA: Record<CategoriaMeta, string> = {
-  ads:      'bg-[rgba(139,92,246,0.15)] text-[#8B5CF6]',
-  creators: 'bg-[rgba(236,72,153,0.15)] text-[#EC4899]',
-  b2b:      'bg-[rgba(59,130,246,0.15)] text-[#3B82F6]',
-  producao: 'bg-[rgba(245,158,11,0.15)] text-[#F59E0B]',
-  vendas:   'bg-[rgba(201,168,76,0.15)] text-[#C9A84C]',
-  geral:    'bg-[rgba(107,107,107,0.12)] text-[#B8B8B8]',
-}
-
-// ─────────────────────────────────────────────
-// UTILIDADES
-// ─────────────────────────────────────────────
-
-function hoje(): string { return new Date().toISOString().slice(0, 10) }
-
-function pct(valorAtual: number, valorAlvo: number | null): number {
-  if (!valorAlvo || valorAlvo <= 0) return 0
-  return Math.min((valorAtual / valorAlvo) * 100, 100)
-}
-
-function pctChecklist(meta: MetaDiaria, itens: MetaChecklistItem[]): number {
-  const mine = itens.filter((i) => i.metaId === meta.id)
-  if (!mine.length) return meta.concluida ? 100 : 0
-  return (mine.filter((i) => i.feito).length / mine.length) * 100
-}
-
-function progressoMeta(meta: MetaDiaria, itens: MetaChecklistItem[]): number {
-  if (meta.tipo === 'checklist') return pctChecklist(meta, itens)
-  return pct(meta.valorAtual, meta.valorAlvo)
-}
-
-function diasSemMetas(data: string): number {
-  return Math.round((Date.now() - new Date(data).getTime()) / 86_400_000)
-}
-
-// ─────────────────────────────────────────────
-// BARRA DE PROGRESSO
-// ─────────────────────────────────────────────
-
-function BarraProgresso({ value, cor = '#C9A84C', concluida }: { value: number; cor?: string; concluida: boolean }) {
-  const c = concluida ? '#4CAF7A' : cor
+function AnelProgresso({ pct, size = 128, largura = 10, cor = '#C9A84C' }: {
+  pct: number; size?: number; largura?: number; cor?: string
+}) {
+  const raio = (size - largura) / 2
+  const circ = 2 * Math.PI * raio
+  const offset = circ * (1 - Math.min(100, pct) / 100)
   return (
-    <div className="w-full h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-      <div
-        className="h-full rounded-full transition-all duration-500"
-        style={{ width: `${value}%`, background: c }}
-      />
+    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size / 2} cy={size / 2} r={raio} stroke="var(--bg-surface-2)" strokeWidth={largura} fill="none" />
+        <motion.circle
+          cx={size / 2} cy={size / 2} r={raio} stroke={cor} strokeWidth={largura} fill="none"
+          strokeLinecap="round"
+          strokeDasharray={circ}
+          initial={{ strokeDashoffset: circ }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 0.9, ease: 'easeOut' }}
+        />
+      </svg>
+      <div style={{
+        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        flexDirection: 'column',
+      }}>
+        <span style={{ fontSize: 26, fontWeight: 800, color: cor }}>{pct}%</span>
+      </div>
     </div>
   )
 }
 
 // ─────────────────────────────────────────────
-// CARD DE META
+// Quick add inline
 // ─────────────────────────────────────────────
 
-function CardMeta({
-  meta, itens, onEditar, onDeletar, onIncrement, onSetValor, onMarcarItem, onConcluir,
-}: {
-  meta: MetaDiaria
-  itens: MetaChecklistItem[]
-  onEditar: (m: MetaDiaria) => void
-  onDeletar: (id: string) => void
-  onIncrement: (id: string) => void
-  onSetValor: (id: string, v: number) => void
-  onMarcarItem: (id: string, feito: boolean) => void
-  onConcluir: (id: string, c: boolean) => void
-}) {
-  const [inputValor, setInputValor] = useState('')
-  const [editandoValor, setEditandoValor] = useState(false)
-  const mineItens = itens.filter((i) => i.metaId === meta.id).sort((a, b) => a.ordem - b.ordem)
-  const progresso = progressoMeta(meta, itens)
-  const CatIcon = ICONE_CATEGORIA[meta.categoria]
+function QuickAdd({ onCriar, onAbrirModal }: { onCriar: (titulo: string) => void; onAbrirModal: () => void }) {
+  const [valor, setValor] = useState('')
 
-  function handleSetValor() {
-    const v = parseFloat(inputValor.replace(',', '.'))
-    if (!isNaN(v) && v >= 0) { onSetValor(meta.id, v) }
-    setEditandoValor(false)
-    setInputValor('')
+  function submeter(e: React.FormEvent) {
+    e.preventDefault()
+    if (!valor.trim()) return
+    onCriar(valor.trim())
+    setValor('')
   }
 
   return (
-    <div
-      className="card-purion p-3.5 flex flex-col gap-2.5 transition-all"
-      style={{ borderLeft: `3px solid ${meta.concluida ? '#4CAF7A' : COR_CATEGORIA[meta.categoria]}` }}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-2 min-w-0">
-          <CatIcon size={13} style={{ color: COR_CATEGORIA[meta.categoria], marginTop: 2 }} className="shrink-0" />
-          <div className="min-w-0">
-            <p className={`text-[13px] font-semibold leading-tight ${meta.concluida ? 'line-through opacity-60' : 'text-[var(--text-primary)]'}`}>
-              {meta.titulo}
-            </p>
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${BADGE_CATEGORIA[meta.categoria]}`}>
-              {LABEL_CATEGORIA[meta.categoria]}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-0.5 shrink-0">
-          {meta.concluida ? (
-            <button onClick={() => onConcluir(meta.id, false)} title="Desmarcar" className="icon-btn">
-              <Check size={11} style={{ color: '#4CAF7A' }} />
-            </button>
-          ) : (
-            <button onClick={() => onConcluir(meta.id, true)} title="Marcar como concluída" className="icon-btn">
-              <Check size={11} />
-            </button>
-          )}
-          <button onClick={() => onEditar(meta)} className="icon-btn"><Pencil size={11} /></button>
-          <button onClick={() => onDeletar(meta.id)} className="icon-btn"><Trash2 size={11} /></button>
-        </div>
-      </div>
-
-      {/* Progresso */}
-      <div>
-        <BarraProgresso value={progresso} cor={COR_CATEGORIA[meta.categoria]} concluida={meta.concluida} />
-        <div className="flex items-center justify-between mt-1">
-          <span className="text-[10px] text-[var(--text-secondary)]">
-            {meta.tipo === 'checklist'
-              ? `${mineItens.filter((i) => i.feito).length}/${mineItens.length} itens`
-              : `${meta.valorAtual}${meta.valorAlvo != null ? `/${meta.valorAlvo}` : ''} ${meta.unidade ?? ''}`
-            }
-          </span>
-          <span className="text-[10px] font-semibold" style={{ color: meta.concluida ? '#4CAF7A' : 'var(--text-secondary)' }}>
-            {progresso.toFixed(0)}%
-          </span>
-        </div>
-      </div>
-
-      {/* Ações — numérica */}
-      {meta.tipo === 'numerica' && !meta.concluida && (
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onIncrement(meta.id)}
-            className="btn btn-secondary btn-sm flex-1 font-bold"
-            style={{ fontSize: 13 }}
-          >
-            +1
-          </button>
-          {editandoValor ? (
-            <div className="flex items-center gap-1 flex-1">
-              <input
-                type="number" min="0" step="0.1"
-                value={inputValor}
-                onChange={(e) => setInputValor(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSetValor() }}
-                autoFocus
-                className="input-purion flex-1 text-[12px] py-1 px-2"
-                style={{ minWidth: 0 }}
-                placeholder={meta.unidade ?? '0'}
-              />
-              <button onClick={handleSetValor} className="icon-btn"><Check size={12} style={{ color: '#4CAF7A' }} /></button>
-              <button onClick={() => setEditandoValor(false)} className="icon-btn"><X size={11} /></button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setEditandoValor(true)}
-              className="btn btn-secondary btn-sm text-[11px] px-2"
-            >
-              Definir
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Itens — checklist */}
-      {meta.tipo === 'checklist' && (
-        <div className="space-y-1.5">
-          {mineItens.map((item) => (
-            <label key={item.id} className="flex items-center gap-2 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={item.feito}
-                onChange={(e) => onMarcarItem(item.id, e.target.checked)}
-                className="w-3.5 h-3.5 accent-[#C9A84C]"
-              />
-              <span
-                className={`text-[12px] leading-tight transition-colors ${
-                  item.feito ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'
-                }`}
-              >
-                {item.texto}
-              </span>
-            </label>
-          ))}
-        </div>
-      )}
-    </div>
+    <form onSubmit={submeter} className="flex items-center gap-1.5" style={{ marginBottom: 10 }}>
+      <Plus size={13} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+      <input
+        value={valor}
+        onChange={(e) => setValor(e.target.value)}
+        placeholder="Nova meta… e Enter"
+        style={{
+          flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid var(--border)',
+          outline: 'none', fontSize: 13, color: 'var(--text-primary)', padding: '4px 0',
+        }}
+      />
+      <button type="button" onClick={onAbrirModal} title="Configurar detalhes" className="icon-btn" style={{ width: 24, height: 24, flexShrink: 0 }}>
+        <Settings2 size={12} />
+      </button>
+    </form>
   )
 }
 
 // ─────────────────────────────────────────────
-// COLUNA DE SÓCIO
+// Coluna genérica (time ou sócio)
 // ─────────────────────────────────────────────
 
-function ColunasSocio({
-  socio, metas, itens, streak, onEditar, onDeletar,
-  onIncrement, onSetValor, onMarcarItem, onConcluir,
-  onNovaMeta,
-}: {
-  socio: PerfilUsuario
+interface ColunaProps {
+  chaveOrdem: string
+  titulo: string
+  subtitulo?: string
+  cor: string
+  avatar: React.ReactNode
   metas: MetaDiaria[]
-  itens: MetaChecklistItem[]
+  pct: number
   streak: number
-  onEditar: (m: MetaDiaria) => void
-  onDeletar: (id: string) => void
-  onIncrement: (id: string) => void
-  onSetValor: (id: string, v: number) => void
-  onMarcarItem: (id: string, feito: boolean) => void
-  onConcluir: (id: string, c: boolean) => void
-  onNovaMeta: (socio: PerfilUsuario) => void
-}) {
-  const total     = metas.length
-  const concluidas = metas.filter((m) => m.concluida).length
-  const pctDia    = total > 0 ? Math.round((concluidas / total) * 100) : 0
-  const cor       = COR_SOCIO[socio]
+  onQuickAdd: (titulo: string) => void
+  onAbrirModal: () => void
+  onTemplate?: () => void
+  acoes: {
+    onIncrementar: (id: string) => void
+    onDecrementar: (id: string) => void
+    onDefinirValor: (id: string, v: number) => void
+    onEditar: (id: string, dados: { titulo?: string; valorAlvo?: number | null; unidade?: string | null }) => void
+    onConcluir: (id: string, c: boolean) => void
+    onDeletar: (id: string) => void
+    onAdicionarItem: (id: string, texto: string) => void
+    onRemoverItem: (id: string) => void
+    onMarcarItem: (id: string, feito: boolean) => void
+  }
+}
+
+function ColunaMetas({ chaveOrdem, titulo, subtitulo, cor, avatar, metas, pct, streak, onQuickAdd, onAbrirModal, onTemplate, acoes }: ColunaProps) {
+  const { metaChecklistItens } = usePurionStore()
+  const [ordem, setOrdem] = useState<string[]>([])
+  const [arrastandoId, setArrastandoId] = useState<string | null>(null)
+  const idsAtuais = metas.map((m) => m.id).join(',')
+
+  useEffect(() => {
+    setOrdem((prev) => {
+      const ids = idsAtuais ? idsAtuais.split(',') : []
+      const preservados = prev.filter((id) => ids.includes(id))
+      const novos = ids.filter((id) => !preservados.includes(id))
+      return [...preservados, ...novos]
+    })
+  }, [chaveOrdem, idsAtuais])
+
+  const metasOrdenadas = ordem.map((id) => metas.find((m) => m.id === id)).filter((m): m is MetaDiaria => !!m)
+
+  function onDrop(id: string) {
+    if (!arrastandoId || arrastandoId === id) return
+    setOrdem((prev) => {
+      const semArrastado = prev.filter((x) => x !== arrastandoId)
+      const idx = semArrastado.indexOf(id)
+      semArrastado.splice(idx, 0, arrastandoId)
+      return semArrastado
+    })
+    setArrastandoId(null)
+  }
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Header da coluna */}
-      <div
-        className="rounded-xl p-3 border"
-        style={{ borderColor: `${cor}30`, background: `${cor}08` }}
-      >
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px]"
-              style={{ background: `${cor}20`, color: cor }}
-            >
-              {LABEL_SOCIO[socio][0]}
-            </div>
-            <span className="font-bold text-[var(--text-primary)] text-sm">{LABEL_SOCIO[socio]}</span>
-            {streak > 0 && (
-              <span className="flex items-center gap-0.5 text-[10px] font-bold" style={{ color: '#FF6B35' }}>
-                <Flame size={11} />{streak}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={() => onNovaMeta(socio)}
-            className="icon-btn"
-            title="Nova meta"
-            style={{ color: cor }}
-          >
-            <Plus size={14} />
-          </button>
+    <div className="flex flex-col" style={{ flex: 1, minWidth: 260 }}>
+      <div className="flex items-center gap-2.5 mb-3">
+        {avatar}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 14, fontWeight: 700 }}>{titulo}</p>
+          {subtitulo && <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{subtitulo}</p>}
         </div>
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-[var(--text-secondary)]">{concluidas}/{total} metas</span>
-            <span className="text-[11px] font-bold" style={{ color: pctDia === 100 ? '#4CAF7A' : cor }}>
-              {pctDia}%
-            </span>
-          </div>
-          <div className="w-full h-1 bg-[var(--border)] rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{ width: `${pctDia}%`, background: pctDia === 100 ? '#4CAF7A' : cor }}
-            />
-          </div>
-        </div>
+        {streak > 0 && (
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#E8A838', display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Flame size={12} /> {streak}
+          </span>
+        )}
+        <span style={{ fontSize: 13, fontWeight: 800, color: cor }}>{pct}%</span>
       </div>
 
-      {/* Metas */}
+      <div style={{ height: 3, background: 'var(--bg-surface-2)', borderRadius: 999, overflow: 'hidden', marginBottom: 12 }}>
+        <motion.div
+          initial={false}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          style={{ height: '100%', background: cor, borderRadius: 999 }}
+        />
+      </div>
+
+      <QuickAdd onCriar={onQuickAdd} onAbrirModal={onAbrirModal} />
+
+      {onTemplate && (
+        <button onClick={onTemplate} className="btn btn-secondary btn-sm" style={{ marginBottom: 12, alignSelf: 'flex-start' }}>
+          <Sparkles size={11} /> Usar modelo
+        </button>
+      )}
+
       <div className="flex flex-col gap-2">
-        {metas.length === 0 ? (
-          <div className="text-center py-6 text-[var(--text-secondary)] text-xs">
-            Nenhuma meta hoje.<br />
-            <button onClick={() => onNovaMeta(socio)} className="text-[#C9A84C] hover:underline mt-1">
-              + Adicionar
-            </button>
+        {metasOrdenadas.length === 0 ? (
+          <div className="empty-state" style={{ padding: '24px 12px' }}>
+            <Target size={26} className="empty-state-icon" />
+            <p className="empty-state-title" style={{ fontSize: 12 }}>Nenhuma meta ainda hoje</p>
+            <p className="empty-state-subtitle" style={{ fontSize: 11 }}>Que tal começar?</p>
           </div>
         ) : (
-          metas.map((m) => (
-            <CardMeta
-              key={m.id} meta={m} itens={itens}
-              onEditar={onEditar} onDeletar={onDeletar}
-              onIncrement={onIncrement} onSetValor={onSetValor}
-              onMarcarItem={onMarcarItem} onConcluir={onConcluir}
+          metasOrdenadas.map((meta) => (
+            <MetaCard
+              key={meta.id}
+              meta={meta}
+              itens={metaChecklistItens}
+              cor={cor}
+              draggable
+              isDragging={arrastandoId === meta.id}
+              onDragStart={() => setArrastandoId(meta.id)}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => onDrop(meta.id)}
+              onIncrementar={() => acoes.onIncrementar(meta.id)}
+              onDecrementar={() => acoes.onDecrementar(meta.id)}
+              onDefinirValor={(v) => acoes.onDefinirValor(meta.id, v)}
+              onEditar={(d) => acoes.onEditar(meta.id, d)}
+              onConcluir={(c) => acoes.onConcluir(meta.id, c)}
+              onDeletar={() => acoes.onDeletar(meta.id)}
+              onAdicionarItem={(t) => acoes.onAdicionarItem(meta.id, t)}
+              onRemoverItem={acoes.onRemoverItem}
+              onMarcarItem={acoes.onMarcarItem}
             />
           ))
         )}
@@ -328,532 +219,293 @@ function ColunasSocio({
 }
 
 // ─────────────────────────────────────────────
-// HEATMAP (últimos 30 dias)
-// ─────────────────────────────────────────────
-
-function Heatmap({ metas, socio }: { metas: MetaDiaria[]; socio: PerfilUsuario | 'time' | 'geral' }) {
-  const hoje30 = useMemo(() => {
-    const dias: string[] = []
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(Date.now() - i * 86_400_000)
-      dias.push(d.toISOString().slice(0, 10))
-    }
-    return dias
-  }, [])
-
-  const mapa = useMemo<Record<string, number>>(() => {
-    const map: Record<string, number> = {}
-    hoje30.forEach((d) => {
-      const metasDia = metas.filter((m) => {
-        if (m.data !== d) return false
-        if (socio === 'geral') return true
-        if (socio === 'time') return m.escopo === 'time'
-        return m.responsavel === socio
-      })
-      if (!metasDia.length) { map[d] = -1; return }
-      const conc = metasDia.filter((m) => m.concluida).length
-      map[d] = (conc / metasDia.length) * 100
-    })
-    return map
-  }, [metas, hoje30, socio])
-
-  function corCelula(v: number): string {
-    if (v < 0) return 'var(--border)'
-    if (v === 0) return 'rgba(232,82,56,0.18)'
-    if (v < 50) return 'rgba(201,168,76,0.25)'
-    if (v < 100) return 'rgba(201,168,76,0.55)'
-    return '#4CAF7A'
-  }
-
-  return (
-    <div className="flex flex-wrap gap-1">
-      {hoje30.map((d) => {
-        const v = mapa[d] ?? -1
-        const label = formatarDataBR(d)
-        return (
-          <div
-            key={d}
-            title={v < 0 ? `${label}: sem metas` : `${label}: ${v.toFixed(0)}%`}
-            className="rounded-sm cursor-default"
-            style={{ width: 12, height: 12, background: corCelula(v) }}
-          />
-        )
-      })}
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────
-// MODAL CRIAR / EDITAR META
-// ─────────────────────────────────────────────
-
-function ModalMeta({
-  metaInicial,
-  socioPreset,
-  onSalvar,
-  onFechar,
-}: {
-  metaInicial: MetaDiaria | null
-  socioPreset: PerfilUsuario | null
-  onSalvar: (dados: {
-    titulo: string; tipo: TipoMeta; escopo: EscopoMeta
-    responsavel: PerfilUsuario | null; categoria: CategoriaMeta
-    valorAlvo: number | null; unidade: string | null
-    recorrente: boolean; data: string; itensChecklist?: string[]
-  }) => void
-  onFechar: () => void
-}) {
-  const [titulo, setTitulo]           = useState(metaInicial?.titulo ?? '')
-  const [tipo, setTipo]               = useState<TipoMeta>(metaInicial?.tipo ?? 'numerica')
-  const [escopo, setEscopo]           = useState<EscopoMeta>(metaInicial?.escopo ?? (socioPreset ? 'individual' : 'time'))
-  const [responsavel, setResponsavel] = useState<PerfilUsuario | null>(
-    metaInicial?.responsavel ?? socioPreset ?? 'matheus'
-  )
-  const [categoria, setCategoria]     = useState<CategoriaMeta>(metaInicial?.categoria ?? 'geral')
-  const [valorAlvo, setValorAlvo]     = useState(metaInicial?.valorAlvo?.toString() ?? '')
-  const [unidade, setUnidade]         = useState(metaInicial?.unidade ?? '')
-  const [recorrente, setRecorrente]   = useState(metaInicial?.recorrente ?? true)
-  const [data, setData]               = useState(metaInicial?.data ?? hoje())
-  const [novoItem, setNovoItem]       = useState('')
-  const [itensChecklist, setItensChecklist] = useState<string[]>([])
-
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  function addItem() {
-    const t = novoItem.trim()
-    if (t) { setItensChecklist((p) => [...p, t]); setNovoItem('') }
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!titulo.trim()) return
-    onSalvar({
-      titulo: titulo.trim(),
-      tipo, escopo,
-      responsavel: escopo === 'time' ? null : responsavel,
-      categoria,
-      valorAlvo: tipo === 'numerica' && valorAlvo ? parseFloat(valorAlvo) : null,
-      unidade: tipo === 'numerica' ? unidade.trim() || null : null,
-      recorrente, data,
-      ...(tipo === 'checklist' && { itensChecklist }),
-    })
-  }
-
-  return (
-    <div className="modal-backdrop" onClick={onFechar}>
-      <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
-        <div className="flex items-start justify-between mb-5">
-          <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            {metaInicial ? 'Editar Meta' : 'Nova Meta Diária'}
-          </h3>
-          <button onClick={onFechar} className="icon-btn"><X size={15} /></button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-3">
-          {/* Título */}
-          <div>
-            <label className="label-purion">Título</label>
-            <input
-              ref={inputRef} autoFocus value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              className="input-purion" maxLength={80}
-              placeholder="Ex: 5 DMs para creators"
-            />
-          </div>
-
-          {/* Tipo + Escopo */}
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="label-purion">Tipo</label>
-              <div className="relative">
-                <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoMeta)} className="input-purion appearance-none pr-8">
-                  <option value="numerica">Numérica</option>
-                  <option value="checklist">Checklist</option>
-                </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#A0A0A0]" />
-              </div>
-            </div>
-            <div className="flex-1">
-              <label className="label-purion">Escopo</label>
-              <div className="relative">
-                <select value={escopo} onChange={(e) => setEscopo(e.target.value as EscopoMeta)} className="input-purion appearance-none pr-8">
-                  <option value="individual">Individual</option>
-                  <option value="time">Time</option>
-                </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#A0A0A0]" />
-              </div>
-            </div>
-          </div>
-
-          {/* Responsável */}
-          {escopo === 'individual' && (
-            <div>
-              <label className="label-purion">Responsável</label>
-              <div className="relative">
-                <select value={responsavel ?? 'matheus'} onChange={(e) => setResponsavel(e.target.value as PerfilUsuario)} className="input-purion appearance-none pr-8">
-                  {SOCIOS.map((s) => <option key={s} value={s}>{LABEL_SOCIO[s]}</option>)}
-                </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#A0A0A0]" />
-              </div>
-            </div>
-          )}
-
-          {/* Categoria */}
-          <div>
-            <label className="label-purion">Categoria</label>
-            <div className="flex flex-wrap gap-1.5">
-              {(Object.keys(LABEL_CATEGORIA) as CategoriaMeta[]).map((c) => (
-                <button
-                  key={c} type="button"
-                  onClick={() => setCategoria(c)}
-                  className={`text-[11px] font-bold px-2.5 py-1 rounded-full transition-all ${
-                    categoria === c
-                      ? BADGE_CATEGORIA[c] + ' ring-1 ring-current'
-                      : 'bg-[var(--bg-surface-2)] text-[#B8B8B8] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  {LABEL_CATEGORIA[c]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Numérica */}
-          {tipo === 'numerica' && (
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className="label-purion">Alvo</label>
-                <input
-                  type="number" min="0" step="0.1" value={valorAlvo}
-                  onChange={(e) => setValorAlvo(e.target.value)}
-                  className="input-purion" placeholder="5"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="label-purion">Unidade</label>
-                <input
-                  value={unidade} onChange={(e) => setUnidade(e.target.value)}
-                  className="input-purion" placeholder="DMs, visitas, R$..."
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Checklist */}
-          {tipo === 'checklist' && (
-            <div>
-              <label className="label-purion">Itens do checklist</label>
-              <div className="space-y-1.5 mb-2">
-                {itensChecklist.map((item, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <span className="text-[12px] text-[var(--text-primary)] flex-1">· {item}</span>
-                    <button
-                      type="button"
-                      onClick={() => setItensChecklist((p) => p.filter((_, j) => j !== i))}
-                      className="icon-btn"
-                    ><X size={10} /></button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <input
-                  value={novoItem}
-                  onChange={(e) => setNovoItem(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addItem() } }}
-                  className="input-purion flex-1 text-[12px]"
-                  placeholder="Adicionar item..."
-                />
-                <button type="button" onClick={addItem} className="btn btn-secondary btn-sm">+</button>
-              </div>
-            </div>
-          )}
-
-          {/* Data + Recorrente */}
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
-              <label className="label-purion">Data</label>
-              <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="input-purion" />
-            </div>
-            <label className="flex items-center gap-2 pb-2 cursor-pointer">
-              <input
-                type="checkbox" checked={recorrente}
-                onChange={(e) => setRecorrente(e.target.checked)}
-                className="w-4 h-4 accent-[#C9A84C]"
-              />
-              <span className="text-[12px] text-[var(--text-secondary)]">Repetir diariamente</span>
-            </label>
-          </div>
-
-          <button type="submit" className="btn btn-primary w-full mt-1">
-            {metaInicial ? 'Salvar alterações' : 'Criar meta'}
-          </button>
-        </form>
-      </div>
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────
-// DASHBOARD PRINCIPAL
+// Componente principal
 // ─────────────────────────────────────────────
 
 export function MetasDashboard() {
-  const { metasDiarias, metaChecklistItens } = usePurionStore()
-  const { criarMeta, atualizarProgresso, incrementarProgresso, marcarItem, concluirMeta, deletarMeta } = useMetas()
+  const isMobile = useMobile()
+  const { metasDiarias } = usePurionStore()
+  const {
+    criarMeta, incrementarProgresso, decrementarProgresso, atualizarProgresso, editarMeta,
+    concluirMeta, deletarMeta, adicionarItemChecklist, removerItemChecklist, marcarItem,
+  } = useMetas()
 
-  const [modalAberto, setModalAberto]   = useState(false)
-  const [editandoMeta, setEditandoMeta] = useState<MetaDiaria | null>(null)
-  const [socioPreset, setSocioPreset]   = useState<PerfilUsuario | null>(null)
+  const [selectedDate, setSelectedDate] = useState(hojeISO())
+  const [filtroCategoria, setFiltroCategoria] = useState<CategoriaMeta | 'todas'>('todas')
+  const [abaMobile, setAbaMobile] = useState<EscopoFiltro>('time')
+  const [modalCompleta, setModalCompleta] = useState<{ escopo: 'time' | 'individual'; responsavel: PerfilUsuario | null; tituloInicial: string } | null>(null)
+  const [modalTemplate, setModalTemplate] = useState<PerfilUsuario | null>(null)
+  const [escopoHistorico, setEscopoHistorico] = useState<EscopoFiltro>('time')
 
-  const hj = hoje()
+  const isHoje = selectedDate === hojeISO()
 
-  const metasHoje = useMemo(
-    () => metasDiarias.filter((m) => m.data === hj),
-    [metasDiarias, hj]
+  const metasFiltroCategoria = useMemo(
+    () => filtroCategoria === 'todas' ? metasDiarias : metasDiarias.filter((m) => m.categoria === filtroCategoria),
+    [metasDiarias, filtroCategoria]
   )
 
-  const metasTime = useMemo(
-    () => metasHoje.filter((m) => m.escopo === 'time'),
-    [metasHoje]
-  )
+  const metasDoDiaAtual = useMemo(() => metasDoDia(metasFiltroCategoria, selectedDate), [metasFiltroCategoria, selectedDate])
 
-  const metasPorSocio = useMemo(
-    () => Object.fromEntries(
-      SOCIOS.map((s) => [s, metasHoje.filter((m) => m.escopo === 'individual' && m.responsavel === s)])
-    ) as Record<PerfilUsuario, MetaDiaria[]>,
-    [metasHoje]
-  )
-
-  // % geral do time hoje
-  const pctTime = useMemo(() => {
-    if (!metasHoje.length) return 0
-    return Math.round((metasHoje.filter((m) => m.concluida).length / metasHoje.length) * 100)
-  }, [metasHoje])
-
-  // Streak — dias seguidos com >= 80% concluídas (time inteiro)
-  const streakTime = useMemo(() => {
-    let streak = 0
-    for (let i = 1; i <= 30; i++) {
-      const d = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10)
-      const dia = metasDiarias.filter((m) => m.data === d)
-      if (!dia.length) break
-      const pctDia = (dia.filter((m) => m.concluida).length / dia.length) * 100
-      if (pctDia >= 80) streak++
-      else break
-    }
-    return streak
+  const pctGeralHoje = useMemo(() => {
+    const todasHoje = metasDoDia(metasDiarias, hojeISO())
+    if (todasHoje.length === 0) return 0
+    return Math.round((todasHoje.filter((m) => m.concluida).length / todasHoje.length) * 100)
   }, [metasDiarias])
 
-  // Streak por sócio
-  const streakSocio = useMemo(() => {
-    return Object.fromEntries(
-      SOCIOS.map((socio) => {
-        let streak = 0
-        for (let i = 1; i <= 30; i++) {
-          const d = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10)
-          const dia = metasDiarias.filter((m) => m.data === d && m.responsavel === socio)
-          if (!dia.length) break
-          const pctDia = (dia.filter((m) => m.concluida).length / dia.length) * 100
-          if (pctDia >= 80) streak++
-          else break
-        }
-        return [socio, streak]
-      })
-    ) as Record<PerfilUsuario, number>
+  const totaisHoje = useMemo(() => {
+    const todasHoje = metasDoDia(metasDiarias, hojeISO())
+    return { total: todasHoje.length, feitas: todasHoje.filter((m) => m.concluida).length }
   }, [metasDiarias])
 
-  function abrirNovaMeta(socio: PerfilUsuario | null) {
-    setEditandoMeta(null)
-    setSocioPreset(socio)
-    setModalAberto(true)
+  const streakTime = useMemo(() => calcularStreak(metasPorEscopo(metasDiarias, 'time')), [metasDiarias])
+
+  const resumoSemanal = useMemo(() => calcularResumoSemanal(metasDiarias), [metasDiarias])
+
+  const acoes = {
+    onIncrementar: incrementarProgresso,
+    onDecrementar: decrementarProgresso,
+    onDefinirValor: atualizarProgresso,
+    onEditar: editarMeta,
+    onConcluir: concluirMeta,
+    onDeletar: deletarMeta,
+    onAdicionarItem: adicionarItemChecklist,
+    onRemoverItem: removerItemChecklist,
+    onMarcarItem: marcarItem,
   }
 
-  async function handleSalvar(dados: Parameters<typeof criarMeta>[0]) {
-    if (editandoMeta) {
-      // Edição: só atualiza campos básicos via DB direto
-      const sb = (await import('@/lib/supabase')).supabase
-      if (sb) {
-        await sb.from('metas_diarias').update({
-          titulo:      dados.titulo,
-          tipo:        dados.tipo,
-          escopo:      dados.escopo,
-          responsavel: dados.responsavel,
-          categoria:   dados.categoria,
-          valor_alvo:  dados.valorAlvo,
-          unidade:     dados.unidade,
-          recorrente:  dados.recorrente,
-          updated_at:  new Date().toISOString(),
-        }).eq('id', editandoMeta.id)
+  function criarRapida(escopo: 'time' | 'individual', responsavel: PerfilUsuario | null, titulo: string) {
+    criarMeta({
+      titulo, tipo: 'numerica', escopo, responsavel, categoria: 'geral',
+      valorAlvo: 1, unidade: null, recorrente: false, data: selectedDate,
+    })
+  }
+
+  async function aplicarTemplates(socio: PerfilUsuario, indices: number[]) {
+    const templates = TEMPLATES_POR_SOCIO[socio]
+    for (const i of indices) {
+      const t = templates[i]
+      await criarMeta({
+        titulo: t.titulo, tipo: t.tipo, escopo: 'individual', responsavel: socio,
+        categoria: t.categoria, valorAlvo: t.valorAlvo, unidade: t.unidade,
+        recorrente: true, data: selectedDate,
+      })
+    }
+    setModalTemplate(null)
+  }
+
+  const metasTime = metasPorEscopo(metasDoDiaAtual, 'time')
+  const pctTime = metasTime.length > 0 ? Math.round((metasTime.filter((m) => m.concluida).length / metasTime.length) * 100) : 0
+
+  const colunaTime = (
+    <ColunaMetas
+      chaveOrdem="time"
+      titulo="Metas do Time"
+      subtitulo="Escopo compartilhado"
+      cor="#C9A84C"
+      avatar={
+        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <TrendingUp size={16} style={{ color: '#C9A84C' }} />
+        </div>
       }
-      const { atualizarMetaDiaria } = usePurionStore.getState()
-      atualizarMetaDiaria(editandoMeta.id, {
-        titulo: dados.titulo, tipo: dados.tipo, escopo: dados.escopo,
-        responsavel: dados.responsavel, categoria: dados.categoria,
-        valorAlvo: dados.valorAlvo, unidade: dados.unidade,
-        recorrente: dados.recorrente,
-      })
-    } else {
-      await criarMeta(dados)
-    }
-    setModalAberto(false)
-    setEditandoMeta(null)
-    setSocioPreset(null)
-  }
+      metas={metasTime}
+      pct={pctTime}
+      streak={streakTime}
+      onQuickAdd={(t) => criarRapida('time', null, t)}
+      onAbrirModal={() => setModalCompleta({ escopo: 'time', responsavel: null, tituloInicial: '' })}
+      acoes={acoes}
+    />
+  )
 
-  const dataFormatada = useMemo(() => {
-    return new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
-  }, [])
+  const colunasSocios = SOCIOS.map(({ id, nome, cor, inicial }) => {
+    const metasSocio = metasPorEscopo(metasDoDiaAtual, id)
+    const pct = metasSocio.length > 0 ? Math.round((metasSocio.filter((m) => m.concluida).length / metasSocio.length) * 100) : 0
+    const streak = calcularStreak(metasPorEscopo(metasDiarias, id))
+    return (
+      <ColunaMetas
+        key={id}
+        chaveOrdem={id}
+        titulo={nome}
+        cor={cor}
+        avatar={
+          <div style={{
+            width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
+            background: `${cor}18`, border: `1px solid ${cor}40`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 13, fontWeight: 700, color: cor,
+          }}>
+            {inicial}
+          </div>
+        }
+        metas={metasSocio}
+        pct={pct}
+        streak={streak}
+        onQuickAdd={(t) => criarRapida('individual', id, t)}
+        onAbrirModal={() => setModalCompleta({ escopo: 'individual', responsavel: id, tituloInicial: '' })}
+        onTemplate={() => setModalTemplate(id)}
+        acoes={acoes}
+      />
+    )
+  })
 
   return (
     <div className="page-content section-gap">
-      {/* ── CABEÇALHO ── */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="page-title">Metas Diárias</h1>
-          <p className="caption mt-1">{dataFormatada}</p>
+      {/* ── HERO DO DIA ── */}
+      <div className="card-purion" style={{
+        padding: '24px 28px', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
+        background: 'linear-gradient(135deg, rgba(201,168,76,0.08), transparent)',
+        borderColor: 'rgba(201,168,76,0.25)',
+      }}>
+        <AnelProgresso pct={pctGeralHoje} />
+        <div style={{ flex: 1, minWidth: 220 }}>
+          <div className="flex items-center gap-2 mb-1">
+            <button onClick={() => setSelectedDate((d) => deslocarData(d, -1))} className="icon-btn"><ChevronLeft size={14} /></button>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary)', textTransform: 'capitalize' }}>
+              {formatarDataExtensa(selectedDate)}
+            </span>
+            <button onClick={() => setSelectedDate((d) => deslocarData(d, 1))} disabled={isHoje} className="icon-btn" style={{ opacity: isHoje ? 0.3 : 1 }}>
+              <ChevronRight size={14} />
+            </button>
+            {!isHoje && (
+              <button onClick={() => setSelectedDate(hojeISO())} className="btn btn-secondary btn-sm">hoje</button>
+            )}
+          </div>
+          <h1 className="page-title">{saudacao()}, time PURION 👋</h1>
+          <p style={{ fontSize: 15, marginTop: 6 }}>
+            <strong style={{ color: '#C9A84C' }}>{totaisHoje.feitas} de {totaisHoje.total}</strong>
+            <span style={{ color: 'var(--text-secondary)' }}> metas batidas hoje</span>
+          </p>
+          {streakTime > 0 && (
+            <p style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6, color: '#E8A838', fontWeight: 600 }}>
+              <Flame size={15} /> {streakTime} dia{streakTime !== 1 ? 's' : ''} seguido{streakTime !== 1 ? 's' : ''} do time
+            </p>
+          )}
         </div>
-        <button
-          onClick={() => abrirNovaMeta(null)}
-          className="btn btn-primary"
-        >
-          <Plus size={14} /> Nova Meta
-        </button>
       </div>
 
-      {/* ── RESUMO DO DIA ── */}
-      <div className="card-purion p-4 flex items-center justify-between gap-6 flex-wrap">
-        <div>
-          <p className="text-[11px] text-[#B8B8B8] uppercase tracking-wider mb-1">Conclusão do time hoje</p>
-          <div className="flex items-baseline gap-2">
-            <span
-              className="text-3xl font-black"
-              style={{ fontFamily: 'Montserrat, sans-serif', color: pctTime === 100 ? '#4CAF7A' : '#C9A84C' }}
-            >
-              {pctTime}%
-            </span>
-            <span className="caption">{metasHoje.filter((m) => m.concluida).length}/{metasHoje.length} metas</span>
-          </div>
-          <div className="w-48 h-2 bg-[var(--border)] rounded-full mt-2 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{ width: `${pctTime}%`, background: pctTime === 100 ? '#4CAF7A' : '#C9A84C' }}
-            />
-          </div>
-        </div>
+      {/* ── Filtro de categoria ── */}
+      <div className="flex items-center gap-1 flex-wrap">
+        <button
+          onClick={() => setFiltroCategoria('todas')}
+          className="px-3 py-1.5 rounded-md text-xs font-medium"
+          style={filtroCategoria === 'todas' ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+        >
+          Todas categorias
+        </button>
+        {CATEGORIAS.map((c) => (
+          <button
+            key={c.id}
+            onClick={() => setFiltroCategoria(c.id)}
+            className="px-3 py-1.5 rounded-md text-xs font-medium"
+            style={filtroCategoria === c.id ? { background: `${c.cor}22`, color: c.cor } : { color: 'var(--text-secondary)' }}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
 
-        <div className="flex items-center gap-6">
-          {streakTime > 0 && (
-            <div className="text-center">
-              <p className="text-[11px] text-[#B8B8B8] mb-1">Streak do time</p>
-              <div className="flex items-center gap-1" style={{ color: '#FF6B35' }}>
-                <Flame size={18} />
-                <span className="text-xl font-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  {streakTime}
+      {/* ── Metas do time ── */}
+      {(!isMobile || abaMobile === 'time') && <div>{colunaTime}</div>}
+
+      {/* ── Colunas por sócio ── */}
+      {isMobile ? (
+        <div>
+          <div className="flex gap-1 mb-4" style={{ overflowX: 'auto' }}>
+            {(['time', ...SOCIOS.map((s) => s.id)] as EscopoFiltro[]).map((e) => {
+              const nome = e === 'time' ? 'Time' : SOCIOS.find((s) => s.id === e)?.nome
+              return (
+                <button
+                  key={e}
+                  onClick={() => setAbaMobile(e)}
+                  className="px-3 py-1.5 rounded-md text-xs font-medium"
+                  style={abaMobile === e ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+                >
+                  {nome}
+                </button>
+              )
+            })}
+          </div>
+          {abaMobile !== 'time' && colunasSocios[SOCIOS.findIndex((s) => s.id === abaMobile)]}
+        </div>
+      ) : (
+        <div className="flex gap-6" style={{ flexWrap: 'wrap' }}>
+          {colunasSocios}
+        </div>
+      )}
+
+      {/* ── Resumo semanal + Heatmap ── */}
+      <div className="grid gap-4" style={{ gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr' }}>
+        <div className="card-purion" style={{ padding: '16px 18px' }}>
+          <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>Resumo da Semana</p>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Metas batidas</span>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>{resumoSemanal.totalConcluidas} / {resumoSemanal.totalMetas}</span>
+            </div>
+            {resumoSemanal.melhorDia && (
+              <div className="flex items-center justify-between">
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Melhor dia</span>
+                <span style={{ fontSize: 13, fontWeight: 700 }}>
+                  {new Date(`${resumoSemanal.melhorDia.data}T12:00:00Z`).toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'UTC' })} · {resumoSemanal.melhorDia.pct}%
                 </span>
               </div>
-              <p className="text-[10px] text-[#A0A0A0]">dia{streakTime > 1 ? 's' : ''} seguido{streakTime > 1 ? 's' : ''}</p>
+            )}
+            {resumoSemanal.socioDestaque && (
+              <div className="flex items-center justify-between">
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Sócio destaque</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: corSocio(resumoSemanal.socioDestaque.socio) }}>
+                  {SOCIOS.find((s) => s.id === resumoSemanal.socioDestaque!.socio)?.nome} · {resumoSemanal.socioDestaque.pct}%
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="card-purion" style={{ padding: '16px 18px' }}>
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <p style={{ fontSize: 13, fontWeight: 700 }}>Histórico</p>
+            <div className="flex gap-1">
+              {(['time', ...SOCIOS.map((s) => s.id)] as EscopoFiltro[]).map((e) => {
+                const nome = e === 'time' ? 'Time' : SOCIOS.find((s) => s.id === e)?.nome
+                return (
+                  <button
+                    key={e}
+                    onClick={() => setEscopoHistorico(e)}
+                    className="px-2 py-0.5 rounded text-[10px] font-medium"
+                    style={escopoHistorico === e ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+                  >
+                    {nome}
+                  </button>
+                )
+              })}
             </div>
-          )}
-          <div>
-            <p className="text-[11px] text-[#B8B8B8] mb-1">Heatmap (30 dias)</p>
-            <Heatmap metas={metasDiarias} socio="geral" />
           </div>
+          <MetaHeatmap metasEscopo={metasPorEscopo(metasDiarias, escopoHistorico)} />
         </div>
       </div>
 
-      {/* ── METAS DO TIME ── */}
-      {metasTime.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Megaphone size={14} style={{ color: '#C9A84C' }} />
-              Metas do Time
-            </h2>
-            <button onClick={() => abrirNovaMeta(null)} className="icon-btn" title="Nova meta do time">
-              <Plus size={13} />
-            </button>
-          </div>
-          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-            {metasTime.map((m) => (
-              <CardMeta
-                key={m.id} meta={m} itens={metaChecklistItens}
-                onEditar={(meta) => { setEditandoMeta(meta); setModalAberto(true) }}
-                onDeletar={deletarMeta}
-                onIncrement={incrementarProgresso}
-                onSetValor={atualizarProgresso}
-                onMarcarItem={marcarItem}
-                onConcluir={concluirMeta}
-              />
-            ))}
-          </div>
-        </div>
+      {modalCompleta && (
+        <ModalMetaCompleta
+          escopo={modalCompleta.escopo}
+          responsavel={modalCompleta.responsavel}
+          tituloInicial={modalCompleta.tituloInicial}
+          onFechar={() => setModalCompleta(null)}
+          onSalvar={(dados: NovaMetaCompleta) => {
+            criarMeta({
+              titulo: dados.titulo, tipo: dados.tipo, escopo: modalCompleta.escopo,
+              responsavel: modalCompleta.responsavel, categoria: dados.categoria,
+              valorAlvo: dados.valorAlvo, unidade: dados.unidade, recorrente: dados.recorrente,
+              data: selectedDate, itensChecklist: dados.itensChecklist,
+            })
+            setModalCompleta(null)
+          }}
+        />
       )}
 
-      {/* ── METAS INDIVIDUAIS ── */}
-      <div>
-        <h2 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-          <Users2 size={14} style={{ color: '#C9A84C' }} />
-          Metas Individuais
-        </h2>
-        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {SOCIOS.map((socio) => (
-            <ColunasSocio
-              key={socio}
-              socio={socio}
-              metas={metasPorSocio[socio]}
-              itens={metaChecklistItens}
-              streak={streakSocio[socio]}
-              onEditar={(meta) => { setEditandoMeta(meta); setModalAberto(true) }}
-              onDeletar={deletarMeta}
-              onIncrement={incrementarProgresso}
-              onSetValor={atualizarProgresso}
-              onMarcarItem={marcarItem}
-              onConcluir={concluirMeta}
-              onNovaMeta={abrirNovaMeta}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* ── HISTÓRICO / HEATMAP POR SÓCIO ── */}
-      {metasDiarias.length > 0 && (
-        <div className="card-purion card-section">
-          <h2 className="text-sm font-bold text-[var(--text-primary)] mb-4">Histórico — 30 dias</h2>
-          <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-            {SOCIOS.map((socio) => (
-              <div key={socio}>
-                <p className="text-[11px] font-semibold mb-2" style={{ color: COR_SOCIO[socio] }}>
-                  {LABEL_SOCIO[socio]}
-                </p>
-                <Heatmap metas={metasDiarias} socio={socio} />
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--border)]">
-            <span className="text-[10px] text-[#A0A0A0]">Legenda:</span>
-            {[
-              { cor: '#4CAF7A', label: '100%' },
-              { cor: 'rgba(201,168,76,0.55)', label: '50–99%' },
-              { cor: 'rgba(201,168,76,0.25)', label: '1–49%' },
-              { cor: 'rgba(232,82,56,0.18)', label: '0%' },
-              { cor: 'var(--border)', label: 'Sem metas' },
-            ].map(({ cor, label }) => (
-              <div key={label} className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-sm" style={{ background: cor }} />
-                <span className="text-[10px] text-[#A0A0A0]">{label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── MODAL ── */}
-      {modalAberto && (
-        <ModalMeta
-          metaInicial={editandoMeta}
-          socioPreset={socioPreset}
-          onSalvar={handleSalvar}
-          onFechar={() => { setModalAberto(false); setEditandoMeta(null); setSocioPreset(null) }}
+      {modalTemplate && (
+        <ModalTemplates
+          socio={modalTemplate}
+          onFechar={() => setModalTemplate(null)}
+          onAplicar={(indices) => aplicarTemplates(modalTemplate, indices)}
         />
       )}
     </div>

@@ -839,6 +839,7 @@ interface PurionState {
   adicionarChecklistItem: (item: MetaChecklistItem) => void
   atualizarChecklistItem: (id: string, dados: Partial<MetaChecklistItem>) => void
   removerChecklistItens: (metaId: string) => void
+  removerChecklistItem: (id: string) => void
 
   // Configurações
   configuracoes: Configuracoes
@@ -1149,6 +1150,9 @@ export const usePurionStore = create<PurionState>()(
         })),
         removerChecklistItens: (metaId) => set((s) => ({
           metaChecklistItens: s.metaChecklistItens.filter((i) => i.metaId !== metaId),
+        })),
+        removerChecklistItem: (id) => set((s) => ({
+          metaChecklistItens: s.metaChecklistItens.filter((i) => i.id !== id),
         })),
 
         // ── Configurações ──

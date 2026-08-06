@@ -81,7 +81,7 @@ async function verificarRecorrencia(
 }
 
 export function useMetas() {
-  const { success, error: toastError } = useToast()
+  const { success, error: toastError, toast } = useToast()
 
   useEffect(() => {
     const sb = supabase
@@ -200,6 +200,97 @@ export function useMetas() {
       if (concluida) success(`✓ ${meta.titulo} concluída!`)
     },
 
+    decrementarProgresso: async (id: string): Promise<void> => {
+      const meta = usePurionStore.getState().metasDiarias.find((m) => m.id === id)
+      if (!meta) return
+      const novoValor = Math.max(0, meta.valorAtual - 1)
+      const sb = supabase
+      const concluida = meta.valorAlvo != null && novoValor >= meta.valorAlvo
+      if (sb) {
+        const { error } = await sb.from('metas_diarias').update({
+          valor_atual: novoValor, concluida, updated_at: new Date().toISOString(),
+        }).eq('id', id)
+        dbLog('UPDATE', 'metas_diarias', error, id)
+        if (error) { toastError('Erro ao decrementar', error.message); return }
+      }
+      usePurionStore.getState().atualizarMetaDiaria(id, { valorAtual: novoValor, concluida })
+    },
+
+    editarMeta: async (id: string, dados: { titulo?: string; valorAlvo?: number | null; unidade?: string | null }): Promise<void> => {
+      const sb = supabase
+      const meta = usePurionStore.getState().metasDiarias.find((m) => m.id === id)
+      if (!meta) return
+      const valorAlvo = dados.valorAlvo !== undefined ? dados.valorAlvo : meta.valorAlvo
+      const concluida = valorAlvo != null ? meta.valorAtual >= valorAlvo : meta.concluida
+      if (sb) {
+        const { error } = await sb.from('metas_diarias').update({
+          ...(dados.titulo    !== undefined && { titulo: dados.titulo }),
+          ...(dados.valorAlvo !== undefined && { valor_alvo: dados.valorAlvo }),
+          ...(dados.unidade   !== undefined && { unidade: dados.unidade }),
+          concluida,
+          updated_at: new Date().toISOString(),
+        }).eq('id', id)
+        dbLog('UPDATE', 'metas_diarias', error, id)
+        if (error) { toastError('Erro ao editar meta', error.message); return }
+      }
+      usePurionStore.getState().atualizarMetaDiaria(id, { ...dados, concluida })
+    },
+
+    adicionarItemChecklist: async (metaId: string, texto: string): Promise<void> => {
+      const sb = supabase
+      const itensAtuais = usePurionStore.getState().metaChecklistItens.filter((i) => i.metaId === metaId)
+      const ordem = itensAtuais.length
+      if (!sb) return
+      const { data, error } = await sb.from('meta_checklist_itens').insert({
+        meta_id: metaId, texto, feito: false, ordem,
+      }).select().single()
+      dbLog('INSERT', 'meta_checklist_itens', error, data?.id)
+      if (error) { toastError('Erro ao adicionar item', error.message); return }
+      if (data) {
+        usePurionStore.getState().adicionarChecklistItem(toItem(data as Row))
+        const store = usePurionStore.getState()
+        const meta = store.metasDiarias.find((m) => m.id === metaId)
+        if (meta) {
+          const total = itensAtuais.length + 1
+          const feitos = itensAtuais.filter((i) => i.feito).length
+          const concluida = feitos === total
+          store.atualizarMetaDiaria(metaId, { valorAtual: feitos, concluida })
+          if (sb) {
+            const { error: ue } = await sb.from('metas_diarias').update({
+              valor_atual: feitos, concluida, updated_at: new Date().toISOString(),
+            }).eq('id', metaId)
+            dbLog('UPDATE', 'metas_diarias', ue, metaId)
+          }
+        }
+      }
+    },
+
+    removerItemChecklist: async (id: string): Promise<void> => {
+      const sb = supabase
+      const item = usePurionStore.getState().metaChecklistItens.find((i) => i.id === id)
+      if (!item) return
+      if (sb) {
+        const { error } = await sb.from('meta_checklist_itens').delete().eq('id', id)
+        dbLog('DELETE', 'meta_checklist_itens', error, id)
+        if (error) { toastError('Erro ao remover item', error.message); return }
+      }
+      const store = usePurionStore.getState()
+      store.removerChecklistItem(id)
+      const restantes = store.metaChecklistItens.filter((i) => i.metaId === item.metaId && i.id !== id)
+      const meta = store.metasDiarias.find((m) => m.id === item.metaId)
+      if (meta) {
+        const feitos = restantes.filter((i) => i.feito).length
+        const concluida = restantes.length > 0 && feitos === restantes.length
+        store.atualizarMetaDiaria(item.metaId, { valorAtual: feitos, concluida })
+        if (sb) {
+          const { error: ue } = await sb.from('metas_diarias').update({
+            valor_atual: feitos, concluida, updated_at: new Date().toISOString(),
+          }).eq('id', item.metaId)
+          dbLog('UPDATE', 'metas_diarias', ue, item.metaId)
+        }
+      }
+    },
+
     marcarItem: async (id: string, feito: boolean): Promise<void> => {
       const sb = supabase
       if (sb) {
@@ -245,6 +336,8 @@ export function useMetas() {
 
     deletarMeta: async (id: string): Promise<void> => {
       const sb = supabase
+      const meta = usePurionStore.getState().metasDiarias.find((m) => m.id === id)
+      if (!meta) return
       if (sb) {
         const { error } = await sb.from('metas_diarias').update({
           deleted_at: new Date().toISOString(),
@@ -253,7 +346,22 @@ export function useMetas() {
         if (error) { toastError('Erro ao excluir meta', error.message); return }
       }
       usePurionStore.getState().removerMetaDiaria(id)
-      success('Meta excluída')
+      toast({
+        type: 'info',
+        title: 'Meta excluída',
+        description: meta.titulo,
+        action: {
+          label: 'Desfazer',
+          onClick: async () => {
+            if (sb) {
+              const { error } = await sb.from('metas_diarias').update({ deleted_at: null }).eq('id', id)
+              dbLog('UPDATE', 'metas_diarias', error, id)
+              if (error) return
+            }
+            usePurionStore.getState().adicionarMetaDiaria(meta)
+          },
+        },
+      })
     },
   }
 }
