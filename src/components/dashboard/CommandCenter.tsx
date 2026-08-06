@@ -30,6 +30,7 @@ import {
 import Link from 'next/link'
 import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
 import { useGrowth } from '@/hooks/useGrowth'
+import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
@@ -555,6 +556,8 @@ export function CommandCenter() {
     dashboardWidgets, estoqueProduto,
   } = usePurionStore()
   const { experimentos } = useGrowth()
+  const { fases } = useEstrategiaRoadmap()
+  const faseAtual = fases.find((f) => f.status === 'atual')
 
   const showWidget = (id: string) => dashboardWidgets.includes(id)
 
@@ -738,13 +741,15 @@ export function CommandCenter() {
           return dias >= 14 && dias <= 35
         }).length
         return (
-          <Link href="/growth" style={{ textDecoration: 'none' }}>
+          <Link href="/estrategias" style={{ textDecoration: 'none' }}>
             <div className="card-purion" style={{ padding: '14px 16px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)' }}>
                 <FlaskConical size={16} style={{ color: '#C9A84C' }} />
               </div>
               <div style={{ flex: 1, minWidth: 180 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>⭐ North Star · recompra</span>
+                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>
+                  ⭐ North Star · recompra{faseAtual && ` · fase: ${faseAtual.nome}`}
+                </span>
                 <span style={{ fontSize: 13, fontWeight: 700 }}>
                   {parceiros} parceiro{parceiros !== 1 ? 's' : ''} ativo{parceiros !== 1 ? 's' : ''}
                   {reposicoes > 0 && <span style={{ color: '#E8A838', marginLeft: 8 }}>{reposicoes} reposição D+21</span>}

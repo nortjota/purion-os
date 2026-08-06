@@ -8,12 +8,17 @@ import {
   Package, Video, BookOpen, BarChart2, Brain,
   Settings, Plus, UserPlus, TrendingUp, TrendingDown,
   Boxes, UserCog, Calendar, KeyRound, FileText, ShoppingBag, Shapes,
+  Compass, Milestone, FlaskConical, UserCircle,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import { useIsMaster } from '@/hooks/useIsMaster'
+import { useEstrategiaDecisoes } from '@/hooks/useEstrategia'
+import { useGrowth } from '@/hooks/useGrowth'
+import { useIcpPersonas } from '@/hooks/useIcpPersonas'
 
 const PAGES = [
   { label: 'Dashboard',      href: '/',              icon: LayoutDashboard },
+  { label: 'Estratégias',    href: '/estrategias',   icon: Compass         },
   { label: 'CRM',            href: '/crm',           icon: Users           },
   { label: 'Tarefas',        href: '/tarefas',       icon: CheckSquare     },
   { label: 'Financeiro',     href: '/financeiro',    icon: DollarSign      },
@@ -53,6 +58,9 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const router = useRouter()
   const { leads, tarefas, creators, kbDocumentos, contasAcessos, vendas, quadros, doacoesUGC } = usePurionStore()
   const { isMaster } = useIsMaster()
+  const { decisoes } = useEstrategiaDecisoes()
+  const { experimentos } = useGrowth()
+  const { personas } = useIcpPersonas()
   const [query, setQuery] = useState('')
 
   const filteredLeads = leads
@@ -91,6 +99,18 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
         const c = creators.find((cr) => cr.id === d.creatorId)
         return c?.nome.toLowerCase().includes(query.toLowerCase()) ?? false
       }).slice(0, 5)
+    : []
+
+  const filteredDecisoes = query.length >= 2
+    ? decisoes.filter((d) => d.titulo.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+    : []
+
+  const filteredExperimentos = query.length >= 2
+    ? experimentos.filter((e) => e.nome.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+    : []
+
+  const filteredPersonas = query.length >= 2
+    ? personas.filter((p) => p.nome.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
     : []
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -182,7 +202,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ))}
           </Command.Group>
 
-          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0 || filteredQuadros.length > 0 || filteredDoacoes.length > 0) && (
+          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0 || filteredQuadros.length > 0 || filteredDoacoes.length > 0 || filteredDecisoes.length > 0 || filteredExperimentos.length > 0 || filteredPersonas.length > 0) && (
             <Command.Group heading="Registros">
               {filteredLeads.map((lead) => (
                 <Command.Item
@@ -307,6 +327,42 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   </Command.Item>
                 )
               })}
+              {filteredDecisoes.map((d) => (
+                <Command.Item
+                  key={`decisao-${d.id}`}
+                  value={`decisao-${d.titulo}`}
+                  onSelect={() => { router.push('/estrategias'); onClose() }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
+                >
+                  <Milestone size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <span>{d.titulo}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Decisão</span>
+                </Command.Item>
+              ))}
+              {filteredExperimentos.map((e) => (
+                <Command.Item
+                  key={`experimento-${e.id}`}
+                  value={`experimento-${e.nome}`}
+                  onSelect={() => { router.push('/estrategias'); onClose() }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
+                >
+                  <FlaskConical size={15} style={{ color: '#E8A838', flexShrink: 0 }} />
+                  <span>{e.nome}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Experimento ICE</span>
+                </Command.Item>
+              ))}
+              {filteredPersonas.map((p) => (
+                <Command.Item
+                  key={`persona-${p.id}`}
+                  value={`persona-${p.nome}`}
+                  onSelect={() => { router.push('/estrategias'); onClose() }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
+                >
+                  <UserCircle size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
+                  <span>{p.emoji} {p.nome}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Persona</span>
+                </Command.Item>
+              ))}
             </Command.Group>
           )}
         </Command.List>

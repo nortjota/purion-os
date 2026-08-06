@@ -573,7 +573,7 @@ function TabAprendizados({ experimentos }: { experimentos: GrowthExperimento[] }
 
 type TabId = 'kanban' | 'aarrr' | 'aprendizados'
 
-export function GrowthPage() {
+export function GrowthPage({ embutido = false }: { embutido?: boolean } = {}) {
   const { experimentos, carregando, criarExperimento, atualizarExperimento, deletarExperimento, moverStatus } = useGrowth()
   const [aba, setAba] = useState<TabId>('kanban')
   const [modalAberto, setModalAberto] = useState(false)
@@ -600,12 +600,14 @@ export function GrowthPage() {
   ]
 
   return (
-    <div className="page-content section-gap">
+    <div className={embutido ? 'flex flex-col gap-5' : 'page-content section-gap'}>
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h1 className="page-title">Growth</h1>
-          <p className="caption mt-1">Experimentação ICE · Funil AARRR · Banco de Aprendizados</p>
-        </div>
+        {embutido ? <div /> : (
+          <div>
+            <h1 className="page-title">Growth</h1>
+            <p className="caption mt-1">Experimentação ICE · Funil AARRR · Banco de Aprendizados</p>
+          </div>
+        )}
         <button onClick={() => { setEditando(null); setModalAberto(true) }} className="btn btn-primary btn-sm">
           <Plus size={12} /> Novo Experimento
         </button>
