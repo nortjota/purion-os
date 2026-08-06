@@ -9,7 +9,7 @@ import type { Creator, PerfilUsuario, StatusCreator } from '@/store'
 
 type Row = Record<string, unknown>
 
-function toCreator(r: Row): Creator {
+export function toCreator(r: Row): Creator {
   return {
     id:               String(r.id),
     nome:             String(r.nome             ?? ''),

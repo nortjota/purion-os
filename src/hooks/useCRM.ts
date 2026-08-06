@@ -9,7 +9,7 @@ import type { Lead, Regiao, PerfilUsuario, TierLead, StatusLead, TipoEstabelecim
 
 type Row = Record<string, unknown>
 
-function toLead(r: Row): Lead {
+export function toLead(r: Row): Lead {
   return {
     id:                  String(r.id),
     nomeEmpresa:         String(r.nome_empresa         ?? ''),

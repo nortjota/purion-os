@@ -7,8 +7,12 @@ import {
   Plus, X, ExternalLink, Copy, Check,
   AtSign, Users, Star, MessageSquare, Trash2, Pencil, GripVertical,
 } from 'lucide-react'
-import { useMarketing } from '@/hooks/useMarketing'
+import { useMarketing, toCreator } from '@/hooks/useMarketing'
+import { useIsMaster } from '@/hooks/useIsMaster'
+import { useBulkActions } from '@/hooks/useBulkActions'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { BulkActionsBar } from '@/components/ui/BulkActionsBar'
+import { ArquivadosPanel } from '@/components/ui/ArquivadosPanel'
 import {
   usePurionStore,
   type Creator,
@@ -35,7 +39,7 @@ const GraficoNicho = dynamic(
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
 
-type TabId = 'overview' | 'pipeline' | 'campanhas' | 'vendas' | 'analise'
+type TabId = 'overview' | 'pipeline' | 'campanhas' | 'vendas' | 'analise' | 'arquivados'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'overview',   label: 'Overview' },
@@ -43,6 +47,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'campanhas',  label: 'Campanhas' },
   { id: 'vendas',     label: 'Vendas & Afiliados' },
   { id: 'analise',    label: 'Análise' },
+  { id: 'arquivados', label: 'Arquivados' },
 ]
 
 const COMISSAO_PADRAO_POR_VENDA = 25
@@ -887,7 +892,14 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
 function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => void }) {
   const { creators } = usePurionStore()
   const isMobile = useMobile()
+  const { isMaster } = useIsMaster()
   const [sort, setSort] = useState<'score' | 'roi' | 'seguidores'>('score')
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set())
+  const [confirmArquivar, setConfirmArquivar] = useState(false)
+  const [confirmExcluir, setConfirmExcluir] = useState(false)
+  const { bulkArchive, bulkHardDelete, bulkUpdateField, isProcessing } = useBulkActions({
+    table: 'creators', itemLabelSingular: 'creator', itemLabelPlural: 'creators',
+  })
 
   const hoje = DATA_REF
   const mesAtual = hoje.toISOString().slice(0, 7)
@@ -921,6 +933,53 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
       return b.seguidores - a.seguidores
     })
   }, [creators, sort])
+
+  function toggleSel(id: string) {
+    setSelecionados((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleTodos() {
+    setSelecionados((prev) =>
+      prev.size === creatorsOrdenados.length ? new Set() : new Set(creatorsOrdenados.map((c) => c.id))
+    )
+  }
+
+  async function handleArquivar() {
+    const ids = Array.from(selecionados)
+    const ok = await bulkArchive(ids)
+    if (ok) {
+      const store = usePurionStore.getState()
+      store.setCreators(store.creators.filter((c) => !selecionados.has(c.id)))
+      setSelecionados(new Set())
+    }
+    setConfirmArquivar(false)
+  }
+
+  async function handleExcluirPermanente() {
+    const ids = Array.from(selecionados)
+    const ok = await bulkHardDelete(ids)
+    if (ok) {
+      const store = usePurionStore.getState()
+      store.setCreators(store.creators.filter((c) => !selecionados.has(c.id)))
+      setSelecionados(new Set())
+    }
+    setConfirmExcluir(false)
+  }
+
+  async function handleMudarStatus(status: string) {
+    const ids = Array.from(selecionados)
+    const ok = await bulkUpdateField(ids, { status }, 'Status')
+    if (ok) {
+      const store = usePurionStore.getState()
+      ids.forEach((id) => store.atualizarCreator(id, { status: status as StatusCreator }))
+      setSelecionados(new Set())
+    }
+  }
 
   const ultimaPost = (c: Creator) => {
     const datas = c.postagens.map((p) => p.data).sort().reverse()
@@ -982,6 +1041,9 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
               const plats = [c.instagram && 'instagram', c.tiktok && 'tiktok', c.youtube && 'youtube'].filter(Boolean) as string[]
               return (
                 <div key={c.id} className="px-4 py-3 flex items-center gap-3 cursor-pointer" onClick={() => onSelectCreator(c.id)}>
+                  <span onClick={(e) => e.stopPropagation()}>
+                    <input type="checkbox" checked={selecionados.has(c.id)} onChange={() => toggleSel(c.id)} />
+                  </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-medium text-[var(--text-primary)]">{c.nome}</p>
@@ -1005,6 +1067,13 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
           <table className="table-purion">
             <thead>
               <tr>
+                <th style={{ width: 32 }}>
+                  <input
+                    type="checkbox"
+                    checked={selecionados.size === creatorsOrdenados.length && creatorsOrdenados.length > 0}
+                    onChange={toggleTodos}
+                  />
+                </th>
                 <th>Nome</th>
                 <th>Plataforma</th>
                 <th>Seguidores</th>
@@ -1017,7 +1086,7 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
             </thead>
             <tbody>
               {creatorsOrdenados.length === 0 && (
-                <tr><td colSpan={8} className="text-center py-12"><div className="empty-state"><Users size={28} className="mx-auto mb-3 opacity-30" /><p>Nenhum creator cadastrado</p></div></td></tr>
+                <tr><td colSpan={9} className="text-center py-12"><div className="empty-state"><Users size={28} className="mx-auto mb-3 opacity-30" /><p>Nenhum creator cadastrado</p></div></td></tr>
               )}
               {creatorsOrdenados.map((c) => {
                 const score = calcularScore(c)
@@ -1025,6 +1094,9 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
                 const plats = [c.instagram && 'instagram', c.tiktok && 'tiktok', c.youtube && 'youtube'].filter(Boolean) as string[]
                 return (
                   <tr key={c.id} className="cursor-pointer" onClick={() => onSelectCreator(c.id)}>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={selecionados.has(c.id)} onChange={() => toggleSel(c.id)} />
+                    </td>
                     <td className="font-medium">{c.nome}</td>
                     <td>
                       <div className="flex gap-1 flex-wrap">
@@ -1044,6 +1116,42 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
           </table>
         )}
       </div>
+
+      <BulkActionsBar
+        selecionados={selecionados.size}
+        total={creatorsOrdenados.length}
+        onLimpar={() => setSelecionados(new Set())}
+        onArquivar={() => setConfirmArquivar(true)}
+        onExcluirPermanente={isMaster ? () => setConfirmExcluir(true) : undefined}
+        processando={isProcessing}
+        campos={[{
+          key: 'status',
+          label: 'Mudar status',
+          options: STATUS_OPTIONS.map((s) => ({ value: s, label: STATUS_LABEL[s] })),
+          onAplicar: handleMudarStatus,
+        }]}
+      />
+
+      <ConfirmModal
+        open={confirmArquivar}
+        title="Arquivar creators"
+        message={`Arquivar ${selecionados.size} creator${selecionados.size !== 1 ? 's' : ''}? Você pode restaurar na aba Arquivados.`}
+        confirmLabel="Arquivar"
+        onConfirm={handleArquivar}
+        onCancel={() => setConfirmArquivar(false)}
+        danger={false}
+      />
+
+      <ConfirmModal
+        open={confirmExcluir}
+        title="Excluir permanentemente"
+        message={`Excluir ${selecionados.size} creator${selecionados.size !== 1 ? 's' : ''} definitivamente? Esta ação não pode ser desfeita.`}
+        confirmLabel="Excluir permanentemente"
+        confirmText="CONFIRMAR"
+        onConfirm={handleExcluirPermanente}
+        onCancel={() => setConfirmExcluir(false)}
+        danger
+      />
     </div>
   )
 }
@@ -1647,7 +1755,8 @@ function AbaVendasAfiliados() {
 // ─────────────────────────────────────────────
 
 export function CreatorsDashboard() {
-  const { adicionarCreator, atualizarCreator, deletarCreator } = useMarketing()
+  const { adicionarCreator, atualizarCreator, deletarCreator, restaurarCreator } = useMarketing()
+  const { isMaster } = useIsMaster()
   const [activeTab, setActiveTab] = useState<TabId>('overview')
   const [drawerCreatorId, setDrawerCreatorId] = useState<string | null>(null)
   const [showModalCreator, setShowModalCreator] = useState(false)
@@ -1688,6 +1797,16 @@ export function CreatorsDashboard() {
       {activeTab === 'campanhas' && <AbaCampanhas />}
       {activeTab === 'vendas'    && <AbaVendasAfiliados />}
       {activeTab === 'analise'   && <AbaAnalise />}
+      {activeTab === 'arquivados' && (
+        <ArquivadosPanel<Creator>
+          table="creators"
+          mapRow={toCreator}
+          renderTitle={(c) => c.nome}
+          renderSubtitle={(c) => `${c.nichoPrincipal || 'Sem nicho'} · ${STATUS_LABEL[c.status]}`}
+          onRestore={restaurarCreator}
+          isMaster={isMaster}
+        />
+      )}
 
       {/* Drawer */}
       {drawerCreatorId && (

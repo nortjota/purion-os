@@ -12,11 +12,14 @@ import {
   Mail, MapPin, Clock, Plus, ChevronDown, MessageSquare, Trash2, Download,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
-import type { Lead, StatusLead, TipoEstabelecimento } from '@/store'
+import type { Lead, StatusLead, TipoEstabelecimento, TierLead, PerfilUsuario } from '@/store'
 import { useMobile } from '@/hooks/useMobile'
 import { BottomSheet } from '@/components/ui/BottomSheet'
 import { useCRM } from '@/hooks/useCRM'
+import { useIsMaster } from '@/hooks/useIsMaster'
+import { useBulkActions } from '@/hooks/useBulkActions'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { BulkActionsBar } from '@/components/ui/BulkActionsBar'
 import { ViewToggle } from '@/components/ui/ViewToggle'
 import { AdvancedFilters } from '@/components/ui/AdvancedFilters'
 import type { ViewType } from '@/components/ui/ViewToggle'
@@ -82,9 +85,11 @@ interface LeadCardProps {
   onDragStart: (e: React.DragEvent, id: string) => void
   onDragEnd:   () => void
   onVerDetalhes: (id: string) => void
+  selecionado: boolean
+  onToggleSel: (id: string) => void
 }
 
-function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: LeadCardProps) {
+function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes, selecionado, onToggleSel }: LeadCardProps) {
   const score = calcularScore(lead)
   const diasSem = diasSemContato(lead)
   const tipo = lead.tipoEstabelecimento ?? 'estetica'
@@ -101,10 +106,14 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes }: L
         hover:border-[rgba(201,168,76,0.25)]
         transition-all duration-150 select-none
         ${isDragging ? 'opacity-40 scale-95 border-[#C9A84C]' : ''}
+        ${selecionado ? 'border-[#C9A84C]' : ''}
       `}
     >
-      {/* Header: Nome + Health Score */}
+      {/* Header: Checkbox + Nome + Health Score */}
       <div className="flex items-start gap-2 mb-2.5">
+        <span onClick={(e) => e.stopPropagation()} className="shrink-0 mt-0.5">
+          <input type="checkbox" checked={selecionado} onChange={() => onToggleSel(lead.id)} />
+        </span>
         <div
           className="w-2.5 h-2.5 rounded-full shrink-0 mt-1 ring-2"
           style={{
@@ -189,11 +198,14 @@ interface KanbanColProps {
   onDragLeave: () => void
   onDrop:      (e: React.DragEvent, id: StatusLead) => void
   onVerDetalhes: (id: string) => void
+  selecionados: Set<string>
+  onToggleSel: (id: string) => void
 }
 
 function KanbanCol({
   coluna, leads, isDragOver, dragLeadId,
   onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop, onVerDetalhes,
+  selecionados, onToggleSel,
 }: KanbanColProps) {
   return (
     <div
@@ -236,6 +248,8 @@ function KanbanCol({
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             onVerDetalhes={onVerDetalhes}
+            selecionado={selecionados.has(lead.id)}
+            onToggleSel={onToggleSel}
           />
         ))}
         {/* Drop zone visual quando vazio */}
@@ -537,9 +551,18 @@ function exportarCSVLeads(leads: Lead[]) {
 export function CRMDashboard() {
   const isMobile = useMobile()
   const { leads } = usePurionStore()
-  const { atualizarLead, deletarLead } = useCRM()
+  const { atualizarLead, deletarLead, restaurarLead } = useCRM()
+  const { isMaster } = useIsMaster()
   const { success } = useToast()
   const [deletandoLead, setDeletandoLead] = useState<Lead | null>(null)
+
+  // ── Seleção em massa ──
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set())
+  const [confirmArquivarMassa, setConfirmArquivarMassa] = useState(false)
+  const [confirmExcluirMassa, setConfirmExcluirMassa] = useState(false)
+  const { bulkArchive, bulkHardDelete, bulkUpdateField, isProcessing: isProcessingMassa } = useBulkActions({
+    table: 'leads_crm', itemLabelSingular: 'lead', itemLabelPlural: 'leads',
+  })
 
   // ── Estado local ──
   const [filtroEstado,  setFiltroEstado]  = useState<'DF' | 'SP' | 'SC' | 'todos'>('todos')
@@ -569,6 +592,73 @@ export function CRMDashboard() {
       return true
     })
   }, [leads, filtroEstado, filtroScore])
+
+  function toggleSel(id: string) {
+    setSelecionados((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleTodosSel() {
+    setSelecionados((prev) =>
+      prev.size === leadsFiltrados.length ? new Set() : new Set(leadsFiltrados.map((l) => l.id))
+    )
+  }
+
+  async function handleArquivarMassa() {
+    const ids = Array.from(selecionados)
+    const ok = await bulkArchive(ids)
+    if (ok) {
+      const store = usePurionStore.getState()
+      store.setLeads(store.leads.filter((l) => !selecionados.has(l.id)))
+      setSelecionados(new Set())
+    }
+    setConfirmArquivarMassa(false)
+  }
+
+  async function handleExcluirMassa() {
+    const ids = Array.from(selecionados)
+    const ok = await bulkHardDelete(ids)
+    if (ok) {
+      const store = usePurionStore.getState()
+      store.setLeads(store.leads.filter((l) => !selecionados.has(l.id)))
+      setSelecionados(new Set())
+    }
+    setConfirmExcluirMassa(false)
+  }
+
+  async function handleMudarStatusMassa(status: string) {
+    const ids = Array.from(selecionados)
+    const ok = await bulkUpdateField(ids, { status }, 'Status')
+    if (ok) {
+      const store = usePurionStore.getState()
+      ids.forEach((id) => store.atualizarLead(id, { status: status as StatusLead }))
+      setSelecionados(new Set())
+    }
+  }
+
+  async function handleMudarTierMassa(tier: string) {
+    const ids = Array.from(selecionados)
+    const ok = await bulkUpdateField(ids, { tier }, 'Tier')
+    if (ok) {
+      const store = usePurionStore.getState()
+      ids.forEach((id) => store.atualizarLead(id, { tier: tier as TierLead }))
+      setSelecionados(new Set())
+    }
+  }
+
+  async function handleMudarResponsavelMassa(responsavel: string) {
+    const ids = Array.from(selecionados)
+    const ok = await bulkUpdateField(ids, { responsavel }, 'Responsável')
+    if (ok) {
+      const store = usePurionStore.getState()
+      ids.forEach((id) => store.atualizarLead(id, { responsavel: responsavel as PerfilUsuario }))
+      setSelecionados(new Set())
+    }
+  }
 
   // ── KPIs ──
   const kpis = useMemo(() => {
@@ -739,6 +829,7 @@ export function CRMDashboard() {
                 >
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <input type="checkbox" checked={selecionados.has(lead.id)} onChange={() => toggleSel(lead.id)} style={{ width: 18, height: 18 }} />
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: SCORE_COR[score].bg, flexShrink: 0, marginTop: 2 }} />
                       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{lead.nomeEmpresa}</span>
                     </div>
@@ -821,6 +912,43 @@ export function CRMDashboard() {
             />
           )}
         </BottomSheet>
+
+        <BulkActionsBar
+          selecionados={selecionados.size}
+          total={leadsFiltrados.length}
+          onLimpar={() => setSelecionados(new Set())}
+          onArquivar={() => setConfirmArquivarMassa(true)}
+          onExcluirPermanente={isMaster ? () => setConfirmExcluirMassa(true) : undefined}
+          processando={isProcessingMassa}
+          campos={[
+            {
+              key: 'status', label: 'Mudar status',
+              options: COLUNAS_KANBAN.map((c) => ({ value: c.id, label: c.label })),
+              onAplicar: handleMudarStatusMassa,
+            },
+          ]}
+        />
+
+        <ConfirmModal
+          open={confirmArquivarMassa}
+          title="Arquivar leads"
+          message={`Arquivar ${selecionados.size} lead${selecionados.size !== 1 ? 's' : ''}? Você pode restaurar na aba Arquivados.`}
+          confirmLabel="Arquivar"
+          onConfirm={handleArquivarMassa}
+          onCancel={() => setConfirmArquivarMassa(false)}
+          danger={false}
+        />
+
+        <ConfirmModal
+          open={confirmExcluirMassa}
+          title="Excluir permanentemente"
+          message={`Excluir ${selecionados.size} lead${selecionados.size !== 1 ? 's' : ''} definitivamente? Esta ação não pode ser desfeita.`}
+          confirmLabel="Excluir permanentemente"
+          confirmText="CONFIRMAR"
+          onConfirm={handleExcluirMassa}
+          onCancel={() => setConfirmExcluirMassa(false)}
+          danger
+        />
       </div>
     )
   }
@@ -927,7 +1055,15 @@ export function CRMDashboard() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-3 ml-auto">
+            <label className="flex items-center gap-1.5" style={{ cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={selecionados.size === leadsFiltrados.length && leadsFiltrados.length > 0}
+                onChange={toggleTodosSel}
+              />
+              <span className="text-[10px] text-[#4A4A4A]">Selecionar todos</span>
+            </label>
             <button
               onClick={() => exportarCSVLeads(leadsFiltrados)}
               title="Exportar CSV"
@@ -959,6 +1095,8 @@ export function CRMDashboard() {
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onVerDetalhes={abrirDrawer}
+                  selecionados={selecionados}
+                  onToggleSel={toggleSel}
                 />
               )
             })}
@@ -970,15 +1108,19 @@ export function CRMDashboard() {
             {leadsFiltrados.map((lead) => {
               const score = calcularScore(lead)
               return (
-                <button
+                <div
                   key={lead.id}
                   onClick={() => abrirDrawer(lead.id)}
                   style={{
-                    background: 'var(--bg-surface)', border: '1px solid var(--border)',
+                    background: 'var(--bg-surface)',
+                    border: `1px solid ${selecionados.has(lead.id) ? '#C9A84C' : 'var(--border)'}`,
                     borderRadius: 12, padding: 14, textAlign: 'left', cursor: 'pointer',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <span onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={selecionados.has(lead.id)} onChange={() => toggleSel(lead.id)} />
+                    </span>
                     <div style={{ width: 10, height: 10, borderRadius: '50%', background: SCORE_COR[score].bg, flexShrink: 0 }} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {lead.nomeEmpresa}
@@ -996,7 +1138,7 @@ export function CRMDashboard() {
                   <span style={{ fontSize: 12, color: '#C9A84C', fontWeight: 600 }}>
                     R$ {lead.valorMedioMensal.toLocaleString('pt-BR')}/mês
                   </span>
-                </button>
+                </div>
               )
             })}
           </div>
@@ -1013,6 +1155,9 @@ export function CRMDashboard() {
                   borderBottom: idx < leadsFiltrados.length - 1 ? '1px solid var(--border)' : 'none',
                 }}
               >
+                <span onClick={(e) => e.stopPropagation()} style={{ marginTop: 2 }}>
+                  <input type="checkbox" checked={selecionados.has(lead.id)} onChange={() => toggleSel(lead.id)} />
+                </span>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#C9A84C' }} />
                   {idx < leadsFiltrados.length - 1 && (
@@ -1034,6 +1179,53 @@ export function CRMDashboard() {
 
         </div>
       </div>
+
+      <BulkActionsBar
+        selecionados={selecionados.size}
+        total={leadsFiltrados.length}
+        onLimpar={() => setSelecionados(new Set())}
+        onArquivar={() => setConfirmArquivarMassa(true)}
+        onExcluirPermanente={isMaster ? () => setConfirmExcluirMassa(true) : undefined}
+        processando={isProcessingMassa}
+        campos={[
+          {
+            key: 'status', label: 'Mudar status',
+            options: COLUNAS_KANBAN.map((c) => ({ value: c.id, label: c.label })),
+            onAplicar: handleMudarStatusMassa,
+          },
+          {
+            key: 'tier', label: 'Mudar tier',
+            options: [{ value: 'A', label: 'Tier A' }, { value: 'B', label: 'Tier B' }, { value: 'C', label: 'Tier C' }],
+            onAplicar: handleMudarTierMassa,
+          },
+          {
+            key: 'responsavel', label: 'Mudar responsável',
+            options: [{ value: 'matheus', label: 'Matheus' }, { value: 'gabriel', label: 'Gabriel' }, { value: 'joao', label: 'João' }],
+            onAplicar: handleMudarResponsavelMassa,
+          },
+        ]}
+      />
+
+      <ConfirmModal
+        open={confirmArquivarMassa}
+        title="Arquivar leads"
+        message={`Arquivar ${selecionados.size} lead${selecionados.size !== 1 ? 's' : ''}? Você pode restaurar na aba Arquivados.`}
+        confirmLabel="Arquivar"
+        onConfirm={handleArquivarMassa}
+        onCancel={() => setConfirmArquivarMassa(false)}
+        danger={false}
+      />
+
+      <ConfirmModal
+        open={confirmExcluirMassa}
+        title="Excluir permanentemente"
+        message={`Excluir ${selecionados.size} lead${selecionados.size !== 1 ? 's' : ''} definitivamente? Esta ação não pode ser desfeita.`}
+        confirmLabel="Excluir permanentemente"
+        confirmText="CONFIRMAR"
+        onConfirm={handleExcluirMassa}
+        onCancel={() => setConfirmExcluirMassa(false)}
+        danger
+      />
 
       {/* ── Drawer lateral ── */}
       {leadAtual && (
