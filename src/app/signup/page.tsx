@@ -100,21 +100,21 @@ export default function SignupPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{ fontSize: '28px', fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em', lineHeight: 1 }}>PURION</div>
-          <div style={{ fontSize: '12px', color: '#6B6B6B', letterSpacing: '0.2em', marginTop: '2px' }}>OS</div>
+          <div style={{ fontSize: '12px', color: '#B8B8B8', letterSpacing: '0.2em', marginTop: '2px' }}>OS</div>
           <div style={{ width: '40px', height: '1px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)', margin: '12px auto 0' }} />
         </div>
 
         <h2 style={{ fontSize: '17px', fontWeight: 600, color: '#FAFAF8', marginBottom: '4px', textAlign: 'center' }}>
           Criar sua conta
         </h2>
-        <p style={{ fontSize: '13px', color: '#6B6B6B', textAlign: 'center', marginBottom: '24px' }}>
+        <p style={{ fontSize: '13px', color: '#B8B8B8', textAlign: 'center', marginBottom: '24px' }}>
           Seu sistema estará pronto em segundos
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {fields.map(({ field, label, placeholder, type = 'text' }) => (
             <div key={field}>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#6B6B6B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#B8B8B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
                 {label}
               </label>
               <input
@@ -160,7 +160,7 @@ export default function SignupPage() {
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: '#4A4A4A' }}>
+        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: '#A0A0A0' }}>
           Já tem uma conta?{' '}
           <a href="/login" style={{ color: '#C9A84C', textDecoration: 'none' }}>Entrar</a>
         </p>

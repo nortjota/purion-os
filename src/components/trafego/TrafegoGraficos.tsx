@@ -46,7 +46,7 @@ function TooltipEmpilhado({ active, payload, label }: {
   const total = payload.reduce((s, p) => s + (p.value ?? 0), 0)
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
-      <p className="text-[#6B6B6B] mb-2">{label}</p>
+      <p className="text-[#B8B8B8] mb-2">{label}</p>
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color }}>
           {p.name}: {fmtR(p.value)}
@@ -67,7 +67,7 @@ function TooltipLinha({ active, payload, label }: {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
-      <p className="text-[#6B6B6B] mb-1">{label}</p>
+      <p className="text-[#B8B8B8] mb-1">{label}</p>
       <p className="font-bold text-[var(--text-primary)]">{fmtR(payload[0].value)}</p>
     </div>
   )
@@ -82,7 +82,7 @@ export default function TrafegoGraficos({ tipo, empilhadoData = [], linhaData = 
   const isDark = theme === 'dark'
 
   const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
-  const tickFill   = isDark ? '#4A4A4A' : '#6B6B66'
+  const tickFill   = isDark ? '#A0A0A0' : '#6B6B66'
 
   if (tipo === 'empilhado') {
     return (

@@ -13,7 +13,7 @@ export const COLUNAS: Array<{
   cor: string
   icon: React.ElementType
 }> = [
-  { id: 'pendente',     label: 'Pendente',     cor: '#6B6B6B', icon: CheckSquare  },
+  { id: 'pendente',     label: 'Pendente',     cor: '#B8B8B8', icon: CheckSquare  },
   { id: 'em_andamento', label: 'Em Andamento', cor: '#5B8FE8', icon: Zap          },
   { id: 'bloqueada',    label: 'Bloqueada',    cor: '#E8A838', icon: AlertTriangle},
   { id: 'concluida',    label: 'Concluída',    cor: '#4CAF7A', icon: CheckSquare  },
@@ -71,7 +71,7 @@ export interface PrazoVisual {
 export function prazoVisual(dueDate: string | null, status?: StatusTarefa): PrazoVisual | null {
   if (!dueDate) return null
   if (status === 'concluida' || status === 'cancelada') {
-    return { cor: '#6B6B6B', bg: 'rgba(107,107,107,0.12)', label: '' }
+    return { cor: '#B8B8B8', bg: 'rgba(107,107,107,0.12)', label: '' }
   }
   const diffDias = Math.round((new Date(dueDate + 'T00:00:00').getTime() - new Date(HOJE + 'T00:00:00').getTime()) / 86_400_000)
   if (diffDias < 0) {

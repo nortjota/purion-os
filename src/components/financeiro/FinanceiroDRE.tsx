@@ -338,7 +338,7 @@ export function FinanceiroDRE() {
         >
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-xs text-[#6B6B6B] mb-1 uppercase tracking-wide">
+              <p className="text-xs text-[#B8B8B8] mb-1 uppercase tracking-wide">
                 Resultado Líquido — {formatarMes(mesSel)}
               </p>
               <p
@@ -350,7 +350,7 @@ export function FinanceiroDRE() {
             </div>
             <div className="flex gap-6">
               <div className="text-right">
-                <p className="text-xs text-[#6B6B6B] mb-1">Margem Líquida</p>
+                <p className="text-xs text-[#B8B8B8] mb-1">Margem Líquida</p>
                 <p
                   className="text-xl font-black"
                   style={{ fontFamily: 'Montserrat, sans-serif', color: margem >= 50 ? '#4CAF7A' : margem >= 0 ? '#C9A84C' : '#E85238' }}
@@ -359,11 +359,11 @@ export function FinanceiroDRE() {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-[#6B6B6B] mb-1">Cobertura</p>
-                <p className="text-xl font-black" style={{ fontFamily: 'Montserrat, sans-serif', color: '#6B6B6B' }}>
+                <p className="text-xs text-[#B8B8B8] mb-1">Cobertura</p>
+                <p className="text-xl font-black" style={{ fontFamily: 'Montserrat, sans-serif', color: '#B8B8B8' }}>
                   {totalRec > 0 ? formatarPercentual((totalDesp / totalRec) * 100) : '—'}
                 </p>
-                <p className="text-[10px] text-[#4A4A4A]">% desp/rec</p>
+                <p className="text-[10px] text-[#A0A0A0]">% desp/rec</p>
               </div>
             </div>
           </div>
@@ -371,7 +371,7 @@ export function FinanceiroDRE() {
           {/* Barra de progresso margem vs meta 65% */}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] text-[#6B6B6B]">Margem vs meta 65%</span>
+              <span className="text-[10px] text-[#B8B8B8]">Margem vs meta 65%</span>
               <span className="text-[10px]" style={{ color: margem >= 65 ? '#4CAF7A' : '#E8A838' }}>
                 {margem >= 65 ? '✓ Acima da meta' : `${(65 - margem).toFixed(1)}pp abaixo`}
               </span>
@@ -391,7 +391,7 @@ export function FinanceiroDRE() {
         {/* Comparativo mês anterior */}
         {mesPrev && (totalRecPrev > 0 || totalDespPrev > 0) && (
           <div className="pt-2 border-t border-[var(--border)]">
-            <p className="text-xs text-[#6B6B6B] mb-3 flex items-center gap-1.5">
+            <p className="text-xs text-[#B8B8B8] mb-3 flex items-center gap-1.5">
               Comparativo vs {formatarMes(mesPrev)}
             </p>
             <div className="grid grid-cols-3 gap-3">
@@ -403,7 +403,7 @@ export function FinanceiroDRE() {
                 const delta = variacaoPct(atual, prev)
                 return (
                   <div key={label} className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-3">
-                    <p className="text-[10px] text-[#6B6B6B] mb-1">{label}</p>
+                    <p className="text-[10px] text-[#B8B8B8] mb-1">{label}</p>
                     <p className="text-sm font-bold" style={{ color: cor }}>{formatarMoeda(atual)}</p>
                     <VarBadge pct={delta} inverso={inverso} />
                   </div>

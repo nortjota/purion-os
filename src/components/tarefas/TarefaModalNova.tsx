@@ -97,13 +97,13 @@ export function TarefaModalNova({ statusInicial, perfilAtivo, onCriar, onFechar 
                 <option value="alta">Prioridade: Alta</option>
                 <option value="urgente">Prioridade: Urgente</option>
               </select>
-              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
             </div>
             <div className="relative flex-1">
               <select value={form.responsavel} onChange={(e) => set('responsavel', e.target.value as PerfilUsuario)} className={`${inputCls} appearance-none cursor-pointer`}>
                 {SOCIOS.map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}
               </select>
-              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
             </div>
           </div>
 
@@ -112,7 +112,7 @@ export function TarefaModalNova({ statusInicial, perfilAtivo, onCriar, onFechar 
             <select value={form.modulo} onChange={(e) => set('modulo', e.target.value)} className={`${inputCls} appearance-none cursor-pointer`}>
               {MODULOS.map((m) => <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
             </select>
-            <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+            <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
           </div>
 
           {/* Datas: início + prazo */}
@@ -146,7 +146,7 @@ export function TarefaModalNova({ statusInicial, perfilAtivo, onCriar, onFechar 
               <select value={form.recorrencia} onChange={(e) => set('recorrencia', e.target.value as RecorrenciaTarefa)} className={`${inputCls} appearance-none cursor-pointer`}>
                 {Object.entries(RECORRENCIA_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
               </select>
-              <ChevronDown size={12} className="absolute right-3 bottom-3 text-[#4A4A4A] pointer-events-none" />
+              <ChevronDown size={12} className="absolute right-3 bottom-3 text-[#A0A0A0] pointer-events-none" />
             </div>
             {form.recorrencia !== 'nenhuma' && (
               <div className="flex-1">
@@ -164,7 +164,7 @@ export function TarefaModalNova({ statusInicial, perfilAtivo, onCriar, onFechar 
               </div>
               <textarea value={form.motivoBloqueio} onChange={(e) => set('motivoBloqueio', e.target.value)}
                 placeholder="Descreva o que está impedindo o avanço desta tarefa..." rows={3}
-                className="w-full bg-[var(--bg-primary)] border border-[rgba(232,168,56,0.2)] rounded-lg px-3 py-2.5 text-xs text-[var(--text-primary)] placeholder-[#4A4A4A] resize-none focus:outline-none focus:border-[rgba(232,168,56,0.5)] transition-colors"
+                className="w-full bg-[var(--bg-primary)] border border-[rgba(232,168,56,0.2)] rounded-lg px-3 py-2.5 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] resize-none focus:outline-none focus:border-[rgba(232,168,56,0.5)] transition-colors"
                 maxLength={400} />
             </div>
           )}

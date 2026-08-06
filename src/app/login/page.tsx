@@ -55,7 +55,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div>
-        <label style={{ display: 'block', fontSize: 11, fontWeight: 500, color: '#6B6B6B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>
+        <label style={{ display: 'block', fontSize: 11, fontWeight: 500, color: '#B8B8B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>
           E-mail
         </label>
         <input
@@ -68,7 +68,7 @@ function LoginForm() {
 
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <label style={{ fontSize: 11, fontWeight: 500, color: '#6B6B6B', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <label style={{ fontSize: 11, fontWeight: 500, color: '#B8B8B8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Senha
           </label>
           <a
@@ -152,13 +152,13 @@ export default function LoginPage() {
           <div style={{ fontSize: 22, fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em', lineHeight: 1, display: 'inline' }}>
             PURION
           </div>
-          <span style={{ fontSize: 12, fontWeight: 400, color: '#6B6B6B', letterSpacing: '0.2em', marginLeft: 6 }}>
+          <span style={{ fontSize: 12, fontWeight: 400, color: '#B8B8B8', letterSpacing: '0.2em', marginLeft: 6 }}>
             OS
           </span>
           <div style={{ width: 32, height: 1, background: '#C9A84C', margin: '16px auto 0', opacity: 0.7 }} />
         </div>
 
-        <p style={{ fontSize: 14, color: '#6B6B6B', textAlign: 'center', marginBottom: 24, marginTop: 0 }}>
+        <p style={{ fontSize: 14, color: '#B8B8B8', textAlign: 'center', marginBottom: 24, marginTop: 0 }}>
           Acesse sua conta
         </p>
 

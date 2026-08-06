@@ -11,7 +11,7 @@ export default function NotFound() {
         <div style={{ fontSize: '28px', fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em', marginBottom: '4px' }}>
           PURION
         </div>
-        <div style={{ fontSize: '11px', color: '#6B6B6B', letterSpacing: '0.2em', marginBottom: '32px' }}>OS</div>
+        <div style={{ fontSize: '11px', color: '#B8B8B8', letterSpacing: '0.2em', marginBottom: '32px' }}>OS</div>
 
         <div style={{ fontSize: '72px', fontWeight: 700, color: '#1E1E1E', lineHeight: 1, marginBottom: '16px' }}>
           404
@@ -19,7 +19,7 @@ export default function NotFound() {
         <h1 style={{ fontSize: '18px', fontWeight: 600, color: '#FAFAF8', marginBottom: '8px' }}>
           Página não encontrada
         </h1>
-        <p style={{ fontSize: '13px', color: '#6B6B6B', marginBottom: '28px', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '13px', color: '#B8B8B8', marginBottom: '28px', lineHeight: 1.6 }}>
           A página que você tentou acessar não existe ou foi movida.
         </p>
 

@@ -10,11 +10,11 @@ const CATEGORIAS: Array<{ id: string; label: string; cor: string }> = [
   { id: 'marca', label: 'Marca', cor: '#A855F7' },
   { id: 'operacao', label: 'Operação', cor: '#4CAF7A' },
   { id: 'growth', label: 'Growth', cor: '#E8A838' },
-  { id: 'geral', label: 'Geral', cor: '#6B6B6B' },
+  { id: 'geral', label: 'Geral', cor: '#B8B8B8' },
 ]
 
 function corCategoria(id: string) {
-  return CATEGORIAS.find((c) => c.id === id)?.cor ?? '#6B6B6B'
+  return CATEGORIAS.find((c) => c.id === id)?.cor ?? '#B8B8B8'
 }
 function labelCategoria(id: string) {
   return CATEGORIAS.find((c) => c.id === id)?.label ?? id

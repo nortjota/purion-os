@@ -60,7 +60,7 @@
   --color-purion-surface: #1A1A1A;
   --color-purion-surface-2: #141414;
   --color-purion-border: #2A2A2A;
-  --color-purion-muted: #6B6B6B;
+  --color-purion-muted: #B8B8B8;
   --color-purion-success: #22C55E;
   --color-purion-warning: #C9A84C;
   --color-purion-danger: #EF4444;
@@ -148,7 +148,7 @@
   --secondary: #1A1A1A;
   --secondary-foreground: #FAFAF8;
   --muted: #141414;
-  --muted-foreground: #6B6B6B;
+  --muted-foreground: #B8B8B8;
   --accent: rgba(201, 168, 76, 0.1);
   --accent-foreground: #C9A84C;
   --destructive: #EF4444;
@@ -173,8 +173,8 @@
   --bg-primary:     #0D0D0D;
   --bg-surface:     #161616;
   --bg-surface-2:   #121212;
-  --text-primary:   #F0EFED;
-  --text-secondary: #7A7A74;
+  --text-primary:   #F5F5F5;
+  --text-secondary: #B8B8B8;
   --border-purion:  #252525;
   --sidebar-bg:     #0F0F0F;
   --gold:           #C9A84C;

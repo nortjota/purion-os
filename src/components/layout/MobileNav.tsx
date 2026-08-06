@@ -8,6 +8,7 @@ import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
   Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
+  Compass, FlaskConical, Mail,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
 
@@ -19,6 +20,7 @@ const MAIN_ITEMS = [
 ]
 
 const DRAWER_ITEMS = [
+  { href: '/estrategias',   label: 'Estratégias',   icon: Compass     },
   { href: '/metas',         label: 'Metas Diárias', icon: Target      },
   { href: '/quadros',       label: 'Quadros',       icon: Shapes      },
   { href: '/vendas',        label: 'Vendas',        icon: ShoppingBag },
@@ -28,8 +30,10 @@ const DRAWER_ITEMS = [
   { href: '/afiliados',     label: 'Afiliados',     icon: Link2       },
   { href: '/sac',           label: 'SAC',           icon: Headphones  },
   { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen    },
+  { href: '/growth',        label: 'Growth',        icon: FlaskConical },
   { href: '/marketing',     label: 'Marketing',     icon: Megaphone   },
   { href: '/trafego',       label: 'Tráfego',       icon: Zap         },
+  { href: '/leads-site',    label: 'Leads do Site', icon: Mail        },
   { href: '/inteligencia',  label: 'Inteligência',  icon: BarChart2   },
   { href: '/reunioes',      label: 'Reuniões',      icon: Calendar    },
   { href: '/conhecimento',  label: 'Central de Conhecimento', icon: BookOpen },

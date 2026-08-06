@@ -35,7 +35,7 @@ function CustomTooltip({ active, payload, label }: {
 
   return (
     <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl p-3 shadow-xl min-w-[160px]">
-      <p className="text-[11px] text-[#6B6B6B] uppercase tracking-wider mb-2 font-medium">
+      <p className="text-[11px] text-[#B8B8B8] uppercase tracking-wider mb-2 font-medium">
         {label}
       </p>
       {payload.map((entry) => (
@@ -64,7 +64,7 @@ function TickMoeda({ x, y, payload, fill }: { x?: number; y?: number; payload?: 
   if (!payload) return null
   const val = payload.value >= 1000 ? `${(payload.value / 1000).toFixed(0)}k` : String(payload.value)
   return (
-    <text x={x} y={y} dy={4} textAnchor="end" fill={fill ?? '#4A4A4A'} fontSize={11}>
+    <text x={x} y={y} dy={4} textAnchor="end" fill={fill ?? '#A0A0A0'} fontSize={11}>
       {val}
     </text>
   )
@@ -74,7 +74,7 @@ function TickMoeda({ x, y, payload, fill }: { x?: number; y?: number; payload?: 
 function TickPercent({ x, y, payload, fill }: { x?: number; y?: number; payload?: { value: number }; fill?: string }) {
   if (!payload) return null
   return (
-    <text x={x} y={y} dy={4} textAnchor="start" fill={fill ?? '#4A4A4A'} fontSize={11}>
+    <text x={x} y={y} dy={4} textAnchor="start" fill={fill ?? '#A0A0A0'} fontSize={11}>
       {payload.value}%
     </text>
   )
@@ -95,7 +95,7 @@ export function GraficoEvolucao({ dados, height = 280 }: GraficoEvolucaoProps) {
 
   const gridStroke  = isDark ? '#1E1E1E' : '#E0DFDB'
   const axisStroke  = isDark ? '#2A2A2A' : '#D4D3CF'
-  const tickFill    = isDark ? '#4A4A4A' : '#888880'
+  const tickFill    = isDark ? '#A0A0A0' : '#888880'
   const dotStroke   = isDark ? '#0D0D0D' : '#FAFAF8'
 
   return (
@@ -133,7 +133,7 @@ export function GraficoEvolucao({ dados, height = 280 }: GraficoEvolucaoProps) {
         />
         <Tooltip content={<CustomTooltip />} />
         <Legend
-          wrapperStyle={{ paddingTop: 16, fontSize: 11, color: '#6B6B6B' }}
+          wrapperStyle={{ paddingTop: 16, fontSize: 11, color: '#B8B8B8' }}
           formatter={(value) => {
             const labels: Record<string, string> = {
               receita: 'Receita',
@@ -170,11 +170,11 @@ export function GraficoEvolucao({ dados, height = 280 }: GraficoEvolucaoProps) {
           yAxisId="pct"
           type="monotone"
           dataKey="margem"
-          stroke="#6B6B6B"
+          stroke="#B8B8B8"
           strokeWidth={1.5}
           strokeDasharray="5 3"
           dot={false}
-          activeDot={{ r: 4, fill: '#6B6B6B', stroke: dotStroke, strokeWidth: 2 }}
+          activeDot={{ r: 4, fill: '#B8B8B8', stroke: dotStroke, strokeWidth: 2 }}
         />
       </LineChart>
     </ResponsiveContainer>

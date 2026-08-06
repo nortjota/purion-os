@@ -18,7 +18,7 @@ const DATA_REF = new Date('2024-02-12T12:00:00Z')
 type NavItem = {
   href: string
   label: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
 }
 
 type NavGroup = {
@@ -28,60 +28,56 @@ type NavGroup = {
 
 const navGroups: NavGroup[] = [
   {
+    label: 'Principal',
     items: [
       { href: '/',            label: 'Início',       icon: LayoutDashboard },
       { href: '/estrategias', label: 'Estratégias',  icon: Compass },
     ],
   },
   {
+    label: 'Comercial',
+    items: [
+      { href: '/crm',        label: 'CRM B2B',    icon: Users },
+      { href: '/vendas',     label: 'Vendas',     icon: ShoppingBag },
+      { href: '/creators',   label: 'Creators',   icon: Users2 },
+      { href: '/afiliados',  label: 'Afiliados',  icon: Link2 },
+      { href: '/sac',        label: 'SAC',        icon: Headphones },
+    ],
+  },
+  {
     label: 'Operação',
     items: [
-      { href: '/crm',       label: 'CRM B2B',          icon: Users },
-      { href: '/tarefas',   label: 'Tarefas',          icon: CheckSquare },
-      { href: '/metas',     label: 'Metas Diárias',    icon: Target },
-      { href: '/quadros',   label: 'Quadros',          icon: Shapes },
-      { href: '/producao',  label: 'Produção',         icon: Package },
-      { href: '/reunioes',  label: 'Reuniões',         icon: Calendar },
+      { href: '/producao',  label: 'Produção',      icon: Package },
+      { href: '/tarefas',   label: 'Tarefas',       icon: CheckSquare },
+      { href: '/metas',     label: 'Metas Diárias', icon: Target },
+      { href: '/quadros',   label: 'Quadros',       icon: Shapes },
+      { href: '/reunioes',  label: 'Reuniões',      icon: Calendar },
     ],
   },
   {
-    label: 'Financeiro',
-    items: [
-      { href: '/financeiro',    label: 'Financeiro',    icon: TrendingUp },
-      { href: '/vendas',        label: 'Vendas',        icon: ShoppingBag },
-      { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen },
-    ],
-  },
-  {
-    label: 'Crescimento',
+    label: 'Marketing & Growth',
     items: [
       { href: '/growth',     label: 'Growth',         icon: FlaskConical },
-      { href: '/creators',   label: 'Creators',      icon: Users2 },
-      { href: '/ugc',        label: 'Doações UGC',   icon: Package },
-      { href: '/afiliados',  label: 'Afiliados',     icon: Link2 },
-      { href: '/sac',        label: 'SAC',           icon: Headphones },
-      { href: '/marketing',  label: 'Marketing',     icon: Megaphone },
-      { href: '/trafego',    label: 'Tráfego',       icon: Zap },
-      { href: '/leads-site', label: 'Leads do Site', icon: Mail },
-    ],
-  },
-  {
-    label: 'Análise',
-    items: [
-      { href: '/inteligencia', label: 'Inteligência', icon: BarChart2 },
+      { href: '/marketing',  label: 'Marketing',      icon: Megaphone },
+      { href: '/trafego',    label: 'Tráfego',        icon: Zap },
+      { href: '/leads-site', label: 'Leads do Site',  icon: Mail },
+      { href: '/ugc',        label: 'Doações UGC',    icon: Package },
     ],
   },
   {
     label: 'Conhecimento',
     items: [
       { href: '/conhecimento', label: 'Central de Conhecimento', icon: BookOpen },
-      { href: '/contas',       label: 'Contas & Acessos',        icon: KeyRound },
+      { href: '/inteligencia', label: 'Inteligência',            icon: BarChart2 },
     ],
   },
   {
-    label: 'Sistema',
+    label: 'Gestão',
     items: [
-      { href: '/settings', label: 'Configurações', icon: Settings },
+      { href: '/financeiro',    label: 'Financeiro',    icon: TrendingUp },
+      { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen },
+      { href: '/contas',        label: 'Contas & Acessos', icon: KeyRound },
+      { href: '/settings',      label: 'Configurações', icon: Settings },
     ],
   },
 ]
@@ -162,9 +158,11 @@ export function Sidebar() {
   const visibleNavGroups = useMemo(
     () => isMaster
       ? navGroups
-      : navGroups
-          .filter((g) => g.label !== 'Sistema')
-          .map((g) => g.label === 'Conhecimento' ? { ...g, items: g.items.filter((i) => i.href !== '/contas') } : g),
+      : navGroups.map((g) =>
+          g.label === 'Gestão'
+            ? { ...g, items: g.items.filter((i) => i.href !== '/contas' && i.href !== '/settings') }
+            : g
+        ),
     [isMaster],
   )
 
@@ -216,7 +214,7 @@ export function Sidebar() {
         }}
       >
         {/* ── TOPO ── */}
-        <div style={{ padding: recolhida ? '20px 0 0' : '20px 16px 0' }}>
+        <div style={{ padding: recolhida ? '24px 0 0' : '24px 20px 0' }}>
           <div style={{
             display: 'flex', alignItems: 'center',
             justifyContent: recolhida ? 'center' : 'space-between',
@@ -245,33 +243,37 @@ export function Sidebar() {
             )}
           </div>
           {recolhida ? (
-            <div style={{ height: 16 }} />
+            <div style={{ height: 18 }} />
           ) : (
             <div style={{
-              height: 1, margin: '12px 0 16px',
+              height: 1, margin: '16px 0 18px',
               background: 'linear-gradient(90deg, transparent, var(--gold-border, rgba(201,168,76,0.25)), transparent)',
             }} />
           )}
         </div>
 
         {/* ── NAV ── */}
-        <nav style={{ flex: 1, overflowY: 'auto', padding: recolhida ? '0 4px' : '0 8px' }}>
+        <nav style={{ flex: 1, overflowY: 'auto', padding: recolhida ? '0 4px' : '0 10px' }}>
           {visibleNavGroups.map((group, gi) => (
-            <div key={gi} style={{ marginBottom: 4 }}>
+            <div
+              key={gi}
+              style={{
+                marginBottom: 14,
+                paddingTop: gi > 0 ? 14 : 0,
+                borderTop: gi > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+              }}
+            >
               {/* Group label — hidden when collapsed, divider line instead */}
               {group.label && !recolhida && (
                 <p style={{
                   fontSize: 10, fontWeight: 500, letterSpacing: '0.1em',
                   textTransform: 'uppercase', color: 'var(--text-secondary)',
-                  padding: '8px 8px 4px', marginTop: gi > 0 ? 8 : 0,
+                  padding: '0 10px 8px', margin: 0, opacity: 0.75,
                 }}>
                   {group.label}
                 </p>
               )}
-              {group.label && recolhida && gi > 0 && (
-                <div style={{ height: 1, margin: '6px 8px', background: 'var(--border)' }} />
-              )}
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {group.items.map(({ href, label, icon: Icon }) => {
                   const ativo = href === '/' ? pathname === '/' : pathname.startsWith(href)
                   const badge = getBadge(href)
@@ -285,22 +287,22 @@ export function Sidebar() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: recolhida ? 'center' : 'flex-start',
-                          gap: recolhida ? 0 : 10,
+                          gap: recolhida ? 0 : 11,
                           height: 44,
                           borderRadius: 8,
                           padding: recolhida ? '0' : '0 10px',
                           fontSize: 13,
                           fontWeight: ativo ? 500 : 400,
                           color: ativo ? '#C9A84C' : 'var(--text-secondary)',
-                          background: ativo ? 'rgba(201,168,76,0.08)' : 'transparent',
+                          background: ativo ? 'rgba(201,168,76,0.1)' : 'transparent',
                           borderLeft: recolhida ? 'none' : `2px solid ${ativo ? '#C9A84C' : 'transparent'}`,
                           textDecoration: 'none',
-                          transition: 'background var(--transition-fast), color var(--transition-fast)',
+                          transition: 'background 150ms ease, color 150ms ease',
                           position: 'relative',
                         }}
                         onMouseEnter={(e) => {
                           if (!ativo) {
-                            e.currentTarget.style.background = 'rgba(201,168,76,0.08)'
+                            e.currentTarget.style.background = 'rgba(201,168,76,0.06)'
                             e.currentTarget.style.color = 'var(--text-primary)'
                           }
                         }}
@@ -311,9 +313,12 @@ export function Sidebar() {
                           }
                         }}
                       >
-                        <Icon size={16} />
+                        <Icon size={16} style={{ color: ativo ? '#C9A84C' : undefined, flexShrink: 0 }} />
                         {!recolhida && (
-                          <span style={{ flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                          <span style={{
+                            flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap',
+                            color: ativo ? 'var(--text-primary)' : undefined,
+                          }}>
                             {label}
                           </span>
                         )}
@@ -341,8 +346,8 @@ export function Sidebar() {
 
         {/* ── BASE ── */}
         <div style={{
-          borderTop: '1px solid var(--border)',
-          padding: recolhida ? '10px 4px' : '12px 16px 16px',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          padding: recolhida ? '14px 4px' : '16px 20px 20px',
         }}>
           {/* User info — full when expanded, avatar-only when collapsed */}
           {recolhida ? (

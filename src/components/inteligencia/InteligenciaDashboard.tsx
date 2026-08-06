@@ -18,7 +18,7 @@ const GraficosInteligencia = dynamic(
     ssr: false,
     loading: () => (
       <div className="h-[500px] flex items-center justify-center">
-        <p className="text-xs text-[#4A4A4A] tracking-widest">Carregando gráficos...</p>
+        <p className="text-xs text-[#A0A0A0] tracking-widest">Carregando gráficos...</p>
       </div>
     ),
   }
@@ -231,7 +231,7 @@ export function InteligenciaDashboard() {
 
         {/* Seção 3 — Mapa B2B */}
         <section>
-          <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
+          <h2 className="text-[11px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-3">
             Seção 3 — Mapa B2B por Estado
           </h2>
           <div className="flex flex-col gap-3">
@@ -243,7 +243,7 @@ export function InteligenciaDashboard() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-black text-[#C9A84C] tracking-widest">{regiao}</span>
-                      <span className="text-[10px] text-[#4A4A4A]">{label}</span>
+                      <span className="text-[10px] text-[#A0A0A0]">{label}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       {conversao >= 40
@@ -262,7 +262,7 @@ export function InteligenciaDashboard() {
                       { label: 'Pipeline', valor: fmtR(pipeline), cor: '#C9A84C' },
                     ].map(({ label: l, valor, cor: c }) => (
                       <div key={l}>
-                        <p className="text-[9px] text-[#4A4A4A] uppercase tracking-wide mb-0.5">{l}</p>
+                        <p className="text-[9px] text-[#A0A0A0] uppercase tracking-wide mb-0.5">{l}</p>
                         <p className="text-base font-black" style={{ color: c }}>
                           {typeof valor === 'string' ? <span className="text-sm">{valor}</span> : valor}
                         </p>
@@ -272,7 +272,7 @@ export function InteligenciaDashboard() {
                   <div className="h-1 bg-[#2A2A2A] rounded-full overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: `${Math.min(100, conversao)}%`, backgroundColor: cor }} />
                   </div>
-                  <p className="text-[9px] text-[#4A4A4A] mt-1">Taxa de conversão</p>
+                  <p className="text-[9px] text-[#A0A0A0] mt-1">Taxa de conversão</p>
                 </div>
               )
             })}
@@ -281,13 +281,13 @@ export function InteligenciaDashboard() {
 
         {/* Seção 4 — Ticket Médio por Canal */}
         <section>
-          <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
+          <h2 className="text-[11px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-3">
             Seção 4 — Ticket Médio por Canal
           </h2>
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
             <div className="grid grid-cols-4 gap-3 px-4 py-2.5 border-b border-[var(--border)]">
               {['Canal', 'Ticket Médio', 'Pedidos', 'Receita Total'].map((h) => (
-                <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+                <span key={h} className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
               ))}
             </div>
             {ticketData.map((row, idx) => (
@@ -312,7 +312,7 @@ export function InteligenciaDashboard() {
 
           {/* Resumo das campanhas */}
           <div className="mt-4">
-            <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-2">
+            <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-2">
               Performance de Campanhas
             </p>
             <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
@@ -323,7 +323,7 @@ export function InteligenciaDashboard() {
                   <div key={c.id} className="px-4 py-3 border-b border-[var(--border)] last:border-0 flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{c.nome}</p>
-                      <p className="text-[10px] text-[#6B6B6B]">
+                      <p className="text-[10px] text-[#B8B8B8]">
                         {c.plataforma.toUpperCase()} · {fmtR(c.gastoTotal)} gasto
                       </p>
                     </div>
@@ -331,7 +331,7 @@ export function InteligenciaDashboard() {
                       <p className={`text-sm font-black ${roasOk ? 'text-emerald-400' : 'text-red-400'}`}>
                         ROAS {roas}×
                       </p>
-                      <p className="text-[10px] text-[#6B6B6B]">{c.conversoes} conv.</p>
+                      <p className="text-[10px] text-[#B8B8B8]">{c.conversoes} conv.</p>
                     </div>
                   </div>
                 )
@@ -343,7 +343,7 @@ export function InteligenciaDashboard() {
 
       {/* ══ Seção 6 — Insights Automáticos ══ */}
       <section>
-        <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
+        <h2 className="text-[11px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-3">
           Seção 6 — Insights Automáticos
         </h2>
         <div className="flex flex-col gap-3">

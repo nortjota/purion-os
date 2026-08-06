@@ -19,7 +19,7 @@ const COLORS = [
   { value: '#22C55E', label: 'Verde'   },
   { value: '#E85238', label: 'Vermelho'},
   { value: '#5B8FE8', label: 'Azul'    },
-  { value: '#4A4A4A', label: 'Cinza'   },
+  { value: '#A0A0A0', label: 'Cinza'   },
 ]
 
 const STORAGE_KEY = 'purion:quick-notes'

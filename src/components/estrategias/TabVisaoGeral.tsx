@@ -17,7 +17,7 @@ const CONTA_DO_MILHAO = {
 const STATUS_COR: Record<StatusFase, string> = {
   concluida: '#4CAF7A',
   atual: '#C9A84C',
-  futura: '#6B6B6B',
+  futura: '#B8B8B8',
 }
 
 const STATUS_LABEL: Record<StatusFase, string> = {

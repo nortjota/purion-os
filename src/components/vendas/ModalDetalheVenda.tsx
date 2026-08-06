@@ -15,7 +15,7 @@ function Secao({ icon: Icon, titulo, children }: { icon: React.ElementType; titu
     <div>
       <div className="flex items-center gap-2 mb-3">
         <Icon size={13} className="text-[var(--gold)] opacity-70" />
-        <h4 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-wider">{titulo}</h4>
+        <h4 className="text-[11px] font-bold text-[#B8B8B8] uppercase tracking-wider">{titulo}</h4>
       </div>
       <div className="space-y-2">{children}</div>
     </div>
@@ -26,7 +26,7 @@ function Campo({ label, valor, destaque }: { label: string; valor: React.ReactNo
   if (!valor && valor !== 0) return null
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <span className="text-[11px] text-[#6B6B6B] shrink-0">{label}</span>
+      <span className="text-[11px] text-[#B8B8B8] shrink-0">{label}</span>
       <span
         className="text-[12px] text-right break-all"
         style={{
@@ -64,7 +64,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
             >
               {v.clienteNome || 'Detalhe da Venda'}
             </h3>
-            <p className="text-xs text-[#6B6B6B] mt-0.5">
+            <p className="text-xs text-[#B8B8B8] mt-0.5">
               <span className="text-[#C9A84C] font-semibold">{v.canal.toUpperCase()}</span>
               {v.pedidoAppmax && ` · Appmax #${v.pedidoAppmax}`}
               {' '}· {formatarDataBR(v.dataVenda.slice(0, 10))}
@@ -72,7 +72,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
           </div>
           <button
             onClick={onFechar}
-            className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"
           >
             <X size={16} />
           </button>
@@ -108,7 +108,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
           {/* PAGAMENTO */}
           <Secao icon={CreditCard} titulo="Pagamento">
             <div className="flex items-baseline justify-between gap-4">
-              <span className="text-[11px] text-[#6B6B6B]">Status</span>
+              <span className="text-[11px] text-[#B8B8B8]">Status</span>
               <span className={`badge ${STATUS_PAGAMENTO_BADGE[v.statusPagamento]}`}>
                 {STATUS_PAGAMENTO_LABEL[v.statusPagamento]}
               </span>
@@ -122,7 +122,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
           {/* LOGÍSTICA */}
           <Secao icon={Truck} titulo="Logística">
             <div className="flex items-baseline justify-between gap-4">
-              <span className="text-[11px] text-[#6B6B6B]">Entrega</span>
+              <span className="text-[11px] text-[#B8B8B8]">Entrega</span>
               <span className={`badge ${STATUS_ENTREGA_BADGE[v.statusEntrega]}`}>
                 {STATUS_ENTREGA_LABEL[v.statusEntrega]}
               </span>

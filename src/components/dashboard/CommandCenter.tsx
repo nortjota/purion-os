@@ -450,7 +450,7 @@ function UltimosDailies({ entries }: { entries: import('@/store').DailyEntry[] }
       </div>
       <ul>
         {ultimos.map((entry) => {
-          const cor = COR_SOCIO[entry.socio] ?? '#6B6B6B'
+          const cor = COR_SOCIO[entry.socio] ?? '#B8B8B8'
           return (
             <li
               key={entry.id}

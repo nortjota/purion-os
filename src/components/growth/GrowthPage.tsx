@@ -21,7 +21,7 @@ const ETAPA_AARRR: Record<EtapaAARRR, { label: string; cor: string; icon: React.
 }
 
 const STATUS_CONFIG: Record<StatusExperimento, { label: string; cor: string; ordem: number }> = {
-  backlog:  { label: 'Backlog',   cor: '#6B6B6B', ordem: 0 },
+  backlog:  { label: 'Backlog',   cor: '#B8B8B8', ordem: 0 },
   rodando:  { label: 'Rodando',   cor: '#5B8FE8', ordem: 1 },
   escalar:  { label: 'Escalar',   cor: '#4CAF7A', ordem: 2 },
   iterar:   { label: 'Iterar',    cor: '#E8A838', ordem: 3 },

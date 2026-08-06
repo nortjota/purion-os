@@ -34,7 +34,7 @@ import { formatarDataBR } from '@/lib/calculos'
 const DATA_REF = new Date('2024-02-12')
 
 const COLUNAS_KANBAN: Array<{ id: StatusLead; label: string; cor: string }> = [
-  { id: 'prospecto',         label: 'Identificado',    cor: '#6B6B6B' },
+  { id: 'prospecto',         label: 'Identificado',    cor: '#B8B8B8' },
   { id: 'contato_feito',    label: 'Abordagem',        cor: '#5B8FE8' },
   { id: 'proposta_enviada', label: 'Proposta Enviada', cor: '#E8A838' },
   { id: 'negociando',       label: 'Negociando',       cor: '#C9A84C' },
@@ -139,7 +139,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes, sel
           inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider
           ${lead.tier === 'A' ? 'bg-[rgba(201,168,76,0.2)] text-[#C9A84C]'
           : lead.tier === 'B' ? 'bg-[rgba(91,143,232,0.15)] text-[#5B8FE8]'
-          : 'bg-[#2A2A2A] text-[#6B6B6B]'}
+          : 'bg-[#2A2A2A] text-[#B8B8B8]'}
         `}>
           Tier {lead.tier}
         </span>
@@ -147,7 +147,7 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes, sel
 
       {/* Cidade + Valor */}
       <div className="flex items-center justify-between mb-2 text-[10px]">
-        <span className="text-[#6B6B6B] flex items-center gap-1">
+        <span className="text-[#B8B8B8] flex items-center gap-1">
           <MapPin size={9} /> {lead.cidade} · {lead.regiao}
         </span>
         <span className="font-semibold text-[#C9A84C]">
@@ -156,13 +156,13 @@ function LeadCard({ lead, isDragging, onDragStart, onDragEnd, onVerDetalhes, sel
       </div>
 
       {/* Último contato */}
-      <div className="flex items-center gap-1 text-[10px] text-[#4A4A4A] mb-3">
+      <div className="flex items-center gap-1 text-[10px] text-[#A0A0A0] mb-3">
         <Clock size={9} />
         <span style={{ color: SCORE_COR[score].bg }}>
           {diasSem === 0 ? 'Hoje' : `${diasSem}d sem contato`}
         </span>
         {lead.ultimoPedido && (
-          <span className="text-[#3A3A3A]"> · último pedido {formatarDataBR(lead.ultimoPedido)}</span>
+          <span className="text-[#8A8A8A]"> · último pedido {formatarDataBR(lead.ultimoPedido)}</span>
         )}
       </div>
 
@@ -325,19 +325,19 @@ function DrawerLead({
               {SCORE_COR[score].label} · {diasSem}d
             </div>
           </div>
-          <p className="text-[11px] text-[#6B6B6B]">{lead.nomeContato}</p>
+          <p className="text-[11px] text-[#B8B8B8]">{lead.nomeContato}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => onDeletar(lead)}
-            className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#6B6B6B] hover:text-[#E85238] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#B8B8B8] hover:text-[#E85238] transition-colors"
             title="Excluir lead"
           >
             <Trash2 size={14} />
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"
           >
             <X size={16} />
           </button>
@@ -349,7 +349,7 @@ function DrawerLead({
 
         {/* Dados de contato */}
         <div className="space-y-1.5">
-          <p className="text-[10px] text-[#4A4A4A] uppercase tracking-wider font-medium">Contato</p>
+          <p className="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-medium">Contato</p>
           <div className="space-y-1">
             {[
               { icon: Phone, text: lead.telefone },
@@ -357,7 +357,7 @@ function DrawerLead({
               { icon: MapPin, text: `${lead.cidade} · ${lead.regiao}` },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                <Icon size={11} className="text-[#4A4A4A] shrink-0" />
+                <Icon size={11} className="text-[#A0A0A0] shrink-0" />
                 {text}
               </div>
             ))}
@@ -373,7 +373,7 @@ function DrawerLead({
             { label: 'Cadastrado', valor: formatarDataBR(lead.createdAt) },
           ].map(({ label, valor }) => (
             <div key={label} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-2.5">
-              <p className="text-[9px] text-[#4A4A4A] uppercase tracking-wider mb-1">{label}</p>
+              <p className="text-[9px] text-[#A0A0A0] uppercase tracking-wider mb-1">{label}</p>
               <p className="text-xs font-semibold text-[var(--text-primary)]">{valor}</p>
             </div>
           ))}
@@ -383,7 +383,7 @@ function DrawerLead({
         {lead.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {lead.tags.map((tag) => (
-              <span key={tag} className="px-2 py-0.5 rounded bg-[#2A2A2A] text-[#6B6B6B] text-[9px] font-medium">
+              <span key={tag} className="px-2 py-0.5 rounded bg-[#2A2A2A] text-[#B8B8B8] text-[9px] font-medium">
                 #{tag}
               </span>
             ))}
@@ -393,7 +393,7 @@ function DrawerLead({
         {/* Notas editáveis */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] text-[#4A4A4A] uppercase tracking-wider font-medium">Notas</p>
+            <p className="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-medium">Notas</p>
             <button
               onClick={() => onSalvarNotas(notasEdit)}
               className="text-[10px] text-[#C9A84C] hover:underline"
@@ -407,7 +407,7 @@ function DrawerLead({
             rows={4}
             className="
               w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-3
-              text-xs text-[var(--text-primary)] placeholder-[#4A4A4A] resize-none
+              text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] resize-none
               focus:outline-none focus:border-[rgba(201,168,76,0.4)]
               transition-colors
             "
@@ -417,7 +417,7 @@ function DrawerLead({
 
         {/* Registrar novo contato */}
         <div>
-          <p className="text-[10px] text-[#4A4A4A] uppercase tracking-wider font-medium mb-2 flex items-center gap-1">
+          <p className="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-medium mb-2 flex items-center gap-1">
             <MessageSquare size={9} /> Registrar contato
           </p>
           <div className="flex gap-2">
@@ -428,7 +428,7 @@ function DrawerLead({
               placeholder="Descrição do contato..."
               className="
                 flex-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2
-                text-xs text-[var(--text-primary)] placeholder-[#4A4A4A]
+                text-xs text-[var(--text-primary)] placeholder-[#A0A0A0]
                 focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors
               "
               onKeyDown={(e) => {
@@ -455,13 +455,13 @@ function DrawerLead({
         {/* Histórico de interações */}
         {historicos.length > 0 && (
           <div>
-            <p className="text-[10px] text-[#4A4A4A] uppercase tracking-wider font-medium mb-2">
+            <p className="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-medium mb-2">
               Histórico ({historicos.length})
             </p>
             <ul className="space-y-2">
               {[...historicos].reverse().map((h) => (
                 <li key={h.id} className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-2.5">
-                  <p className="text-[10px] text-[#4A4A4A] mb-1">{h.timestamp}</p>
+                  <p className="text-[10px] text-[#A0A0A0] mb-1">{h.timestamp}</p>
                   <p className="text-xs text-[var(--text-secondary)]">{h.texto}</p>
                 </li>
               ))}
@@ -471,7 +471,7 @@ function DrawerLead({
 
         {/* Mover para... */}
         <div>
-          <p className="text-[10px] text-[#4A4A4A] uppercase tracking-wider font-medium mb-2 flex items-center gap-1">
+          <p className="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-medium mb-2 flex items-center gap-1">
             <ChevronDown size={9} /> Mover para
           </p>
           <div className="relative">
@@ -490,7 +490,7 @@ function DrawerLead({
             </select>
             <ChevronDown
               size={12}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none"
             />
           </div>
         </div>
@@ -763,7 +763,7 @@ export function CRMDashboard() {
     { id: 'vermelho', label: '● Frio'    },
   ] as const
 
-  const COR_BTN_SCORE: Record<string, string> = { verde: '#4CAF7A', amarelo: '#E8A838', vermelho: '#E85238', todos: '#6B6B6B' }
+  const COR_BTN_SCORE: Record<string, string> = { verde: '#4CAF7A', amarelo: '#E8A838', vermelho: '#E85238', todos: '#B8B8B8' }
 
   // ── MOBILE VIEW ──────────────────────────────
   if (isMobile) {
@@ -1026,7 +1026,7 @@ export function CRMDashboard() {
                   px-3 py-1.5 rounded-md text-xs font-semibold transition-all
                   ${filtroEstado === e
                     ? 'bg-[rgba(201,168,76,0.15)] text-[#C9A84C] border border-[rgba(201,168,76,0.25)]'
-                    : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'
+                    : 'text-[#B8B8B8] hover:text-[var(--text-primary)]'
                   }
                 `}
               >
@@ -1045,7 +1045,7 @@ export function CRMDashboard() {
                   px-3 py-1.5 rounded-md text-xs font-semibold transition-all
                   ${filtroScore === id
                     ? 'bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.2)]'
-                    : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'
+                    : 'text-[#B8B8B8] hover:text-[var(--text-primary)]'
                   }
                 `}
                 style={{ color: filtroScore === id ? COR_BTN_SCORE[id] : undefined }}
@@ -1062,7 +1062,7 @@ export function CRMDashboard() {
                 checked={selecionados.size === leadsFiltrados.length && leadsFiltrados.length > 0}
                 onChange={toggleTodosSel}
               />
-              <span className="text-[10px] text-[#4A4A4A]">Selecionar todos</span>
+              <span className="text-[10px] text-[#A0A0A0]">Selecionar todos</span>
             </label>
             <button
               onClick={() => exportarCSVLeads(leadsFiltrados)}
@@ -1071,7 +1071,7 @@ export function CRMDashboard() {
             >
               <Download size={13} />
             </button>
-            <span className="text-[10px] text-[#4A4A4A]">
+            <span className="text-[10px] text-[#A0A0A0]">
               {leadsFiltrados.length} leads exibidos
             </span>
           </div>
@@ -1130,7 +1130,7 @@ export function CRMDashboard() {
                     <span style={{
                       padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 700,
                       background: lead.tier === 'A' ? 'rgba(201,168,76,0.15)' : lead.tier === 'B' ? 'rgba(91,143,232,0.15)' : '#2A2A2A',
-                      color: lead.tier === 'A' ? '#C9A84C' : lead.tier === 'B' ? '#5B8FE8' : '#6B6B6B',
+                      color: lead.tier === 'A' ? '#C9A84C' : lead.tier === 'B' ? '#5B8FE8' : '#B8B8B8',
                     }}>
                       Tier {lead.tier}
                     </span>

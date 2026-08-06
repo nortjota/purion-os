@@ -75,7 +75,7 @@ function BannerErro({ status, plataforma, ultimaAtualizacao }: {
         </div>
         <div>
           <p className="text-sm font-semibold text-[var(--text-primary)]">Configure a API de {plataforma}</p>
-          <p className="text-xs text-[#6B6B6B] mt-1">As credenciais não foram preenchidas em Configurações.</p>
+          <p className="text-xs text-[#B8B8B8] mt-1">As credenciais não foram preenchidas em Configurações.</p>
         </div>
         <Link href="/settings"
           className="text-xs font-bold text-[#0A0A0A] bg-[#C9A84C] px-4 py-2 rounded-lg hover:bg-[#D4B568] transition-colors">
@@ -121,7 +121,7 @@ function StatusConexao({ status, plataforma }: { status: TrafegoApiResponse['sta
     </span>
   )
   if (status === 'no_credentials') return (
-    <span className="text-[9px] font-bold text-[#6B6B6B]">Não configurado</span>
+    <span className="text-[9px] font-bold text-[#B8B8B8]">Não configurado</span>
   )
   if (status === 'auth_error') return (
     <span className="text-[9px] font-bold text-red-400">Token expirado</span>
@@ -134,7 +134,7 @@ function KpiCard({ label, valor, destaque, alerta, aviso }: {
 }) {
   return (
     <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl px-4 py-3">
-      <p className="text-[9px] text-[#6B6B6B] uppercase tracking-widest mb-1">{label}</p>
+      <p className="text-[9px] text-[#B8B8B8] uppercase tracking-widest mb-1">{label}</p>
       <p className={`text-lg font-black ${alerta ? 'text-red-400' : aviso ? 'text-amber-400' : destaque ? 'text-[#C9A84C]' : 'text-[var(--text-primary)]'}`}>
         {valor}
       </p>
@@ -149,13 +149,13 @@ function TabelaCampanhas({ campanhas, roasMinimo, cpaMaximo }: {
   cpaMaximo: number
 }) {
   if (!campanhas.length) return (
-    <p className="text-xs text-[#4A4A4A] py-4 text-center">Nenhuma campanha no período.</p>
+    <p className="text-xs text-[#A0A0A0] py-4 text-center">Nenhuma campanha no período.</p>
   )
   return (
     <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl overflow-hidden">
       <div className="grid grid-cols-6 gap-2 px-4 py-2.5 border-b border-[var(--border)]">
         {['Nome', 'Status', 'Gasto', 'Conv.', 'ROAS', 'CPA'].map((h) => (
-          <span key={h} className="text-[9px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+          <span key={h} className="text-[9px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
         ))}
       </div>
       {campanhas.map((c) => {
@@ -164,7 +164,7 @@ function TabelaCampanhas({ campanhas, roasMinimo, cpaMaximo }: {
         return (
           <div key={c.id} className="grid grid-cols-6 gap-2 px-4 py-3 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]">
             <span className="text-xs text-[var(--text-primary)] truncate col-span-1">{c.nome}</span>
-            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded w-fit ${c.status === 'ATIVO' ? 'text-emerald-400 bg-emerald-400/10' : 'text-[#6B6B6B] bg-[var(--bg-surface)]'}`}>
+            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded w-fit ${c.status === 'ATIVO' ? 'text-emerald-400 bg-emerald-400/10' : 'text-[#B8B8B8] bg-[var(--bg-surface)]'}`}>
               {c.status}
             </span>
             <span className="text-xs text-[var(--text-primary)] font-semibold">{fmtR(c.gasto)}</span>
@@ -226,7 +226,7 @@ function PlataformaTab({ data, loading, plataforma, cor, subLabel, roasMinimo, c
 
           {/* Gráfico de linha — gasto diário */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
+            <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-4">
               Gasto Diário — {subLabel}
             </p>
             <TrafegoGraficos tipo="linha" linhaData={data.diario} cor={cor} />
@@ -234,7 +234,7 @@ function PlataformaTab({ data, loading, plataforma, cor, subLabel, roasMinimo, c
 
           {/* Campanhas */}
           <div>
-            <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
+            <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-3">
               Campanhas Ativas
             </p>
             <TabelaCampanhas campanhas={data.campanhas} roasMinimo={roasMinimo} cpaMaximo={cpaMaximo} />
@@ -333,7 +333,7 @@ export function TrafegoDashboard() {
         <div className="flex gap-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-1">
           {PERIODOS.map(({ value, label }) => (
             <button key={value} onClick={() => setPeriod(value)}
-              className={`text-[10px] font-bold px-3 py-1.5 rounded-md transition-colors ${period === value ? 'bg-[#C9A84C] text-[#0A0A0A]' : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'}`}>
+              className={`text-[10px] font-bold px-3 py-1.5 rounded-md transition-colors ${period === value ? 'bg-[#C9A84C] text-[#0A0A0A]' : 'text-[#B8B8B8] hover:text-[var(--text-primary)]'}`}>
               {label}
             </button>
           ))}
@@ -344,7 +344,7 @@ export function TrafegoDashboard() {
       <div className="flex gap-1 border-b border-[var(--border)]">
         {([{ id: 'painel' as const, label: 'Painel Unificado' }, ...PLATAFORMAS.map((p) => ({ id: p.id, label: p.label }))]).map(({ id, label }) => (
           <button key={id} onClick={() => setActiveTab(id)}
-            className={`text-[11px] font-bold px-4 py-2.5 border-b-2 transition-colors ${activeTab === id ? 'border-[#C9A84C] text-[#C9A84C]' : 'border-transparent text-[#6B6B6B] hover:text-[var(--text-primary)]'}`}>
+            className={`text-[11px] font-bold px-4 py-2.5 border-b-2 transition-colors ${activeTab === id ? 'border-[#C9A84C] text-[#C9A84C]' : 'border-transparent text-[#B8B8B8] hover:text-[var(--text-primary)]'}`}>
             {label}
           </button>
         ))}
@@ -370,7 +370,7 @@ export function TrafegoDashboard() {
 
           {/* Gráfico empilhado */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-            <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
+            <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-4">
               Gasto Diário por Plataforma
             </p>
             {anyLoading
@@ -381,13 +381,13 @@ export function TrafegoDashboard() {
 
           {/* Tabela comparativa */}
           <div>
-            <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-3">
+            <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-3">
               Comparativo de Plataformas
             </p>
             <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
               <div className="grid grid-cols-6 gap-2 px-4 py-2.5 border-b border-[var(--border)]">
                 {['Plataforma', 'Gasto', 'Cliques', 'CPA', 'ROAS', 'Conexão'].map((h) => (
-                  <span key={h} className="text-[9px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+                  <span key={h} className="text-[9px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
                 ))}
               </div>
               {PLATAFORMAS.map(({ id, label, cor }) => {

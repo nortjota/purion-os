@@ -85,7 +85,7 @@ function TooltipSemanal({ active, payload, label }: {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
-      <p className="text-[#6B6B6B] mb-1">Semana de {label}</p>
+      <p className="text-[#B8B8B8] mb-1">Semana de {label}</p>
       <p className="font-bold text-[#C9A84C]">{fmtR(payload[0].value)}</p>
     </div>
   )
@@ -100,7 +100,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
   const isDark = theme === 'dark'
 
   const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
-  const tickFill   = isDark ? '#4A4A4A' : '#6B6B66'
+  const tickFill   = isDark ? '#A0A0A0' : '#6B6B66'
 
   return (
     <div className="flex flex-col gap-6">
@@ -110,7 +110,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
 
         {/* Seção 1 — Ranking de Produtos (BarChart) */}
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-          <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
+          <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-4">
             Seção 1 — Ranking de Produtos
           </p>
           <ResponsiveContainer width="100%" height={200}>
@@ -118,7 +118,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
               <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
               <XAxis
                 dataKey="nome"
-                tick={{ fill: '#6B6B6B', fontSize: 11, fontWeight: 700 }}
+                tick={{ fill: '#B8B8B8', fontSize: 11, fontWeight: 700 }}
                 axisLine={false} tickLine={false}
               />
               <YAxis
@@ -140,7 +140,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
               <div key={p.nome} className="bg-[var(--bg-surface-2)] rounded-md p-2">
                 <p className="text-[9px] font-black tracking-widest mb-1.5"
                    style={{ color: PRODUTO_CORES[i] }}>{p.nome}</p>
-                <p className="text-[10px] text-[#6B6B6B]">
+                <p className="text-[10px] text-[#B8B8B8]">
                   {p.unidades} un · <span className="text-emerald-400">{p.margem}%</span>
                 </p>
               </div>
@@ -150,10 +150,10 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
 
         {/* Seção 2 — Ranking de Canais (PieChart) */}
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-          <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-1">
+          <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-1">
             Seção 2 — Ranking de Canais
           </p>
-          <p className="text-[9px] text-[#4A4A4A] mb-3">Fatia dourada = canal líder</p>
+          <p className="text-[9px] text-[#A0A0A0] mb-3">Fatia dourada = canal líder</p>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie
@@ -190,7 +190,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
 
       {/* Seção 5 — Sazonalidade (LineChart) — largura total */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
-        <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest mb-4">
+        <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-widest mb-4">
           Seção 5 — Sazonalidade — Vendas por Semana (2 meses)
         </p>
         <ResponsiveContainer width="100%" height={200}>

@@ -20,7 +20,7 @@ function StatusBadge({ status }: { status: ServiceStatus }) {
     online:    { label: 'Online',    color: '#22C55E' },
     degradado: { label: 'Degradado', color: '#E8A838' },
     offline:   { label: 'Offline',   color: '#E85238' },
-    em_breve:  { label: 'Em breve',  color: '#6B6B6B' },
+    em_breve:  { label: 'Em breve',  color: '#B8B8B8' },
   }
   const { label, color } = cfg[status]
   return (

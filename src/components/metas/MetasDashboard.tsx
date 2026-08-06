@@ -37,7 +37,7 @@ const ICONE_CATEGORIA: Record<CategoriaMeta, React.ElementType> = {
 
 const COR_CATEGORIA: Record<CategoriaMeta, string> = {
   ads: '#8B5CF6', creators: '#EC4899', b2b: '#3B82F6',
-  producao: '#F59E0B', vendas: '#C9A84C', geral: '#6B6B6B',
+  producao: '#F59E0B', vendas: '#C9A84C', geral: '#B8B8B8',
 }
 
 const BADGE_CATEGORIA: Record<CategoriaMeta, string> = {
@@ -46,7 +46,7 @@ const BADGE_CATEGORIA: Record<CategoriaMeta, string> = {
   b2b:      'bg-[rgba(59,130,246,0.15)] text-[#3B82F6]',
   producao: 'bg-[rgba(245,158,11,0.15)] text-[#F59E0B]',
   vendas:   'bg-[rgba(201,168,76,0.15)] text-[#C9A84C]',
-  geral:    'bg-[rgba(107,107,107,0.12)] text-[#6B6B6B]',
+  geral:    'bg-[rgba(107,107,107,0.12)] text-[#B8B8B8]',
 }
 
 // ─────────────────────────────────────────────
@@ -470,7 +470,7 @@ function ModalMeta({
                   <option value="numerica">Numérica</option>
                   <option value="checklist">Checklist</option>
                 </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#4A4A4A]" />
+                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#A0A0A0]" />
               </div>
             </div>
             <div className="flex-1">
@@ -480,7 +480,7 @@ function ModalMeta({
                   <option value="individual">Individual</option>
                   <option value="time">Time</option>
                 </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#4A4A4A]" />
+                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#A0A0A0]" />
               </div>
             </div>
           </div>
@@ -493,7 +493,7 @@ function ModalMeta({
                 <select value={responsavel ?? 'matheus'} onChange={(e) => setResponsavel(e.target.value as PerfilUsuario)} className="input-purion appearance-none pr-8">
                   {SOCIOS.map((s) => <option key={s} value={s}>{LABEL_SOCIO[s]}</option>)}
                 </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#4A4A4A]" />
+                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#A0A0A0]" />
               </div>
             </div>
           )}
@@ -509,7 +509,7 @@ function ModalMeta({
                   className={`text-[11px] font-bold px-2.5 py-1 rounded-full transition-all ${
                     categoria === c
                       ? BADGE_CATEGORIA[c] + ' ring-1 ring-current'
-                      : 'bg-[var(--bg-surface-2)] text-[#6B6B6B] hover:text-[var(--text-primary)]'
+                      : 'bg-[var(--bg-surface-2)] text-[#B8B8B8] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   {LABEL_CATEGORIA[c]}
@@ -723,7 +723,7 @@ export function MetasDashboard() {
       {/* ── RESUMO DO DIA ── */}
       <div className="card-purion p-4 flex items-center justify-between gap-6 flex-wrap">
         <div>
-          <p className="text-[11px] text-[#6B6B6B] uppercase tracking-wider mb-1">Conclusão do time hoje</p>
+          <p className="text-[11px] text-[#B8B8B8] uppercase tracking-wider mb-1">Conclusão do time hoje</p>
           <div className="flex items-baseline gap-2">
             <span
               className="text-3xl font-black"
@@ -744,18 +744,18 @@ export function MetasDashboard() {
         <div className="flex items-center gap-6">
           {streakTime > 0 && (
             <div className="text-center">
-              <p className="text-[11px] text-[#6B6B6B] mb-1">Streak do time</p>
+              <p className="text-[11px] text-[#B8B8B8] mb-1">Streak do time</p>
               <div className="flex items-center gap-1" style={{ color: '#FF6B35' }}>
                 <Flame size={18} />
                 <span className="text-xl font-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   {streakTime}
                 </span>
               </div>
-              <p className="text-[10px] text-[#4A4A4A]">dia{streakTime > 1 ? 's' : ''} seguido{streakTime > 1 ? 's' : ''}</p>
+              <p className="text-[10px] text-[#A0A0A0]">dia{streakTime > 1 ? 's' : ''} seguido{streakTime > 1 ? 's' : ''}</p>
             </div>
           )}
           <div>
-            <p className="text-[11px] text-[#6B6B6B] mb-1">Heatmap (30 dias)</p>
+            <p className="text-[11px] text-[#B8B8B8] mb-1">Heatmap (30 dias)</p>
             <Heatmap metas={metasDiarias} socio="geral" />
           </div>
         </div>
@@ -830,7 +830,7 @@ export function MetasDashboard() {
             ))}
           </div>
           <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--border)]">
-            <span className="text-[10px] text-[#4A4A4A]">Legenda:</span>
+            <span className="text-[10px] text-[#A0A0A0]">Legenda:</span>
             {[
               { cor: '#4CAF7A', label: '100%' },
               { cor: 'rgba(201,168,76,0.55)', label: '50–99%' },
@@ -840,7 +840,7 @@ export function MetasDashboard() {
             ].map(({ cor, label }) => (
               <div key={label} className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-sm" style={{ background: cor }} />
-                <span className="text-[10px] text-[#4A4A4A]">{label}</span>
+                <span className="text-[10px] text-[#A0A0A0]">{label}</span>
               </div>
             ))}
           </div>

@@ -17,7 +17,7 @@ function useChartColors() {
   return {
     grid:    dark ? '#252525' : '#E5E7EB',
     axis:    dark ? '#555555' : '#9CA3AF',
-    tick:    dark ? '#6B6B6B' : '#6B7280',
+    tick:    dark ? '#B8B8B8' : '#6B7280',
     surface: dark ? '#161616' : '#FFFFFF',
   }
 }

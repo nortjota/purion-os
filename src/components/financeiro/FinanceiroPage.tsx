@@ -24,7 +24,7 @@ export function FinanceiroPage() {
             onClick={() => setAba(a.id)}
             className="relative px-4 py-2.5 text-xs font-semibold transition-colors"
             style={{
-              color: aba === a.id ? '#C9A84C' : '#6B6B6B',
+              color: aba === a.id ? '#C9A84C' : '#B8B8B8',
             }}
           >
             {a.label}

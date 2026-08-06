@@ -53,7 +53,7 @@ const TABS: { id: TabId; label: string }[] = [
 const COMISSAO_PADRAO_POR_VENDA = 25
 
 const PIPELINE_COLS: { status: StatusCreator[]; label: string; cor: string }[] = [
-  { status: ['contatado'],           label: 'Identificado',      cor: '#6B6B6B' },
+  { status: ['contatado'],           label: 'Identificado',      cor: '#B8B8B8' },
   { status: ['negociando'],          label: 'Abordado',          cor: '#3B82F6' },
   { status: ['kit_enviado'],         label: 'Kit Enviado',       cor: '#C9A84C' },
   { status: ['postado', 'pago'],     label: 'Publicou',          cor: '#10B981' },
@@ -662,12 +662,12 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
           <div className="flex items-center gap-1 ml-3 shrink-0">
             <button
               onClick={() => setShowEditar(true)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(201,168,76,0.1)] text-[#6B6B6B] hover:text-[#C9A84C] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(201,168,76,0.1)] text-[#B8B8B8] hover:text-[#C9A84C] transition-colors"
               title="Editar creator"
             ><Pencil size={13} /></button>
             <button
               onClick={() => onDeletar(creator)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#6B6B6B] hover:text-[#E85238] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#B8B8B8] hover:text-[#E85238] transition-colors"
               title="Excluir creator"
             ><Trash2 size={13} /></button>
             <button onClick={onClose} className="icon-btn"><X size={14} /></button>

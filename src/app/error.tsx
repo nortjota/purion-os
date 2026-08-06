@@ -24,13 +24,13 @@ export default function GlobalError({
         <div style={{ fontSize: '28px', fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em', marginBottom: '4px' }}>
           PURION
         </div>
-        <div style={{ fontSize: '11px', color: '#6B6B6B', letterSpacing: '0.2em', marginBottom: '32px' }}>OS</div>
+        <div style={{ fontSize: '11px', color: '#B8B8B8', letterSpacing: '0.2em', marginBottom: '32px' }}>OS</div>
 
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
         <h1 style={{ fontSize: '18px', fontWeight: 600, color: '#FAFAF8', marginBottom: '8px' }}>
           Algo deu errado
         </h1>
-        <p style={{ fontSize: '13px', color: '#6B6B6B', marginBottom: '28px', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '13px', color: '#B8B8B8', marginBottom: '28px', lineHeight: 1.6 }}>
           Ocorreu um erro inesperado. Nossa equipe foi notificada.
         </p>
 
@@ -46,7 +46,7 @@ export default function GlobalError({
         </button>
 
         <p style={{ marginTop: '16px' }}>
-          <a href="/" style={{ fontSize: '12px', color: '#6B6B6B', textDecoration: 'none' }}>
+          <a href="/" style={{ fontSize: '12px', color: '#B8B8B8', textDecoration: 'none' }}>
             ← Voltar para o início
           </a>
         </p>

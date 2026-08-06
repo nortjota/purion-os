@@ -36,7 +36,7 @@ const GraficoEvolucao = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[280px] flex items-center justify-center text-[#4A4A4A] text-xs">
+      <div className="h-[280px] flex items-center justify-center text-[#A0A0A0] text-xs">
         Carregando gráfico...
       </div>
     ),
@@ -122,11 +122,11 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
             <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Distribuição Recomendada
             </h3>
-            <p className="text-xs text-[#6B6B6B] mt-0.5">
+            <p className="text-xs text-[#B8B8B8] mt-0.5">
               Receita registrada: <span className="text-[#C9A84C] font-semibold">{formatarMoeda(valor)}</span>
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -145,7 +145,7 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
                   <div className="h-full rounded-full" style={{ width: `${item.percentual}%`, backgroundColor: item.cor }} />
                 </div>
               </div>
-              <span className="text-[10px] text-[#6B6B6B] w-8 text-right shrink-0">{item.percentual}%</span>
+              <span className="text-[10px] text-[#B8B8B8] w-8 text-right shrink-0">{item.percentual}%</span>
             </div>
           ))}
         </div>
@@ -213,14 +213,14 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
             <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Editar Movimentação
             </h3>
-            <p className="text-xs text-[#6B6B6B] mt-0.5">
+            <p className="text-xs text-[#B8B8B8] mt-0.5">
               <span style={{ color: linha.tipo === 'receita' ? '#4CAF7A' : '#E85238' }}>
                 {linha.tipo === 'receita' ? '↑ Receita' : '↓ Despesa'}
               </span>
               {' '}· ID {linha.id.slice(0, 8)}
             </p>
           </div>
-          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -233,7 +233,7 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
               <select value={categoria} onChange={(e) => setCategoria(e.target.value)} className="input-purion appearance-none pr-8 cursor-pointer">
                 {categorias.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
               </select>
-              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
             </div>
           </div>
 
@@ -242,7 +242,7 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
             <div className="flex-1">
               <label className="label-purion">Valor</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] text-xs">R$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] text-xs">R$</span>
                 <input
                   type="number" min="0" step="0.01"
                   value={valor} onChange={(e) => setValor(e.target.value)}
@@ -284,7 +284,7 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
                   <option value="joao">João</option>
                   <option value="gabriel">Gabriel</option>
                 </select>
-                <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+                <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
               </div>
             </div>
             <div className="w-[90px]">
@@ -295,7 +295,7 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
                   <option value="SP">SP</option>
                   <option value="SC">SC</option>
                 </select>
-                <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+                <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
               </div>
             </div>
           </div>
@@ -414,7 +414,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
                 ? t === 'receita'
                   ? 'bg-[rgba(76,175,122,0.15)] text-[#4CAF7A] border border-[rgba(76,175,122,0.3)]'
                   : 'bg-[rgba(232,82,56,0.15)] text-[#E85238] border border-[rgba(232,82,56,0.3)]'
-                : 'text-[#6B6B6B] hover:text-[var(--text-primary)]'
+                : 'text-[#B8B8B8] hover:text-[var(--text-primary)]'
             }`}
           >
             {t === 'receita' ? '↑ Receita' : '↓ Despesa'}
@@ -428,13 +428,13 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
           <option value="" disabled>Categoria</option>
           {categoriasDisponiveis.map(([key, label]) => <option key={key} value={key}>{label}</option>)}
         </select>
-        <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+        <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
       </div>
 
       {/* Valor + Data */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] text-xs">R$</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] text-xs">R$</span>
           <input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} placeholder="0,00" className="input-purion pl-8" />
         </div>
         <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="input-purion w-[140px]" />
@@ -451,7 +451,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
             <option value="joao">João</option>
             <option value="gabriel">Gabriel</option>
           </select>
-          <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+          <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
         </div>
         <div className="relative w-[90px]">
           <select value={regiao} onChange={(e) => setRegiao(e.target.value as Regiao)} className="input-purion appearance-none pr-6 cursor-pointer">
@@ -459,7 +459,7 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
             <option value="SP">SP</option>
             <option value="SC">SC</option>
           </select>
-          <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+          <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
         </div>
       </div>
 
@@ -502,12 +502,12 @@ function CalculadoraPrecificacao() {
   return (
     <div className="space-y-3">
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] text-xs">R$</span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] text-xs">R$</span>
         <input
           type="number" min="0" step="0.01" value={custo}
           onChange={(e) => setCusto(e.target.value)}
           placeholder="Custo do produto"
-          className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2.5 pl-8 text-sm text-[var(--text-primary)] placeholder-[#4A4A4A] focus:outline-none focus:border-[rgba(201,168,76,0.5)] transition-colors"
+          className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2.5 pl-8 text-sm text-[var(--text-primary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(201,168,76,0.5)] transition-colors"
         />
       </div>
       {resultado ? (
@@ -519,7 +519,7 @@ function CalculadoraPrecificacao() {
             { label: 'Markup',         valor: `${resultado.markup.toFixed(2)}×`,          cor: '#8B5CF6', destaque: false },
           ].map(({ label, valor, cor, destaque }) => (
             <div key={label} className={`flex items-center justify-between p-3 rounded-lg border ${destaque ? 'bg-[rgba(201,168,76,0.06)] border-[rgba(201,168,76,0.2)]' : 'bg-[var(--bg-surface-2)] border-[var(--border)]'}`}>
-              <span className="text-xs text-[#6B6B6B]">{label}</span>
+              <span className="text-xs text-[#B8B8B8]">{label}</span>
               <span className="text-sm font-black" style={{ color: cor, fontFamily: 'Montserrat, sans-serif' }}>{valor}</span>
             </div>
           ))}
@@ -632,14 +632,14 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
       {/* Busca + CSV */}
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1 max-w-xs">
-          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A4A4A]" />
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A0A0A0]" />
           <input
             type="text" value={busca} onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar descrição, fornecedor…"
-            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-xs text-[var(--text-secondary)] placeholder-[#4A4A4A] focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-xs text-[var(--text-secondary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors"
           />
           {busca && (
-            <button onClick={() => setBusca('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#4A4A4A] hover:text-[var(--text-primary)]">
+            <button onClick={() => setBusca('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#A0A0A0] hover:text-[var(--text-primary)]">
               <X size={10} />
             </button>
           )}
@@ -647,7 +647,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
         <button
           onClick={() => exportarCSV(linhasFiltradas)}
           title={`Exportar ${linhasFiltradas.length} registros como CSV`}
-          className="p-1.5 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] text-[#6B6B6B] hover:text-[#C9A84C] hover:border-[rgba(201,168,76,0.4)] transition-colors"
+          className="p-1.5 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] text-[#B8B8B8] hover:text-[#C9A84C] hover:border-[rgba(201,168,76,0.4)] transition-colors"
         >
           <Download size={13} />
         </button>
@@ -655,7 +655,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
 
       {/* Filtros */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <Filter size={13} className="text-[#4A4A4A]" />
+        <Filter size={13} className="text-[#A0A0A0]" />
         <select value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)} className={selectCls}>
           <option value="">Todos os tipos</option>
           <option value="receita">Receitas</option>
@@ -680,7 +680,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
             <X size={10} /> Limpar
           </button>
         )}
-        <span className="ml-auto text-[10px] text-[#4A4A4A]">{linhasFiltradas.length} registros</span>
+        <span className="ml-auto text-[10px] text-[#A0A0A0]">{linhasFiltradas.length} registros</span>
       </div>
 
       {/* Subtotais */}
@@ -727,7 +727,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                     className="bg-[var(--bg-primary)] hover:bg-[rgba(255,255,255,0.02)] transition-colors group/row"
                     style={isMobile ? { cursor: 'pointer' } : {}}
                   >
-                    <td className="px-4 py-2.5 text-[#6B6B6B] whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-[#B8B8B8] whitespace-nowrap">
                       {formatarDataBR(linha.data)}
                     </td>
                     <td className="px-4 py-2.5">
@@ -742,24 +742,24 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                         {linha.tipo === 'receita' ? '↑' : '↓'}
                       </span>
                     </td>
-                    {!isMobile && <td className="px-4 py-2.5 text-[#6B6B6B]">{labelCat(linha.categoria)}</td>}
+                    {!isMobile && <td className="px-4 py-2.5 text-[#B8B8B8]">{labelCat(linha.categoria)}</td>}
                     {!isMobile && (
                       <td className="px-4 py-2.5 text-[var(--text-secondary)] max-w-[200px] truncate" title={linha.descricao}>
                         {linha.descricao}
                       </td>
                     )}
                     {!isMobile && (
-                      <td className="px-4 py-2.5 text-[#6B6B6B]">
+                      <td className="px-4 py-2.5 text-[#B8B8B8]">
                         {LABEL_RESPONSAVEL[linha.responsavel as PerfilUsuario] ?? linha.responsavel}
-                        <span className="text-[#3A3A3A] ml-1">{linha.regiao}</span>
+                        <span className="text-[#8A8A8A] ml-1">{linha.regiao}</span>
                       </td>
                     )}
                     {!isMobile && (
-                      <td className="px-4 py-2.5 text-[#4A4A4A] text-xs max-w-[180px] truncate">
+                      <td className="px-4 py-2.5 text-[#A0A0A0] text-xs max-w-[180px] truncate">
                         {linha.fornecedor ? (
                           <>
                             {linha.fornecedor}
-                            {linha.notaFiscal && <span className="text-[#3A3A3A] ml-1">· NF {linha.notaFiscal}</span>}
+                            {linha.notaFiscal && <span className="text-[#8A8A8A] ml-1">· NF {linha.notaFiscal}</span>}
                           </>
                         ) : linha.notaFiscal ? (
                           <span>NF {linha.notaFiscal}</span>
@@ -777,13 +777,13 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                           {onEditar && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onEditar(linha) }}
-                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[#5B8FE8]"
+                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[#5B8FE8]"
                             ><Pencil size={11} /></button>
                           )}
                           {onDeletar && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onDeletar(linha.id, linha.tipo) }}
-                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#6B6B6B] hover:text-[#E85238]"
+                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[#E85238]"
                             ><Trash2 size={11} /></button>
                           )}
                         </div>
@@ -794,14 +794,14 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                     <tr key={`${linha.id}-detail`} className="bg-[var(--bg-surface-2)]">
                       <td colSpan={3} className="px-4 py-3">
                         <div className="space-y-1.5">
-                          <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Categoria:</span> {labelCat(linha.categoria)}</p>
-                          <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Descrição:</span> {linha.descricao}</p>
-                          <p className="text-[11px] text-[#6B6B6B]">
-                            <span className="text-[#4A4A4A] font-medium">Responsável:</span>{' '}
+                          <p className="text-[11px] text-[#B8B8B8]"><span className="text-[#A0A0A0] font-medium">Categoria:</span> {labelCat(linha.categoria)}</p>
+                          <p className="text-[11px] text-[#B8B8B8]"><span className="text-[#A0A0A0] font-medium">Descrição:</span> {linha.descricao}</p>
+                          <p className="text-[11px] text-[#B8B8B8]">
+                            <span className="text-[#A0A0A0] font-medium">Responsável:</span>{' '}
                             {LABEL_RESPONSAVEL[linha.responsavel as PerfilUsuario] ?? linha.responsavel} · {linha.regiao}
                           </p>
-                          {linha.fornecedor && <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Fornecedor:</span> {linha.fornecedor}</p>}
-                          {linha.notaFiscal  && <p className="text-[11px] text-[#6B6B6B]"><span className="text-[#4A4A4A] font-medium">Nota Fiscal:</span> {linha.notaFiscal}</p>}
+                          {linha.fornecedor && <p className="text-[11px] text-[#B8B8B8]"><span className="text-[#A0A0A0] font-medium">Fornecedor:</span> {linha.fornecedor}</p>}
+                          {linha.notaFiscal  && <p className="text-[11px] text-[#B8B8B8]"><span className="text-[#A0A0A0] font-medium">Nota Fiscal:</span> {linha.notaFiscal}</p>}
                           {(onEditar || onDeletar) && (
                             <div className="flex gap-2 pt-2">
                               {onEditar && (
@@ -935,19 +935,19 @@ export function FinanceiroDashboard() {
           {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
             <div key={dias} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 hover:border-[rgba(201,168,76,0.2)] transition-colors">
               <div className="mb-3">
-                <span className="text-[10px] text-[#6B6B6B] uppercase tracking-wider font-medium">{dias} dias</span>
+                <span className="text-[10px] text-[#B8B8B8] uppercase tracking-wider font-medium">{dias} dias</span>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-[#6B6B6B]">Receita proj.</span>
+                  <span className="text-xs text-[#B8B8B8]">Receita proj.</span>
                   <span className="text-sm font-black text-[#4CAF7A]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{formatarMoeda(receitaProjetada)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-[#6B6B6B]">Despesa proj.</span>
+                  <span className="text-xs text-[#B8B8B8]">Despesa proj.</span>
                   <span className="text-sm font-semibold text-[#E85238]">{formatarMoeda(despesaProjetada)}</span>
                 </div>
                 <div className="pt-1 border-t border-[var(--border)] flex justify-between items-center">
-                  <span className="text-xs text-[#6B6B6B]">Margem proj.</span>
+                  <span className="text-xs text-[#B8B8B8]">Margem proj.</span>
                   <span className="text-sm font-black text-[#C9A84C]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{margemProjetada}%</span>
                 </div>
               </div>

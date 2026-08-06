@@ -56,21 +56,21 @@ export default function InvitePage() {
       <div style={{ width: '100%', maxWidth: '400px', backgroundColor: '#141414', border: '1px solid #1E1E1E', borderRadius: '16px', padding: '40px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ fontSize: '28px', fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em' }}>PURION</div>
-          <div style={{ fontSize: '12px', color: '#6B6B6B', letterSpacing: '0.2em', marginTop: '2px' }}>OS</div>
+          <div style={{ fontSize: '12px', color: '#B8B8B8', letterSpacing: '0.2em', marginTop: '2px' }}>OS</div>
           <div style={{ width: '40px', height: '1px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)', margin: '12px auto 0' }} />
         </div>
 
         <p style={{ fontSize: '14px', color: '#FAFAF8', fontWeight: 500, textAlign: 'center', marginBottom: '6px' }}>
           Bem-vindo ao PURION OS
         </p>
-        <p style={{ fontSize: '13px', color: '#6B6B6B', textAlign: 'center', marginBottom: '28px' }}>
+        <p style={{ fontSize: '13px', color: '#B8B8B8', textAlign: 'center', marginBottom: '28px' }}>
           Defina sua senha para ativar o acesso
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {(['password', 'confirm'] as const).map((field) => (
             <div key={field}>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#6B6B6B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#B8B8B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
                 {field === 'password' ? 'Nova senha' : 'Confirmar senha'}
               </label>
               <input

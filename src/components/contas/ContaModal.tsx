@@ -63,13 +63,13 @@ export function ContaModal({ conta, onSalvar, onFechar }: ContaModalProps) {
               <select value={form.categoria} onChange={(e) => set('categoria', e.target.value as CategoriaContaAcesso)} className={`${inputCls} appearance-none cursor-pointer`}>
                 {CATEGORIAS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
               </select>
-              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
             </div>
             <div className="relative flex-1">
               <select value={form.status} onChange={(e) => set('status', e.target.value as StatusContaAcesso)} className={`${inputCls} appearance-none cursor-pointer`}>
                 {STATUS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
-              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A4A4A] pointer-events-none" />
+              <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
             </div>
           </div>
           <input value={form.identificador} onChange={(e) => set('identificador', e.target.value)} placeholder="Identificador (login/e-mail)" className={inputCls} />

@@ -52,7 +52,7 @@ const STATUS_PEDIDO_COLOR: Record<PedidoExpedicao['status'], string> = {
   em_separacao: 'text-blue-400 bg-blue-400/10',
   enviado: 'text-purple-400 bg-purple-400/10',
   entregue: 'text-emerald-400 bg-emerald-400/10',
-  cancelado: 'text-[#6B6B6B] bg-[#2A2A2A]',
+  cancelado: 'text-[#B8B8B8] bg-[#2A2A2A]',
 }
 
 // ─────────────────────────────────────────────
@@ -285,7 +285,7 @@ export function ProducaoDashboard() {
                 {/* SKU header */}
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-[#6B6B6B] tracking-widest uppercase">
+                    <span className="text-[10px] font-bold text-[#B8B8B8] tracking-widest uppercase">
                       {SKU_LABEL[sku.sku]}
                     </span>
                     <p className="text-xs text-[var(--text-secondary)]">{SKU_SUB[sku.sku]}</p>
@@ -306,7 +306,7 @@ export function ProducaoDashboard() {
                   >
                     {sku.unidades.toLocaleString('pt-BR')}
                   </span>
-                  <span className="text-xs text-[#6B6B6B]">un</span>
+                  <span className="text-xs text-[#B8B8B8]">un</span>
                 </div>
 
                 {/* Threshold indicator */}
@@ -320,10 +320,10 @@ export function ProducaoDashboard() {
                       }}
                     />
                   </div>
-                  <span className="text-[10px] text-[#6B6B6B] shrink-0">mín {sku.threshold}</span>
+                  <span className="text-[10px] text-[#B8B8B8] shrink-0">mín {sku.threshold}</span>
                 </div>
 
-                <p className="text-[10px] text-[#4A4A4A]">Atualizado em {fmt(sku.ultimaAtualizacao)}</p>
+                <p className="text-[10px] text-[#A0A0A0]">Atualizado em {fmt(sku.ultimaAtualizacao)}</p>
 
                 <button
                   onClick={() => setAjusteModal({ id: sku.id, nome: sku.nome, unidades: sku.unidades })}
@@ -358,14 +358,14 @@ export function ProducaoDashboard() {
           {!isMobile && (
             <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1.5fr_40px] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
               {['Nº Lote', 'Fragrância', 'Data Prod.', 'Qtd', 'Status'].map((h) => (
-                <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+                <span key={h} className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
               ))}
               <span />
             </div>
           )}
 
           {lotes.length === 0 && (
-            <div className="px-4 py-8 text-center text-xs text-[#4A4A4A]">Nenhum lote cadastrado</div>
+            <div className="px-4 py-8 text-center text-xs text-[#A0A0A0]">Nenhum lote cadastrado</div>
           )}
 
           {lotes.map((lote) => {
@@ -395,13 +395,13 @@ export function ProducaoDashboard() {
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-mono text-[#C9A84C]">{lote.codigo}</p>
                         <p className="text-xs text-[var(--text-primary)] truncate">{lote.produto}</p>
-                        <p className="text-[10px] text-[#6B6B6B]">{fmt(lote.dataInicio)} · {lote.quantidadeProduzida} un</p>
+                        <p className="text-[10px] text-[#B8B8B8]">{fmt(lote.dataInicio)} · {lote.quantidadeProduzida} un</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColor}`}>
                           {statusLabel}
                         </span>
-                        {expandido ? <ChevronUp size={14} className="text-[#6B6B6B]" /> : <ChevronDown size={14} className="text-[#6B6B6B]" />}
+                        {expandido ? <ChevronUp size={14} className="text-[#B8B8B8]" /> : <ChevronDown size={14} className="text-[#B8B8B8]" />}
                       </div>
                     </>
                   ) : (
@@ -413,7 +413,7 @@ export function ProducaoDashboard() {
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full self-center ${statusColor}`}>
                         {statusLabel}
                       </span>
-                      <span className="flex items-center justify-center gap-1 text-[#6B6B6B]">
+                      <span className="flex items-center justify-center gap-1 text-[#B8B8B8]">
                         <button
                           onClick={(e) => { e.stopPropagation(); setDeletandoLote(loteRef) }}
                           className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] hover:text-[#E85238] transition-colors"
@@ -428,7 +428,7 @@ export function ProducaoDashboard() {
                 {expandido && (
                   <div className="px-4 pb-4 pt-1">
                     <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-4">
-                      <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-3">
+                      <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-wider mb-3">
                         Checklist de Testes — {lote.codigo}
                       </p>
                       <div className="flex flex-col gap-2.5">
@@ -447,17 +447,17 @@ export function ProducaoDashboard() {
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className={`text-xs font-medium ${resultado === 'aprovado' ? 'text-[var(--text-primary)]' : resultado === 'reprovado' ? 'text-red-400' : 'text-[#6B6B6B]'}`}>
+                                  <span className={`text-xs font-medium ${resultado === 'aprovado' ? 'text-[var(--text-primary)]' : resultado === 'reprovado' ? 'text-red-400' : 'text-[#B8B8B8]'}`}>
                                     {req.label}
                                   </span>
                                   {teste?.data && (
-                                    <span className="text-[10px] text-[#4A4A4A]">
+                                    <span className="text-[10px] text-[#A0A0A0]">
                                       {resultado !== 'pendente' ? `aprovado em ${fmt(teste.data)}` : `iniciado em ${fmt(teste.data)}`}
                                     </span>
                                   )}
                                 </div>
                                 {teste?.observacoes && (
-                                  <p className="text-[10px] text-[#4A4A4A] mt-0.5 truncate">{teste.observacoes}</p>
+                                  <p className="text-[10px] text-[#A0A0A0] mt-0.5 truncate">{teste.observacoes}</p>
                                 )}
                               </div>
                               {/* Aprovar / Reprovar se pendente */}
@@ -516,7 +516,7 @@ export function ProducaoDashboard() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-[11px] font-bold text-[#6B6B6B] uppercase tracking-widest">
+            <h2 className="text-[11px] font-bold text-[#B8B8B8] uppercase tracking-widest">
               Expedição
             </h2>
             {expirados > 0 && (
@@ -531,13 +531,13 @@ export function ProducaoDashboard() {
           {!isMobile && (
             <div className="grid grid-cols-[1.5fr_2fr_1fr_2.5fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
               {['Pedido', 'Destinatário', 'Data', 'SLA 48h', 'Status'].map((h) => (
-                <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+                <span key={h} className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
               ))}
             </div>
           )}
 
           {pedidosExpedicao.length === 0 && (
-            <div className="px-4 py-8 text-center text-xs text-[#4A4A4A]">Nenhum pedido registrado</div>
+            <div className="px-4 py-8 text-center text-xs text-[#A0A0A0]">Nenhum pedido registrado</div>
           )}
 
           {pedidosExpedicao.map((pedido) => {
@@ -552,7 +552,7 @@ export function ProducaoDashboard() {
                     <div>
                       <p className="text-xs font-mono text-[#C9A84C]">{pedido.numeroPedido}</p>
                       <p className="text-xs text-[var(--text-primary)]">{pedido.destinatario}</p>
-                      <p className="text-[10px] text-[#4A4A4A]">
+                      <p className="text-[10px] text-[#A0A0A0]">
                         {pedido.itens.map((i) => `${i.quantidade}× ${SKU_LABEL[i.sku]}`).join(', ')} · {fmt(pedido.dataPedido)}
                       </p>
                     </div>
@@ -570,7 +570,7 @@ export function ProducaoDashboard() {
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center justify-between">
                       {concluido ? (
-                        <span className="text-[10px] text-[#6B6B6B]">Concluído</span>
+                        <span className="text-[10px] text-[#B8B8B8]">Concluído</span>
                       ) : expirado ? (
                         <span className="flex items-center gap-1 text-[10px] font-bold text-red-400">
                           <AlertTriangle size={10} /> EXPIRADO
@@ -597,7 +597,7 @@ export function ProducaoDashboard() {
                 <span className="text-xs font-mono text-[#C9A84C]">{pedido.numeroPedido}</span>
                 <div>
                   <p className="text-xs text-[var(--text-primary)]">{pedido.destinatario}</p>
-                  <p className="text-[10px] text-[#4A4A4A]">
+                  <p className="text-[10px] text-[#A0A0A0]">
                     {pedido.itens.map((i) => `${i.quantidade}× ${SKU_LABEL[i.sku]}`).join(', ')}
                   </p>
                 </div>
@@ -607,7 +607,7 @@ export function ProducaoDashboard() {
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center justify-between mb-0.5">
                     {concluido ? (
-                      <span className="text-[10px] text-[#6B6B6B]">Concluído</span>
+                      <span className="text-[10px] text-[#B8B8B8]">Concluído</span>
                     ) : expirado ? (
                       <span className="flex items-center gap-1 text-[10px] font-bold text-red-400">
                         <AlertTriangle size={10} /> EXPIRADO
@@ -645,7 +645,7 @@ export function ProducaoDashboard() {
                 {/* Delete */}
                 <button
                   onClick={() => setDeletandoPedido(pedido)}
-                  className="opacity-0 group-hover/ped:opacity-100 p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#6B6B6B] hover:text-[#E85238] transition-all"
+                  className="opacity-0 group-hover/ped:opacity-100 p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#B8B8B8] hover:text-[#E85238] transition-all"
                 ><Trash2 size={12} /></button>
               </div>
             )

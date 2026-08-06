@@ -95,7 +95,7 @@ export function ContasDashboard() {
           <p className="kpi-label mb-3">{CATEGORIA_LABEL[cat]}</p>
           <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
             {filtradas.filter((c) => c.categoria === cat).map((conta) => {
-              const cor = COR_RESPONSAVEL[conta.responsavel] ?? '#6B6B6B'
+              const cor = COR_RESPONSAVEL[conta.responsavel] ?? '#B8B8B8'
               return (
                 <div key={conta.id} className="card-purion card-section group relative">
                   <div className="flex items-start justify-between mb-2">

@@ -72,7 +72,7 @@ export default function LandingPage() {
       <nav style={{ padding: '20px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #141414' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
           <span style={{ fontSize: '18px', fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em' }}>PURION</span>
-          <span style={{ fontSize: '10px', color: '#6B6B6B', letterSpacing: '0.1em' }}>OS</span>
+          <span style={{ fontSize: '10px', color: '#B8B8B8', letterSpacing: '0.1em' }}>OS</span>
         </div>
         <a
           href="/login"
@@ -116,7 +116,7 @@ export default function LandingPage() {
           <div key={b.title} style={{ backgroundColor: '#111111', border: '1px solid #1E1E1E', borderRadius: '12px', padding: '28px 24px' }}>
             <div style={{ fontSize: '28px', marginBottom: '14px' }}>{b.icon}</div>
             <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px', color: '#FAFAF8' }}>{b.title}</h3>
-            <p style={{ fontSize: '13px', color: '#6B6B6B', lineHeight: 1.6, margin: 0 }}>{b.desc}</p>
+            <p style={{ fontSize: '13px', color: '#B8B8B8', lineHeight: 1.6, margin: 0 }}>{b.desc}</p>
           </div>
         ))}
       </section>
@@ -128,12 +128,12 @@ export default function LandingPage() {
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
               <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎯</div>
               <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>Recebemos sua solicitação!</h3>
-              <p style={{ fontSize: '13px', color: '#6B6B6B' }}>Nossa equipe entrará em contato em até 24h para agendar a demonstração.</p>
+              <p style={{ fontSize: '13px', color: '#B8B8B8' }}>Nossa equipe entrará em contato em até 24h para agendar a demonstração.</p>
             </div>
           ) : (
             <>
               <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '6px' }}>Solicitar demonstração</h2>
-              <p style={{ fontSize: '13px', color: '#6B6B6B', marginBottom: '28px' }}>Preencha e nossa equipe entra em contato em 24h.</p>
+              <p style={{ fontSize: '13px', color: '#B8B8B8', marginBottom: '28px' }}>Preencha e nossa equipe entra em contato em 24h.</p>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {[
                   { field: 'nome',      label: 'Nome completo',    placeholder: 'João Silva' },
@@ -142,7 +142,7 @@ export default function LandingPage() {
                   { field: 'whatsapp',  label: 'WhatsApp',         placeholder: '(11) 99999-9999' },
                 ].map(({ field, label, placeholder }) => (
                   <div key={field}>
-                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#6B6B6B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#B8B8B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
                       {label}
                     </label>
                     <input
@@ -170,7 +170,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer style={{ textAlign: 'center', padding: '24px', borderTop: '1px solid #141414', fontSize: '12px', color: '#3A3A3A' }}>
+      <footer style={{ textAlign: 'center', padding: '24px', borderTop: '1px solid #141414', fontSize: '12px', color: '#8A8A8A' }}>
         © 2025 PURION OS · Todos os direitos reservados
       </footer>
     </div>

@@ -47,7 +47,7 @@ function InputNum({
       <label className="text-xs text-[var(--text-secondary)] block mb-1">{label}</label>
       <div className="flex items-center bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C] transition-colors">
         {prefix && (
-          <span className="px-2.5 py-2 text-xs text-[#4A4A4A] border-r border-[#3A3A3A] bg-[var(--bg-surface-2)]">
+          <span className="px-2.5 py-2 text-xs text-[#A0A0A0] border-r border-[#3A3A3A] bg-[var(--bg-surface-2)]">
             {prefix}
           </span>
         )}
@@ -61,12 +61,12 @@ function InputNum({
           className="flex-1 px-3 py-2 text-sm text-[var(--text-primary)] bg-transparent outline-none"
         />
         {suffix && (
-          <span className="px-2.5 py-2 text-xs text-[#4A4A4A] border-l border-[#3A3A3A] bg-[var(--bg-surface-2)]">
+          <span className="px-2.5 py-2 text-xs text-[#A0A0A0] border-l border-[#3A3A3A] bg-[var(--bg-surface-2)]">
             {suffix}
           </span>
         )}
       </div>
-      {hint && <p className="text-[10px] text-[#4A4A4A] mt-0.5">{hint}</p>}
+      {hint && <p className="text-[10px] text-[#A0A0A0] mt-0.5">{hint}</p>}
     </div>
   )
 }
@@ -91,7 +91,7 @@ function InputPwd({
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="px-2.5 text-[#6B6B6B] hover:text-[#C9A84C]"
+          className="px-2.5 text-[#B8B8B8] hover:text-[#C9A84C]"
         >
           {visible ? <EyeOff size={13} /> : <Eye size={13} />}
         </button>
@@ -324,7 +324,7 @@ export function SettingsDashboard() {
               className={`w-full flex items-center justify-between px-4 py-4 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors ${i > 0 ? 'border-t border-[var(--border)]' : ''}`}
             >
               <span className="text-sm text-[var(--text-primary)]">{tab.label}</span>
-              <ChevronRightIcon size={16} className="text-[#4A4A4A]" />
+              <ChevronRightIcon size={16} className="text-[#A0A0A0]" />
             </button>
           ))}
         </div>
@@ -426,7 +426,7 @@ export function SettingsDashboard() {
               ].map(({ label, color, val }) => (
                 <div key={label} className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                  <span className="text-[10px] text-[#6B6B6B]">{label} {val}%</span>
+                  <span className="text-[10px] text-[#B8B8B8]">{label} {val}%</span>
                 </div>
               ))}
             </div>
@@ -618,7 +618,7 @@ export function SettingsDashboard() {
                     <p className={`text-xl font-black ${alerta ? 'text-red-400' : 'text-[var(--text-primary)]'}`}>
                       {sku.unidades}
                     </p>
-                    <p className="text-[9px] text-[#4A4A4A]">mín {threshold} un</p>
+                    <p className="text-[9px] text-[#A0A0A0]">mín {threshold} un</p>
                   </div>
                 )
               })}
@@ -723,8 +723,8 @@ export function SettingsDashboard() {
       {/* ── Rodapé — Export JSON ── */}
       <div className="mt-10 pt-6 border-t border-[var(--border)] flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p className="text-xs text-[#6B6B6B]">Exportar todos os dados do PURION OS em formato JSON.</p>
-          <p className="text-[10px] text-[#4A4A4A] mt-0.5">
+          <p className="text-xs text-[#B8B8B8]">Exportar todos os dados do PURION OS em formato JSON.</p>
+          <p className="text-[10px] text-[#A0A0A0] mt-0.5">
             Inclui leads, financeiro, tarefas, produção, marketing, reuniões e configurações.
           </p>
         </div>

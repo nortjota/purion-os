@@ -36,8 +36,8 @@ const STATUS_KIT_LABEL: Record<string, string> = {
 }
 
 const STATUS_KIT_COLOR: Record<string, string> = {
-  contatado:    'text-[#6B6B6B] bg-[#2A2A2A]',
-  negociando:   'text-[#6B6B6B] bg-[#2A2A2A]',
+  contatado:    'text-[#B8B8B8] bg-[#2A2A2A]',
+  negociando:   'text-[#B8B8B8] bg-[#2A2A2A]',
   kit_enviado:  'text-blue-400 bg-blue-400/10',
   postado:      'text-emerald-400 bg-emerald-400/10',
   pago:         'text-emerald-400 bg-emerald-400/10',
@@ -60,7 +60,7 @@ const FORMATO_COLOR: Record<FormatoConteudo, string> = {
 }
 
 const STATUS_CONTEUDO_COLOR: Record<StatusConteudo, string> = {
-  planejado:    'text-[#6B6B6B]',
+  planejado:    'text-[#B8B8B8]',
   em_producao:  'text-amber-400',
   publicado:    'text-emerald-400',
   cancelado:    'text-red-400',
@@ -452,7 +452,7 @@ export function MarketingDashboard() {
           <div className="flex items-center gap-2">
             {/* Filtro plataforma */}
             <div className="flex items-center gap-1.5">
-              <Filter size={11} className="text-[#6B6B6B]" />
+              <Filter size={11} className="text-[#B8B8B8]" />
               <select
                 value={filtroPlatforma}
                 onChange={(e) => setFiltroPlatforma(e.target.value)}
@@ -489,12 +489,12 @@ export function MarketingDashboard() {
           {/* Cabeçalho */}
           <div className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
             {['Nome', 'Plataforma', 'Seguidores', 'Status Kit', 'Data Envio', 'Link Conteúdo'].map((h) => (
-              <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+              <span key={h} className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
             ))}
           </div>
 
           {creatoresFiltrados.length === 0 && (
-            <div className="px-4 py-8 text-center text-xs text-[#4A4A4A]">
+            <div className="px-4 py-8 text-center text-xs text-[#A0A0A0]">
               Nenhum creator encontrado
             </div>
           )}
@@ -514,7 +514,7 @@ export function MarketingDashboard() {
                 {/* Nome */}
                 <div>
                   <p className="text-xs font-semibold text-[var(--text-primary)]">{creator.nome}</p>
-                  <p className="text-[10px] text-[#6B6B6B]">{creator.nichoPrincipal}</p>
+                  <p className="text-[10px] text-[#B8B8B8]">{creator.nichoPrincipal}</p>
                 </div>
 
                 {/* Plataformas */}
@@ -562,7 +562,7 @@ export function MarketingDashboard() {
                     <span className="truncate">Ver post</span>
                   </a>
                 ) : (
-                  <span className="text-xs text-[#4A4A4A]">—</span>
+                  <span className="text-xs text-[#A0A0A0]">—</span>
                 )}
               </div>
             )
@@ -582,7 +582,7 @@ export function MarketingDashboard() {
             {/* Navegação de semana */}
             <button
               onClick={() => setSemanaBase((d) => addDays(d, -7))}
-              className="p-1.5 rounded-md text-[#6B6B6B] hover:text-[#C9A84C] hover:bg-[rgba(201,168,76,0.08)]"
+              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[#C9A84C] hover:bg-[rgba(201,168,76,0.08)]"
             >
               <ChevronLeft size={14} />
             </button>
@@ -591,7 +591,7 @@ export function MarketingDashboard() {
             </span>
             <button
               onClick={() => setSemanaBase((d) => addDays(d, 7))}
-              className="p-1.5 rounded-md text-[#6B6B6B] hover:text-[#C9A84C] hover:bg-[rgba(201,168,76,0.08)]"
+              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[#C9A84C] hover:bg-[rgba(201,168,76,0.08)]"
             >
               <ChevronRight size={14} />
             </button>
@@ -614,7 +614,7 @@ export function MarketingDashboard() {
               <div key={key} className="flex flex-col gap-1.5">
                 {/* Header do dia */}
                 <div className="text-center">
-                  <p className="text-[10px] font-bold text-[#6B6B6B] uppercase">{DIAS_SEMANA[idx]}</p>
+                  <p className="text-[10px] font-bold text-[#B8B8B8] uppercase">{DIAS_SEMANA[idx]}</p>
                   <p className="text-xs text-[var(--text-secondary)]">{fmtDia(dia)}</p>
                 </div>
 
@@ -650,7 +650,7 @@ export function MarketingDashboard() {
                   {/* Botão add no dia */}
                   <button
                     onClick={() => setModalConteudo(key)}
-                    className="text-[10px] text-[#3A3A3A] hover:text-[#C9A84C] py-1 text-center rounded transition-colors"
+                    className="text-[10px] text-[#8A8A8A] hover:text-[#C9A84C] py-1 text-center rounded transition-colors"
                   >
                     + add
                   </button>

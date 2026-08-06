@@ -70,7 +70,7 @@ const STATUS_REUNIAO_LABEL: Record<ReuniaoItem['status'], string> = {
 const STATUS_REUNIAO_COLOR: Record<ReuniaoItem['status'], string> = {
   agendada:  'text-blue-400 bg-blue-400/10',
   realizada: 'text-emerald-400 bg-emerald-400/10',
-  cancelada: 'text-[#6B6B6B] bg-[#2A2A2A]',
+  cancelada: 'text-[#B8B8B8] bg-[#2A2A2A]',
 }
 
 // ─────────────────────────────────────────────
@@ -221,7 +221,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     form.participantes.includes(s)
                       ? 'bg-[rgba(201,168,76,0.15)] text-[#C9A84C] border border-[#C9A84C]/30'
-                      : 'bg-[#2A2A2A] text-[#6B6B6B] border border-transparent'
+                      : 'bg-[#2A2A2A] text-[#B8B8B8] border border-transparent'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${SOCIO_COLOR[s]}`}>
@@ -391,7 +391,7 @@ function ModalEditarReuniao({ reuniao, onSalvar, onFechar }: {
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     form.participantes.includes(s)
                       ? 'bg-[rgba(201,168,76,0.15)] text-[#C9A84C] border border-[#C9A84C]/30'
-                      : 'bg-[#2A2A2A] text-[#6B6B6B] border border-transparent'
+                      : 'bg-[#2A2A2A] text-[#B8B8B8] border border-transparent'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${SOCIO_COLOR[s]}`}>
@@ -573,7 +573,7 @@ function DailyCard({
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-[var(--text-primary)]">{SOCIO_NOME[socio]}</p>
-          <p className="text-[10px] text-[#6B6B6B]">{SOCIO_CARGO[socio]}</p>
+          <p className="text-[10px] text-[#B8B8B8]">{SOCIO_CARGO[socio]}</p>
         </div>
         {temBloqueio && (
           <span className="flex items-center gap-1 text-[10px] font-bold text-amber-400">
@@ -586,18 +586,18 @@ function DailyCard({
       {/* Última entrada (leitura) */}
       {ultimaEntry && (
         <div className="px-4 py-3 border-b border-[var(--border)] space-y-2">
-          <p className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">
+          <p className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">
             Último update · {fmtDataSimples(ultimaEntry.data)}
           </p>
           {ultimaEntry.ontemFiz && (
             <div>
-              <span className="text-[10px] text-[#6B6B6B]">Ontem fiz: </span>
+              <span className="text-[10px] text-[#B8B8B8]">Ontem fiz: </span>
               <span className="text-xs text-[var(--text-secondary)]">{ultimaEntry.ontemFiz}</span>
             </div>
           )}
           {ultimaEntry.hojeFarei && (
             <div>
-              <span className="text-[10px] text-[#6B6B6B]">Hoje farei: </span>
+              <span className="text-[10px] text-[#B8B8B8]">Hoje farei: </span>
               <span className="text-xs text-[var(--text-secondary)]">{ultimaEntry.hojeFarei}</span>
             </div>
           )}
@@ -612,9 +612,9 @@ function DailyCard({
 
       {/* Formulário nova entrada */}
       <div className="px-4 py-3 space-y-2">
-        <p className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">Novo update</p>
+        <p className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">Novo update</p>
         <div>
-          <label className="text-[10px] text-[#6B6B6B] block mb-0.5">Ontem fiz:</label>
+          <label className="text-[10px] text-[#B8B8B8] block mb-0.5">Ontem fiz:</label>
           <textarea
             rows={2}
             value={form.ontemFiz}
@@ -624,7 +624,7 @@ function DailyCard({
           />
         </div>
         <div>
-          <label className="text-[10px] text-[#6B6B6B] block mb-0.5">Hoje farei:</label>
+          <label className="text-[10px] text-[#B8B8B8] block mb-0.5">Hoje farei:</label>
           <textarea
             rows={2}
             value={form.hojeFarei}
@@ -634,7 +634,7 @@ function DailyCard({
           />
         </div>
         <div>
-          <label className="text-[10px] text-[#6B6B6B] block mb-0.5">Bloqueado em:</label>
+          <label className="text-[10px] text-[#B8B8B8] block mb-0.5">Bloqueado em:</label>
           <textarea
             rows={1}
             value={form.bloqueadoEm}
@@ -663,7 +663,7 @@ function DailyCard({
         <div className="border-t border-[var(--border)]">
           <button
             onClick={() => setHistorico((h) => !h)}
-            className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-[#6B6B6B] hover:text-[var(--text-secondary)]"
+            className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-[#B8B8B8] hover:text-[var(--text-secondary)]"
           >
             <span>Histórico ({historicoEntries.length} entradas)</span>
             {historico ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -671,10 +671,10 @@ function DailyCard({
           {historico && (
             <div className="px-4 pb-3 space-y-2 max-h-[200px] overflow-y-auto">
               {historicoEntries.slice(1).map((e) => (
-                <div key={e.id} className="bg-[var(--bg-surface-2)] rounded-md px-3 py-2 text-[10px] text-[#6B6B6B]">
-                  <p className="text-[#4A4A4A] mb-1">{fmtDataSimples(e.data)}</p>
-                  {e.ontemFiz && <p><span className="text-[#4A4A4A]">Fez: </span>{e.ontemFiz}</p>}
-                  {e.hojeFarei && <p><span className="text-[#4A4A4A]">Planeja: </span>{e.hojeFarei}</p>}
+                <div key={e.id} className="bg-[var(--bg-surface-2)] rounded-md px-3 py-2 text-[10px] text-[#B8B8B8]">
+                  <p className="text-[#A0A0A0] mb-1">{fmtDataSimples(e.data)}</p>
+                  {e.ontemFiz && <p><span className="text-[#A0A0A0]">Fez: </span>{e.ontemFiz}</p>}
+                  {e.hojeFarei && <p><span className="text-[#A0A0A0]">Planeja: </span>{e.hojeFarei}</p>}
                   {e.bloqueadoEm && <p className="text-amber-400/70"><span className="text-amber-500/60">Bloq: </span>{e.bloqueadoEm}</p>}
                 </div>
               ))}
@@ -822,7 +822,7 @@ export function ReunioesDashboard() {
               </button>
             )}
             {reunioesExibidas.length === 0 && (
-              <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#4A4A4A]">
+              <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#A0A0A0]">
                 {filtroReuniao === 'proximas' ? 'Nenhuma reunião agendada' : 'Nenhuma reunião no histórico'}
               </div>
             )}
@@ -839,16 +839,16 @@ export function ReunioesDashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{reuniao.titulo}</p>
-                          <span className="text-[10px] text-[#4A4A4A] bg-[#2A2A2A] px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] text-[#A0A0A0] bg-[#2A2A2A] px-2 py-0.5 rounded-full">
                             {TIPO_REUNIAO_LABEL[reuniao.tipo]}
                           </span>
                           {reuniao.googleEventId ? (
                             <span title="Sincronizado com o Google Calendar"><CalendarCheck2 size={12} className="text-emerald-500" /></span>
                           ) : (
-                            <span title="Apenas no CRM (não sincronizado)"><CalendarOff size={12} className="text-[#4A4A4A]" /></span>
+                            <span title="Apenas no CRM (não sincronizado)"><CalendarOff size={12} className="text-[#A0A0A0]" /></span>
                           )}
                         </div>
-                        <p className="text-xs text-[#6B6B6B] mt-0.5">
+                        <p className="text-xs text-[#B8B8B8] mt-0.5">
                           {fmtData(reuniao.data)} · {reuniao.duracao}min ·{' '}
                           {reuniao.participantes.map((p) => SOCIO_NOME[p]).join(', ')}
                         </p>
@@ -872,15 +872,15 @@ export function ReunioesDashboard() {
                     </select>
                     <span
                       onClick={() => setEditandoReuniao(reuniao)}
-                      className="p-1 rounded hover:bg-[rgba(201,168,76,0.1)] text-[#4A4A4A] hover:text-[#C9A84C] transition-colors cursor-pointer"
+                      className="p-1 rounded hover:bg-[rgba(201,168,76,0.1)] text-[#A0A0A0] hover:text-[#C9A84C] transition-colors cursor-pointer"
                       title="Editar reunião"
                     ><Pencil size={12} /></span>
                     <span
                       onClick={() => setDeletandoReuniao(reuniao)}
-                      className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#4A4A4A] hover:text-[#E85238] transition-colors cursor-pointer"
+                      className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#A0A0A0] hover:text-[#E85238] transition-colors cursor-pointer"
                     ><Trash2 size={12} /></span>
                     <button onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}>
-                      {expandida ? <ChevronUp size={14} className="text-[#6B6B6B]" /> : <ChevronDown size={14} className="text-[#6B6B6B]" />}
+                      {expandida ? <ChevronUp size={14} className="text-[#B8B8B8]" /> : <ChevronDown size={14} className="text-[#B8B8B8]" />}
                     </button>
                   </div>
                 </div>
@@ -889,11 +889,11 @@ export function ReunioesDashboard() {
                   <div className="px-4 pb-4 border-t border-[var(--border)] pt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {reuniao.pauta.length > 0 && (
                       <div>
-                        <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Pauta</p>
+                        <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-wider mb-2">Pauta</p>
                         <ul className="space-y-1">
                           {reuniao.pauta.map((item, i) => (
                             <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
-                              <span className="text-[#4A4A4A] shrink-0">{i + 1}.</span>
+                              <span className="text-[#A0A0A0] shrink-0">{i + 1}.</span>
                               {item}
                             </li>
                           ))}
@@ -902,7 +902,7 @@ export function ReunioesDashboard() {
                     )}
                     {reuniao.decisoes.length > 0 && (
                       <div>
-                        <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Decisões</p>
+                        <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-wider mb-2">Decisões</p>
                         <ul className="space-y-1">
                           {reuniao.decisoes.map((d, i) => (
                             <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
@@ -915,7 +915,7 @@ export function ReunioesDashboard() {
                     )}
                     {reuniao.ata && (
                       <div className="md:col-span-2">
-                        <p className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider mb-2">Ata</p>
+                        <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-wider mb-2">Ata</p>
                         <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{reuniao.ata}</p>
                       </div>
                     )}
@@ -957,13 +957,13 @@ export function ReunioesDashboard() {
           {!isMobile && (
             <div className="grid grid-cols-[3fr_1fr_1fr_1.5fr_1.5fr_32px] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
               {['Decisão', 'Proposto por', 'Data', 'Votos M · J · G', 'Status', ''].map((h) => (
-                <span key={h} className="text-[10px] font-bold text-[#4A4A4A] uppercase tracking-wider">{h}</span>
+                <span key={h} className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
               ))}
             </div>
           )}
 
           {decisoes.length === 0 && (
-            <div className="px-4 py-8 text-center text-xs text-[#4A4A4A]">Nenhuma decisão registrada</div>
+            <div className="px-4 py-8 text-center text-xs text-[#A0A0A0]">Nenhuma decisão registrada</div>
           )}
 
           {[...decisoes].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((decisao) => {
@@ -993,7 +993,7 @@ export function ReunioesDashboard() {
                     ><X size={isMobile ? 16 : 11} /></button>
                     <button
                       onClick={() => handleVotar(decisao.id, 'abstencao')}
-                      className={`rounded hover:bg-[#3A3A3A] text-[#6B6B6B] ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-[var(--border)]' : 'p-0.5'}`}
+                      className={`rounded hover:bg-[#3A3A3A] text-[#B8B8B8] ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-[var(--border)]' : 'p-0.5'}`}
                     ><Minus size={isMobile ? 16 : 11} /></button>
                   </div>
                 )
@@ -1003,7 +1003,7 @@ export function ReunioesDashboard() {
                 : voto === 'nao'
                   ? <X size={11} className="text-red-400" />
                   : voto === 'abstencao'
-                    ? <Minus size={11} className="text-[#6B6B6B]" />
+                    ? <Minus size={11} className="text-[#B8B8B8]" />
                     : <span className="w-2.5 h-2.5 rounded-full border border-[#3A3A3A] inline-block" />
               return (
                 <span key={socio} title={`${SOCIO_NOME[socio]}: ${voto}`} className="flex items-center">
@@ -1019,7 +1019,7 @@ export function ReunioesDashboard() {
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-[var(--text-primary)] leading-snug">{decisao.titulo}</p>
                       {decisao.descricao && (
-                        <p className="text-[10px] text-[#4A4A4A] mt-0.5 line-clamp-2">{decisao.descricao}</p>
+                        <p className="text-[10px] text-[#A0A0A0] mt-0.5 line-clamp-2">{decisao.descricao}</p>
                       )}
                       <div className="flex items-center gap-2 mt-1">
                         <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black ${SOCIO_COLOR[decisao.propostoPor]}`}>
@@ -1032,7 +1032,7 @@ export function ReunioesDashboard() {
                       {statusBadge}
                       <span
                         onClick={() => setDeletandoDecisao(decisao)}
-                        className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#4A4A4A] hover:text-[#E85238] transition-colors cursor-pointer"
+                        className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#A0A0A0] hover:text-[#E85238] transition-colors cursor-pointer"
                       ><Trash2 size={11} /></span>
                     </div>
                   </div>
@@ -1060,7 +1060,7 @@ export function ReunioesDashboard() {
                 <div>
                   <p className="text-xs font-semibold text-[var(--text-primary)] leading-snug">{decisao.titulo}</p>
                   {decisao.descricao && (
-                    <p className="text-[10px] text-[#4A4A4A] mt-0.5 line-clamp-2 leading-relaxed">{decisao.descricao}</p>
+                    <p className="text-[10px] text-[#A0A0A0] mt-0.5 line-clamp-2 leading-relaxed">{decisao.descricao}</p>
                   )}
                 </div>
 
@@ -1089,7 +1089,7 @@ export function ReunioesDashboard() {
                 <div className="flex items-center justify-center opacity-0 group-hover/dec:opacity-100 transition-opacity">
                   <span
                     onClick={() => setDeletandoDecisao(decisao)}
-                    className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#4A4A4A] hover:text-[#E85238] transition-colors cursor-pointer"
+                    className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#A0A0A0] hover:text-[#E85238] transition-colors cursor-pointer"
                   ><Trash2 size={12} /></span>
                 </div>
               </div>

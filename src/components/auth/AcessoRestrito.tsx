@@ -11,7 +11,7 @@ export function AcessoRestrito() {
           <Lock size={24} className="text-[#C9A84C]" />
         </div>
         <h1 className="mb-2 text-lg font-semibold text-[#FAFAF8]">Acesso restrito ao administrador</h1>
-        <p className="mb-8 text-sm leading-relaxed text-[#6B6B6B]">
+        <p className="mb-8 text-sm leading-relaxed text-[#B8B8B8]">
           Esta área é exclusiva para o administrador master do sistema.
         </p>
         <Link

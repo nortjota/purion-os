@@ -99,7 +99,7 @@ export default function DiagnosticoPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#0D0D0D', color: '#FAFAF8', padding: 32, fontFamily: 'monospace' }}>
       <h1 style={{ color: '#C9A84C', fontSize: 20, marginBottom: 8 }}>PURION OS — Diagnóstico</h1>
-      <p style={{ color: '#6B6B6B', fontSize: 13, marginBottom: 24 }}>
+      <p style={{ color: '#B8B8B8', fontSize: 13, marginBottom: 24 }}>
         Testa autenticação e permissões de banco em tempo real.
       </p>
 
@@ -135,11 +135,11 @@ export default function DiagnosticoPage() {
         ))}
 
         {rodando && (
-          <div style={{ color: '#6B6B6B', fontSize: 13 }}>Rodando testes...</div>
+          <div style={{ color: '#B8B8B8', fontSize: 13 }}>Rodando testes...</div>
         )}
       </div>
 
-      <p style={{ marginTop: 32, fontSize: 11, color: '#3A3A3A' }}>
+      <p style={{ marginTop: 32, fontSize: 11, color: '#8A8A8A' }}>
         Acesse: purion-os.vercel.app/diagnostico
       </p>
     </div>
