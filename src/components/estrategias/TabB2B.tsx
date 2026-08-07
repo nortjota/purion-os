@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ShieldCheck, ChevronDown, MessageCircleQuestion } from 'lucide-react'
 import { FunilB2B } from '@/components/crm/FunilB2B'
+import { SecaoNotas } from './SecaoNotas'
 
 const REGRAS_DE_OURO = [
   { titulo: 'Tabela não se negocia', desc: 'O preço da tabela é fixo. Negociar preço corrói margem e posicionamento premium.' },
@@ -100,6 +101,8 @@ export function TabB2B() {
           .tab-b2b-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
+
+      <SecaoNotas secao="b2b" />
     </div>
   )
 }

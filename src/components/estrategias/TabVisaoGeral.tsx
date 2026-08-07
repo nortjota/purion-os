@@ -5,6 +5,7 @@ import { Star, Flag, CalendarClock, DollarSign, Percent, Scale, Package, CheckCi
 import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
 import { formatCurrency, formatNumber } from '@/lib/formatters'
 import type { EstrategiaFase, StatusFase } from '@/hooks/useEstrategia'
+import { SecaoNotas } from './SecaoNotas'
 
 // ─── Constantes de negócio (referência do plano da marca) ────────────
 const CONTA_DO_MILHAO = {
@@ -218,6 +219,8 @@ export function TabVisaoGeral() {
           <MiniCard icon={Package} label="Conta do milhão" valor={`~${formatNumber(CONTA_DO_MILHAO.frascosMilhao)}`} sub="frascos/mês" cor="#A855F7" />
         </div>
       </div>
+
+      <SecaoNotas secao="visao_geral" />
     </div>
   )
 }

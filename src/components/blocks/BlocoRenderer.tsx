@@ -1,12 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { GripVertical, Trash2, Plus, X } from 'lucide-react'
-import type { KbBloco, TipoBloco, ConteudoBloco } from '@/store'
-import { TIPO_BLOCO_LABEL, TIPOS_BLOCO_MENU, conteudoPadrao } from './conhecimentoHelpers'
+import { GripVertical, Trash2, Plus, X, ChevronRight } from 'lucide-react'
+import type { TipoBloco, ConteudoBloco } from '@/store'
+import { TIPO_BLOCO_LABEL, TIPOS_BLOCO_MENU, conteudoPadrao } from './blocksHelpers'
+
+export interface BlocoBase {
+  id: string
+  tipo: TipoBloco
+  conteudo: ConteudoBloco
+}
 
 interface BlocoRendererProps {
-  bloco: KbBloco
+  bloco: BlocoBase
   isDragging: boolean
   onAtualizar: (conteudo: ConteudoBloco) => void
   onDeletar: () => void
@@ -67,7 +73,7 @@ export function BlocoRenderer({
             value={c.texto}
             onChange={(e) => onAtualizar({ texto: e.target.value })}
             onKeyDown={handleKeyDownLinha}
-            placeholder="Escreva algo…"
+            placeholder="Digite '/' para comandos ou comece a escrever…"
             rows={Math.max(1, c.texto.split('\n').length)}
             className={`${textoBase} text-[14px] leading-relaxed`}
           />
@@ -116,6 +122,39 @@ export function BlocoRenderer({
               rows={Math.max(1, c.texto.split('\n').length)}
               className={`${textoBase} text-[14px] leading-relaxed`}
             />
+          </div>
+        )
+      }
+      case 'toggle': {
+        const c = bloco.conteudo as { texto: string; conteudo: string; aberto: boolean }
+        return (
+          <div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => onAtualizar({ ...c, aberto: !c.aberto })}
+                className="shrink-0"
+                style={{ transform: c.aberto ? 'rotate(90deg)' : 'none', transition: 'transform 150ms ease' }}
+              >
+                <ChevronRight size={14} className="text-[var(--text-secondary)]" />
+              </button>
+              <input
+                value={c.texto}
+                onChange={(e) => onAtualizar({ ...c, texto: e.target.value })}
+                placeholder="Toggle — clique na seta para recolher"
+                className={`${textoBase} text-[14px] font-semibold`}
+              />
+            </div>
+            {c.aberto && (
+              <div className="pl-6 mt-1">
+                <textarea
+                  value={c.conteudo}
+                  onChange={(e) => onAtualizar({ ...c, conteudo: e.target.value })}
+                  placeholder="Conteúdo escondido…"
+                  rows={Math.max(1, c.conteudo.split('\n').length)}
+                  className={`${textoBase} text-[13px] leading-relaxed text-[var(--text-secondary)]`}
+                />
+              </div>
+            )}
           </div>
         )
       }

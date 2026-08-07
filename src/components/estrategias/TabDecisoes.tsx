@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { Plus, X, Milestone, Trash2 } from 'lucide-react'
 import { useEstrategiaDecisoes, type NovaDecisao } from '@/hooks/useEstrategia'
+import { SecaoNotas } from './SecaoNotas'
 
 const CATEGORIAS: Array<{ id: string; label: string; cor: string }> = [
   { id: 'preco', label: 'Preço', cor: '#C9A84C' },
@@ -173,6 +174,8 @@ export function TabDecisoes() {
           onSalvar={async (d) => { await criarDecisao(d); setModalAberto(false) }}
         />
       )}
+
+      <SecaoNotas secao="decisoes" />
     </div>
   )
 }

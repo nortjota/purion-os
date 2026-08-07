@@ -7,6 +7,7 @@ import {
   useSocialEstrategia, DIAS_SEMANA,
   type SocialPilar, type SocialCalendarioItem, type NovoItemCalendario, type DiaSemana,
 } from '@/hooks/useSocialEstrategia'
+import { SecaoNotas } from './SecaoNotas'
 
 const DIA_LABEL: Record<DiaSemana, string> = {
   segunda: 'Segunda', terca: 'Terça', quarta: 'Quarta', quinta: 'Quinta',
@@ -368,6 +369,8 @@ export function TabSocial() {
           .social-cal-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
+
+      <SecaoNotas secao="social" />
     </div>
   )
 }

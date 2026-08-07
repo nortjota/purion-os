@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Pencil, X, Ban, Sparkles } from 'lucide-react'
 import { useIcpPersonas, type IcpPersona, type NovaPersona } from '@/hooks/useIcpPersonas'
+import { SecaoNotas } from './SecaoNotas'
 
 function ListaEditavel({ label, valores, onChange }: { label: string; valores: string; onChange: (v: string) => void }) {
   return (
@@ -205,6 +206,8 @@ export function TabCliente() {
           onSalvar={(dados) => { atualizarPersona(editando.id, dados); setEditando(null) }}
         />
       )}
+
+      <SecaoNotas secao="icp" />
     </div>
   )
 }

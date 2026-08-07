@@ -8,6 +8,7 @@ import { TabB2B } from './TabB2B'
 import { TabSocial } from './TabSocial'
 import { TabCliente } from './TabCliente'
 import { TabDecisoes } from './TabDecisoes'
+import { SecaoNotas } from './SecaoNotas'
 
 type TabId = 'visao-geral' | 'b2b' | 'social' | 'growth' | 'cliente' | 'decisoes'
 
@@ -64,7 +65,12 @@ export function EstrategiasPage() {
         {aba === 'visao-geral' && <TabVisaoGeral />}
         {aba === 'b2b' && <TabB2B />}
         {aba === 'social' && <TabSocial />}
-        {aba === 'growth' && <GrowthPage embutido />}
+        {aba === 'growth' && (
+          <div className="flex flex-col gap-5">
+            <GrowthPage embutido />
+            <SecaoNotas secao="growth" />
+          </div>
+        )}
         {aba === 'cliente' && <TabCliente />}
         {aba === 'decisoes' && <TabDecisoes />}
       </div>

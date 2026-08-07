@@ -401,7 +401,7 @@ export interface DecisaoEstrategica {
 
 export type TipoBloco =
   | 'titulo' | 'subtitulo' | 'paragrafo' | 'lista' | 'checklist'
-  | 'citacao' | 'divisor' | 'tabela' | 'callout' | 'codigo'
+  | 'citacao' | 'divisor' | 'tabela' | 'callout' | 'codigo' | 'toggle'
 
 export type ConteudoBloco =
   | { texto: string }                                          // titulo, subtitulo, paragrafo, citacao, codigo
@@ -409,6 +409,7 @@ export type ConteudoBloco =
   | { itens: Array<{ texto: string; feito: boolean }> }        // checklist
   | { texto: string; emoji: string }                           // callout
   | { colunas: string[]; linhas: string[][] }                  // tabela
+  | { texto: string; conteudo: string; aberto: boolean }       // toggle
   | Record<string, never>                                      // divisor
 
 export interface KbCategoria {
@@ -434,6 +435,20 @@ export interface KbDocumento {
 export interface KbBloco {
   id: string
   documentoId: string
+  tipo: TipoBloco
+  conteudo: ConteudoBloco
+  ordem: number
+}
+
+// ─────────────────────────────────────────────
+// INTERFACES — BLOCOS DE ESTRATÉGIA (Notion-style)
+// ─────────────────────────────────────────────
+
+export type SecaoEstrategia = 'visao_geral' | 'b2b' | 'social' | 'growth' | 'icp' | 'decisoes' | 'geral'
+
+export interface EstrategiaBloco {
+  id: string
+  secao: SecaoEstrategia
   tipo: TipoBloco
   conteudo: ConteudoBloco
   ordem: number
@@ -784,6 +799,13 @@ interface PurionState {
   atualizarKbBloco: (id: string, dados: Partial<KbBloco>) => void
   removerKbBloco: (id: string) => void
 
+  // Blocos de Estratégia (Notion-style)
+  estrategiaBlocos: EstrategiaBloco[]
+  setEstrategiaBlocos: (blocos: EstrategiaBloco[]) => void
+  adicionarEstrategiaBloco: (bloco: EstrategiaBloco) => void
+  atualizarEstrategiaBloco: (id: string, dados: Partial<EstrategiaBloco>) => void
+  removerEstrategiaBloco: (id: string) => void
+
   // Contas & Acessos
   contasAcessos: ContaAcesso[]
   setContasAcessos: (contas: ContaAcesso[]) => void
@@ -1053,6 +1075,7 @@ export const usePurionStore = create<PurionState>()(
         kbCategorias: [],
         kbDocumentos: [],
         kbBlocos: [],
+        estrategiaBlocos: [],
         setKbCategorias: (kbCategorias) => set({ kbCategorias }),
         setKbDocumentos: (kbDocumentos) => set({ kbDocumentos }),
         setKbBlocos: (kbBlocos) => set({ kbBlocos }),
@@ -1072,6 +1095,15 @@ export const usePurionStore = create<PurionState>()(
           })),
         removerKbBloco: (id) =>
           set((s) => ({ kbBlocos: s.kbBlocos.filter((b) => b.id !== id) })),
+        setEstrategiaBlocos: (estrategiaBlocos) => set({ estrategiaBlocos }),
+        adicionarEstrategiaBloco: (bloco) =>
+          set((s) => ({ estrategiaBlocos: [...s.estrategiaBlocos, bloco] })),
+        atualizarEstrategiaBloco: (id, dados) =>
+          set((s) => ({
+            estrategiaBlocos: s.estrategiaBlocos.map((b) => (b.id === id ? { ...b, ...dados } : b)),
+          })),
+        removerEstrategiaBloco: (id) =>
+          set((s) => ({ estrategiaBlocos: s.estrategiaBlocos.filter((b) => b.id !== id) })),
 
         // ── Contas & Acessos ──
         contasAcessos: [],

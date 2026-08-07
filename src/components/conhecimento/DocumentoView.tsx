@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { Star, Trash2 } from 'lucide-react'
 import type { KbDocumento, KbBloco, TipoBloco, ConteudoBloco } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
-import { BlocoRenderer, conteudoPadrao } from './BlocoRenderer'
+import { BlockEditor } from '@/components/blocks/BlockEditor'
 
 interface DocumentoViewProps {
   documento: KbDocumento
@@ -21,30 +20,6 @@ export function DocumentoView({
   documento, blocos, onAtualizarDocumento, onDeletarDocumento,
   onCriarBloco, onAtualizarBloco, onDeletarBloco, onReordenarBlocos,
 }: DocumentoViewProps) {
-  const [dragId, setDragId] = useState<string | null>(null)
-  const blocosOrdenados = [...blocos].sort((a, b) => a.ordem - b.ordem)
-
-  async function handleAdicionarAbaixo(ordemAtual: number, tipo: TipoBloco) {
-    await onCriarBloco(documento.id, tipo, conteudoPadrao(tipo), ordemAtual + 0.5)
-    // Renumerar para manter inteiros
-    const reordenadas = [...blocosOrdenados]
-    const idx = reordenadas.findIndex((b) => b.ordem === ordemAtual)
-    onReordenarBlocos(reordenadas.map((b, i) => ({ id: b.id, ordem: i <= idx ? i : i + 1 })))
-  }
-
-  function handleDragStart(id: string) { setDragId(id) }
-  function handleDrop(targetId: string) {
-    if (!dragId || dragId === targetId) { setDragId(null); return }
-    const lista = [...blocosOrdenados]
-    const fromIdx = lista.findIndex((b) => b.id === dragId)
-    const toIdx = lista.findIndex((b) => b.id === targetId)
-    if (fromIdx === -1 || toIdx === -1) { setDragId(null); return }
-    const [moved] = lista.splice(fromIdx, 1)
-    lista.splice(toIdx, 0, moved)
-    onReordenarBlocos(lista.map((b, idx) => ({ id: b.id, ordem: idx })))
-    setDragId(null)
-  }
-
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="max-w-[760px] mx-auto px-8 py-10">
@@ -90,31 +65,14 @@ export function DocumentoView({
         </div>
 
         {/* Blocos */}
-        <div className="flex flex-col gap-0.5">
-          {blocosOrdenados.length === 0 && (
-            <button
-              onClick={() => onCriarBloco(documento.id, 'paragrafo', conteudoPadrao('paragrafo'), 0)}
-              className="text-[14px] text-[var(--text-secondary)] hover:text-[#C9A84C] py-2"
-            >
-              + Clique para adicionar o primeiro bloco
-            </button>
-          )}
-          {blocosOrdenados.map((bloco) => (
-            <BlocoRenderer
-              key={bloco.id}
-              bloco={bloco}
-              isDragging={dragId === bloco.id}
-              onAtualizar={(conteudo) => onAtualizarBloco(bloco.id, { conteudo })}
-              onDeletar={() => onDeletarBloco(bloco.id)}
-              onAdicionarAbaixo={(tipo) => handleAdicionarAbaixo(bloco.ordem, tipo)}
-              onEnterAbaixo={() => handleAdicionarAbaixo(bloco.ordem, 'paragrafo')}
-              onDragStart={() => handleDragStart(bloco.id)}
-              onDragEnd={() => setDragId(null)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => handleDrop(bloco.id)}
-            />
-          ))}
-        </div>
+        <BlockEditor
+          blocos={blocos}
+          onCriarBloco={(tipo, conteudo, ordem) => onCriarBloco(documento.id, tipo, conteudo, ordem)}
+          onAtualizarBloco={(id, conteudo) => onAtualizarBloco(id, { conteudo })}
+          onDeletarBloco={onDeletarBloco}
+          onReordenarBlocos={onReordenarBlocos}
+          placeholderVazio="+ Clique para adicionar o primeiro bloco"
+        />
       </div>
     </div>
   )
