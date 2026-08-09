@@ -9,7 +9,7 @@ const GraficoVendasDiarias = dynamic(() => import('./GraficoVendasDiarias'), { s
 import {
   TrendingUp, TrendingDown, DollarSign, Target,
   ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
-  Info, Activity, Clock, Calendar, Users, FlaskConical,
+  Info, Activity, Clock, Calendar, Users, FlaskConical, Compass,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { MetaDiaria } from '@/store'
@@ -30,7 +30,7 @@ import {
 import Link from 'next/link'
 import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
 import { useGrowth } from '@/hooks/useGrowth'
-import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
+import { useEstrategia } from '@/hooks/useEstrategia'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
@@ -450,7 +450,7 @@ function UltimosDailies({ entries }: { entries: import('@/store').DailyEntry[] }
       </div>
       <ul>
         {ultimos.map((entry) => {
-          const cor = COR_SOCIO[entry.socio] ?? '#B8B8B8'
+          const cor = COR_SOCIO[entry.socio] ?? '#6B6B6B'
           return (
             <li
               key={entry.id}
@@ -556,8 +556,7 @@ export function CommandCenter() {
     dashboardWidgets, estoqueProduto,
   } = usePurionStore()
   const { experimentos } = useGrowth()
-  const { fases } = useEstrategiaRoadmap()
-  const faseAtual = fases.find((f) => f.status === 'atual')
+  const { fases } = useEstrategia()
 
   const showWidget = (id: string) => dashboardWidgets.includes(id)
 
@@ -741,15 +740,13 @@ export function CommandCenter() {
           return dias >= 14 && dias <= 35
         }).length
         return (
-          <Link href="/estrategias" style={{ textDecoration: 'none' }}>
+          <Link href="/growth" style={{ textDecoration: 'none' }}>
             <div className="card-purion" style={{ padding: '14px 16px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)' }}>
                 <FlaskConical size={16} style={{ color: '#C9A84C' }} />
               </div>
               <div style={{ flex: 1, minWidth: 180 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>
-                  ⭐ North Star · recompra{faseAtual && ` · fase: ${faseAtual.nome}`}
-                </span>
+                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>⭐ North Star · recompra</span>
                 <span style={{ fontSize: 13, fontWeight: 700 }}>
                   {parceiros} parceiro{parceiros !== 1 ? 's' : ''} ativo{parceiros !== 1 ? 's' : ''}
                   {reposicoes > 0 && <span style={{ color: '#E8A838', marginLeft: 8 }}>{reposicoes} reposição D+21</span>}
@@ -770,6 +767,26 @@ export function CommandCenter() {
                   </div>
                 )}
               </div>
+            </div>
+          </Link>
+        )
+      })()}
+
+      {/* ── Hub Estratégico: fase atual + North Star ── */}
+      {fases.length > 0 && (() => {
+        const faseAtiva = fases.find((f) => f.status === 'atual') ?? fases[0]
+        return (
+          <Link href="/estrategias" style={{ textDecoration: 'none' }}>
+            <div className="card-purion" style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)' }}>
+                <Compass size={16} style={{ color: '#C9A84C' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>Hub Estratégico · fase atual</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{faseAtiva.nome}</span>
+                <span style={{ fontSize: 11, color: '#C9A84C', marginLeft: 8 }}>{faseAtiva.percentualConclusao}%</span>
+              </div>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Ver estratégias →</span>
             </div>
           </Link>
         )

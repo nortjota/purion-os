@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -210,4 +210,10 @@ export function useEstrategiaDecisoes() {
   }
 
   return { decisoes, carregando, criarDecisao, deletarDecisao }
+}
+
+// Wrapper de compatibilidade (CommandCenter)
+export function useEstrategia() {
+  const { fases, carregando } = useEstrategiaRoadmap()
+  return { fases, carregando }
 }

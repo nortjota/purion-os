@@ -3,6 +3,6 @@ import { EstrategiasPage } from '@/components/estrategias/EstrategiasPage'
 
 export const metadata: Metadata = { title: 'Estratégias — Purion OS' }
 
-export default function Estrategias() {
+export default function EstrategiasRoute() {
   return <EstrategiasPage />
 }
