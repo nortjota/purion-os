@@ -7,38 +7,59 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
-  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
+  Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
   Compass, FlaskConical, Mail,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
 
 const MAIN_ITEMS = [
-  { href: '/',          label: 'Início',    icon: LayoutDashboard },
-  { href: '/crm',       label: 'CRM',       icon: Users           },
-  { href: '/tarefas',   label: 'Tarefas',   icon: CheckSquare     },
-  { href: '/financeiro', label: 'Financeiro', icon: TrendingUp    },
+  { href: '/',            label: 'Início',     icon: LayoutDashboard },
+  { href: '/estrategias', label: 'Estratégias', icon: Compass        },
+  { href: '/vendas',      label: 'Vendas',      icon: ShoppingBag    },
+  { href: '/tarefas',     label: 'Tarefas',     icon: CheckSquare    },
+  { href: '/metas',       label: 'Metas',       icon: Target         },
 ]
 
-const DRAWER_ITEMS = [
-  { href: '/estrategias',   label: 'Estratégias',   icon: Compass     },
-  { href: '/metas',         label: 'Metas Diárias', icon: Target      },
-  { href: '/quadros',       label: 'Quadros',       icon: Shapes      },
-  { href: '/vendas',        label: 'Vendas',        icon: ShoppingBag },
-  { href: '/producao',      label: 'Produção',      icon: Package     },
-  { href: '/creators',      label: 'Creators',      icon: Users2      },
-  { href: '/ugc',           label: 'Doações UGC',   icon: Package     },
-  { href: '/afiliados',     label: 'Afiliados',     icon: Link2       },
-  { href: '/sac',           label: 'SAC',           icon: Headphones  },
-  { href: '/contabilidade', label: 'Contabilidade', icon: BookOpen    },
-  { href: '/growth',        label: 'Growth',        icon: FlaskConical },
-  { href: '/marketing',     label: 'Marketing',     icon: Megaphone   },
-  { href: '/trafego',       label: 'Tráfego',       icon: Zap         },
-  { href: '/leads-site',    label: 'Leads do Site', icon: Mail        },
-  { href: '/inteligencia',  label: 'Inteligência',  icon: BarChart2   },
-  { href: '/reunioes',      label: 'Reuniões',      icon: Calendar    },
-  { href: '/conhecimento',  label: 'Central de Conhecimento', icon: BookOpen },
-  { href: '/contas',        label: 'Contas & Acessos',        icon: KeyRound },
-  { href: '/settings',      label: 'Configurações', icon: Settings    },
+type DrawerGroup = {
+  label: string
+  items: { href: string; label: string; icon: React.ComponentType<{ size?: number }> ; masterOnly?: boolean }[]
+}
+
+const DRAWER_GROUPS: DrawerGroup[] = [
+  {
+    label: 'COMERCIAL',
+    items: [
+      { href: '/crm',        label: 'CRM B2B',      icon: Users  },
+      { href: '/leads-site', label: 'Leads do Site', icon: Mail  },
+    ],
+  },
+  {
+    label: 'OPERAÇÃO',
+    items: [
+      { href: '/quadros',  label: 'Quadros',   icon: Shapes   },
+      { href: '/producao', label: 'Produção',  icon: Package  },
+      { href: '/reunioes', label: 'Reuniões',  icon: Calendar },
+      { href: '/sac',      label: 'SAC',       icon: Headphones },
+    ],
+  },
+  {
+    label: 'CRESCIMENTO',
+    items: [
+      { href: '/marketing', label: 'Marketing', icon: Megaphone   },
+      { href: '/creators',  label: 'Creators',  icon: Users2      },
+      { href: '/growth',    label: 'Growth',    icon: FlaskConical },
+      { href: '/afiliados', label: 'Afiliados', icon: Link2       },
+    ],
+  },
+  {
+    label: 'GESTÃO',
+    items: [
+      { href: '/financeiro',   label: 'Financeiro',       icon: TrendingUp },
+      { href: '/conhecimento', label: 'Conhecimento',      icon: BookOpen  },
+      { href: '/contas',       label: 'Contas & Acessos',  icon: KeyRound,  masterOnly: true },
+      { href: '/settings',     label: 'Configurações',     icon: Settings,  masterOnly: true },
+    ],
+  },
 ]
 
 export function MobileNav() {
@@ -46,10 +67,14 @@ export function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { isMaster } = useIsMaster()
 
-  const drawerItems = isMaster ? DRAWER_ITEMS : DRAWER_ITEMS.filter((item) => item.href !== '/settings' && item.href !== '/contas')
+  const visibleGroups = DRAWER_GROUPS.map((g) => ({
+    ...g,
+    items: g.items.filter((i) => isMaster || !i.masterOnly),
+  })).filter((g) => g.items.length > 0)
 
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
-  const isDrawerActive = drawerItems.some((item) => isActive(item.href))
+
+  const isDrawerActive = visibleGroups.some((g) => g.items.some((i) => isActive(i.href)))
 
   function closeDrawer() { setDrawerOpen(false) }
 
@@ -83,7 +108,6 @@ export function MobileNav() {
           )
         })}
 
-        {/* Menu button */}
         <button
           onClick={() => setDrawerOpen(true)}
           style={{
@@ -102,7 +126,6 @@ export function MobileNav() {
       <AnimatePresence>
         {drawerOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -116,7 +139,6 @@ export function MobileNav() {
               }}
             />
 
-            {/* Drawer panel */}
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
@@ -124,27 +146,29 @@ export function MobileNav() {
               transition={{ type: 'spring', damping: 28, stiffness: 280 }}
               style={{
                 position: 'fixed', bottom: 0, left: 0, right: 0,
-                maxHeight: '70vh',
+                maxHeight: '75vh',
                 background: 'var(--bg-surface)',
                 borderRadius: '16px 16px 0 0',
                 border: '1px solid var(--border)',
                 borderBottom: 'none',
                 zIndex: 151,
                 paddingBottom: 'env(safe-area-inset-bottom)',
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              {/* Handle bar */}
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
+              {/* Handle */}
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px', flexShrink: 0 }}>
                 <div style={{ width: 32, height: 4, borderRadius: 2, background: 'var(--border)' }} />
               </div>
 
               {/* Header */}
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '4px 20px 8px', borderBottom: '1px solid var(--border)',
+                padding: '4px 20px 10px', borderBottom: '1px solid var(--border)', flexShrink: 0,
               }}>
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  Mais módulos
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(184,184,184,0.6)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  Todos os módulos
                 </span>
                 <button
                   onClick={closeDrawer}
@@ -159,31 +183,40 @@ export function MobileNav() {
                 </button>
               </div>
 
-              {/* Items list */}
-              <div style={{ overflowY: 'auto', maxHeight: 'calc(70vh - 80px)' }}>
-                {drawerItems.map(({ href, label, icon: Icon }) => {
-                  const active = isActive(href)
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={closeDrawer}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 14,
-                        height: 52, padding: '0 20px',
-                        color: active ? '#C9A84C' : 'var(--text-primary)',
-                        background: active ? 'rgba(201,168,76,0.06)' : 'transparent',
-                        borderLeft: `3px solid ${active ? '#C9A84C' : 'transparent'}`,
-                        textDecoration: 'none',
-                        fontSize: 14, fontWeight: active ? 500 : 400,
-                        borderBottom: '1px solid var(--border)',
-                      }}
-                    >
-                      <Icon size={18} style={{ color: active ? '#C9A84C' : 'var(--text-secondary)' }} />
-                      {label}
-                    </Link>
-                  )
-                })}
+              {/* Grouped items */}
+              <div style={{ overflowY: 'auto', flex: 1 }}>
+                {visibleGroups.map((group) => (
+                  <div key={group.label}>
+                    <p style={{
+                      fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
+                      textTransform: 'uppercase', color: 'rgba(184,184,184,0.45)',
+                      padding: '12px 20px 4px', margin: 0, userSelect: 'none',
+                    }}>
+                      {group.label}
+                    </p>
+                    {group.items.map(({ href, label, icon: Icon }) => {
+                      const active = isActive(href)
+                      return (
+                        <Link
+                          key={href}
+                          href={href}
+                          onClick={closeDrawer}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 14,
+                            height: 48, padding: '0 20px',
+                            color: active ? '#C9A84C' : '#B8B8B8',
+                            background: active ? 'rgba(201,168,76,0.06)' : 'transparent',
+                            textDecoration: 'none',
+                            fontSize: 14, fontWeight: active ? 500 : 400,
+                          }}
+                        >
+                          <Icon size={17} />
+                          {label}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                ))}
               </div>
             </motion.div>
           </>

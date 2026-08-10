@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
-import { MarketingDashboard } from '@/components/marketing/MarketingDashboard'
+import { Suspense } from 'react'
+import { MarketingHub } from '@/components/marketing/MarketingHub'
 
-export const metadata: Metadata = { title: 'Marketing & Creators' }
+export const metadata: Metadata = { title: 'Marketing — Purion OS' }
 
 export default function MarketingPage() {
-  return <MarketingDashboard />
+  return (
+    <Suspense>
+      <MarketingHub />
+    </Suspense>
+  )
 }

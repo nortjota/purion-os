@@ -1,8 +1,5 @@
-import type { Metadata } from 'next'
-import { TrafegoDashboard } from '@/components/trafego/TrafegoDashboard'
-
-export const metadata: Metadata = { title: 'Tráfego Pago' }
+import { redirect } from 'next/navigation'
 
 export default function TrafegoPage() {
-  return <TrafegoDashboard />
+  redirect('/marketing?tab=trafego')
 }

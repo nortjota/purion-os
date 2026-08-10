@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
-import { CreatorsDashboard } from '@/components/creators/CreatorsDashboard'
+import { Suspense } from 'react'
+import { CreatorsHub } from '@/components/creators/CreatorsHub'
 
-export const metadata: Metadata = { title: 'Creators' }
+export const metadata: Metadata = { title: 'Creators — Purion OS' }
 
 export default function CreatorsPage() {
-  return <CreatorsDashboard />
+  return (
+    <Suspense>
+      <CreatorsHub />
+    </Suspense>
+  )
 }

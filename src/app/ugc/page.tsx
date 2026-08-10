@@ -1,5 +1,5 @@
-import { DoacoesUGCPage } from '@/components/ugc/DoacoesUGCPage'
+import { redirect } from 'next/navigation'
 
-export default function Page() {
-  return <DoacoesUGCPage />
+export default function UGCPage() {
+  redirect('/creators?tab=ugc')
 }

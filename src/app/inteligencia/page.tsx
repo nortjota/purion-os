@@ -1,8 +1,5 @@
-import type { Metadata } from 'next'
-import { InteligenciaDashboard } from '@/components/inteligencia/InteligenciaDashboard'
-
-export const metadata: Metadata = { title: 'Inteligência Comercial' }
+import { redirect } from 'next/navigation'
 
 export default function InteligenciaPage() {
-  return <InteligenciaDashboard />
+  redirect('/marketing?tab=inteligencia')
 }
