@@ -1,32 +1,47 @@
 'use client'
 
-/**
- * PURION OS — Módulo de Tarefas
- * Gestor de tarefas completo: kanban + lista, subtarefas, recorrência,
- * comentários, anexos e filtros combináveis.
- */
-
 import { useState, useMemo, useEffect } from 'react'
-import { LayoutGrid, List, Plus, AlertTriangle, CheckSquare, Users, SlidersHorizontal, X } from 'lucide-react'
+import { Plus, SlidersHorizontal, Layers, ChevronDown, X } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { Tarefa, StatusTarefa } from '@/store'
 import { useMobile } from '@/hooks/useMobile'
 import { BottomSheet } from '@/components/ui/BottomSheet'
+import { InnerTabs } from '@/components/ui/InnerTabs'
 import { useTarefas } from '@/hooks/useTarefas'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
-import { SOCIOS, isVencida, type ColunaTarefa } from './tarefasHelpers'
+import { type ColunaTarefa, type GroupBy } from './tarefasHelpers'
 import { TarefaFiltros, FILTROS_VAZIOS, aplicarFiltros, type FiltrosTarefas } from './TarefaFiltros'
 import { TarefaKanbanView } from './TarefaKanbanView'
 import { TarefaListaView } from './TarefaListaView'
+import { TarefaTimelineView } from './TarefaTimelineView'
+import { TarefaCalendarView } from './TarefaCalendarView'
+import { TarefaDashboardView } from './TarefaDashboardView'
 import { TarefaModalNova } from './TarefaModalNova'
 import { TarefaDetalhesPainel } from './TarefaDetalhesPainel'
 
-type Visao = 'kanban' | 'lista'
+type Visao = 'lista' | 'quadro' | 'cronograma' | 'calendario' | 'painel'
+
+const TABS = [
+  { id: 'lista',      label: 'Lista'      },
+  { id: 'quadro',     label: 'Quadro'     },
+  { id: 'cronograma', label: 'Cronograma' },
+  { id: 'calendario', label: 'Calendário' },
+  { id: 'painel',     label: 'Painel'     },
+]
+
+const VISOES_VALIDAS: Visao[] = ['lista', 'quadro', 'cronograma', 'calendario', 'painel']
+const GROUP_OPTIONS: [GroupBy, string][] = [
+  ['none',        'Sem agrupamento'],
+  ['modulo',      'Por módulo'],
+  ['status',      'Por status'],
+  ['responsavel', 'Por responsável'],
+  ['prioridade',  'Por prioridade'],
+]
 
 function carregarVisaoSalva(): Visao {
-  if (typeof window === 'undefined') return 'kanban'
+  if (typeof window === 'undefined') return 'lista'
   const v = localStorage.getItem('purion:view:tarefas')
-  return v === 'lista' ? 'lista' : 'kanban'
+  return VISOES_VALIDAS.includes(v as Visao) ? (v as Visao) : 'lista'
 }
 
 export function TarefasDashboard() {
@@ -38,43 +53,34 @@ export function TarefasDashboard() {
     adicionarComentario, deletarComentario, uploadAnexo, deletarAnexo,
   } = useTarefas()
 
-  const [visao, setVisao] = useState<Visao>('kanban')
+  const [visao, setVisao] = useState<Visao>('lista')
   const [filtros, setFiltros] = useState<FiltrosTarefas>(FILTROS_VAZIOS)
-  const [filtrosMobileAbertos, setFiltrosMobileAbertos] = useState(false)
-  const [modalNova, setModalNova] = useState<{ aberto: boolean; colunaId: ColunaTarefa }>({ aberto: false, colunaId: 'pendente' })
+  const [groupBy, setGroupBy] = useState<GroupBy>('modulo')
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false)
+  const [groupMenuAberto, setGroupMenuAberto] = useState(false)
+  const [modalNova, setModalNova] = useState<{ aberto: boolean; colunaId: ColunaTarefa; dueDatePre?: string }>({
+    aberto: false, colunaId: 'pendente',
+  })
   const [tarefaSelecionadaId, setTarefaSelecionadaId] = useState<string | null>(null)
   const [deletando, setDeletando] = useState<Tarefa | null>(null)
 
   useEffect(() => { setVisao(carregarVisaoSalva()) }, [])
 
-  function mudarVisao(v: Visao) {
-    setVisao(v)
+  function mudarVisao(v: string) {
+    setVisao(v as Visao)
     if (typeof window !== 'undefined') localStorage.setItem('purion:view:tarefas', v)
   }
 
   const tarefasAtivas = useMemo(() => tarefas.filter((t) => t.status !== 'cancelada'), [tarefas])
   const tarefasFiltradas = useMemo(() => aplicarFiltros(tarefasAtivas, filtros), [tarefasAtivas, filtros])
+  const tarefaSelecionada = useMemo(() => tarefas.find((t) => t.id === tarefaSelecionadaId) ?? null, [tarefas, tarefaSelecionadaId])
 
-  const tarefaSelecionada = useMemo(
-    () => tarefas.find((t) => t.id === tarefaSelecionadaId) ?? null,
-    [tarefas, tarefaSelecionadaId]
-  )
+  const filtrosAtivosCount = Object.entries(filtros).filter(
+    ([k, v]) => v !== FILTROS_VAZIOS[k as keyof FiltrosTarefas]
+  ).length
 
-  // ── Métricas rápidas ──
-  const metricas = useMemo(() => {
-    const abertas = tarefasAtivas.filter((t) => t.status !== 'concluida').length
-    const atrasadas = tarefasAtivas.filter((t) => isVencida(t.dueDate, t.status)).length
-    const seteDiasAtras = new Date(); seteDiasAtras.setDate(seteDiasAtras.getDate() - 7)
-    const concluidasSemana = tarefas.filter((t) => t.completedAt && new Date(t.completedAt) >= seteDiasAtras).length
-    const porSocio = SOCIOS.map((s) => ({
-      ...s,
-      total: tarefasAtivas.filter((t) => t.responsavel === s.id && t.status !== 'concluida').length,
-    }))
-    return { abertas, atrasadas, concluidasSemana, porSocio }
-  }, [tarefasAtivas, tarefas])
-
-  function handleNovaTarefa(colunaId: ColunaTarefa) {
-    setModalNova({ aberto: true, colunaId })
+  function handleNovaTarefa(colunaId: ColunaTarefa = 'pendente', dueDatePre?: string) {
+    setModalNova({ aberto: true, colunaId, dueDatePre })
   }
 
   function handleCriar(dados: Omit<Tarefa, 'id' | 'createdAt' | 'subtarefas' | 'comentarios' | 'anexos'>) {
@@ -83,7 +89,10 @@ export function TarefasDashboard() {
 
   function handleConcluirRapido(t: Tarefa) {
     const novoStatus: StatusTarefa = t.status === 'concluida' ? 'pendente' : 'concluida'
-    atualizarTarefa(t.id, { status: novoStatus, completedAt: novoStatus === 'concluida' ? new Date().toISOString() : null })
+    atualizarTarefa(t.id, {
+      status: novoStatus,
+      completedAt: novoStatus === 'concluida' ? new Date().toISOString() : null,
+    })
   }
 
   function handleConfirmarDelete() {
@@ -94,122 +103,194 @@ export function TarefasDashboard() {
     }
   }
 
-  const filtrosAtivosCount = Object.entries(filtros).filter(([k, v]) => v !== FILTROS_VAZIOS[k as keyof FiltrosTarefas]).length
+  const btnStyle = (active = false): React.CSSProperties => ({
+    display: 'flex', alignItems: 'center', gap: 6,
+    height: 30, padding: '0 10px', borderRadius: 6, fontSize: 12,
+    border: `1px solid ${active ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
+    background: 'transparent',
+    color: active ? '#C9A84C' : 'var(--text-secondary)',
+    cursor: 'pointer', whiteSpace: 'nowrap' as const,
+  })
 
   return (
-    <div className="page-content section-gap max-w-[1600px]">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
       {/* ── Header ── */}
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="page-title">Tarefas</h1>
-          <p className="caption mt-1">Gestão completa de tarefas — kanban, prazos, subtarefas e colaboração</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {!isMobile && (
-            <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}>
-              <button
-                onClick={() => mudarVisao('kanban')}
-                className="flex items-center justify-center w-8 h-7 rounded-md transition-colors duration-150"
-                style={{ background: visao === 'kanban' ? '#C9A84C' : 'transparent', color: visao === 'kanban' ? '#0D0D0D' : 'var(--text-secondary)' }}
-                title="Visão Kanban"
-              >
-                <LayoutGrid size={14} />
-              </button>
-              <button
-                onClick={() => mudarVisao('lista')}
-                className="flex items-center justify-center w-8 h-7 rounded-md transition-colors duration-150"
-                style={{ background: visao === 'lista' ? '#C9A84C' : 'transparent', color: visao === 'lista' ? '#0D0D0D' : 'var(--text-secondary)' }}
-                title="Visão Lista"
-              >
-                <List size={14} />
-              </button>
-            </div>
-          )}
-          <button onClick={() => handleNovaTarefa('pendente')} className="btn btn-primary">
-            <Plus size={15} /> Nova tarefa
-          </button>
-        </div>
-      </div>
+      <div style={{ padding: '18px 24px 0', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Tarefas</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {!isMobile && (
+              <>
+                {/* Filtrar */}
+                <button
+                  style={btnStyle(filtrosAtivosCount > 0)}
+                  onClick={() => setFiltrosAbertos((o) => !o)}
+                >
+                  <SlidersHorizontal size={13} />
+                  Filtrar
+                  {filtrosAtivosCount > 0 && (
+                    <span style={{
+                      background: '#C9A84C', color: '#0D0D0D',
+                      borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700,
+                    }}>
+                      {filtrosAtivosCount}
+                    </span>
+                  )}
+                </button>
 
-      {/* ── Métricas rápidas ── */}
-      <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Total Abertas</span>
-            <CheckSquare size={14} className="text-[var(--text-secondary)] opacity-60" />
-          </div>
-          <span className="kpi-value">{metricas.abertas}</span>
-        </div>
-        <div className="kpi-card" style={metricas.atrasadas > 0 ? { borderColor: 'rgba(232,82,56,0.3)' } : {}}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Atrasadas</span>
-            <AlertTriangle size={14} className="text-[#E85238] opacity-70" />
-          </div>
-          <span className="kpi-value" style={{ color: metricas.atrasadas > 0 ? '#E85238' : 'var(--gold)' }}>{metricas.atrasadas}</span>
-        </div>
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Concluídas (7d)</span>
-            <CheckSquare size={14} className="text-[#4CAF7A] opacity-70" />
-          </div>
-          <span className="kpi-value" style={{ color: '#4CAF7A' }}>{metricas.concluidasSemana}</span>
-        </div>
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Por Sócio</span>
-            <Users size={14} className="text-[var(--text-secondary)] opacity-60" />
-          </div>
-          <div className="flex items-center gap-3">
-            {metricas.porSocio.map((s) => (
-              <span key={s.id} className="flex items-center gap-1" title={s.nome}>
-                <span className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black" style={{ backgroundColor: `${s.cor}25`, color: s.cor }}>{s.inicial}</span>
-                <span className="text-[12px] font-semibold" style={{ color: s.cor }}>{s.total}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+                {/* Agrupar */}
+                <div style={{ position: 'relative' }}>
+                  <button
+                    style={btnStyle(groupBy !== 'none')}
+                    onClick={() => setGroupMenuAberto((o) => !o)}
+                  >
+                    <Layers size={13} />
+                    Agrupar
+                    <ChevronDown size={11} />
+                  </button>
+                  {groupMenuAberto && (
+                    <>
+                      <div
+                        style={{ position: 'fixed', inset: 0, zIndex: 49 }}
+                        onClick={() => setGroupMenuAberto(false)}
+                      />
+                      <div style={{
+                        position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                        background: 'var(--bg-surface)', border: '1px solid var(--border)',
+                        borderRadius: 8, padding: '4px 0', zIndex: 50, minWidth: 170,
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
+                      }}>
+                        {GROUP_OPTIONS.map(([v, label]) => (
+                          <button
+                            key={v}
+                            onClick={() => { setGroupBy(v); setGroupMenuAberto(false) }}
+                            style={{
+                              display: 'block', width: '100%', textAlign: 'left',
+                              padding: '8px 14px', fontSize: 13, border: 'none', cursor: 'pointer',
+                              background: groupBy === v ? 'rgba(201,168,76,0.08)' : 'transparent',
+                              color: groupBy === v ? '#C9A84C' : 'var(--text-primary)',
+                            }}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
 
-      {/* ── Filtros ── */}
-      {isMobile ? (
-        <div className="flex items-center gap-2">
-          <button onClick={() => setFiltrosMobileAbertos(true)} className="btn btn-secondary btn-sm flex-1">
-            <SlidersHorizontal size={13} /> Filtros {filtrosAtivosCount > 0 && `(${filtrosAtivosCount})`}
-          </button>
-          <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}>
-            <button onClick={() => mudarVisao('kanban')} className="flex items-center justify-center w-8 h-7 rounded-md" style={{ background: visao === 'kanban' ? '#C9A84C' : 'transparent', color: visao === 'kanban' ? '#0D0D0D' : 'var(--text-secondary)' }}>
-              <LayoutGrid size={14} />
-            </button>
-            <button onClick={() => mudarVisao('lista')} className="flex items-center justify-center w-8 h-7 rounded-md" style={{ background: visao === 'lista' ? '#C9A84C' : 'transparent', color: visao === 'lista' ? '#0D0D0D' : 'var(--text-secondary)' }}>
-              <List size={14} />
+            {/* + Adicionar tarefa */}
+            <button
+              onClick={() => handleNovaTarefa()}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                height: 32, padding: '0 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
+                background: '#C9A84C', color: '#0D0D0D', border: 'none', cursor: 'pointer',
+              }}
+            >
+              <Plus size={14} />
+              {!isMobile ? 'Adicionar tarefa' : ''}
             </button>
           </div>
         </div>
-      ) : (
-        <TarefaFiltros tarefas={tarefasAtivas} filtros={filtros} onChange={setFiltros} />
+
+        {/* Tabs de visão */}
+        {isMobile ? (
+          <select
+            value={visao}
+            onChange={(e) => mudarVisao(e.target.value)}
+            style={{
+              width: '100%', height: 36, borderRadius: 6, padding: '0 10px',
+              background: 'var(--bg-surface)', border: '1px solid var(--border)',
+              color: 'var(--text-primary)', fontSize: 13, marginBottom: 8,
+            }}
+          >
+            {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+          </select>
+        ) : (
+          <InnerTabs tabs={TABS} activeTab={visao} onChange={mudarVisao} />
+        )}
+      </div>
+
+      {/* ── Painel de filtros (toggle inline) ── */}
+      {filtrosAbertos && !isMobile && (
+        <div style={{
+          padding: '12px 24px', flexShrink: 0,
+          borderBottom: '1px solid var(--border)',
+          background: 'var(--bg-surface)',
+          position: 'relative',
+        }}>
+          <TarefaFiltros tarefas={tarefasAtivas} filtros={filtros} onChange={setFiltros} />
+          <button
+            onClick={() => setFiltrosAbertos(false)}
+            style={{
+              position: 'absolute', top: 10, right: 20,
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <X size={14} />
+          </button>
+        </div>
       )}
 
-      {/* ── Conteúdo: kanban ou lista ── */}
-      {visao === 'kanban' ? (
-        <TarefaKanbanView
-          tarefas={tarefasFiltradas}
-          onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
-          onNovaTarefa={handleNovaTarefa}
-          onReordenar={reordenarTarefas}
-        />
-      ) : (
-        <TarefaListaView
-          tarefas={tarefasFiltradas}
-          onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
-          onConcluirRapido={handleConcluirRapido}
-        />
-      )}
+      {/* ── Área de conteúdo ── */}
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
-      {/* ── Filtros mobile (bottom sheet) ── */}
+        {visao === 'lista' && (
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+            <TarefaListaView
+              tarefas={tarefasFiltradas}
+              groupBy={groupBy}
+              onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
+              onConcluirRapido={handleConcluirRapido}
+              onNovaTarefa={handleNovaTarefa}
+            />
+          </div>
+        )}
+
+        {visao === 'quadro' && (
+          <div style={{ flex: 1, overflowX: 'auto', overflowY: 'hidden', padding: '16px 24px' }}>
+            <TarefaKanbanView
+              tarefas={tarefasFiltradas}
+              onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
+              onNovaTarefa={handleNovaTarefa}
+              onReordenar={reordenarTarefas}
+            />
+          </div>
+        )}
+
+        {visao === 'cronograma' && (
+          <TarefaTimelineView
+            tarefas={tarefasFiltradas}
+            onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
+            onAtualizarTarefa={atualizarTarefa}
+          />
+        )}
+
+        {visao === 'calendario' && (
+          <TarefaCalendarView
+            tarefas={tarefasFiltradas}
+            onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
+            onNovaTarefa={(dueDate) => handleNovaTarefa('pendente', dueDate)}
+            onAtualizarTarefa={atualizarTarefa}
+          />
+        )}
+
+        {visao === 'painel' && (
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+            <TarefaDashboardView tarefas={tarefasAtivas} />
+          </div>
+        )}
+      </div>
+
+      {/* ── Filtros mobile ── */}
       <BottomSheet
-        open={filtrosMobileAbertos}
-        onClose={() => setFiltrosMobileAbertos(false)}
+        open={filtrosAbertos && isMobile}
+        onClose={() => setFiltrosAbertos(false)}
         title="Filtros"
       >
         <TarefaFiltros tarefas={tarefasAtivas} filtros={filtros} onChange={setFiltros} />
@@ -225,7 +306,7 @@ export function TarefasDashboard() {
         />
       )}
 
-      {/* ── Painel de detalhes ── */}
+      {/* ── Painel detalhes ── */}
       {tarefaSelecionada && (
         <TarefaDetalhesPainel
           tarefa={tarefaSelecionada}

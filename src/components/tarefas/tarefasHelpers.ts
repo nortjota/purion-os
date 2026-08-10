@@ -44,6 +44,8 @@ export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inici
 
 export const MODULOS = ['crm', 'marketing', 'producao', 'financeiro', 'geral'] as const
 
+export type GroupBy = 'none' | 'modulo' | 'status' | 'responsavel' | 'prioridade'
+
 export const RECORRENCIA_LABEL: Record<string, string> = {
   nenhuma: 'Não repete',
   diaria:  'Diariamente',
