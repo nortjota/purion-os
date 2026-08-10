@@ -178,6 +178,7 @@ export interface Tarefa {
   comentarios: Comentario[]
   anexos: Anexo[]
   googleEventId?: string | null
+  objetivoId?: string | null
 }
 
 // ─────────────────────────────────────────────

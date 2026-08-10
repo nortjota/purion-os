@@ -77,6 +77,7 @@ function toTarefaBase(r: Row): Omit<Tarefa, 'subtarefas' | 'comentarios' | 'anex
     ordem:           Number(r.ordem ?? 0),
     estimativaMin:   r.estimativa_min != null ? Number(r.estimativa_min) : null,
     googleEventId:   r.google_event_id ? String(r.google_event_id) : null,
+    objetivoId:      r.objetivo_id ? String(r.objetivo_id) : null,
   }
 }
 
@@ -278,6 +279,7 @@ export function useTarefas() {
         recorrencia_ate: t.recorrenciaAte  ?? null,
         ordem:           t.ordem           ?? 0,
         estimativa_min:  t.estimativaMin   ?? null,
+        objetivo_id:     t.objetivoId      ?? null,
       }
       const { data, error } = await sb.from('tarefas').insert(payload).select().single()
       dbLog('INSERT', 'tarefas', error, data?.id)
@@ -320,6 +322,7 @@ export function useTarefas() {
         ...(dados.recorrenciaAte !== undefined && { recorrencia_ate: dados.recorrenciaAte }),
         ...(dados.ordem          !== undefined && { ordem:           dados.ordem }),
         ...(dados.estimativaMin  !== undefined && { estimativa_min:  dados.estimativaMin }),
+        ...(dados.objetivoId     !== undefined && { objetivo_id:     dados.objetivoId }),
       }).eq('id', id)
       dbLog('UPDATE', 'tarefas', upErr, id)
       if (upErr) { toastError('Erro ao salvar tarefa', upErr.message); return }

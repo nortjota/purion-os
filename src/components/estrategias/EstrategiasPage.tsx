@@ -1,19 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { Compass, Users, Megaphone, FlaskConical, UserCircle, Milestone } from 'lucide-react'
+import { Compass, Users, Megaphone, FlaskConical, UserCircle, Milestone, Target } from 'lucide-react'
 import { GrowthPage } from '@/components/growth/GrowthPage'
 import { TabVisaoGeral } from './TabVisaoGeral'
 import { TabB2B } from './TabB2B'
 import { TabSocial } from './TabSocial'
 import { TabCliente } from './TabCliente'
 import { TabDecisoes } from './TabDecisoes'
+import { TabMetas } from './metas/TabMetas'
 import { SecaoNotas } from './SecaoNotas'
 
-type TabId = 'visao-geral' | 'b2b' | 'social' | 'growth' | 'cliente' | 'decisoes'
+type TabId = 'visao-geral' | 'metas' | 'b2b' | 'social' | 'growth' | 'cliente' | 'decisoes'
 
 const TABS: Array<{ id: TabId; label: string; icon: React.ElementType }> = [
   { id: 'visao-geral', label: 'Visão Geral', icon: Compass },
+  { id: 'metas',        label: 'Metas Estratégicas', icon: Target },
   { id: 'b2b',          label: 'B2B',         icon: Users },
   { id: 'social',       label: 'Redes Sociais', icon: Megaphone },
   { id: 'growth',       label: 'Growth',      icon: FlaskConical },
@@ -63,6 +65,7 @@ export function EstrategiasPage() {
 
       <div>
         {aba === 'visao-geral' && <TabVisaoGeral />}
+        {aba === 'metas' && <TabMetas />}
         {aba === 'b2b' && <TabB2B />}
         {aba === 'social' && <TabSocial />}
         {aba === 'growth' && (
