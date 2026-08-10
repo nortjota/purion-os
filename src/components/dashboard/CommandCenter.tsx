@@ -30,7 +30,9 @@ import {
 import Link from 'next/link'
 import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
 import { useGrowth } from '@/hooks/useGrowth'
-import { useEstrategia } from '@/hooks/useEstrategia'
+import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
+import { useEventosCalendario } from '@/hooks/useEventosCalendario'
+import { Proximos7Dias } from '@/components/calendario/Proximos7Dias'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
@@ -556,7 +558,9 @@ export function CommandCenter() {
     dashboardWidgets, estoqueProduto,
   } = usePurionStore()
   const { experimentos } = useGrowth()
-  const { fases } = useEstrategia()
+  const { fases } = useEstrategiaRoadmap()
+  const { eventos } = useEventosCalendario()
+  const faseAtual = fases.find((f) => f.status === 'atual')
 
   const showWidget = (id: string) => dashboardWidgets.includes(id)
 
@@ -791,6 +795,15 @@ export function CommandCenter() {
           </Link>
         )
       })()}
+
+      {/* ── Card Próximos Eventos ── */}
+      <div className="card-purion" style={{ padding: '14px 16px' }}>
+        <Link href="/calendario" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+          <Calendar size={14} style={{ color: '#C9A84C' }} />
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Próximos eventos</span>
+        </Link>
+        <Proximos7Dias eventos={eventos} limite={3} />
+      </div>
 
       {/* ── Card Estoque Produto ── */}
       {estoqueProduto && (() => {

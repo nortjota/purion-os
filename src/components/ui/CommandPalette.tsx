@@ -8,16 +8,18 @@ import {
   Package, Video, BookOpen, BarChart2, Brain,
   Settings, Plus, UserPlus, TrendingUp, TrendingDown,
   Boxes, UserCog, Calendar, KeyRound, FileText, ShoppingBag, Shapes,
-  Compass, Milestone, FlaskConical, UserCircle,
+  Compass, Milestone, FlaskConical, UserCircle, CalendarDays,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import { useIsMaster } from '@/hooks/useIsMaster'
 import { useEstrategiaDecisoes } from '@/hooks/useEstrategia'
 import { useGrowth } from '@/hooks/useGrowth'
 import { useIcpPersonas } from '@/hooks/useIcpPersonas'
+import { useEventosCalendario } from '@/hooks/useEventosCalendario'
 
 const PAGES = [
   { label: 'Dashboard',      href: '/',              icon: LayoutDashboard },
+  { label: 'Calendário',     href: '/calendario',    icon: CalendarDays    },
   { label: 'Estratégias',    href: '/estrategias',   icon: Compass         },
   { label: 'CRM',            href: '/crm',           icon: Users           },
   { label: 'Tarefas',        href: '/tarefas',       icon: CheckSquare     },
@@ -61,6 +63,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const { decisoes } = useEstrategiaDecisoes()
   const { experimentos } = useGrowth()
   const { personas } = useIcpPersonas()
+  const { eventos } = useEventosCalendario()
   const [query, setQuery] = useState('')
 
   const filteredLeads = leads
@@ -111,6 +114,10 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
 
   const filteredPersonas = query.length >= 2
     ? personas.filter((p) => p.nome.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+    : []
+
+  const filteredEventos = query.length >= 2
+    ? eventos.filter((e) => e.titulo.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
     : []
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -202,7 +209,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ))}
           </Command.Group>
 
-          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0 || filteredQuadros.length > 0 || filteredDoacoes.length > 0 || filteredDecisoes.length > 0 || filteredExperimentos.length > 0 || filteredPersonas.length > 0) && (
+          {(filteredLeads.length > 0 || filteredTarefas.length > 0 || filteredCreators.length > 0 || filteredDocumentos.length > 0 || filteredContas.length > 0 || filteredVendas.length > 0 || filteredQuadros.length > 0 || filteredDoacoes.length > 0 || filteredDecisoes.length > 0 || filteredExperimentos.length > 0 || filteredPersonas.length > 0 || filteredEventos.length > 0) && (
             <Command.Group heading="Registros">
               {filteredLeads.map((lead) => (
                 <Command.Item
@@ -361,6 +368,18 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   <UserCircle size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
                   <span>{p.emoji} {p.nome}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Persona</span>
+                </Command.Item>
+              ))}
+              {filteredEventos.map((e) => (
+                <Command.Item
+                  key={`evento-${e.id}`}
+                  value={`evento-${e.titulo}`}
+                  onSelect={() => { router.push('/calendario'); onClose() }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
+                >
+                  <CalendarDays size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <span>{e.titulo}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Evento</span>
                 </Command.Item>
               ))}
             </Command.Group>

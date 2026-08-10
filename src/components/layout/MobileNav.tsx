@@ -7,8 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
-  Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
-  Compass, FlaskConical, Mail,
+  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
+  Compass, FlaskConical, Mail, CalendarDays,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
 
@@ -36,6 +36,7 @@ const DRAWER_GROUPS: DrawerGroup[] = [
   {
     label: 'OPERAÇÃO',
     items: [
+      { href: '/calendario', label: 'Calendário', icon: CalendarDays },
       { href: '/quadros',  label: 'Quadros',   icon: Shapes   },
       { href: '/producao', label: 'Produção',  icon: Package  },
       { href: '/reunioes', label: 'Reuniões',  icon: Calendar },

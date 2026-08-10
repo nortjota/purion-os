@@ -9,7 +9,7 @@ export const runtime = 'nodejs'
 
 type SyncBody = {
   acao: 'criar' | 'atualizar' | 'deletar'
-  tabela?: 'reunioes' | 'tarefas'
+  tabela?: 'reunioes' | 'tarefas' | 'eventos_calendario'
   reuniaoId: string
   titulo?: string
   descricao?: string

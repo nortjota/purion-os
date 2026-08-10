@@ -328,6 +328,32 @@ export interface ReuniaoItem {
 }
 
 // ─────────────────────────────────────────────
+// INTERFACES — CALENDÁRIO
+// ─────────────────────────────────────────────
+
+export type TipoEvento = 'reuniao' | 'tarefa' | 'followup' | 'data_importante' | 'post' | 'outro'
+
+export interface EventoCalendario {
+  id: string
+  titulo: string
+  descricao: string | null
+  dataInicio: string          // ISO datetime
+  dataFim: string | null      // ISO datetime
+  diaInteiro: boolean
+  tipo: TipoEvento
+  origemTabela: string | null
+  origemId: string | null
+  cor: string | null
+  responsavel: PerfilUsuario | null
+  lembreteMinutos: number
+  googleEventId: string | null
+  concluido: boolean
+  createdAt: string
+  /** true = derivado ao vivo de outra tabela (reuniões, tarefas, leads) — não editável diretamente aqui */
+  virtual?: boolean
+}
+
+// ─────────────────────────────────────────────
 // INTERFACES — PRODUÇÃO (SKUs & Expedição)
 // ─────────────────────────────────────────────
 
@@ -806,6 +832,13 @@ interface PurionState {
   atualizarEstrategiaBloco: (id: string, dados: Partial<EstrategiaBloco>) => void
   removerEstrategiaBloco: (id: string) => void
 
+  // Calendário
+  eventosCalendario: EventoCalendario[]
+  setEventosCalendario: (eventos: EventoCalendario[]) => void
+  adicionarEventoCalendario: (evento: EventoCalendario) => void
+  atualizarEventoCalendario: (id: string, dados: Partial<EventoCalendario>) => void
+  removerEventoCalendario: (id: string) => void
+
   // Contas & Acessos
   contasAcessos: ContaAcesso[]
   setContasAcessos: (contas: ContaAcesso[]) => void
@@ -1076,6 +1109,7 @@ export const usePurionStore = create<PurionState>()(
         kbDocumentos: [],
         kbBlocos: [],
         estrategiaBlocos: [],
+        eventosCalendario: [],
         setKbCategorias: (kbCategorias) => set({ kbCategorias }),
         setKbDocumentos: (kbDocumentos) => set({ kbDocumentos }),
         setKbBlocos: (kbBlocos) => set({ kbBlocos }),
@@ -1104,6 +1138,15 @@ export const usePurionStore = create<PurionState>()(
           })),
         removerEstrategiaBloco: (id) =>
           set((s) => ({ estrategiaBlocos: s.estrategiaBlocos.filter((b) => b.id !== id) })),
+        setEventosCalendario: (eventosCalendario) => set({ eventosCalendario }),
+        adicionarEventoCalendario: (evento) =>
+          set((s) => ({ eventosCalendario: [...s.eventosCalendario, evento] })),
+        atualizarEventoCalendario: (id, dados) =>
+          set((s) => ({
+            eventosCalendario: s.eventosCalendario.map((e) => (e.id === id ? { ...e, ...dados } : e)),
+          })),
+        removerEventoCalendario: (id) =>
+          set((s) => ({ eventosCalendario: s.eventosCalendario.filter((e) => e.id !== id) })),
 
         // ── Contas & Acessos ──
         contasAcessos: [],

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Bell, X, CheckCheck } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { usePurionStore } from '@/store'
+import { useLembretesCalendario } from '@/hooks/useLembretesCalendario'
 
 type Notif = {
   id: string
@@ -30,6 +31,8 @@ export function NotificationBell() {
   const [notifs, setNotifs]   = useState<Notif[]>([])
   const ref                   = useRef<HTMLDivElement>(null)
   const perfilAtivo           = usePurionStore((s) => s.perfilAtivo)
+
+  useLembretesCalendario()
 
   const naoLidas = notifs.filter(n => !n.lida).length
 
