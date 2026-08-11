@@ -1,55 +1,40 @@
 'use client'
 
 import { useState } from 'react'
-import { VendasDashboard } from './VendasDashboard'
+import { InnerTabs } from '@/components/ui/InnerTabs'
+import { VendasTodasView } from './VendasTodasView'
 import { VendasB2C } from './VendasB2C'
 import { VendasB2B } from './VendasB2B'
-import { VendasLogistica } from './VendasLogistica'
-import { PainelDespacho } from './PainelDespacho'
+import { VendasDespachoLogistica } from './VendasDespachoLogistica'
 import { PainelMetricasVendas } from './PainelMetricasVendas'
 
-type TabId = 'b2c' | 'b2b' | 'despacho' | 'logistica' | 'appmax'
+type TabId = 'todas' | 'b2c' | 'b2b' | 'despacho' | 'metricas'
 
 const TABS: { id: TabId; label: string }[] = [
-  { id: 'b2c', label: 'B2C' },
-  { id: 'b2b', label: 'B2B' },
-  { id: 'despacho', label: 'Despacho' },
-  { id: 'logistica', label: 'Logística' },
-  { id: 'appmax', label: 'Appmax (site)' },
+  { id: 'todas',    label: 'Todas as Vendas'     },
+  { id: 'b2c',      label: 'B2C'                 },
+  { id: 'b2b',      label: 'B2B'                 },
+  { id: 'despacho', label: 'Despacho & Logística' },
+  { id: 'metricas', label: 'Métricas'            },
 ]
 
 export function VendasPage() {
-  const [activeTab, setActiveTab] = useState<TabId>('b2c')
+  const [aba, setAba] = useState<TabId>('todas')
 
   return (
     <div className="page-content section-gap">
       <div>
         <h1 className="page-title">Vendas</h1>
-        <p className="caption mt-1">Registro manual B2C/B2B, logística de entrega e pedidos automáticos via Appmax</p>
+        <p className="caption mt-1">Pipeline de pedidos B2C/B2B, despacho e métricas — estilo Asana</p>
       </div>
 
-      <PainelMetricasVendas />
+      <InnerTabs tabs={TABS} activeTab={aba} onChange={(id) => setAba(id as TabId)} />
 
-      <div className="flex gap-1 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit overflow-x-auto">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTab(t.id)}
-            className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap"
-            style={activeTab === t.id
-              ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
-              : { color: 'var(--text-secondary)' }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {activeTab === 'b2c' && <VendasB2C />}
-      {activeTab === 'b2b' && <VendasB2B />}
-      {activeTab === 'despacho' && <PainelDespacho />}
-      {activeTab === 'logistica' && <VendasLogistica />}
-      {activeTab === 'appmax' && <VendasDashboard />}
+      {aba === 'todas' && <VendasTodasView />}
+      {aba === 'b2c' && <VendasB2C />}
+      {aba === 'b2b' && <VendasB2B />}
+      {aba === 'despacho' && <VendasDespachoLogistica />}
+      {aba === 'metricas' && <PainelMetricasVendas />}
     </div>
   )
 }

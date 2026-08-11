@@ -96,6 +96,9 @@ export type NovaVendaManual = {
   responsavel?: PerfilUsuario
   observacoes?: string
   produto?: string
+  origemVenda?: OrigemVenda | null
+  tipoCliente?: TipoCliente
+  notaFiscal?: string | null
 }
 
 export function useVendas() {
@@ -145,10 +148,23 @@ export function useVendas() {
     dbLog('INSERT', 'financeiro (venda)', error, venda.id)
   }
 
+  /** Recompra = já existe outra venda do mesmo cliente (por leadId em B2B, ou telefone/e-mail em B2C). */
+  function detectarTipoCliente(v: NovaVendaManual): TipoCliente {
+    const vendasAtuais = usePurionStore.getState().vendas
+    const jaComprou = vendasAtuais.some((existente) => {
+      if (v.canal === 'b2b' && v.leadId) return existente.leadId === v.leadId
+      if (v.clienteTelefone) return existente.clienteTelefone === v.clienteTelefone
+      if (v.clienteEmail) return existente.clienteEmail === v.clienteEmail
+      return false
+    })
+    return jaComprou ? 'recompra' : 'novo'
+  }
+
   return {
     criarVenda: async (v: NovaVendaManual) => {
       const sb = supabase
       if (!sb) return
+      const tipoCliente = v.tipoCliente ?? detectarTipoCliente(v)
       const payload = {
         canal:               v.canal,
         cliente_nome:        v.clienteNome,
@@ -183,6 +199,9 @@ export function useVendas() {
         responsavel:         v.responsavel ?? 'matheus',
         observacoes:         v.observacoes ?? null,
         produto:             v.produto ?? 'Perfume PURION GT',
+        origem_venda:        v.origemVenda ?? (v.canal === 'b2b' ? 'b2b_presencial' : null),
+        tipo_cliente:        tipoCliente,
+        nota_fiscal:         v.notaFiscal ?? null,
       }
       const { data, error } = await sb.from('vendas').insert(payload).select().single()
       dbLog('INSERT', 'vendas', error, data?.id)
@@ -241,6 +260,9 @@ export function useVendas() {
         ...(dados.afiliadoCreatorId  !== undefined && { afiliado_creator_id: dados.afiliadoCreatorId }),
         ...(dados.responsavel        !== undefined && { responsavel:         dados.responsavel }),
         ...(dados.observacoes        !== undefined && { observacoes:         dados.observacoes }),
+        ...(dados.origemVenda        !== undefined && { origem_venda:        dados.origemVenda }),
+        ...(dados.tipoCliente        !== undefined && { tipo_cliente:        dados.tipoCliente }),
+        ...(dados.notaFiscal         !== undefined && { nota_fiscal:         dados.notaFiscal }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       dbLog('UPDATE', 'vendas', error, id)

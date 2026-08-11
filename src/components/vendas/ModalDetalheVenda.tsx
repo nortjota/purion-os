@@ -1,14 +1,46 @@
 'use client'
 
-import { X, User, MapPin, Package, CreditCard, Truck, Users, FileText } from 'lucide-react'
+import { X, User, MapPin, Package, CreditCard, Truck, Users, FileText, Building2, TrendingUp, Check } from 'lucide-react'
 import type { Venda } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
 import {
   STATUS_PAGAMENTO_LABEL, STATUS_PAGAMENTO_BADGE,
   STATUS_ENTREGA_LABEL, STATUS_ENTREGA_BADGE,
-  METODO_PAGAMENTO_LABEL, fmtR,
+  METODO_PAGAMENTO_LABEL, fmtR, calcularMargem,
 } from '@/lib/vendas-helpers'
 import { usePurionStore } from '@/store'
+
+interface EtapaTimeline { label: string; data: string | null; feita: boolean }
+
+function Timeline({ etapas }: { etapas: EtapaTimeline[] }) {
+  return (
+    <div className="flex items-center" style={{ overflowX: 'auto' }}>
+      {etapas.map((e, i) => (
+        <div key={e.label} className="flex items-center" style={{ flex: i < etapas.length - 1 ? 1 : undefined, minWidth: 64 }}>
+          <div className="flex flex-col items-center" style={{ minWidth: 64 }}>
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 20, height: 20, borderRadius: '50%',
+                background: e.feita ? '#4CAF7A' : 'var(--bg-surface-2)',
+                border: `1px solid ${e.feita ? '#4CAF7A' : 'var(--border)'}`,
+              }}
+            >
+              {e.feita && <Check size={11} color="#0D0D0D" />}
+            </div>
+            <span className="text-[10px] mt-1 text-center" style={{ color: e.feita ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: e.feita ? 600 : 400 }}>
+              {e.label}
+            </span>
+            <span className="text-[9px] text-[#8A8A8A]">{e.data ? formatarDataBR(e.data.slice(0, 10)) : '—'}</span>
+          </div>
+          {i < etapas.length - 1 && (
+            <div style={{ flex: 1, height: 1, background: e.feita ? '#4CAF7A' : 'var(--border)', marginBottom: 16 }} />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function Secao({ icon: Icon, titulo, children }: { icon: React.ElementType; titulo: string; children: React.ReactNode }) {
   return (
@@ -46,11 +78,21 @@ interface Props {
 }
 
 export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
-  const { creators } = usePurionStore()
+  const { creators, leads } = usePurionStore()
   const creator = v.afiliadoCreatorId ? creators.find((c) => c.id === v.afiliadoCreatorId) : null
+  const lead = v.leadId ? leads.find((l) => l.id === v.leadId) : null
 
   const endereco = [v.endereco, v.numero, v.complemento].filter(Boolean).join(', ')
   const enderecoCompleto = [endereco, v.bairro, v.cidade && v.uf ? `${v.cidade}/${v.uf}` : v.cidade ?? v.uf].filter(Boolean).join(' — ')
+
+  const margem = calcularMargem(v)
+
+  const etapasTimeline: EtapaTimeline[] = [
+    { label: 'Criado',     data: v.createdAt, feita: true },
+    { label: 'Pago',       data: v.statusPagamento === 'pago' ? v.updatedAt : null, feita: v.statusPagamento === 'pago' },
+    { label: 'Despachado', data: v.dataEnvio, feita: !!v.dataEnvio },
+    { label: 'Entregue',   data: v.dataEntregaRealizada, feita: !!v.dataEntregaRealizada },
+  ]
 
   return (
     <div className="modal-backdrop" onClick={onFechar}>
@@ -80,6 +122,11 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
 
         <div className="space-y-5 overflow-y-auto" style={{ maxHeight: '70vh' }}>
 
+          {/* TIMELINE */}
+          <div style={{ padding: '4px 0 8px' }}>
+            <Timeline etapas={etapasTimeline} />
+          </div>
+
           {/* CLIENTE */}
           <Secao icon={User} titulo="Cliente">
             <Campo label="Nome" valor={v.clienteNome || '—'} />
@@ -103,6 +150,12 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
             {v.valorUnitario != null && <Campo label="Valor Unitário" valor={fmtR(v.valorUnitario)} />}
             {v.desconto > 0 && <Campo label="Desconto" valor={fmtR(v.desconto)} />}
             <Campo label="Valor Total" valor={fmtR(v.valorTotal ?? v.valorLiquido)} destaque />
+          </Secao>
+
+          {/* MARGEM */}
+          <Secao icon={TrendingUp} titulo="Margem">
+            <Campo label="Margem estimada" valor={fmtR(margem)} destaque />
+            <p className="text-[10px] text-[#8A8A8A]">Valor − custo de produção (R$28/frasco × {v.quantidade}) − taxa</p>
           </Secao>
 
           {/* PAGAMENTO */}
@@ -133,6 +186,15 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
             {v.dataEntregaPrevista && <Campo label="Prev. Entrega" valor={formatarDataBR(v.dataEntregaPrevista.slice(0, 10))} />}
             {v.dataEntregaRealizada && <Campo label="Entregue em" valor={formatarDataBR(v.dataEntregaRealizada.slice(0, 10))} />}
           </Secao>
+
+          {/* VÍNCULO B2B */}
+          {lead && (
+            <Secao icon={Building2} titulo="Estética parceira (CRM)">
+              <Campo label="Estética" valor={lead.nomeEmpresa} />
+              <Campo label="Cidade" valor={`${lead.cidade} · ${lead.regiao}`} />
+              <Campo label="Tier" valor={lead.tier} />
+            </Secao>
+          )}
 
           {/* AFILIADO */}
           {(creator || v.afiliadoCodigo) && (
