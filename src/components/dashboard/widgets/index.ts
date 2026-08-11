@@ -1,0 +1,8 @@
+export { WidgetShell } from './WidgetShell'
+export { WidgetContador } from './WidgetContador'
+export { WidgetDonut, type DonutFatia } from './WidgetDonut'
+export { WidgetBarras, type BarraItem } from './WidgetBarras'
+export { WidgetLinha, type PontoLinha } from './WidgetLinha'
+export { WidgetLista, type ItemLista } from './WidgetLista'
+export { WidgetFunil, type EtapaFunil } from './WidgetFunil'
+export * from './widgetHelpers'

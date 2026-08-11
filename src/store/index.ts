@@ -928,6 +928,10 @@ interface PurionState {
   // Dashboard Widgets
   dashboardWidgets: string[]
   setDashboardWidgets: (ids: string[]) => void
+
+  // Ordem dos contadores do painel executivo (arrastar para reordenar) — persistida por usuário
+  dashboardContadoresOrdem: string[]
+  setDashboardContadoresOrdem: (ids: string[]) => void
 }
 
 // ─────────────────────────────────────────────
@@ -1269,6 +1273,9 @@ export const usePurionStore = create<PurionState>()(
           'metas-diarias', 'decisoes', 'alertas', 'notas-fixadas',
         ],
         setDashboardWidgets: (ids) => set({ dashboardWidgets: ids }),
+
+        dashboardContadoresOrdem: ['faturamento', 'frascos', 'estoque', 'leads-b2b'],
+        setDashboardContadoresOrdem: (ids) => set({ dashboardContadoresOrdem: ids }),
       }),
       {
         name: 'purion-os-storage',
@@ -1280,6 +1287,7 @@ export const usePurionStore = create<PurionState>()(
           sidebarRecolhida: state.sidebarRecolhida,
           leads: state.leads,
           dashboardWidgets: state.dashboardWidgets,
+          dashboardContadoresOrdem: state.dashboardContadoresOrdem,
         }),
         merge: (persisted, current) => ({
           ...current,
