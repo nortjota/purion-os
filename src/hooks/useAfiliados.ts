@@ -99,17 +99,11 @@ export function useAfiliados() {
   const [vendas,     setVendas]     = useState<AfiliadoVenda[]>([])
   const [cliques,    setCliques]    = useState<Pick<AfiliadoClique, 'afiliado_id' | 'converteu'>[]>([])
   const [pagamentos, setPagamentos] = useState<AfiliadoPagamento[]>([])
-  const [tenantId,   setTenantId]   = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
 
   const carregar = useCallback(async () => {
     if (!supabase) { setCarregando(false); return }
     setCarregando(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: perfil } = await supabase.from('perfis').select('tenant_id').eq('id', user.id).single()
-      setTenantId(perfil?.tenant_id ?? null)
-    }
     const [r1, r2, r3, r4] = await Promise.all([
       supabase.from('afiliados').select('*').is('deleted_at', null).order('criado_em', { ascending: false }),
       supabase.from('afiliado_vendas').select('*').neq('status_venda', 'cancelada').order('data_venda', { ascending: false }),
@@ -131,14 +125,15 @@ export function useAfiliados() {
 
   const criarAfiliado = useCallback(async (dados: NovoAfiliado): Promise<Afiliado | null> => {
     if (!supabase) return null
-    const payload = { ...dados, tenant_id: dados.tenant_id ?? tenantId }
+    // tenant_id nunca é enviado pelo cliente — o DEFAULT public.meu_tenant_id() no banco cuida disso.
+    const { tenant_id: _tenantId, ...payload } = dados
     const { data, error } = await supabase.from('afiliados').insert(payload).select().single()
     dbLog('INSERT', 'afiliados', error, data?.id)
     if (error || !data) return null
     const novo = data as Afiliado
     setAfiliados(prev => [novo, ...prev])
     return novo
-  }, [tenantId])
+  }, [])
 
   const atualizarAfiliado = useCallback(async (id: string, dados: Partial<Afiliado>) => {
     if (!supabase) return
@@ -172,7 +167,7 @@ export function useAfiliados() {
     vendasIds: string[],
   ): Promise<boolean> => {
     if (!supabase) return false
-    const { error: pgError } = await supabase.from('afiliado_pagamentos').insert({ ...dados, tenant_id: tenantId })
+    const { error: pgError } = await supabase.from('afiliado_pagamentos').insert(dados)
     dbLog('INSERT', 'afiliado_pagamentos', pgError)
     if (pgError) return false
     const { error: vdError } = await supabase.from('afiliado_vendas')
@@ -181,10 +176,10 @@ export function useAfiliados() {
     dbLog('UPDATE', 'afiliado_vendas', vdError, vendasIds)
     if (!vdError) setVendas(prev => prev.map(v => vendasIds.includes(v.id) ? { ...v, status_comissao: 'paga' as StatusComissao } : v))
     return !vdError
-  }, [tenantId])
+  }, [])
 
   return {
-    afiliados, vendas, cliques, pagamentos, tenantId, carregando,
+    afiliados, vendas, cliques, pagamentos, carregando,
     carregar,
     criarAfiliado, atualizarAfiliado, deletarAfiliado, pausarAfiliado,
     aprovarComissao, registrarPagamento,

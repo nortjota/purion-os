@@ -6,7 +6,6 @@ import type { Afiliado, TipoComissao } from '@/hooks/useAfiliados'
 
 type Props = {
   afiliado?: Afiliado
-  tenantId?: string | null
   onSalvar: (dados: Omit<Afiliado, 'id' | 'link_afiliado' | 'criado_em' | 'atualizado_em'>) => Promise<void>
   onFechar: () => void
 }
@@ -27,7 +26,7 @@ function gerarCodigoLocal(nome: string): string {
   return `PURION-${base}`
 }
 
-export function AfiliadoModal({ afiliado, tenantId, onSalvar, onFechar }: Props) {
+export function AfiliadoModal({ afiliado, onSalvar, onFechar }: Props) {
   const editando = !!afiliado
   const [passo, setPasso] = useState(0)
   const [salvando, setSalvando] = useState(false)
@@ -54,7 +53,6 @@ export function AfiliadoModal({ afiliado, tenantId, onSalvar, onFechar }: Props)
     banco_agencia:    afiliado?.banco_agencia    ?? '',
     banco_conta:      afiliado?.banco_conta      ?? '',
     status:           afiliado?.status           ?? 'ativo' as const,
-    tenant_id:        afiliado?.tenant_id        ?? tenantId ?? '',
   })
 
   const set = (k: keyof typeof form, v: unknown) => setForm(prev => ({ ...prev, [k]: v }))
@@ -103,7 +101,6 @@ export function AfiliadoModal({ afiliado, tenantId, onSalvar, onFechar }: Props)
         banco_agencia:    form.banco_agencia || undefined,
         banco_conta:      form.banco_conta || undefined,
         status:           form.status,
-        tenant_id:        form.tenant_id   || undefined,
       })
       onFechar()
     } catch {

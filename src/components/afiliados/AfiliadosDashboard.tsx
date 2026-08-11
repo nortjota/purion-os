@@ -41,7 +41,7 @@ function plataformaPrincipal(a: Afiliado) {
 
 export function AfiliadosDashboard() {
   const router = useRouter()
-  const { afiliados, vendas, cliques, carregando, tenantId, criarAfiliado, atualizarAfiliado, deletarAfiliado, pausarAfiliado } = useAfiliados()
+  const { afiliados, vendas, cliques, carregando, criarAfiliado, atualizarAfiliado, deletarAfiliado, pausarAfiliado } = useAfiliados()
   const { success, error: toastError } = useToast()
 
   const [modalAberto, setModalAberto]         = useState(false)
@@ -332,7 +332,6 @@ export function AfiliadosDashboard() {
       {modalAberto && (
         <AfiliadoModal
           afiliado={editando ?? undefined}
-          tenantId={tenantId}
           onSalvar={async dados => {
             if (editando) {
               await atualizarAfiliado(editando.id, dados)

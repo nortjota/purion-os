@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function InvitePage() {
   const router = useRouter()
@@ -14,9 +14,8 @@ export default function InvitePage() {
 
   useEffect(() => {
     // Supabase embeds the recovery/invite token in the URL hash — exchange it for a session
-    if (!isSupabaseConfigured()) { setValid(true); return }
-    const sb = createClient()
-    sb.auth.getSession().then(({ data: { session } }) => {
+    if (!supabase) { setValid(true); return }
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setValid(true)
     })
   }, [])
@@ -28,14 +27,13 @@ export default function InvitePage() {
     setError(null)
     setLoading(true)
 
-    if (!isSupabaseConfigured()) {
+    if (!isSupabaseConfigured() || !supabase) {
       router.push('/')
       return
     }
 
     try {
-      const sb = createClient()
-      const { error: updateError } = await sb.auth.updateUser({ password })
+      const { error: updateError } = await supabase.auth.updateUser({ password })
       if (updateError) { setError(updateError.message); setLoading(false); return }
       router.push('/')
       router.refresh()

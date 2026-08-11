@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { UserPlus, Trash2, Shield, User, Building2, Zap } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import type { Perfil } from '@/lib/auth-types'
 
 const PLANO_LABEL: Record<string, string> = {
@@ -32,10 +32,9 @@ export default function EmpresaDashboard() {
   const [showInvite, setShowInvite]   = useState(false)
 
   useEffect(() => {
-    if (!tenant || !isSupabaseConfigured()) return
+    if (!tenant || !supabase) return
     setLoadingU(true)
-    const sb = createClient()
-    sb.from('perfis').select('*').eq('tenant_id', tenant.id)
+    supabase.from('perfis').select('*').eq('tenant_id', tenant.id)
       .then(({ data }) => {
         setUsuarios((data as Perfil[]) ?? [])
         setLoadingU(false)
@@ -77,10 +76,9 @@ export default function EmpresaDashboard() {
   }
 
   async function revogarAcesso(userId: string) {
-    if (!isSupabaseConfigured()) return
+    if (!supabase) return
     if (!confirm('Revogar o acesso deste usuário?')) return
-    const sb = createClient()
-    await sb.from('perfis').delete().eq('id', userId)
+    await supabase.from('perfis').delete().eq('id', userId)
     setUsuarios((prev) => prev.filter((u) => u.id !== userId))
   }
 

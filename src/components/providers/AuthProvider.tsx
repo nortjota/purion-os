@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import type { Perfil, Tenant, AuthState } from '@/lib/auth-types'
 
 const defaultState: AuthState = {
@@ -26,11 +26,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(isSupabaseConfigured())
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) return
+    const sb = supabase
+    if (!sb) return
 
-    const sb = createClient()
-
-    async function loadPerfil(userId: string) {
+    const loadPerfil = async (userId: string) => {
       const { data } = await sb
         .from('perfis')
         .select('*, tenants(*)')
@@ -70,9 +69,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   async function signOut() {
-    if (!isSupabaseConfigured()) return
-    const sb = createClient()
-    await sb.auth.signOut()
+    if (!supabase) return
+    await supabase.auth.signOut()
     // middleware will redirect to /login
     window.location.href = '/login'
   }

@@ -455,7 +455,7 @@ function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
   const socios = [
     { id: 'matheus' as const, label: 'Matheus', cor: '#C9A84C' },
     { id: 'gabriel' as const, label: 'Gabriel', cor: '#22C55E' },
-    { id: 'joao'    as const, label: 'João',    cor: '#3B82F6' },
+    { id: 'joao'    as const, label: 'João',    cor: '#5B8FE8' },
   ]
 
   return (

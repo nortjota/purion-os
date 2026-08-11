@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 const BENEFITS = [
   {
@@ -33,9 +33,8 @@ export default function LandingPage() {
     setLoading(true)
 
     try {
-      if (isSupabaseConfigured()) {
-        const sb = createClient()
-        await sb.from('leads_saas').insert([{
+      if (isSupabaseConfigured() && supabase) {
+        await supabase.from('leads_saas').insert([{
           nome: form.nome,
           empresa: form.empresa,
           email: form.email,
