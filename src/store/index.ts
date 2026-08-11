@@ -39,7 +39,9 @@ export type PrioridadeTarefa = 'baixa' | 'media' | 'alta' | 'urgente'
 export type RecorrenciaTarefa = 'nenhuma' | 'diaria' | 'semanal' | 'mensal'
 export type TipoEstabelecimento = 'estetica' | 'detailer' | 'concessionaria'
 
-export type StatusLote = 'em_producao' | 'controle_qualidade' | 'aprovado' | 'reprovado' | 'estoque'
+// Pipeline padronizado do lote: planejado → em_producao → controle_qualidade → concluido (ou reprovado).
+// Valores antigos (aprovado, estoque) mantidos para compatibilidade.
+export type StatusLote = 'planejado' | 'em_producao' | 'controle_qualidade' | 'concluido' | 'reprovado' | 'aprovado' | 'estoque'
 
 export type StatusCreator =
   | 'contatado'
@@ -235,6 +237,7 @@ export interface ItemEstoque {
   custoUnitario: number
   ultimaEntrada: string
   notas: string
+  rendimentoPorFrasco?: number // unidades deste insumo consumidas por frasco produzido (default 1)
 }
 
 // ─────────────────────────────────────────────

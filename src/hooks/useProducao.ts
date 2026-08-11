@@ -5,9 +5,26 @@ import { supabase } from '@/lib/supabase'
 import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import { useToast } from '@/components/ui/Toast'
-import type { Lote, PedidoExpedicao, PerfilUsuario, StatusLote, StatusPedidoExpedicao } from '@/store'
+import { normalizarStatusLote } from '@/components/producao/producaoHelpers'
+import type { Lote, PedidoExpedicao, PerfilUsuario, StatusLote, StatusPedidoExpedicao, ItemEstoque } from '@/store'
 
 type Row = Record<string, unknown>
+
+function toItemEstoque(r: Row): ItemEstoque {
+  return {
+    id:                  String(r.id),
+    nome:                String(r.nome ?? ''),
+    tipo:                String(r.tipo ?? 'outro') as ItemEstoque['tipo'],
+    fornecedor:          String(r.fornecedor ?? ''),
+    quantidadeAtual:     Number(r.quantidade_atual ?? 0),
+    unidade:             String(r.unidade ?? 'un'),
+    quantidadeMinima:    Number(r.quantidade_minima ?? 0),
+    custoUnitario:       Number(r.custo_unitario ?? 0),
+    ultimaEntrada:       r.ultima_entrada ? String(r.ultima_entrada) : '',
+    notas:               String(r.notas ?? ''),
+    rendimentoPorFrasco: r.rendimento_por_frasco != null ? Number(r.rendimento_por_frasco) : 1,
+  }
+}
 
 function toLote(r: Row): Lote {
   return {
@@ -66,8 +83,19 @@ export function useProducao() {
       if (data) usePurionStore.getState().setPedidosExpedicao(data.map(toPedido))
     }
 
+    const loadInsumos = async () => {
+      const { data, error } = await sb
+        .from('estoque_insumos')
+        .select('*')
+        .is('deleted_at', null)
+        .order('tipo', { ascending: true })
+      dbLog('SELECT', 'estoque_insumos', error, `${data?.length ?? 0} rows`)
+      if (data) usePurionStore.getState().setEstoque(data.map(toItemEstoque))
+    }
+
     loadLotes()
     loadPedidos()
+    loadInsumos()
 
     const chL = sb.channel(`lotes-sync-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'lotes_producao' }, loadLotes)
@@ -77,9 +105,14 @@ export function useProducao() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos_expedicao' }, loadPedidos)
       .subscribe()
 
+    const chI = sb.channel(`insumos-sync-${Math.random().toString(36).slice(2)}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'estoque_insumos' }, loadInsumos)
+      .subscribe()
+
     return () => {
       sb.removeChannel(chL)
       sb.removeChannel(chP)
+      sb.removeChannel(chI)
     }
   }, [])
 
@@ -132,24 +165,33 @@ export function useProducao() {
       if (error) { toastError('Erro ao salvar lote', error.message); return }
       usePurionStore.getState().atualizarLote(id, dados)
 
-      // Entrada automática de estoque quando lote aprovado
-      if (dados.status === 'aprovado') {
+      // Entrada automática de estoque de prontos quando o lote é concluído/envasado
+      if (dados.status !== undefined && normalizarStatusLote(dados.status) === 'concluido') {
         const lote = usePurionStore.getState().lotes.find((l) => l.id === id)
         const qty = dados.quantidadeAprovada ?? lote?.quantidadeAprovada ?? 0
         if (qty > 0) {
-          const { data: estoque } = await sb.from('estoque_produto').select('id, quantidade_atual').order('created_at', { ascending: true }).limit(1).maybeSingle()
-          if (estoque) {
-            const saldo = estoque.quantidade_atual + qty
-            const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
-              tipo: 'entrada', quantidade: qty,
-              motivo: `Lote aprovado ${id}`, origem_tipo: 'lote', origem_id: id,
-              saldo_apos: saldo, autor: dados.responsavel ?? lote?.responsavel ?? 'matheus',
-            })
-            dbLog('INSERT', 'estoque_movimentacoes (entrada_lote)', movErr, id)
-            if (!movErr) {
-              await sb.from('estoque_produto').update({ quantidade_atual: saldo, updated_at: new Date().toISOString() }).eq('id', estoque.id)
-              const ep = usePurionStore.getState().estoqueProduto
-              if (ep) usePurionStore.getState().setEstoqueProduto({ ...ep, quantidadeAtual: saldo })
+          // Idempotência: não duplica a entrada se este lote já gerou uma movimentação
+          const { data: existente } = await sb
+            .from('estoque_movimentacoes')
+            .select('id')
+            .eq('origem_tipo', 'lote').eq('origem_id', id).eq('tipo', 'entrada')
+            .maybeSingle()
+          if (!existente) {
+            const { data: estoque } = await sb.from('estoque_produto').select('id, quantidade_atual').order('created_at', { ascending: true }).limit(1).maybeSingle()
+            if (estoque) {
+              const saldo = estoque.quantidade_atual + qty
+              const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
+                tipo: 'entrada', quantidade: qty,
+                motivo: `Lote concluído ${lote?.codigo ?? id}`, origem_tipo: 'lote', origem_id: id,
+                saldo_apos: saldo, autor: dados.responsavel ?? lote?.responsavel ?? 'matheus',
+              })
+              dbLog('INSERT', 'estoque_movimentacoes (entrada_lote)', movErr, id)
+              if (!movErr) {
+                await sb.from('estoque_produto').update({ quantidade_atual: saldo, updated_at: new Date().toISOString() }).eq('id', estoque.id)
+                const ep = usePurionStore.getState().estoqueProduto
+                if (ep) usePurionStore.getState().setEstoqueProduto({ ...ep, quantidadeAtual: saldo })
+                success(`Estoque atualizado: +${qty} frascos`)
+              }
             }
           }
         }
@@ -242,6 +284,79 @@ export function useProducao() {
       }
       usePurionStore.getState().adicionarPedidoExpedicao(pedido)
       success('Pedido restaurado')
+    },
+
+    // ── INSUMOS (matéria-prima) ──
+    adicionarInsumo: async (item: Omit<ItemEstoque, 'id'>) => {
+      const sb = supabase
+      if (!sb) return
+      const { data, error } = await sb.from('estoque_insumos').insert({
+        nome:                  item.nome,
+        tipo:                  item.tipo,
+        fornecedor:            item.fornecedor,
+        quantidade_atual:      item.quantidadeAtual,
+        unidade:               item.unidade,
+        quantidade_minima:     item.quantidadeMinima,
+        custo_unitario:        item.custoUnitario,
+        rendimento_por_frasco: item.rendimentoPorFrasco ?? 1,
+        ultima_entrada:        item.ultimaEntrada || new Date().toISOString().slice(0, 10),
+        notas:                 item.notas,
+      }).select().single()
+      dbLog('INSERT', 'estoque_insumos', error, data?.id)
+      if (error) { toastError('Erro ao cadastrar insumo', error.message); return }
+      if (data) {
+        const store = usePurionStore.getState()
+        store.setEstoque([...store.estoque, toItemEstoque(data)])
+        success('Insumo cadastrado')
+      }
+    },
+
+    atualizarInsumo: async (id: string, dados: Partial<ItemEstoque>) => {
+      const sb = supabase
+      if (!sb) { usePurionStore.getState().atualizarItemEstoque(id, dados); return }
+      const { error } = await sb.from('estoque_insumos').update({
+        ...(dados.nome                !== undefined && { nome:                  dados.nome }),
+        ...(dados.tipo                !== undefined && { tipo:                  dados.tipo }),
+        ...(dados.fornecedor          !== undefined && { fornecedor:            dados.fornecedor }),
+        ...(dados.quantidadeAtual     !== undefined && { quantidade_atual:      dados.quantidadeAtual }),
+        ...(dados.unidade             !== undefined && { unidade:               dados.unidade }),
+        ...(dados.quantidadeMinima    !== undefined && { quantidade_minima:     dados.quantidadeMinima }),
+        ...(dados.custoUnitario       !== undefined && { custo_unitario:        dados.custoUnitario }),
+        ...(dados.rendimentoPorFrasco !== undefined && { rendimento_por_frasco: dados.rendimentoPorFrasco }),
+        ...(dados.ultimaEntrada       !== undefined && { ultima_entrada:        dados.ultimaEntrada || null }),
+        ...(dados.notas               !== undefined && { notas:                 dados.notas }),
+        updated_at: new Date().toISOString(),
+      }).eq('id', id)
+      dbLog('UPDATE', 'estoque_insumos', error, id)
+      if (error) { toastError('Erro ao salvar insumo', error.message); return }
+      usePurionStore.getState().atualizarItemEstoque(id, dados)
+    },
+
+    ajustarQuantidadeInsumo: async (id: string, novaQuantidade: number) => {
+      const sb = supabase
+      const item = usePurionStore.getState().estoque.find((i) => i.id === id)
+      if (!sb || !item) { usePurionStore.getState().atualizarItemEstoque(id, { quantidadeAtual: novaQuantidade }); return }
+      const { error } = await sb.from('estoque_insumos').update({
+        quantidade_atual: novaQuantidade,
+        ultima_entrada: novaQuantidade > item.quantidadeAtual ? new Date().toISOString().slice(0, 10) : item.ultimaEntrada || null,
+        updated_at: new Date().toISOString(),
+      }).eq('id', id)
+      dbLog('UPDATE', 'estoque_insumos (ajuste)', error, id)
+      if (error) { toastError('Erro ao ajustar insumo', error.message); return }
+      usePurionStore.getState().atualizarItemEstoque(id, { quantidadeAtual: novaQuantidade })
+      success('Estoque de insumo ajustado')
+    },
+
+    deletarInsumo: async (id: string) => {
+      const sb = supabase
+      if (sb) {
+        const { error } = await sb.from('estoque_insumos').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+        dbLog('DELETE', 'estoque_insumos', error, id)
+        if (error) { toastError('Erro ao excluir insumo', error.message); return }
+      }
+      const store = usePurionStore.getState()
+      store.setEstoque(store.estoque.filter((i) => i.id !== id))
+      success('Insumo excluído')
     },
   }
 }

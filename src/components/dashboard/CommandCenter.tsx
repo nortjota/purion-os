@@ -809,7 +809,7 @@ export function CommandCenter() {
       {estoqueProduto && (() => {
         const alerta = estoqueProduto.quantidadeAtual < estoqueProduto.quantidadeMinima
         return (
-          <Link href="/vendas" style={{ textDecoration: 'none' }}>
+          <Link href="/producao" style={{ textDecoration: 'none' }}>
             <div className="card-purion" style={{
               padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14,
               border: alerta ? '1px solid rgba(239,68,68,0.35)' : undefined,

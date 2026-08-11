@@ -35,7 +35,33 @@ export async function GET() {
       }
     }
 
-    // 2. Estoque baixo
+    // 2. Estoque baixo (produto pronto — PURION GT 60ml)
+    const { data: estoqueProduto } = await db.from('estoque_produto').select('id, produto, quantidade_atual, quantidade_minima').order('created_at', { ascending: true }).limit(1).maybeSingle()
+    if (estoqueProduto && estoqueProduto.quantidade_atual < estoqueProduto.quantidade_minima) {
+      alertas.push({
+        titulo: '📦 Estoque baixo',
+        mensagem: `${estoqueProduto.produto}: ${estoqueProduto.quantidade_atual} frascos — abaixo do mínimo de ${estoqueProduto.quantidade_minima}.`,
+        canal: ['sistema', 'whatsapp'], link: '/producao', papel: 'gabriel',
+      })
+
+      // Cria tarefa "produzir mais" — idempotente: só cria se não houver uma já aberta
+      const { data: tarefaAberta } = await db.from('tarefas').select('id')
+        .eq('modulo', 'producao').contains('tags', ['reposicao-estoque'])
+        .not('status', 'in', '("concluida","cancelada")')
+        .is('deleted_at', null)
+        .maybeSingle()
+      if (!tarefaAberta) {
+        const { error: tarefaErr } = await db.from('tarefas').insert({
+          titulo: '🏭 Produzir mais — estoque de prontos abaixo do mínimo',
+          descricao: `Estoque atual: ${estoqueProduto.quantidade_atual} frascos (mínimo: ${estoqueProduto.quantidade_minima}). Planeje um novo lote de produção.`,
+          status: 'aberta', prioridade: 'alta', responsavel: 'gabriel', modulo: 'producao',
+          tags: ['reposicao-estoque'],
+        })
+        if (tarefaErr) console.error('[alertas/check] erro ao criar tarefa produzir mais', tarefaErr)
+      }
+    }
+
+    // Legado: SKUs antigos (produtos_sku), mantido por compatibilidade
     const { data: skus } = await db.from('produtos_sku').select('nome, unidades, threshold').not('threshold', 'is', null)
     if (skus) {
       for (const s of skus) {
