@@ -1,0 +1,254 @@
+'use client'
+
+import { useState, useMemo, useEffect } from 'react'
+import {
+  startOfMonth, endOfMonth, startOfWeek, endOfWeek,
+  eachDayOfInterval, addMonths, subMonths,
+  isSameMonth, isToday, format,
+  addDays, startOfDay,
+} from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import type { Lead } from '@/store'
+import { useMobile } from '@/hooks/useMobile'
+import { estagioConfig, socioInfo } from './crmHelpers'
+
+interface Props {
+  leads: Lead[]
+  onAbrirLead: (id: string) => void
+  onAgendarPasso: (id: string, data: string) => void
+}
+
+type ViewMode = 'mes' | 'semana'
+
+const DIA_LABELS_FULL  = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+const DIA_LABELS_SHORT = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
+
+export function CRMCalendarioView({ leads, onAbrirLead, onAgendarPasso }: Props) {
+  const isMobile = useMobile()
+  const [dataRef, setDataRef] = useState(() => startOfDay(new Date()))
+  const [mode, setMode] = useState<ViewMode>(() => typeof window !== 'undefined' && window.innerWidth < 768 ? 'semana' : 'mes')
+  const [dragLeadId, setDragLeadId] = useState<string | null>(null)
+  const [dragOverDate, setDragOverDate] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (isMobile && mode === 'mes') setMode('semana')
+  }, [isMobile]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const dias = useMemo(() => {
+    if (mode === 'mes') {
+      const inicio = startOfWeek(startOfMonth(dataRef), { locale: ptBR })
+      const fim    = endOfWeek(endOfMonth(dataRef), { locale: ptBR })
+      return eachDayOfInterval({ start: inicio, end: fim })
+    }
+    const inicio = startOfWeek(dataRef, { locale: ptBR })
+    return eachDayOfInterval({ start: inicio, end: addDays(inicio, 6) })
+  }, [dataRef, mode])
+
+  const leadsPorDia = useMemo(() => {
+    const mapa: Record<string, Lead[]> = {}
+    leads.forEach((l) => {
+      if (!l.proximoPassoData) return
+      const key = l.proximoPassoData.slice(0, 10)
+      if (!mapa[key]) mapa[key] = []
+      mapa[key].push(l)
+    })
+    return mapa
+  }, [leads])
+
+  const mesAtual = startOfMonth(dataRef)
+
+  function navAnterior() { setDataRef((d) => mode === 'mes' ? subMonths(d, 1) : addDays(d, -7)) }
+  function navProximo()  { setDataRef((d) => mode === 'mes' ? addMonths(d, 1) : addDays(d, 7))  }
+  function irHoje()      { setDataRef(startOfDay(new Date())) }
+
+  function handleDrop(e: React.DragEvent, date: Date) {
+    e.preventDefault()
+    const id = e.dataTransfer.getData('leadId')
+    if (!id) return
+    onAgendarPasso(id, format(date, 'yyyy-MM-dd'))
+    setDragLeadId(null)
+    setDragOverDate(null)
+  }
+
+  const tituloHeader = mode === 'mes'
+    ? format(mesAtual, 'MMMM yyyy', { locale: ptBR })
+    : `${format(dias[0], "dd 'de' MMM", { locale: ptBR })} — ${format(dias[6], "dd 'de' MMM", { locale: ptBR })}`
+
+  const maxChipsPorCelula = isMobile ? (mode === 'semana' ? 5 : 1) : (mode === 'semana' ? 8 : 3)
+  const alturaMinCell = mode === 'semana' ? (isMobile ? 140 : 200) : (isMobile ? 64 : 100)
+  const diaLabels = isMobile ? DIA_LABELS_SHORT : DIA_LABELS_FULL
+  const semData = leads.filter((l) => !l.proximoPassoData)
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 10,
+        padding: isMobile ? '10px 14px' : '12px 20px',
+        flexShrink: 0, borderBottom: '1px solid var(--border)',
+      }}>
+        {!isMobile && (
+          <button onClick={irHoje} style={{ height: 30, padding: '0 12px', borderRadius: 6, fontSize: 12, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+            Hoje
+          </button>
+        )}
+        <button onClick={navAnterior} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', padding: 4 }}>
+          <ChevronLeft size={isMobile ? 22 : 18} />
+        </button>
+        <button onClick={navProximo} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', padding: 4 }}>
+          <ChevronRight size={isMobile ? 22 : 18} />
+        </button>
+        <span style={{ fontSize: isMobile ? 14 : 15, fontWeight: 600, color: 'var(--text-primary)', flex: 1, textTransform: 'capitalize' }}>
+          {tituloHeader}
+        </span>
+        {isMobile && (
+          <button onClick={irHoje} style={{ height: 30, padding: '0 10px', borderRadius: 20, fontSize: 12, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', flexShrink: 0 }}>
+            Hoje
+          </button>
+        )}
+        <div style={{ display: 'flex', gap: 1, padding: 2, borderRadius: 6, background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}>
+          {(['mes', 'semana'] as ViewMode[]).map((m) => (
+            <button key={m} onClick={() => setMode(m)} style={{
+              height: isMobile ? 30 : 26, padding: isMobile ? '0 12px' : '0 10px',
+              borderRadius: 5, fontSize: isMobile ? 12 : 11, fontWeight: 500, cursor: 'pointer',
+              border: 'none',
+              background: mode === m ? '#C9A84C' : 'transparent',
+              color: mode === m ? '#0D0D0D' : 'var(--text-secondary)',
+            }}>
+              {m === 'mes' ? 'Mês' : 'Semana'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+          {diaLabels.map((d, i) => (
+            <div key={i} style={{ padding: isMobile ? '5px 0' : '6px 0', textAlign: 'center', fontSize: isMobile ? 10 : 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {d}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', flex: 1 }}>
+          {dias.map((dia) => {
+            const key       = format(dia, 'yyyy-MM-dd')
+            const leadsDia  = leadsPorDia[key] ?? []
+            const ehHoje    = isToday(dia)
+            const outroMes  = mode === 'mes' && !isSameMonth(dia, mesAtual)
+            const isDragOver = dragOverDate === key
+            const extra     = leadsDia.length - maxChipsPorCelula
+
+            return (
+              <div
+                key={key}
+                style={{
+                  minHeight: alturaMinCell,
+                  borderRight: '1px solid var(--border)',
+                  borderBottom: '1px solid var(--border)',
+                  padding: isMobile ? '3px 4px' : '4px 6px',
+                  background: isDragOver ? 'rgba(201,168,76,0.06)' : outroMes ? 'rgba(0,0,0,0.05)' : 'transparent',
+                  transition: 'background 120ms',
+                }}
+                onDragOver={(e) => { e.preventDefault(); setDragOverDate(key) }}
+                onDragLeave={() => setDragOverDate(null)}
+                onDrop={(e) => handleDrop(e, dia)}
+              >
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: isMobile ? 22 : 24, height: isMobile ? 22 : 24, borderRadius: '50%',
+                  fontSize: isMobile ? 11 : 12, fontWeight: ehHoje ? 700 : 400,
+                  background: ehHoje ? '#C9A84C' : 'transparent',
+                  color: ehHoje ? '#0D0D0D' : outroMes ? 'rgba(184,184,184,0.3)' : 'var(--text-primary)',
+                  marginBottom: 2,
+                }}>
+                  {format(dia, 'd')}
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  {leadsDia.slice(0, maxChipsPorCelula).map((l) => {
+                    const cor  = estagioConfig(l.status).cor
+                    const info = socioInfo(l.responsavel)
+                    return (
+                      <div
+                        key={l.id}
+                        draggable={!isMobile}
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData('leadId', l.id)
+                          e.stopPropagation()
+                          setDragLeadId(l.id)
+                        }}
+                        onDragEnd={() => { setDragLeadId(null); setDragOverDate(null) }}
+                        onClick={(e) => { e.stopPropagation(); onAbrirLead(l.id) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 3,
+                          padding: isMobile ? '3px 5px' : '2px 5px',
+                          borderRadius: 4,
+                          background: `${cor}18`, border: `1px solid ${cor}28`,
+                          cursor: 'pointer',
+                          opacity: dragLeadId === l.id ? 0.4 : 1,
+                          minHeight: isMobile ? 24 : 'auto',
+                        }}
+                      >
+                        <span style={{ width: 4, height: 4, borderRadius: '50%', background: cor, flexShrink: 0 }} />
+                        <span style={{ fontSize: 10, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                          {l.nomeEmpresa}
+                        </span>
+                        {!isMobile && (
+                          <span style={{ width: 12, height: 12, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 6, fontWeight: 800, background: `${info.cor}22`, color: info.cor }}>
+                            {info.inicial}
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })}
+                  {extra > 0 && (
+                    <span style={{ fontSize: 10, color: '#C9A84C', paddingLeft: 4, fontWeight: 600 }}>
+                      +{extra}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {semData.length > 0 && (
+        <div style={{
+          padding: isMobile ? '8px 14px' : '10px 20px', flexShrink: 0,
+          borderTop: '1px solid var(--border)', background: 'var(--bg-surface)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <Calendar size={12} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+          <span style={{ fontSize: 11, color: 'var(--text-secondary)', flexShrink: 0 }}>
+            Sem follow-up agendado ({semData.length})
+          </span>
+          <div style={{ display: 'flex', gap: 4, overflowX: 'auto', flex: 1 }}>
+            {semData.slice(0, isMobile ? 4 : 8).map((l) => {
+              const cor = estagioConfig(l.status).cor
+              return (
+                <button
+                  key={l.id}
+                  draggable={!isMobile}
+                  onDragStart={(e) => { e.dataTransfer.setData('leadId', l.id); setDragLeadId(l.id) }}
+                  onDragEnd={() => setDragLeadId(null)}
+                  onClick={() => onAbrirLead(l.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '3px 8px', borderRadius: 4, whiteSpace: 'nowrap',
+                    background: `${cor}15`, border: `1px solid ${cor}25`,
+                    cursor: 'pointer', fontSize: 11, color: 'var(--text-primary)', flexShrink: 0,
+                  }}
+                >
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: cor }} />
+                  {l.nomeEmpresa}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

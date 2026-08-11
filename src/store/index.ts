@@ -16,8 +16,16 @@ import { devtools, persist } from 'zustand/middleware'
 export type PerfilUsuario = 'matheus' | 'joao' | 'gabriel'
 export type Regiao = 'DF' | 'SP' | 'SC'
 
+// Pipeline padronizado (Máquina de Vendas / Doc07). Valores antigos mantidos para compatibilidade.
 export type StatusLead =
   | 'prospecto'
+  | 'abordado'
+  | 'reuniao_agendada'
+  | 'oportunidade'
+  | 'cliente'
+  | 'recorrente'
+  | 'perdido'
+  // ── legado (compatibilidade) ──
   | 'contato_feito'
   | 'proposta_enviada'
   | 'negociando'
@@ -76,6 +84,9 @@ export interface Lead {
   latitude?: number
   longitude?: number
   tags: string[]
+  proximoPassoData?: string | null   // ISO date — próximo follow-up agendado
+  proximoPassoAcao?: string | null   // descrição da ação (ex: "Ligar para fechar proposta")
+  historicoEstagios?: Array<{ id: string; de: StatusLead | null; para: StatusLead; timestamp: string }>
 }
 
 // ─────────────────────────────────────────────
