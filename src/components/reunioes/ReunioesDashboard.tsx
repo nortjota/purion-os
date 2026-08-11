@@ -49,8 +49,8 @@ const SOCIO_INICIAL: Record<PerfilUsuario, string> = {
 
 const SOCIO_COLOR: Record<PerfilUsuario, string> = {
   matheus: 'bg-[#C9A84C] text-[#0D0D0D]',
-  joao:    'bg-blue-500 text-white',
-  gabriel: 'bg-emerald-600 text-white',
+  joao:    'bg-[#5B8FE8] text-white',
+  gabriel: 'bg-[#22C55E] text-white',
 }
 
 const TIPO_REUNIAO_LABEL: Record<ReuniaoItem['tipo'], string> = {

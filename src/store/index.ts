@@ -16,8 +16,16 @@ import { devtools, persist } from 'zustand/middleware'
 export type PerfilUsuario = 'matheus' | 'joao' | 'gabriel'
 export type Regiao = 'DF' | 'SP' | 'SC'
 
+// Pipeline padronizado (Máquina de Vendas / Doc07). Valores antigos mantidos para compatibilidade.
 export type StatusLead =
   | 'prospecto'
+  | 'abordado'
+  | 'reuniao_agendada'
+  | 'oportunidade'
+  | 'cliente'
+  | 'recorrente'
+  | 'perdido'
+  // ── legado (compatibilidade) ──
   | 'contato_feito'
   | 'proposta_enviada'
   | 'negociando'
@@ -31,7 +39,9 @@ export type PrioridadeTarefa = 'baixa' | 'media' | 'alta' | 'urgente'
 export type RecorrenciaTarefa = 'nenhuma' | 'diaria' | 'semanal' | 'mensal'
 export type TipoEstabelecimento = 'estetica' | 'detailer' | 'concessionaria'
 
-export type StatusLote = 'em_producao' | 'controle_qualidade' | 'aprovado' | 'reprovado' | 'estoque'
+// Pipeline padronizado do lote: planejado → em_producao → controle_qualidade → concluido (ou reprovado).
+// Valores antigos (aprovado, estoque) mantidos para compatibilidade.
+export type StatusLote = 'planejado' | 'em_producao' | 'controle_qualidade' | 'concluido' | 'reprovado' | 'aprovado' | 'estoque'
 
 export type StatusCreator =
   | 'contatado'
@@ -76,6 +86,9 @@ export interface Lead {
   latitude?: number
   longitude?: number
   tags: string[]
+  proximoPassoData?: string | null   // ISO date — próximo follow-up agendado
+  proximoPassoAcao?: string | null   // descrição da ação (ex: "Ligar para fechar proposta")
+  historicoEstagios?: Array<{ id: string; de: StatusLead | null; para: StatusLead; timestamp: string }>
 }
 
 // ─────────────────────────────────────────────
@@ -224,6 +237,7 @@ export interface ItemEstoque {
   custoUnitario: number
   ultimaEntrada: string
   notas: string
+  rendimentoPorFrasco?: number // unidades deste insumo consumidas por frasco produzido (default 1)
 }
 
 // ─────────────────────────────────────────────
@@ -471,7 +485,7 @@ export interface KbBloco {
 // INTERFACES — BLOCOS DE ESTRATÉGIA (Notion-style)
 // ─────────────────────────────────────────────
 
-export type SecaoEstrategia = 'visao_geral' | 'b2b' | 'social' | 'growth' | 'icp' | 'decisoes' | 'geral'
+export type SecaoEstrategia = 'visao_geral' | 'metas' | 'b2b' | 'social' | 'growth' | 'icp' | 'decisoes' | 'geral'
 
 export interface EstrategiaBloco {
   id: string
@@ -914,6 +928,10 @@ interface PurionState {
   // Dashboard Widgets
   dashboardWidgets: string[]
   setDashboardWidgets: (ids: string[]) => void
+
+  // Ordem dos contadores do painel executivo (arrastar para reordenar) — persistida por usuário
+  dashboardContadoresOrdem: string[]
+  setDashboardContadoresOrdem: (ids: string[]) => void
 }
 
 // ─────────────────────────────────────────────
@@ -1255,6 +1273,9 @@ export const usePurionStore = create<PurionState>()(
           'metas-diarias', 'decisoes', 'alertas', 'notas-fixadas',
         ],
         setDashboardWidgets: (ids) => set({ dashboardWidgets: ids }),
+
+        dashboardContadoresOrdem: ['faturamento', 'frascos', 'estoque', 'leads-b2b'],
+        setDashboardContadoresOrdem: (ids) => set({ dashboardContadoresOrdem: ids }),
       }),
       {
         name: 'purion-os-storage',
@@ -1266,6 +1287,7 @@ export const usePurionStore = create<PurionState>()(
           sidebarRecolhida: state.sidebarRecolhida,
           leads: state.leads,
           dashboardWidgets: state.dashboardWidgets,
+          dashboardContadoresOrdem: state.dashboardContadoresOrdem,
         }),
         merge: (persisted, current) => ({
           ...current,

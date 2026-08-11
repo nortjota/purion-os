@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 function LoginForm() {
   const router       = useRouter()
@@ -25,8 +25,8 @@ function LoginForm() {
     }
 
     try {
-      const sb = createClient()
-      const { error: authError } = await sb.auth.signInWithPassword({ email, password })
+      if (!supabase) { setError('Erro ao conectar. Tente novamente.'); setLoading(false); return }
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
       if (authError) {
         setError('E-mail ou senha incorretos.')
         setLoading(false)
@@ -166,12 +166,12 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
 
-        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: '#333333', marginBottom: 0 }}>
+        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: '#888888', marginBottom: 0 }}>
           Acesso apenas por convite
         </p>
       </motion.div>
 
-      <p style={{ marginTop: 20, fontSize: 11, color: '#333333' }}>
+      <p style={{ marginTop: 20, fontSize: 11, color: '#888888' }}>
         © 2025 PURION OS
       </p>
 

@@ -35,7 +35,43 @@ export function toLead(r: Row): Lead {
     latitude:            r.latitude  ? Number(r.latitude)  : undefined,
     longitude:           r.longitude ? Number(r.longitude) : undefined,
     tags:                Array.isArray(r.tags) ? (r.tags as string[]) : [],
+    proximoPassoData:    r.proximo_passo_data ? String(r.proximo_passo_data) : null,
+    proximoPassoAcao:    r.proximo_passo_acao ? String(r.proximo_passo_acao) : null,
+    historicoEstagios:   Array.isArray(r.historico_estagios)
+                           ? (r.historico_estagios as Lead['historicoEstagios'])
+                           : [],
   }
+}
+
+const ESTAGIO_NORMALIZADO: Partial<Record<StatusLead, StatusLead>> = {
+  contato_feito:    'abordado',
+  proposta_enviada: 'oportunidade',
+  negociando:       'oportunidade',
+  parceiro_ativo:   'cliente',
+  inativo:          'perdido',
+}
+
+export function normalizarEstagio(status: StatusLead): StatusLead {
+  return ESTAGIO_NORMALIZADO[status] ?? status
+}
+
+/** Cria automaticamente uma tarefa de reposição D+21 quando um lead vira cliente pela 1ª vez. */
+export async function criarTarefaReposicaoD21(lead: Lead) {
+  const sb = supabase
+  if (!sb) return
+  const prazo = new Date(Date.now() + 21 * 86_400_000)
+  const payload = {
+    titulo:      `Reposição D+21 — ${lead.nomeEmpresa}`,
+    descricao:   `Follow-up de reposição de estoque para ${lead.nomeEmpresa} (${lead.cidade}/${lead.regiao}). Cliente fechado há 21 dias.`,
+    status:      'aberta',
+    prioridade:  'alta',
+    responsavel: lead.responsavel,
+    modulo:      'crm',
+    due_date:    prazo.toISOString().slice(0, 10),
+    tags:        ['reposicao', 'd21'],
+  }
+  const { data, error } = await sb.from('tarefas').insert(payload).select().single()
+  dbLog('INSERT', 'tarefas (reposicao D+21)', error, data?.id)
 }
 
 export function useCRM() {
@@ -82,6 +118,9 @@ export function useCRM() {
         tipo_estabelecimento: lead.tipoEstabelecimento ?? null,
         historico_interacoes: lead.historicoInteracoes ?? [],
         tags:                 lead.tags,
+        proximo_passo_data:   lead.proximoPassoData ?? null,
+        proximo_passo_acao:   lead.proximoPassoAcao ?? null,
+        historico_estagios:   lead.historicoEstagios ?? [],
       }).select().single()
       dbLog('INSERT', 'leads_crm', error, data?.id)
       if (error) { toastError('Erro ao cadastrar lead', error.message); return }
@@ -91,13 +130,31 @@ export function useCRM() {
       }
     },
 
-    atualizarLead: async (id: string, dados: Partial<Lead>) => {
+    atualizarLead: async (id: string, dadosOriginais: Partial<Lead>) => {
       const sb = supabase
+      const leadAtual = usePurionStore.getState().leads.find((l) => l.id === id)
+      let dados = dadosOriginais
+
+      // Mudança de estágio: registra no histórico e dispara alerta D+21 ao virar cliente
+      const novoStatus = dados.status
+      if (novoStatus !== undefined && leadAtual && novoStatus !== leadAtual.status) {
+        const historico = [
+          ...(leadAtual.historicoEstagios ?? []),
+          { id: `hist-${Date.now()}`, de: leadAtual.status, para: novoStatus, timestamp: new Date().toISOString() },
+        ]
+        dados = { ...dados, historicoEstagios: historico }
+
+        const eraCliente = normalizarEstagio(leadAtual.status) === 'cliente' || normalizarEstagio(leadAtual.status) === 'recorrente'
+        const viraCliente = normalizarEstagio(novoStatus) === 'cliente'
+        if (!eraCliente && viraCliente) {
+          criarTarefaReposicaoD21({ ...leadAtual, ...dados } as Lead)
+        }
+      }
+
       if (!sb) {
         usePurionStore.getState().atualizarLead(id, dados)
         return
       }
-      const leadAtual = usePurionStore.getState().leads.find((l) => l.id === id)
       const { error } = await sb.from('leads_crm').update({
         ...(dados.nomeEmpresa         !== undefined && { nome_empresa:         dados.nomeEmpresa }),
         ...(dados.nomeContato         !== undefined && { nome_contato:         dados.nomeContato }),
@@ -112,6 +169,9 @@ export function useCRM() {
         ...(dados.notas               !== undefined && { notas:                dados.notas }),
         ...(dados.tipoEstabelecimento !== undefined && { tipo_estabelecimento: dados.tipoEstabelecimento }),
         ...(dados.historicoInteracoes !== undefined && { historico_interacoes: dados.historicoInteracoes }),
+        ...(dados.proximoPassoData    !== undefined && { proximo_passo_data:   dados.proximoPassoData }),
+        ...(dados.proximoPassoAcao    !== undefined && { proximo_passo_acao:   dados.proximoPassoAcao }),
+        ...(dados.historicoEstagios   !== undefined && { historico_estagios:   dados.historicoEstagios }),
         updated_at: new Date().toISOString(),
       }).eq('id', id)
       dbLog('UPDATE', 'leads_crm', error, id)

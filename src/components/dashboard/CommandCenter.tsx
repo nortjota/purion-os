@@ -1,15 +1,13 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import dynamic from 'next/dynamic'
+import { useMemo, useState, useEffect } from 'react'
 import { useMobile } from '@/hooks/useMobile'
 import { ResumoDiario } from './ResumoDiario'
-
-const GraficoVendasDiarias = dynamic(() => import('./GraficoVendasDiarias'), { ssr: false })
 import {
-  TrendingUp, TrendingDown, DollarSign, Target,
+  TrendingUp, DollarSign, Target,
   ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
   Info, Activity, Clock, Calendar, Users, FlaskConical, Compass,
+  Package, RefreshCw, ListChecks, RotateCcw,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { MetaDiaria } from '@/store'
@@ -23,7 +21,6 @@ import {
   calcularHealthScore,
   gerarFeedAtividade,
   formatarMoeda,
-  formatarPercentual,
   formatarDataBR,
   LABEL_STATUS_LEAD,
   type Alerta,
@@ -36,10 +33,16 @@ import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
 import { useGrowth } from '@/hooks/useGrowth'
 import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
 import { useEventosCalendario } from '@/hooks/useEventosCalendario'
+import { useEstoque } from '@/hooks/useEstoque'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 import { Proximos7Dias } from '@/components/calendario/Proximos7Dias'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
+import { WidgetContador, WidgetDonut, WidgetBarras, WidgetLinha, WidgetLista, WidgetFunil, type ItemLista } from '@/components/dashboard/widgets'
+import { PERIODO_OPCOES, type Periodo, inicioPeriodo } from '@/components/dashboard/widgets/widgetHelpers'
+import { estagioNormalizado, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS } from '@/components/crm/crmHelpers'
+import { STATUS_OBJETIVO_COR, STATUS_OBJETIVO_LABEL } from '@/components/estrategias/metas/metasHelpers'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -53,13 +56,6 @@ const MESES_PT: Record<string, string> = {
   '09': 'Setembro','10': 'Outubro',   '11': 'Novembro', '12': 'Dezembro',
 }
 
-const PERIODOS_DASHBOARD: Array<{ id: PeriodoDashboard; label: string }> = [
-  { id: 'hoje',      label: 'Hoje' },
-  { id: 'semana',    label: 'Semana' },
-  { id: 'mes',       label: 'Mês' },
-  { id: 'trimestre', label: 'Trimestre' },
-]
-
 const PERIODO_LABEL_LONGO: Record<PeriodoDashboard, string> = {
   hoje: 'Hoje',
   semana: 'Últimos 7 dias',
@@ -71,55 +67,6 @@ const INFO_SOCIOS = {
   matheus: { nome: 'Matheus',  cidade: 'Brasília · DF',        dominio: 'Comercial & CRM',    cor: '#C9A84C', inicial: 'M' },
   gabriel: { nome: 'Gabriel',  cidade: 'São Paulo · SP',        dominio: 'Produção & Supply',  cor: '#22C55E', inicial: 'G' },
   joao:    { nome: 'João',     cidade: 'Florianópolis · SC',    dominio: 'Marketing & Growth', cor: '#5B8FE8', inicial: 'J' },
-}
-
-// ─────────────────────────────────────────────
-// KPI CARD
-// ─────────────────────────────────────────────
-
-interface KPICardProps {
-  label: string
-  valor: string
-  subvalor?: string
-  icon: React.ElementType
-  tendencia?: 'up' | 'down' | 'neutral'
-  destaque?: boolean
-}
-
-function KPICard({ label, valor, subvalor, icon: Icon, tendencia, destaque }: KPICardProps) {
-  return (
-    <div className={`
-      kpi-card flex flex-col gap-4
-      ${destaque ? 'border-[rgba(201,168,76,0.25)] bg-[rgba(201,168,76,0.04)]' : ''}
-    `}>
-      <div className="flex items-start justify-between">
-        <span className="kpi-label">{label}</span>
-        <div className={`
-          w-8 h-8 rounded-lg flex items-center justify-center shrink-0
-          ${destaque
-            ? 'bg-[rgba(201,168,76,0.12)]'
-            : 'bg-[var(--bg-surface-2)]'
-          }
-        `}>
-          <Icon
-            size={16}
-            className={destaque ? 'text-[#C9A84C] opacity-70' : 'text-[var(--text-secondary)] opacity-60'}
-          />
-        </div>
-      </div>
-
-      <div>
-        <div className="flex items-end gap-2 mb-1">
-          <span className="kpi-value">{valor}</span>
-          {tendencia === 'up' && <TrendingUp size={14} className="text-[#22C55E] mb-0.5 shrink-0" />}
-          {tendencia === 'down' && <TrendingDown size={14} className="text-[#EF4444] mb-0.5 shrink-0" />}
-        </div>
-        {subvalor && (
-          <p className="caption">{subvalor}</p>
-        )}
-      </div>
-    </div>
-  )
 }
 
 // ─────────────────────────────────────────────
@@ -519,7 +466,7 @@ function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
   const socios = [
     { id: 'matheus' as const, label: 'Matheus', cor: '#C9A84C' },
     { id: 'gabriel' as const, label: 'Gabriel', cor: '#22C55E' },
-    { id: 'joao'    as const, label: 'João',    cor: '#3B82F6' },
+    { id: 'joao'    as const, label: 'João',    cor: '#5B8FE8' },
   ]
 
   return (
@@ -574,11 +521,32 @@ export function CommandCenter() {
     dailyEntries, vendas, doacoesUGC, metasDiarias,
     perfilAtivo, setPerfilAtivo,
     dashboardWidgets, estoqueProduto,
+    dashboardContadoresOrdem, setDashboardContadoresOrdem,
   } = usePurionStore()
   const { experimentos } = useGrowth()
-  const { fases } = useEstrategiaRoadmap()
+  const { fases, objetivos } = useEstrategiaRoadmap()
   const { eventos } = useEventosCalendario()
+  const { perfil } = useAuthContext()
+  useEstoque()
   const faseAtual = fases.find((f) => f.status === 'atual')
+
+  const [periodo, setPeriodo] = useState<Periodo>('mes')
+  const [ultimaAtualizacao, setUltimaAtualizacao] = useState(() => new Date())
+
+  const saudacao = useMemo(() => {
+    const h = new Date().getHours()
+    if (h < 12) return 'Bom dia'
+    if (h < 18) return 'Boa tarde'
+    return 'Boa noite'
+  }, [])
+
+  const dataExtenso = useMemo(
+    () => new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }),
+    []
+  )
+
+  // Dados chegam em tempo real via Supabase Realtime — o carimbo acompanha qualquer mudança.
+  useEffect(() => { setUltimaAtualizacao(new Date()) }, [vendas, receitas, leads, tarefas, estoqueProduto])
 
   const showWidget = (id: string) => dashboardWidgets.includes(id)
 
@@ -591,8 +559,7 @@ export function CommandCenter() {
   const feedAtividade = useMemo(() => gerarFeedAtividade(tarefas, leads, lotes, reunioes), [tarefas, leads, lotes, reunioes])
 
   // ── Seletor de período: Hoje / Semana / Mês / Trimestre ──
-  const [periodo, setPeriodo] = useState<PeriodoDashboard>('mes')
-
+  // (o estado `periodo` já foi declarado acima, junto dos demais estados do componente)
   const [dataInicioPeriodo, dataFimPeriodo] = useMemo(() => rangePeriodoDashboard(periodo), [periodo])
   const [dataInicioAnterior, dataFimAnterior] = useMemo(() => rangePeriodoAnterior(periodo), [periodo])
 
@@ -615,7 +582,7 @@ export function CommandCenter() {
     const inicio = new Date(`${dataInicioPeriodo}T00:00:00`)
     const fim = new Date(`${dataFimPeriodo}T00:00:00`)
     const totalDias = Math.max(1, Math.round((fim.getTime() - inicio.getTime()) / 86_400_000) + 1)
-    const dias: { data: string; valor: number }[] = []
+    const dias: { name: string; valor: number }[] = []
     for (let i = totalDias - 1; i >= 0; i--) {
       const d = new Date(fim)
       d.setDate(d.getDate() - i)
@@ -623,7 +590,7 @@ export function CommandCenter() {
       const valor = vendas
         .filter((v) => v.statusPagamento === 'pago' && v.dataVenda.slice(0, 10) === chave)
         .reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
-      dias.push({ data: `${chave.slice(8, 10)}/${chave.slice(5, 7)}`, valor })
+      dias.push({ name: `${chave.slice(8, 10)}/${chave.slice(5, 7)}`, valor })
     }
     return dias
   }, [vendas, dataInicioPeriodo, dataFimPeriodo])
@@ -659,53 +626,148 @@ export function CommandCenter() {
   const nomeMes    = `${MESES_PT[mes] ?? mes} ${ano}`
   const periodoLabel = PERIODO_LABEL_LONGO[periodo]
 
-  const kpiCards: KPICardProps[] = [
-    {
-      label: `Faturamento — ${PERIODOS_DASHBOARD.find((p) => p.id === periodo)?.label}`,
-      valor: formatarMoeda(kpisPeriodo.faturamento),
-      subvalor: variacaoFaturamento !== null
-        ? `${variacaoFaturamento >= 0 ? '+' : ''}${variacaoFaturamento.toFixed(1)}% vs período anterior`
-        : `${kpisPeriodo.pedidos} pedidos registrados`,
-      icon: DollarSign,
-      tendencia: variacaoFaturamento === null || variacaoFaturamento >= 0 ? 'up' : 'down',
-      destaque: true,
-    },
-    {
-      label: 'ROAS no Período',
-      valor: kpisPeriodo.roas > 0 ? `${kpisPeriodo.roas.toFixed(2)}x` : '—',
-      subvalor: kpisPeriodo.roas === 0 ? 'Sem dados de ads' : kpisPeriodo.roas < 2.5 ? 'Abaixo de 2.5x' : 'Meta atingida',
-      icon: TrendingUp,
-      tendencia: kpisPeriodo.roas === 0 ? 'neutral' : kpisPeriodo.roas >= 2.5 ? 'up' : 'down',
-    },
-    {
-      label: 'CPA Médio',
-      valor: kpisPeriodo.cpa > 0 ? formatarMoeda(kpisPeriodo.cpa) : '—',
-      subvalor: kpisPeriodo.cpa === 0 ? 'Sem conversões' : kpisPeriodo.cpa > 30 ? 'Acima de R$ 30,00' : 'Dentro do limite',
-      icon: ShoppingCart,
-      tendencia: kpisPeriodo.cpa === 0 ? 'neutral' : kpisPeriodo.cpa <= 30 ? 'up' : 'down',
-    },
-    {
-      label: 'Margem Bruta',
-      valor: formatarPercentual(kpisPeriodo.margemBruta),
-      subvalor: `Meta 65% · Saldo ${formatarMoeda(kpisPeriodo.saldo)}`,
-      icon: BarChart2,
-      tendencia: kpisPeriodo.margemBruta >= 60 ? 'up' : 'down',
-    },
-    {
-      label: 'Pedidos no Período',
-      valor: String(resumoFrascosPeriodo.pedidos),
-      subvalor: `${resumoFrascosPeriodo.frascos} frascos vendidos`,
-      icon: Activity,
-      tendencia: 'neutral',
-    },
-    {
-      label: 'Ticket Médio',
-      valor: formatarMoeda(kpisPeriodo.ticketMedio),
-      subvalor: `Despesa total: ${formatarMoeda(kpisPeriodo.despesaTotal)}`,
-      icon: Target,
-      tendencia: 'neutral',
-    },
-  ]
+  // ── LINHA 1 — Contadores grandes ──
+  const leadsB2BAtivos = useMemo(
+    () => leads.filter((l) => ESTAGIOS_ATIVOS.includes(estagioNormalizado(l.status))).length,
+    [leads]
+  )
+  const alertaEstoque = estoqueProduto ? estoqueProduto.quantidadeAtual < estoqueProduto.quantidadeMinima : false
+
+  const [dragContadorId, setDragContadorId] = useState<string | null>(null)
+
+  const contadoresMap = useMemo(() => ({
+    faturamento: (
+      <WidgetContador
+        label={`Faturamento — ${periodoLabel}`} icon={DollarSign} destaque
+        valor={formatarMoeda(kpisPeriodo.faturamento)}
+        variacao={variacaoFaturamento}
+        variacaoLabel="vs período anterior"
+        subvalor={`${resumoFrascosPeriodo.pedidos} pedidos pagos`}
+      />
+    ),
+    frascos: (
+      <WidgetContador
+        label="Frascos vendidos" icon={Package}
+        valor={String(resumoFrascosPeriodo.frascos)}
+        subvalor={`${resumoFrascosPeriodo.pedidos} pedido${resumoFrascosPeriodo.pedidos !== 1 ? 's' : ''} — ${periodoLabel}`}
+      />
+    ),
+    estoque: (
+      <WidgetContador
+        label="Estoque de prontos" icon={Package} alerta={alertaEstoque}
+        valor={estoqueProduto ? String(estoqueProduto.quantidadeAtual) : '—'}
+        subvalor={estoqueProduto ? (alertaEstoque ? `Abaixo do mínimo (${estoqueProduto.quantidadeMinima})` : `Mínimo: ${estoqueProduto.quantidadeMinima} · OK`) : 'Sem dados'}
+        href="/producao"
+      />
+    ),
+    'leads-b2b': (
+      <WidgetContador
+        label="Leads B2B ativos" icon={Users}
+        valor={String(leadsB2BAtivos)}
+        subvalor="no pipeline comercial"
+        href="/crm"
+      />
+    ),
+  }), [periodoLabel, kpisPeriodo.faturamento, variacaoFaturamento, resumoFrascosPeriodo, alertaEstoque, estoqueProduto, leadsB2BAtivos])
+
+  const contadoresOrdenados = useMemo(() => {
+    const ids = dashboardContadoresOrdem.filter((id) => id in contadoresMap)
+    const faltantes = Object.keys(contadoresMap).filter((id) => !ids.includes(id))
+    return [...ids, ...faltantes].map((id) => ({ id, node: contadoresMap[id as keyof typeof contadoresMap] }))
+  }, [dashboardContadoresOrdem, contadoresMap])
+
+  function handleDropContador(alvoId: string) {
+    if (!dragContadorId || dragContadorId === alvoId) { setDragContadorId(null); return }
+    const atual = contadoresOrdenados.map((c) => c.id)
+    const semArrastado = atual.filter((id) => id !== dragContadorId)
+    const idx = semArrastado.indexOf(alvoId)
+    semArrastado.splice(idx, 0, dragContadorId)
+    setDashboardContadoresOrdem(semArrastado)
+    setDragContadorId(null)
+  }
+
+  // ── LINHA 2 — Gráficos ──
+  const vendasPorCanal = useMemo(() => {
+    const inicio = inicioPeriodo(periodo)
+    const pagas = vendas.filter((v) => v.statusPagamento === 'pago' && (v.valorTotal ?? v.valorLiquido) > 0 && new Date(v.dataVenda) >= inicio)
+    const b2c = pagas.filter((v) => v.canal === 'b2c').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
+    const b2b = pagas.filter((v) => v.canal === 'b2b').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
+    return [
+      { name: 'B2C', value: b2c, cor: '#C9A84C' },
+      { name: 'B2B', value: b2b, cor: '#5B8FE8' },
+    ]
+  }, [vendas, periodo])
+
+  const funilB2BEtapas = useMemo(() => {
+    const norm = leads.map((l) => estagioNormalizado(l.status))
+    return [
+      { label: 'Abordagens',    valor: norm.filter((s) => s === 'prospecto' || s === 'abordado').length, cor: '#5B8FE8' },
+      { label: 'Reuniões',      valor: norm.filter((s) => s === 'reuniao_agendada').length, cor: '#C9A84C' },
+      { label: 'Oportunidades', valor: norm.filter((s) => s === 'oportunidade').length, cor: '#E8A838' },
+      { label: 'Ganhos',        valor: norm.filter((s) => ESTAGIOS_GANHOS.includes(s)).length, cor: '#4CAF7A' },
+    ]
+  }, [leads])
+
+  const metasPorStatus = useMemo(() => {
+    const topo = objetivos.filter((o) => !o.parentId)
+    const statusList: Array<'em_dia' | 'em_risco' | 'em_atraso' | 'concluido' | 'pausado'> = ['em_dia', 'em_risco', 'em_atraso', 'concluido', 'pausado']
+    return statusList
+      .map((s) => ({ name: STATUS_OBJETIVO_LABEL[s], value: topo.filter((o) => o.status === s).length, cor: STATUS_OBJETIVO_COR[s] }))
+      .filter((d) => d.value > 0)
+  }, [objetivos])
+
+  // ── LINHA 3 — Listas rápidas ──
+  const northStarItems: ItemLista[] = useMemo(() => {
+    const itens: ItemLista[] = [{
+      id: 'north-star', titulo: 'Clientes e parceiros ativos que recompram', subtitulo: 'North Star da PURION', cor: '#C9A84C',
+    }]
+    if (faseAtual) {
+      itens.push({
+        id: 'fase-atual', titulo: faseAtual.nome, subtitulo: 'Fase atual do roadmap',
+        valor: `${faseAtual.percentualConclusao}%`, cor: '#5B8FE8',
+      })
+    }
+    return itens
+  }, [faseAtual])
+
+  const tarefasListaItems: ItemLista[] = useMemo(() => {
+    const hoje = new Date().toISOString().slice(0, 10)
+    const emAberto = tarefas.filter((t) => t.status !== 'concluida' && t.status !== 'cancelada' && t.dueDate)
+    const atrasadas = emAberto.filter((t) => t.dueDate! < hoje).sort((a, b) => a.dueDate!.localeCompare(b.dueDate!))
+    const proximas = emAberto.filter((t) => t.dueDate! >= hoje).sort((a, b) => a.dueDate!.localeCompare(b.dueDate!))
+    return [...atrasadas, ...proximas].slice(0, 5).map((t) => {
+      const atrasada = t.dueDate! < hoje
+      const dias = Math.round(Math.abs(new Date(t.dueDate!).getTime() - new Date(hoje).getTime()) / 86_400_000)
+      return {
+        id: t.id, titulo: t.titulo, subtitulo: t.responsavel,
+        badge: atrasada ? `${dias}d atrasada` : dias === 0 ? 'Hoje' : `em ${dias}d`,
+        cor: atrasada ? '#EF4444' : dias <= 2 ? '#E8A838' : '#4CAF7A',
+      }
+    })
+  }, [tarefas])
+
+  const reposicoesItems: ItemLista[] = useMemo(() => {
+    return leads
+      .filter((l) => {
+        if (!ESTAGIOS_GANHOS.includes(estagioNormalizado(l.status))) return false
+        const dias = Math.floor((Date.now() - new Date(l.updatedAt).getTime()) / 86_400_000)
+        return dias >= 14 && dias <= 35
+      })
+      .sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime())
+      .slice(0, 5)
+      .map((l) => {
+        const dias = Math.floor((Date.now() - new Date(l.updatedAt).getTime()) / 86_400_000)
+        return { id: l.id, titulo: l.nomeEmpresa, subtitulo: `${l.cidade} · ${l.regiao}`, badge: `D+${dias}`, cor: dias >= 21 ? '#E8A838' : '#4CAF7A' }
+      })
+  }, [leads])
+
+  const proximoICEItems: ItemLista[] = useMemo(() => {
+    return experimentos
+      .filter((e) => e.status === 'backlog')
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map((e) => ({ id: e.id, titulo: e.nome, subtitulo: e.etapa, valor: e.score.toFixed(1), cor: '#C9A84C' }))
+  }, [experimentos])
 
   return (
     <div className="page-content section-gap">
@@ -721,44 +783,81 @@ export function CommandCenter() {
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <p className="caption uppercase mb-1" style={{ letterSpacing: '0.08em' }}>
-            {nomeMes} · Visão unificada
+            {dataExtenso} · {nomeMes}
           </p>
-          <h1 className="page-title">Command Center</h1>
+          <h1 className="page-title">{saudacao}{perfil?.nome ? `, ${perfil.nome.split(' ')[0]}` : ''}</h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex gap-0.5 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)]">
+            {PERIODO_OPCOES.map((p) => (
+              <button key={p.id} onClick={() => setPeriodo(p.id)}
+                className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors"
+                style={periodo === p.id ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setUltimaAtualizacao(new Date())}
+            title="Os dados já são sincronizados em tempo real — atualiza o carimbo de horário"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8,
+              background: 'var(--bg-surface-2)', border: '1px solid var(--border)', cursor: 'pointer',
+              fontSize: 11, color: 'var(--text-secondary)',
+            }}
+          >
+            <RefreshCw size={12} />
+            Atualizado {ultimaAtualizacao.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+          </button>
           <WidgetCustomizer />
           {showWidget('health-score') && <HealthScoreBadge hs={healthScore} />}
         </div>
       </div>
 
-      {/* ── Seletor de período ── */}
-      {showWidget('kpis') && (
-        <div className="flex gap-0.5 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit">
-          {PERIODOS_DASHBOARD.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setPeriodo(p.id)}
-              className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-              style={periodo === p.id
-                ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
-                : { color: 'var(--text-secondary)' }}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* ── Resumo de hoje ── */}
       <ResumoDiario />
 
-      {/* ── KPI Cards ── */}
+      {/* ══════════════════════════════════════════════════════════
+          PAINEL EXECUTIVO — estilo Asana
+      ══════════════════════════════════════════════════════════ */}
       {showWidget('kpis') && (
-        <section>
-          <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-            {kpiCards.map((card) => (
-              <KPICard key={card.label} {...card} />
+        <section className="flex flex-col gap-4">
+          {/* Linha 1 — contadores grandes (arraste para reordenar) */}
+          <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            {contadoresOrdenados.map(({ id, node }) => (
+              <div
+                key={id}
+                draggable
+                onDragStart={() => setDragContadorId(id)}
+                onDragEnd={() => setDragContadorId(null)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => handleDropContador(id)}
+                style={{ opacity: dragContadorId === id ? 0.4 : 1, cursor: 'grab' }}
+                title="Arraste para reordenar"
+              >
+                {node}
+              </div>
             ))}
+          </div>
+
+          {/* Linha 2 — gráficos */}
+          <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            <div style={{ gridColumn: isMobile ? undefined : 'span 2' }}>
+              <WidgetLinha title={`Vendas por dia — ${periodoLabel}`} icon={Activity} data={vendasDiarias} formatarValor={(v) => formatarMoeda(v)} />
+            </div>
+            <WidgetDonut title="Vendas por canal" icon={ShoppingCart} data={vendasPorCanal} formatarValor={(v) => formatarMoeda(v)} href="/vendas" />
+            <WidgetFunil title="Funil B2B" icon={TrendingUp} etapas={funilB2BEtapas} href="/crm" />
+          </div>
+          <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            <WidgetDonut title="Metas por status" icon={Target} data={metasPorStatus} href="/estrategias" />
+
+            {/* Linha 3 — listas rápidas */}
+            <WidgetLista title="North Star & Estratégia" icon={Compass} items={northStarItems} href="/estrategias" emptyMessage="Nenhuma fase cadastrada" />
+            <WidgetLista title="Tarefas atrasadas / próximas" icon={ListChecks} items={tarefasListaItems} href="/tarefas" emptyMessage="Nenhuma tarefa com prazo" />
+            <WidgetLista title="Reposições B2B (D+21)" icon={RotateCcw} items={reposicoesItems} href="/crm" emptyMessage="Nenhuma reposição esta semana" />
+          </div>
+          <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            <WidgetLista title="Próximo experimento (maior ICE)" icon={FlaskConical} items={proximoICEItems} href="/growth" emptyMessage="Backlog de growth vazio" />
           </div>
         </section>
       )}
@@ -783,69 +882,6 @@ export function CommandCenter() {
         </div>
       )}
 
-      {/* ── Growth: North Star + próximo ICE + funil B2B ── */}
-      {(() => {
-        const proxICE = experimentos.filter((e) => e.status === 'backlog').sort((a, b) => b.score - a.score)[0]
-        const rodando = experimentos.filter((e) => e.status === 'rodando').length
-        const parceiros = leads.filter((l) => ['parceiro_ativo', 'pago', 'parceiro_recorrente'].includes(l.status)).length
-        const reposicoes = leads.filter((l) => {
-          if (!['parceiro_ativo', 'pago'].includes(l.status)) return false
-          const dias = Math.floor((Date.now() - new Date(l.updatedAt).getTime()) / 86_400_000)
-          return dias >= 14 && dias <= 35
-        }).length
-        return (
-          <Link href="/growth" style={{ textDecoration: 'none' }}>
-            <div className="card-purion" style={{ padding: '14px 16px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)' }}>
-                <FlaskConical size={16} style={{ color: '#C9A84C' }} />
-              </div>
-              <div style={{ flex: 1, minWidth: 180 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>⭐ North Star · recompra</span>
-                <span style={{ fontSize: 13, fontWeight: 700 }}>
-                  {parceiros} parceiro{parceiros !== 1 ? 's' : ''} ativo{parceiros !== 1 ? 's' : ''}
-                  {reposicoes > 0 && <span style={{ color: '#E8A838', marginLeft: 8 }}>{reposicoes} reposição D+21</span>}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 16 }}>
-                {proxICE && (
-                  <div>
-                    <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>Próximo ICE</span>
-                    <span style={{ fontSize: 12, fontWeight: 600 }}>{proxICE.nome.slice(0, 30)}{proxICE.nome.length > 30 ? '…' : ''}</span>
-                    <span style={{ fontSize: 10, color: '#C9A84C', marginLeft: 6 }}>score {proxICE.score.toFixed(1)}</span>
-                  </div>
-                )}
-                {rodando > 0 && (
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>Rodando</span>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: '#5B8FE8' }}>{rodando}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Link>
-        )
-      })()}
-
-      {/* ── Hub Estratégico: fase atual + North Star ── */}
-      {fases.length > 0 && (() => {
-        const faseAtiva = fases.find((f) => f.status === 'atual') ?? fases[0]
-        return (
-          <Link href="/estrategias" style={{ textDecoration: 'none' }}>
-            <div className="card-purion" style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)' }}>
-                <Compass size={16} style={{ color: '#C9A84C' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block' }}>Hub Estratégico · fase atual</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{faseAtiva.nome}</span>
-                <span style={{ fontSize: 11, color: '#C9A84C', marginLeft: 8 }}>{faseAtiva.percentualConclusao}%</span>
-              </div>
-              <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Ver estratégias →</span>
-            </div>
-          </Link>
-        )
-      })()}
-
       {/* ── Card Próximos Eventos ── */}
       <div className="card-purion" style={{ padding: '14px 16px' }}>
         <Link href="/calendario" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
@@ -855,49 +891,11 @@ export function CommandCenter() {
         <Proximos7Dias eventos={eventos} limite={3} />
       </div>
 
-      {/* ── Card Estoque Produto ── */}
-      {estoqueProduto && (() => {
-        const alerta = estoqueProduto.quantidadeAtual < estoqueProduto.quantidadeMinima
-        return (
-          <Link href="/vendas" style={{ textDecoration: 'none' }}>
-            <div className="card-purion" style={{
-              padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14,
-              border: alerta ? '1px solid rgba(239,68,68,0.35)' : undefined,
-              background: alerta ? 'rgba(239,68,68,0.04)' : undefined,
-            }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: alerta ? 'rgba(239,68,68,0.12)' : 'rgba(34,197,94,0.12)',
-                color: alerta ? '#EF4444' : '#22C55E',
-              }}>
-                <AlertTriangle size={18} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block' }}>Estoque Produto Pronto</span>
-                <span style={{ fontSize: 20, fontWeight: 700, color: alerta ? '#EF4444' : '#22C55E' }}>
-                  {estoqueProduto.quantidadeAtual} unidades
-                </span>
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                  {alerta ? `⚠️ Abaixo do mínimo (${estoqueProduto.quantidadeMinima})` : `Mínimo: ${estoqueProduto.quantidadeMinima} · OK`}
-                </span>
-              </div>
-            </div>
-          </Link>
-        )
-      })()}
-
       {/* ── Meta de Faturamento ── */}
       {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}
 
       {/* ── Metas de Hoje ── */}
       {showWidget('metas-diarias') && <CardMetasHoje metas={metasDiarias} />}
-
-      {/* ── Vendas por dia ── */}
-      <section className="card-purion p-4">
-        <p className="kpi-label flex items-center gap-1.5 mb-3">Vendas pagas por dia — {periodoLabel}</p>
-        <GraficoVendasDiarias data={vendasDiarias} />
-      </section>
 
       {/* ── Alertas ── */}
       {showWidget('alertas') && <SecaoAlertas alertas={todosAlertas} />}

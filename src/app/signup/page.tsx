@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -57,9 +57,8 @@ export default function SignupPage() {
       }
 
       // Faz login automático após criar a conta
-      if (isSupabaseConfigured()) {
-        const sb = createClient()
-        await sb.auth.signInWithPassword({ email: form.email, password: form.password })
+      if (isSupabaseConfigured() && supabase) {
+        await supabase.auth.signInWithPassword({ email: form.email, password: form.password })
       }
 
       router.push('/')
@@ -165,7 +164,7 @@ export default function SignupPage() {
           <a href="/login" style={{ color: '#C9A84C', textDecoration: 'none' }}>Entrar</a>
         </p>
 
-        <p style={{ textAlign: 'center', marginTop: '12px', fontSize: '11px', color: '#2E2E2E' }}>
+        <p style={{ textAlign: 'center', marginTop: '12px', fontSize: '11px', color: '#888888' }}>
           Ao criar sua conta você concorda com os termos de uso.
         </p>
       </div>

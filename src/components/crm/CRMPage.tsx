@@ -2,17 +2,15 @@
 
 import { useState } from 'react'
 import { CRMDashboard } from './CRMDashboard'
-import { FunilB2B } from './FunilB2B'
 import { useCRM, toLead } from '@/hooks/useCRM'
 import { useIsMaster } from '@/hooks/useIsMaster'
 import { ArquivadosPanel } from '@/components/ui/ArquivadosPanel'
 import type { Lead } from '@/store'
 
-type TabId = 'kanban' | 'funil' | 'arquivados'
+type TabId = 'pipeline' | 'arquivados'
 
 const TABS: Array<{ id: TabId; label: string }> = [
-  { id: 'kanban',     label: 'Kanban' },
-  { id: 'funil',      label: 'Funil & Placar' },
+  { id: 'pipeline',   label: 'Pipeline' },
   { id: 'arquivados', label: 'Arquivados' },
 ]
 
@@ -36,20 +34,9 @@ function TabNav({ aba, onChange }: { aba: TabId; onChange: (id: TabId) => void }
 }
 
 export function CRMPage() {
-  const [aba, setAba] = useState<TabId>('kanban')
+  const [aba, setAba] = useState<TabId>('pipeline')
   const { restaurarLead } = useCRM()
   const { isMaster } = useIsMaster()
-
-  if (aba === 'kanban') {
-    return (
-      <div>
-        <div style={{ padding: '0 16px 0', maxWidth: 1600, margin: '0 auto' }}>
-          <div className="mb-[-8px]"><TabNav aba={aba} onChange={setAba} /></div>
-        </div>
-        <CRMDashboard />
-      </div>
-    )
-  }
 
   if (aba === 'arquivados') {
     return (
@@ -74,15 +61,11 @@ export function CRMPage() {
   }
 
   return (
-    <div className="page-content section-gap">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h1 className="page-title">CRM B2B — Funil</h1>
-          <p className="caption mt-1">Máquina de Vendas · Placar comercial · D+21 reposição · Ritual de sexta</p>
-        </div>
-        <TabNav aba={aba} onChange={setAba} />
+    <div>
+      <div style={{ padding: '0 16px 0', maxWidth: 1600, margin: '0 auto' }}>
+        <div className="mb-[-8px]"><TabNav aba={aba} onChange={setAba} /></div>
       </div>
-      <FunilB2B />
+      <CRMDashboard />
     </div>
   )
 }

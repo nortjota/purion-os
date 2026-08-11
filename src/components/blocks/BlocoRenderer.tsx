@@ -71,7 +71,11 @@ export function BlocoRenderer({
         return (
           <textarea
             value={c.texto}
-            onChange={(e) => onAtualizar({ texto: e.target.value })}
+            onChange={(e) => {
+              // Notion-like: "/" num parágrafo vazio abre o menu de tipos em vez de digitar a barra
+              if (e.target.value === '/' && c.texto === '') { setMenuAberto(true); return }
+              onAtualizar({ texto: e.target.value })
+            }}
             onKeyDown={handleKeyDownLinha}
             placeholder="Digite '/' para comandos ou comece a escrever…"
             rows={Math.max(1, c.texto.split('\n').length)}
@@ -332,8 +336,8 @@ export function BlocoRenderer({
 
       <div className="flex-1 min-w-0">{renderConteudo()}</div>
 
-      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1 relative">
-        <button onClick={() => setMenuAberto(!menuAberto)} className="icon-btn border-0" style={{ width: 24, height: 24 }} title="Adicionar bloco abaixo">
+      <div className={`flex items-center gap-0.5 transition-opacity shrink-0 mt-1 relative ${menuAberto ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+        <button onClick={() => setMenuAberto(!menuAberto)} className="icon-btn border-0" style={{ width: 24, height: 24 }} title="Adicionar bloco abaixo (ou digite &quot;/&quot; no parágrafo)">
           <Plus size={13} />
         </button>
         <button onClick={onDeletar} className="icon-btn border-0" style={{ width: 24, height: 24 }} title="Excluir bloco">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 interface Resultado {
   titulo: string
@@ -17,7 +17,12 @@ export default function DiagnosticoPage() {
     setRodando(true)
     setResultados([])
     const r: Resultado[] = []
-    const sb = createClient()
+    const sb = supabase
+    if (!sb) {
+      setResultados([{ titulo: 'Supabase não configurado', ok: false, detalhe: '❌ Variáveis de ambiente ausentes' }])
+      setRodando(false)
+      return
+    }
 
     // 1. Usuário autenticado?
     const { data: { user }, error: authErr } = await sb.auth.getUser()

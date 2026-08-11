@@ -21,7 +21,7 @@ const STATUS_BADGE: Record<string, string> = {
 
 const STATUS_LABEL: Record<string, string> = { ativo: 'Ativo', pendente: 'Pendente', inativo: 'Inativo' }
 
-const COR_RESPONSAVEL: Record<string, string> = { matheus: '#C9A84C', joao: '#5B8FE8', gabriel: '#4CAF7A' }
+const COR_RESPONSAVEL: Record<string, string> = { matheus: '#C9A84C', joao: '#5B8FE8', gabriel: '#22C55E' }
 
 export function ContasDashboard() {
   const { isMaster, loading } = useIsMaster()

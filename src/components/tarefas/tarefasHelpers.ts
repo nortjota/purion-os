@@ -39,7 +39,7 @@ export const PRIORIDADE_ICON = Flag
 export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inicial: string; dominio: string }> = [
   { id: 'matheus', nome: 'Matheus', cor: '#C9A84C', inicial: 'M', dominio: 'Estratégia & B2B' },
   { id: 'joao',    nome: 'João',    cor: '#5B8FE8', inicial: 'J', dominio: 'Marketing & Growth' },
-  { id: 'gabriel', nome: 'Gabriel', cor: '#4CAF7A', inicial: 'G', dominio: 'Produção & Qualidade' },
+  { id: 'gabriel', nome: 'Gabriel', cor: '#22C55E', inicial: 'G', dominio: 'Produção & Qualidade' },
 ]
 
 export const MODULOS = ['crm', 'marketing', 'producao', 'financeiro', 'geral'] as const

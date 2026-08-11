@@ -68,6 +68,7 @@ const navGroups: NavGroup[] = [
     label: 'GESTÃO',
     items: [
       { href: '/financeiro',   label: 'Financeiro',            icon: TrendingUp },
+      { href: '/relatorios',   label: 'Relatórios',            icon: BarChart2 },
       { href: '/conhecimento', label: 'Conhecimento',           icon: BookOpen },
       { href: '/contas',       label: 'Contas & Acessos',      icon: KeyRound,  masterOnly: true },
       { href: '/settings',     label: 'Configurações',          icon: Settings,  masterOnly: true },

@@ -17,6 +17,7 @@ import { MetaPainelView } from './MetaPainelView'
 import { ModalObjetivo, type DadosObjetivo } from './ModalObjetivo'
 import { ModalResultado, type DadosResultado } from './ModalResultado'
 import { DetalheObjetivo } from './DetalheObjetivo'
+import { SecaoNotas } from '../SecaoNotas'
 
 type Visao = 'lista' | 'painel'
 const VISAO_STORAGE_KEY = 'purion:view:metas'
@@ -223,6 +224,8 @@ export function TabMetas() {
           onNovaSubMeta={() => abrirNovaMeta(objetivoDetalhe.id)}
         />
       )}
+
+      <SecaoNotas secao="metas" />
     </div>
   )
 }

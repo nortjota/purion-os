@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function ResetPasswordPage() {
   const [email, setEmail]       = useState('')
@@ -21,8 +21,8 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const sb = createClient()
-      const { error: resetError } = await sb.auth.resetPasswordForEmail(email, {
+      if (!supabase) { setError('Erro ao enviar e-mail. Tente novamente.'); setLoading(false); return }
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/invite/reset`,
       })
       if (resetError) { setError(resetError.message); setLoading(false); return }

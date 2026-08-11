@@ -400,7 +400,7 @@ export interface AtividadeItem {
 // Cor de avatar por sócio
 const COR_AVATAR: Record<string, string> = {
   matheus: '#C9A84C',
-  gabriel: '#4CAF7A',
+  gabriel: '#22C55E',
   joao:    '#5B8FE8',
 }
 

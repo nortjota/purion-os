@@ -4,22 +4,13 @@ import { useMemo } from 'react'
 import { Users, ArrowDown, Bell, TrendingUp, Calendar, CheckCircle2, AlertCircle } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import { useGrowth } from '@/hooks/useGrowth'
-// StatusLead: prospecto | contato_feito | proposta_enviada | negociando | parceiro_ativo | inativo
+import { estagioNormalizado, METAS_MENSAIS, diasDesde } from './crmHelpers'
+// StatusLead (novo pipeline): prospecto | abordado | reuniao_agendada | oportunidade | cliente | recorrente | perdido
+// Valores antigos (contato_feito, proposta_enviada, negociando, parceiro_ativo, inativo) são normalizados via estagioNormalizado().
 
 function fmtR(v: number) {
   return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
 }
-
-function diasDesde(iso: string) {
-  return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
-}
-
-// Metas mensais progressivas (Doc07)
-const METAS_MENSAIS = [
-  { mes: 'Mês 1', ganhos: 4, receita: 3400 },
-  { mes: 'Mês 2', ganhos: 5, receita: 6000 },
-  { mes: 'Mês 3', ganhos: 6, receita: 12600 },
-]
 
 export function FunilB2B() {
   const { leads, vendas } = usePurionStore()
@@ -30,13 +21,12 @@ export function FunilB2B() {
   const inicioSemana = new Date(hoje)
   inicioSemana.setDate(hoje.getDate() - hoje.getDay())
 
-  // ── Contadores por etapa ──────────────────────────────────────────
-  // StatusLead válidos: prospecto | contato_feito | proposta_enviada | negociando | parceiro_ativo | inativo
+  // ── Contadores por etapa (normalizados para o novo pipeline) ──────
   const contadores = useMemo(() => {
-    const abordagens    = leads.filter((l) => l.status === 'prospecto' || l.status === 'contato_feito').length
-    const reunioes      = leads.filter((l) => l.status === 'contato_feito').length
-    const oportunidades = leads.filter((l) => l.status === 'proposta_enviada' || l.status === 'negociando').length
-    const ganhos        = leads.filter((l) => l.status === 'parceiro_ativo').length
+    const abordagens    = leads.filter((l) => ['prospecto', 'abordado'].includes(estagioNormalizado(l.status))).length
+    const reunioes      = leads.filter((l) => estagioNormalizado(l.status) === 'reuniao_agendada').length
+    const oportunidades = leads.filter((l) => estagioNormalizado(l.status) === 'oportunidade').length
+    const ganhos        = leads.filter((l) => ['cliente', 'recorrente'].includes(estagioNormalizado(l.status))).length
     return { abordagens, reunioes, oportunidades, ganhos }
   }, [leads])
 
@@ -49,7 +39,7 @@ export function FunilB2B() {
   // ── D+21: parceiros ativos sem reposição follow-up ───────────────
   const reposicoesPendentes = useMemo(() =>
     leads.filter((l) => {
-      if (l.status !== 'parceiro_ativo') return false
+      if (!['cliente', 'recorrente'].includes(estagioNormalizado(l.status))) return false
       const dias = diasDesde(l.updatedAt)
       return dias >= 14 && dias <= 35
     }).sort((a, b) => diasDesde(b.updatedAt) - diasDesde(a.updatedAt)),
@@ -77,7 +67,7 @@ export function FunilB2B() {
     {
       label: 'Reuniões',
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('reuni'))?.metaSemanal ?? 4,
-      realizado: leads.filter((l) => l.status === 'contato_feito' && new Date(l.updatedAt) >= inicioSemana).length,
+      realizado: leads.filter((l) => estagioNormalizado(l.status) === 'reuniao_agendada' && new Date(l.updatedAt) >= inicioSemana).length,
       total: contadores.reunioes,
       cor: '#C9A84C',
       desc: 'Prospects que aceitaram conversar',
@@ -85,7 +75,7 @@ export function FunilB2B() {
     {
       label: 'Oportunidades',
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('oportunidade'))?.metaSemanal ?? 3,
-      realizado: leads.filter((l) => ['proposta_enviada', 'negociando'].includes(l.status) && new Date(l.updatedAt) >= inicioSemana).length,
+      realizado: leads.filter((l) => estagioNormalizado(l.status) === 'oportunidade' && new Date(l.updatedAt) >= inicioSemana).length,
       total: contadores.oportunidades,
       cor: '#E8A838',
       desc: 'Proposta enviada / negociando',
@@ -93,7 +83,7 @@ export function FunilB2B() {
     {
       label: 'Ganhos',
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('ganho'))?.metaSemanal ?? 2,
-      realizado: leads.filter((l) => ['pago', 'parceiro_ativo'].includes(l.status) && new Date(l.updatedAt) >= inicioSemana).length,
+      realizado: leads.filter((l) => ['cliente', 'recorrente'].includes(estagioNormalizado(l.status)) && new Date(l.updatedAt) >= inicioSemana).length,
       total: contadores.ganhos,
       cor: '#4CAF7A',
       desc: 'Fechamentos confirmados',

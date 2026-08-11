@@ -1,4 +1,4 @@
-import type { StatusPagamentoVenda, StatusEntregaVenda } from '@/store'
+import type { StatusPagamentoVenda, StatusEntregaVenda, CanalVenda, OrigemVenda, TipoCliente, Venda } from '@/store'
 
 export const STATUS_PAGAMENTO_LABEL: Record<StatusPagamentoVenda, string> = {
   pendente: 'Pendente', pago: 'Pago', estornado: 'Estornado', cancelado: 'Cancelado',
@@ -32,4 +32,40 @@ export const METODO_PAGAMENTO_LABEL: Record<string, string> = {
 
 export function fmtR(v: number) {
   return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+export const CANAL_LABEL: Record<CanalVenda, string> = { b2c: 'B2C', b2b: 'B2B' }
+export const CANAL_BADGE: Record<CanalVenda, string> = { b2c: 'badge-info', b2b: 'badge-neutral' }
+
+// Preço oficial de referência e custo de produção — usados no cálculo de margem.
+export const PRECO_OFICIAL_B2C = 109.90
+export const PRECO_OFICIAL_B2B = 60
+export const CUSTO_UNITARIO_PRODUTO = 28
+
+/** Margem = valor da venda − (custo de produção × qtd) − taxa de pagamento. */
+export function calcularMargem(v: Venda): number {
+  const valor = v.valorTotal ?? v.valorLiquido
+  const custo = CUSTO_UNITARIO_PRODUTO * (v.quantidade || 1)
+  return valor - custo - (v.taxa || 0)
+}
+
+export const ORIGEM_VENDA_LABEL: Record<OrigemVenda, string> = {
+  organico: 'Orgânico',
+  meta_ads: 'Meta Ads',
+  tiktok: 'TikTok',
+  indicacao: 'Indicação',
+  b2b_presencial: 'B2B Presencial',
+  afiliado: 'Afiliado',
+}
+
+export const TIPO_CLIENTE_LABEL: Record<TipoCliente, string> = {
+  novo: 'Novo',
+  recompra: 'Recompra',
+}
+
+export type AgrupamentoVendas = 'status_entrega' | 'canal' | 'periodo' | 'none'
+
+/** Chave de período (semana ISO simplificada por data) usada para agrupar vendas por período. */
+export function chavePeriodo(dataVenda: string): string {
+  return dataVenda.slice(0, 10)
 }
