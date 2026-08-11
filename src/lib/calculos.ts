@@ -151,6 +151,86 @@ export function calcularKPIsMes(
 }
 
 // ─────────────────────────────────────────────
+// KPIs POR PERÍODO (seletor Hoje/Semana/Mês/Trimestre)
+// ─────────────────────────────────────────────
+
+export type PeriodoDashboard = 'hoje' | 'semana' | 'mes' | 'trimestre'
+
+/** Range [inicio, fim] em ISO (yyyy-MM-dd) para cada opção do seletor de período. */
+export function rangePeriodoDashboard(periodo: PeriodoDashboard, referencia: Date = new Date()): [string, string] {
+  const fim = referencia.toISOString().slice(0, 10)
+  if (periodo === 'hoje') return [fim, fim]
+  if (periodo === 'semana') {
+    const inicio = new Date(referencia)
+    inicio.setDate(inicio.getDate() - 6)
+    return [inicio.toISOString().slice(0, 10), fim]
+  }
+  if (periodo === 'mes') {
+    const inicio = new Date(referencia.getFullYear(), referencia.getMonth(), 1)
+    return [inicio.toISOString().slice(0, 10), fim]
+  }
+  // trimestre — últimos 90 dias
+  const inicio = new Date(referencia)
+  inicio.setDate(inicio.getDate() - 89)
+  return [inicio.toISOString().slice(0, 10), fim]
+}
+
+/** Range imediatamente anterior, com a mesma duração — usado para calcular variação (tendência). */
+export function rangePeriodoAnterior(periodo: PeriodoDashboard, referencia: Date = new Date()): [string, string] {
+  if (periodo === 'hoje') {
+    const ontem = new Date(referencia); ontem.setDate(ontem.getDate() - 1)
+    const d = ontem.toISOString().slice(0, 10)
+    return [d, d]
+  }
+  if (periodo === 'semana') {
+    const fim = new Date(referencia); fim.setDate(fim.getDate() - 7)
+    const inicio = new Date(referencia); inicio.setDate(inicio.getDate() - 13)
+    return [inicio.toISOString().slice(0, 10), fim.toISOString().slice(0, 10)]
+  }
+  if (periodo === 'mes') {
+    const mesAnteriorRef = new Date(referencia.getFullYear(), referencia.getMonth() - 1, 1)
+    const inicio = new Date(mesAnteriorRef.getFullYear(), mesAnteriorRef.getMonth(), 1)
+    const fim = new Date(mesAnteriorRef.getFullYear(), mesAnteriorRef.getMonth() + 1, 0)
+    return [inicio.toISOString().slice(0, 10), fim.toISOString().slice(0, 10)]
+  }
+  const fim = new Date(referencia); fim.setDate(fim.getDate() - 90)
+  const inicio = new Date(referencia); inicio.setDate(inicio.getDate() - 179)
+  return [inicio.toISOString().slice(0, 10), fim.toISOString().slice(0, 10)]
+}
+
+export function calcularKPIsPeriodo(
+  receitas: Receita[],
+  despesas: Despesa[],
+  campanhas: CampanhaAds[],
+  dataInicio: string,
+  dataFim: string
+): KPIsMes {
+  const dentro = (data: string) => data.slice(0, 10) >= dataInicio && data.slice(0, 10) <= dataFim
+
+  const receitasPeriodo = receitas.filter((r) => dentro(r.data))
+  const despesasPeriodo = despesas.filter((d) => dentro(d.data))
+
+  const faturamento = receitasPeriodo.reduce((s, r) => s + r.valor, 0)
+  const despesaTotal = despesasPeriodo.reduce((s, d) => s + d.valor, 0)
+  const saldo = faturamento - despesaTotal
+  const margemBruta = faturamento > 0 ? ((faturamento - despesaTotal) / faturamento) * 100 : 0
+  const pedidos = receitasPeriodo.length
+  const ticketMedio = pedidos > 0 ? faturamento / pedidos : 0
+
+  const campsPeriodo = campanhas.filter(
+    (c) => dentro(c.periodo.inicio) || (c.periodo.fim && dentro(c.periodo.fim))
+  )
+  const gastoAds = campsPeriodo.reduce((s, c) => s + c.gastoTotal, 0)
+  const receitaAds = campsPeriodo.reduce((s, c) => s + c.receitaGerada, 0)
+  const conversoes = campsPeriodo.reduce((s, c) => s + c.conversoes, 0)
+
+  const roas = gastoAds > 0 ? receitaAds / gastoAds : 0
+  const cpa = conversoes > 0 ? gastoAds / conversoes : 0
+
+  return { faturamento, despesaTotal, margemBruta, pedidos, ticketMedio, roas, cpa, saldo }
+}
+
+// ─────────────────────────────────────────────
 // KPIs GLOBAIS (todos os meses)
 // ─────────────────────────────────────────────
 

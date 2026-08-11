@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useMobile } from '@/hooks/useMobile'
 import { ResumoDiario } from './ResumoDiario'
@@ -16,6 +16,9 @@ import type { MetaDiaria } from '@/store'
 import {
   getMesAtual,
   calcularKPIsMes,
+  calcularKPIsPeriodo,
+  rangePeriodoDashboard,
+  rangePeriodoAnterior,
   calcularAlertas,
   calcularHealthScore,
   gerarFeedAtividade,
@@ -26,6 +29,7 @@ import {
   type Alerta,
   type AtividadeItem,
   type HealthScore,
+  type PeriodoDashboard,
 } from '@/lib/calculos'
 import Link from 'next/link'
 import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
@@ -47,6 +51,20 @@ const MESES_PT: Record<string, string> = {
   '01': 'Janeiro', '02': 'Fevereiro', '03': 'Março',    '04': 'Abril',
   '05': 'Maio',    '06': 'Junho',     '07': 'Julho',    '08': 'Agosto',
   '09': 'Setembro','10': 'Outubro',   '11': 'Novembro', '12': 'Dezembro',
+}
+
+const PERIODOS_DASHBOARD: Array<{ id: PeriodoDashboard; label: string }> = [
+  { id: 'hoje',      label: 'Hoje' },
+  { id: 'semana',    label: 'Semana' },
+  { id: 'mes',       label: 'Mês' },
+  { id: 'trimestre', label: 'Trimestre' },
+]
+
+const PERIODO_LABEL_LONGO: Record<PeriodoDashboard, string> = {
+  hoje: 'Hoje',
+  semana: 'Últimos 7 dias',
+  mes: 'Mês atual',
+  trimestre: 'Últimos 90 dias',
 }
 
 const INFO_SOCIOS = {
@@ -564,16 +582,42 @@ export function CommandCenter() {
 
   const showWidget = (id: string) => dashboardWidgets.includes(id)
 
+  // Alertas e health score ficam ancorados no mês corrente (thresholds mensais) —
+  // não mudam com o seletor de período abaixo, que é só para os KPIs/gráficos visíveis.
   const mesAtual     = useMemo(() => getMesAtual(receitas), [receitas])
   const kpis         = useMemo(() => calcularKPIsMes(receitas, despesas, campanhasAds, mesAtual), [receitas, despesas, campanhasAds, mesAtual])
   const alertas      = useMemo(() => calcularAlertas(kpis, estoque), [kpis, estoque])
   const healthScore  = useMemo(() => calcularHealthScore(receitas, despesas, campanhasAds, estoque), [receitas, despesas, campanhasAds, estoque])
   const feedAtividade = useMemo(() => gerarFeedAtividade(tarefas, leads, lotes, reunioes), [tarefas, leads, lotes, reunioes])
 
+  // ── Seletor de período: Hoje / Semana / Mês / Trimestre ──
+  const [periodo, setPeriodo] = useState<PeriodoDashboard>('mes')
+
+  const [dataInicioPeriodo, dataFimPeriodo] = useMemo(() => rangePeriodoDashboard(periodo), [periodo])
+  const [dataInicioAnterior, dataFimAnterior] = useMemo(() => rangePeriodoAnterior(periodo), [periodo])
+
+  const kpisPeriodo = useMemo(
+    () => calcularKPIsPeriodo(receitas, despesas, campanhasAds, dataInicioPeriodo, dataFimPeriodo),
+    [receitas, despesas, campanhasAds, dataInicioPeriodo, dataFimPeriodo]
+  )
+  const kpisPeriodoAnterior = useMemo(
+    () => calcularKPIsPeriodo(receitas, despesas, campanhasAds, dataInicioAnterior, dataFimAnterior),
+    [receitas, despesas, campanhasAds, dataInicioAnterior, dataFimAnterior]
+  )
+  const variacaoFaturamento = useMemo(
+    () => kpisPeriodoAnterior.faturamento > 0
+      ? ((kpisPeriodo.faturamento - kpisPeriodoAnterior.faturamento) / kpisPeriodoAnterior.faturamento) * 100
+      : null,
+    [kpisPeriodo.faturamento, kpisPeriodoAnterior.faturamento]
+  )
+
   const vendasDiarias = useMemo(() => {
+    const inicio = new Date(`${dataInicioPeriodo}T00:00:00`)
+    const fim = new Date(`${dataFimPeriodo}T00:00:00`)
+    const totalDias = Math.max(1, Math.round((fim.getTime() - inicio.getTime()) / 86_400_000) + 1)
     const dias: { data: string; valor: number }[] = []
-    for (let i = 13; i >= 0; i--) {
-      const d = new Date()
+    for (let i = totalDias - 1; i >= 0; i--) {
+      const d = new Date(fim)
       d.setDate(d.getDate() - i)
       const chave = d.toISOString().slice(0, 10)
       const valor = vendas
@@ -582,24 +626,7 @@ export function CommandCenter() {
       dias.push({ data: `${chave.slice(8, 10)}/${chave.slice(5, 7)}`, valor })
     }
     return dias
-  }, [vendas])
-
-  const mesAnterior = useMemo(() => {
-    const [a, m] = mesAtual.split('-').map(Number)
-    return m === 1 ? `${a - 1}-12` : `${a}-${String(m - 1).padStart(2, '0')}`
-  }, [mesAtual])
-
-  const kpisAnterior = useMemo(
-    () => calcularKPIsMes(receitas, despesas, campanhasAds, mesAnterior),
-    [receitas, despesas, campanhasAds, mesAnterior]
-  )
-
-  const variacaoFaturamento = useMemo(
-    () => kpisAnterior.faturamento > 0
-      ? ((kpis.faturamento - kpisAnterior.faturamento) / kpisAnterior.faturamento) * 100
-      : null,
-    [kpis.faturamento, kpisAnterior.faturamento]
-  )
+  }, [vendas, dataInicioPeriodo, dataFimPeriodo])
 
   const lotesAlerta = useMemo<Alerta[]>(
     () => lotes
@@ -615,61 +642,66 @@ export function CommandCenter() {
 
   const todosAlertas = useMemo(() => [...alertas, ...lotesAlerta], [alertas, lotesAlerta])
 
-  const resumoFrascosMes = useMemo(() => {
-    const vendasMes = vendas.filter((v) => v.dataVenda.startsWith(mesAtual) && v.statusPagamento === 'pago')
-    const pedidos = vendasMes.length
-    const frascos = vendasMes.reduce((s, v) => s + v.quantidade, 0)
-    const despachados = vendasMes.filter((v) => ['postado', 'em_transito', 'entregue'].includes(v.statusEntrega)).reduce((s, v) => s + v.quantidade, 0)
-    const ugc = doacoesUGC.filter((d) => d.dataEnvio.startsWith(mesAtual) && ['postado', 'entregue'].includes(d.statusEnvio)).reduce((s, d) => s + d.quantidade, 0)
+  const resumoFrascosPeriodo = useMemo(() => {
+    const vendasPeriodo = vendas.filter((v) =>
+      v.dataVenda.slice(0, 10) >= dataInicioPeriodo && v.dataVenda.slice(0, 10) <= dataFimPeriodo && v.statusPagamento === 'pago'
+    )
+    const pedidos = vendasPeriodo.length
+    const frascos = vendasPeriodo.reduce((s, v) => s + v.quantidade, 0)
+    const despachados = vendasPeriodo.filter((v) => ['postado', 'em_transito', 'entregue'].includes(v.statusEntrega)).reduce((s, v) => s + v.quantidade, 0)
+    const ugc = doacoesUGC
+      .filter((d) => d.dataEnvio.slice(0, 10) >= dataInicioPeriodo && d.dataEnvio.slice(0, 10) <= dataFimPeriodo && ['postado', 'entregue'].includes(d.statusEnvio))
+      .reduce((s, d) => s + d.quantidade, 0)
     return { pedidos, frascos, despachados, ugc }
-  }, [vendas, doacoesUGC, mesAtual])
+  }, [vendas, doacoesUGC, dataInicioPeriodo, dataFimPeriodo])
 
   const [ano, mes] = mesAtual.split('-')
   const nomeMes    = `${MESES_PT[mes] ?? mes} ${ano}`
+  const periodoLabel = PERIODO_LABEL_LONGO[periodo]
 
   const kpiCards: KPICardProps[] = [
     {
-      label: 'Faturamento do Mês',
-      valor: formatarMoeda(kpis.faturamento),
+      label: `Faturamento — ${PERIODOS_DASHBOARD.find((p) => p.id === periodo)?.label}`,
+      valor: formatarMoeda(kpisPeriodo.faturamento),
       subvalor: variacaoFaturamento !== null
-        ? `${variacaoFaturamento >= 0 ? '+' : ''}${variacaoFaturamento.toFixed(1)}% vs mês anterior`
-        : `${kpis.pedidos} pedidos registrados`,
+        ? `${variacaoFaturamento >= 0 ? '+' : ''}${variacaoFaturamento.toFixed(1)}% vs período anterior`
+        : `${kpisPeriodo.pedidos} pedidos registrados`,
       icon: DollarSign,
       tendencia: variacaoFaturamento === null || variacaoFaturamento >= 0 ? 'up' : 'down',
       destaque: true,
     },
     {
-      label: 'ROAS Atual',
-      valor: kpis.roas > 0 ? `${kpis.roas.toFixed(2)}x` : '—',
-      subvalor: kpis.roas === 0 ? 'Sem dados de ads' : kpis.roas < 2.5 ? 'Abaixo de 2.5x' : 'Meta atingida',
+      label: 'ROAS no Período',
+      valor: kpisPeriodo.roas > 0 ? `${kpisPeriodo.roas.toFixed(2)}x` : '—',
+      subvalor: kpisPeriodo.roas === 0 ? 'Sem dados de ads' : kpisPeriodo.roas < 2.5 ? 'Abaixo de 2.5x' : 'Meta atingida',
       icon: TrendingUp,
-      tendencia: kpis.roas === 0 ? 'neutral' : kpis.roas >= 2.5 ? 'up' : 'down',
+      tendencia: kpisPeriodo.roas === 0 ? 'neutral' : kpisPeriodo.roas >= 2.5 ? 'up' : 'down',
     },
     {
       label: 'CPA Médio',
-      valor: kpis.cpa > 0 ? formatarMoeda(kpis.cpa) : '—',
-      subvalor: kpis.cpa === 0 ? 'Sem conversões' : kpis.cpa > 30 ? 'Acima de R$ 30,00' : 'Dentro do limite',
+      valor: kpisPeriodo.cpa > 0 ? formatarMoeda(kpisPeriodo.cpa) : '—',
+      subvalor: kpisPeriodo.cpa === 0 ? 'Sem conversões' : kpisPeriodo.cpa > 30 ? 'Acima de R$ 30,00' : 'Dentro do limite',
       icon: ShoppingCart,
-      tendencia: kpis.cpa === 0 ? 'neutral' : kpis.cpa <= 30 ? 'up' : 'down',
+      tendencia: kpisPeriodo.cpa === 0 ? 'neutral' : kpisPeriodo.cpa <= 30 ? 'up' : 'down',
     },
     {
       label: 'Margem Bruta',
-      valor: formatarPercentual(kpis.margemBruta),
-      subvalor: `Meta 65% · Saldo ${formatarMoeda(kpis.saldo)}`,
+      valor: formatarPercentual(kpisPeriodo.margemBruta),
+      subvalor: `Meta 65% · Saldo ${formatarMoeda(kpisPeriodo.saldo)}`,
       icon: BarChart2,
-      tendencia: kpis.margemBruta >= 60 ? 'up' : 'down',
+      tendencia: kpisPeriodo.margemBruta >= 60 ? 'up' : 'down',
     },
     {
-      label: 'Pedidos do Mês',
-      valor: String(resumoFrascosMes.pedidos),
-      subvalor: `${resumoFrascosMes.frascos} frascos vendidos`,
+      label: 'Pedidos no Período',
+      valor: String(resumoFrascosPeriodo.pedidos),
+      subvalor: `${resumoFrascosPeriodo.frascos} frascos vendidos`,
       icon: Activity,
       tendencia: 'neutral',
     },
     {
       label: 'Ticket Médio',
-      valor: formatarMoeda(kpis.ticketMedio),
-      subvalor: `Despesa total: ${formatarMoeda(kpis.despesaTotal)}`,
+      valor: formatarMoeda(kpisPeriodo.ticketMedio),
+      subvalor: `Despesa total: ${formatarMoeda(kpisPeriodo.despesaTotal)}`,
       icon: Target,
       tendencia: 'neutral',
     },
@@ -686,7 +718,7 @@ export function CommandCenter() {
       <DashboardBanner isAdmin={true} />
 
       {/* ── Header ── */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <p className="caption uppercase mb-1" style={{ letterSpacing: '0.08em' }}>
             {nomeMes} · Visão unificada
@@ -698,6 +730,24 @@ export function CommandCenter() {
           {showWidget('health-score') && <HealthScoreBadge hs={healthScore} />}
         </div>
       </div>
+
+      {/* ── Seletor de período ── */}
+      {showWidget('kpis') && (
+        <div className="flex gap-0.5 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit">
+          {PERIODOS_DASHBOARD.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setPeriodo(p.id)}
+              className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+              style={periodo === p.id
+                ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+                : { color: 'var(--text-secondary)' }}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ── Resumo de hoje ── */}
       <ResumoDiario />
@@ -714,20 +764,20 @@ export function CommandCenter() {
       )}
 
       {/* ── Resumo Pedidos vs Frascos ── */}
-      {resumoFrascosMes.pedidos > 0 && (
+      {resumoFrascosPeriodo.pedidos > 0 && (
         <div className="card-purion" style={{ padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            {nomeMes}
+            {periodoLabel}
           </span>
           <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
-            <strong>{resumoFrascosMes.pedidos}</strong> pedidos pagos
+            <strong>{resumoFrascosPeriodo.pedidos}</strong> pedidos pagos
             <span style={{ color: 'var(--text-secondary)' }}> = </span>
-            <strong style={{ color: '#5B8FE8' }}>{resumoFrascosMes.frascos}</strong> frascos vendidos
+            <strong style={{ color: '#5B8FE8' }}>{resumoFrascosPeriodo.frascos}</strong> frascos vendidos
           </span>
           <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
-            <strong style={{ color: '#22C55E' }}>{resumoFrascosMes.despachados}</strong>
+            <strong style={{ color: '#22C55E' }}>{resumoFrascosPeriodo.despachados}</strong>
             <span style={{ color: 'var(--text-secondary)' }}> despachados · </span>
-            <strong style={{ color: '#A855F7' }}>{resumoFrascosMes.ugc}</strong>
+            <strong style={{ color: '#A855F7' }}>{resumoFrascosPeriodo.ugc}</strong>
             <span style={{ color: 'var(--text-secondary)' }}> doados UGC</span>
           </span>
         </div>
@@ -845,7 +895,7 @@ export function CommandCenter() {
 
       {/* ── Vendas por dia ── */}
       <section className="card-purion p-4">
-        <p className="kpi-label flex items-center gap-1.5 mb-3">Vendas pagas — últimos 14 dias</p>
+        <p className="kpi-label flex items-center gap-1.5 mb-3">Vendas pagas por dia — {periodoLabel}</p>
         <GraficoVendasDiarias data={vendasDiarias} />
       </section>
 
