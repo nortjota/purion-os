@@ -485,7 +485,7 @@ export interface KbBloco {
 // INTERFACES — BLOCOS DE ESTRATÉGIA (Notion-style)
 // ─────────────────────────────────────────────
 
-export type SecaoEstrategia = 'visao_geral' | 'b2b' | 'social' | 'growth' | 'icp' | 'decisoes' | 'geral'
+export type SecaoEstrategia = 'visao_geral' | 'metas' | 'b2b' | 'social' | 'growth' | 'icp' | 'decisoes' | 'geral'
 
 export interface EstrategiaBloco {
   id: string
