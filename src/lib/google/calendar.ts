@@ -20,26 +20,53 @@ export interface EventoCalendarInput {
   allDay?: boolean
 }
 
-function getOAuthClient() {
-  const clientId     = process.env.GOOGLE_CLIENT_ID
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN
+/** Nomes das env vars obrigatórias, na ordem em que são checadas. */
+const ENV_VARS_OBRIGATORIAS = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH_TOKEN'] as const
 
-  if (!clientId || !clientSecret || !refreshToken) {
+/**
+ * Diagnóstico de configuração — nunca expõe valores, só quais nomes de
+ * variável estão ausentes em process.env. Use para logar/depurar sem
+ * vazar segredo nenhum.
+ */
+export function diagnosticoConfigGoogle(): { configurado: boolean; faltando: string[] } {
+  const faltando = ENV_VARS_OBRIGATORIAS.filter((nome) => !process.env[nome])
+  return { configurado: faltando.length === 0, faltando }
+}
+
+export function googleCalendarConfigurado(): boolean {
+  return diagnosticoConfigGoogle().configurado
+}
+
+function getOAuthClient() {
+  const { configurado, faltando } = diagnosticoConfigGoogle()
+  if (!configurado) {
+    console.warn('[google/calendar] credenciais ausentes em process.env:', faltando.join(', '))
     return null
   }
 
-  const client = new google.auth.OAuth2(clientId, clientSecret)
-  client.setCredentials({ refresh_token: refreshToken })
+  const client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET)
+  client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN })
   return client
 }
 
 function getCalendarId(): string {
-  return process.env.GOOGLE_CALENDAR_ID || 'primary'
+  const id = process.env.GOOGLE_CALENDAR_ID
+  if (!id) console.warn('[google/calendar] GOOGLE_CALENDAR_ID não definido — usando "primary"')
+  return id || 'primary'
 }
 
-export function googleCalendarConfigurado(): boolean {
-  return !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN)
+/** Erro da API do Google traduzido para uma mensagem acionável (nunca vaza credenciais). */
+function explicarErroGoogle(err: unknown): string {
+  const status = (err as { code?: number; response?: { status?: number } })?.response?.status
+    ?? (err as { code?: number })?.code
+  const msg = err instanceof Error ? err.message : String(err)
+  if (status === 404) {
+    return `Google Calendar respondeu 404 (Not Found) — verifique se GOOGLE_CALENDAR_ID ("${getCalendarId()}") existe e se a conta autenticada (GOOGLE_REFRESH_TOKEN) tem acesso a ele. Detalhe: ${msg}`
+  }
+  if (status === 401 || status === 403) {
+    return `Google Calendar recusou a credencial (${status}) — GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN podem estar expirados ou incorretos. Detalhe: ${msg}`
+  }
+  return `Erro ao chamar a API do Google Calendar (status ${status ?? 'desconhecido'}): ${msg}`
 }
 
 function toEventBody(input: EventoCalendarInput) {
@@ -70,44 +97,79 @@ function toEventBody(input: EventoCalendarInput) {
 
 /** Cria um evento no calendário central. Retorna o ID do evento criado, ou null se falhar/não configurado. */
 export async function criarEvento(input: EventoCalendarInput): Promise<string | null> {
+  console.log('[google/calendar] criarEvento: verificando credenciais…')
   const auth = getOAuthClient()
-  if (!auth) return null
+  if (!auth) {
+    console.warn('[google/calendar] criarEvento: abortado — credenciais ausentes')
+    return null
+  }
 
-  const calendar = google.calendar({ version: 'v3', auth })
-  const res = await calendar.events.insert({
-    calendarId: getCalendarId(),
-    requestBody: toEventBody(input),
-  })
-  return res.data.id ?? null
+  const calendarId = getCalendarId()
+  console.log(`[google/calendar] criarEvento: chamando calendar.events.insert (calendarId="${calendarId}")`)
+  try {
+    const calendar = google.calendar({ version: 'v3', auth })
+    const res = await calendar.events.insert({
+      calendarId,
+      requestBody: toEventBody(input),
+    })
+    console.log(`[google/calendar] criarEvento: sucesso, eventId=${res.data.id}`)
+    return res.data.id ?? null
+  } catch (err) {
+    console.error('[google/calendar] criarEvento: falhou —', explicarErroGoogle(err))
+    throw err
+  }
 }
 
 /** Atualiza um evento existente pelo ID. Retorna true se sucesso. */
 export async function atualizarEvento(eventId: string, input: EventoCalendarInput): Promise<boolean> {
+  console.log(`[google/calendar] atualizarEvento(${eventId}): verificando credenciais…`)
   const auth = getOAuthClient()
-  if (!auth) return false
+  if (!auth) {
+    console.warn('[google/calendar] atualizarEvento: abortado — credenciais ausentes')
+    return false
+  }
 
-  const calendar = google.calendar({ version: 'v3', auth })
-  await calendar.events.update({
-    calendarId: getCalendarId(),
-    eventId,
-    requestBody: toEventBody(input),
-  })
-  return true
+  const calendarId = getCalendarId()
+  console.log(`[google/calendar] atualizarEvento: chamando calendar.events.update (calendarId="${calendarId}", eventId="${eventId}")`)
+  try {
+    const calendar = google.calendar({ version: 'v3', auth })
+    await calendar.events.update({
+      calendarId,
+      eventId,
+      requestBody: toEventBody(input),
+    })
+    console.log('[google/calendar] atualizarEvento: sucesso')
+    return true
+  } catch (err) {
+    console.error('[google/calendar] atualizarEvento: falhou —', explicarErroGoogle(err))
+    throw err
+  }
 }
 
 /** Remove um evento do calendário pelo ID. Retorna true se sucesso (ou se já não existia). */
 export async function deletarEvento(eventId: string): Promise<boolean> {
+  console.log(`[google/calendar] deletarEvento(${eventId}): verificando credenciais…`)
   const auth = getOAuthClient()
-  if (!auth) return false
+  if (!auth) {
+    console.warn('[google/calendar] deletarEvento: abortado — credenciais ausentes')
+    return false
+  }
 
+  const calendarId = getCalendarId()
+  console.log(`[google/calendar] deletarEvento: chamando calendar.events.delete (calendarId="${calendarId}", eventId="${eventId}")`)
   const calendar = google.calendar({ version: 'v3', auth })
   try {
-    await calendar.events.delete({ calendarId: getCalendarId(), eventId })
+    await calendar.events.delete({ calendarId, eventId })
+    console.log('[google/calendar] deletarEvento: sucesso')
   } catch (err: unknown) {
     // 410/404 = evento já removido — não é um erro real para o nosso fluxo
     const status = (err as { code?: number; response?: { status?: number } })?.response?.status
       ?? (err as { code?: number })?.code
-    if (status !== 404 && status !== 410) throw err
+    if (status !== 404 && status !== 410) {
+      console.error('[google/calendar] deletarEvento: falhou —', explicarErroGoogle(err))
+      throw err
+    }
+    console.log('[google/calendar] deletarEvento: evento já não existia (404/410), ignorando')
   }
   return true
 }
