@@ -5,6 +5,7 @@ import { usePurionStore } from '@/store'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
 import { useToast } from '@/components/ui/Toast'
 import { Save, Trash2, Plus, BarChart2, RefreshCw } from 'lucide-react'
+import { AportesSociosCard } from './AportesSociosCard'
 
 const SPLIT_COLORS = ['#C9A84C', '#3B82F6', '#22C55E', '#A855F7', '#EF4444']
 const SPLIT_LABELS = ['Estoque', 'Marketing', 'Caixa', 'Desenvolvimento', 'Societário']
@@ -118,6 +119,9 @@ export function FinanceiroSettings() {
           </div>
         </div>
       </div>
+
+      {/* Aportes dos Sócios */}
+      <AportesSociosCard />
 
       {/* Reinvestimento */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
