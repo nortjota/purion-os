@@ -11,9 +11,10 @@ import {
 } from '@/hooks/useEstrategia'
 import type { PerfilUsuario } from '@/store'
 import { RESPONSAVEIS } from '@/components/calendario/calendarioHelpers'
-import { STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_OPCOES } from './metasHelpers'
+import { STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_OPCOES, ordenarPorPrioridadeEPeso } from './metasHelpers'
 import { MetaListaView, type GrupoMetas } from './MetaListaView'
 import { MetaPainelView } from './MetaPainelView'
+import { PainelPorPessoa } from './PainelPorPessoa'
 import { ModalObjetivo, type DadosObjetivo } from './ModalObjetivo'
 import { ModalResultado, type DadosResultado } from './ModalResultado'
 import { DetalheObjetivo } from './DetalheObjetivo'
@@ -62,10 +63,12 @@ export function TabMetas() {
   const [objetivoDetalheId, setObjetivoDetalheId] = useState<string | null>(null)
 
   const objetivosTopo = useMemo(() => {
-    return objetivos
-      .filter((o) => !o.parentId)
-      .filter((o) => filtroStatus === 'todos' || o.status === filtroStatus)
-      .filter((o) => filtroResponsavel === 'todos' || o.responsavel === filtroResponsavel)
+    return ordenarPorPrioridadeEPeso(
+      objetivos
+        .filter((o) => !o.parentId)
+        .filter((o) => filtroStatus === 'todos' || o.status === filtroStatus)
+        .filter((o) => filtroResponsavel === 'todos' || o.responsavel === filtroResponsavel)
+    )
   }, [objetivos, filtroStatus, filtroResponsavel])
 
   const grupos: GrupoMetas[] = useMemo(() => {
@@ -157,6 +160,10 @@ export function TabMetas() {
         </button>
       </div>
 
+      {filtroResponsavel !== 'todos' && (
+        <PainelPorPessoa responsavel={filtroResponsavel} objetivos={objetivosTopo} />
+      )}
+
       {visao === 'lista' ? (
         <MetaListaView
           grupos={grupos}
@@ -168,6 +175,8 @@ export function TabMetas() {
           onSelecionarResultado={(r, objetivoTitulo) => abrirEditarResultado(r, objetivoTitulo)}
           onNovaMeta={abrirNovaMeta}
           onNovoResultado={abrirNovoResultado}
+          onAtualizarPeso={(id, peso) => atualizarObjetivo(id, { peso }, { silencioso: true })}
+          onAtualizarPrioridade={(id, prioridade) => atualizarObjetivo(id, { prioridade })}
         />
       ) : (
         <MetaPainelView

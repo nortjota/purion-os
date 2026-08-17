@@ -14,7 +14,9 @@ import { formatNumber } from '@/lib/formatters'
 import { SOCIOS } from '@/components/tarefas/tarefasHelpers'
 import {
   STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_COR, formatarDataAlvo, calcularRitmo, RITMO_LABEL,
+  PRIORIDADE_LABEL, PRIORIDADE_COR,
 } from './metasHelpers'
+import { ReguaMensal } from './ReguaMensal'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
   background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
@@ -156,7 +158,23 @@ export function DetalheObjetivo({
           <span className="kpi-label mb-1 block">Trimestre</span>
           <span style={{ fontSize: 12 }}>{objetivo.trimestre ?? '—'}</span>
         </div>
+        <div style={{ flex: 1, minWidth: 130 }}>
+          <span className="kpi-label mb-1 block">Prioridade</span>
+          <span style={{
+            fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 5,
+            background: `${PRIORIDADE_COR[objetivo.prioridade]}20`, color: PRIORIDADE_COR[objetivo.prioridade],
+          }}>
+            {PRIORIDADE_LABEL[objetivo.prioridade]}
+          </span>
+        </div>
+        <div style={{ flex: 1, minWidth: 130 }}>
+          <span className="kpi-label mb-1 block">Peso (G4)</span>
+          <span style={{ fontSize: 12, fontWeight: 700 }}>{objetivo.peso}%</span>
+        </div>
       </div>
+
+      {/* Régua mensal — método G4 */}
+      <ReguaMensal objetivo={objetivo} todosResultados={todosResultados} />
 
       {/* Sub-metas */}
       <div>

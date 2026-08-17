@@ -3,11 +3,15 @@
 import { useState } from 'react'
 import { ChevronRight, ChevronDown, Plus, Target, Milestone } from 'lucide-react'
 import type { Tarefa } from '@/store'
-import type { EstrategiaObjetivo, EstrategiaResultado, MetricasCRM } from '@/hooks/useEstrategia'
+import type { EstrategiaObjetivo, EstrategiaResultado, MetricasCRM, PrioridadeObjetivo } from '@/hooks/useEstrategia'
 import { progressoObjetivo, progressoResultadoEfetivo, valorEfetivoResultado } from '@/hooks/useEstrategia'
 import { formatNumber } from '@/lib/formatters'
+import { InlineEdit } from '@/components/ui/InlineEdit'
 import { SOCIOS } from '@/components/tarefas/tarefasHelpers'
-import { STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_COR, formatarDataAlvo } from './metasHelpers'
+import {
+  STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_COR,
+  PRIORIDADE_LABEL_CURTO, PRIORIDADE_COR, PRIORIDADE_OPCOES,
+} from './metasHelpers'
 
 export interface GrupoMetas {
   id: string
@@ -25,6 +29,8 @@ interface Props {
   onSelecionarResultado: (r: EstrategiaResultado, objetivoTitulo: string) => void
   onNovaMeta: (parentId: string | null) => void
   onNovoResultado: (objetivoId: string) => void
+  onAtualizarPeso: (id: string, peso: number) => void
+  onAtualizarPrioridade: (id: string, prioridade: PrioridadeObjetivo) => void
 }
 
 function Avatar({ id }: { id: string | null }) {
@@ -62,6 +68,23 @@ function StatusBadge({ status }: { status: EstrategiaObjetivo['status'] }) {
       background: `${cor}18`, color: cor, whiteSpace: 'nowrap',
     }}>
       {STATUS_OBJETIVO_LABEL[status]}
+    </span>
+  )
+}
+
+function PrioridadeBadge({ prioridade, onClick }: { prioridade: EstrategiaObjetivo['prioridade']; onClick?: (e: React.MouseEvent) => void }) {
+  const cor = PRIORIDADE_COR[prioridade]
+  return (
+    <span
+      onClick={onClick}
+      title={onClick ? 'Clique para mudar a prioridade' : undefined}
+      style={{
+        fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 5,
+        background: `${cor}20`, color: cor, whiteSpace: 'nowrap', flexShrink: 0,
+        cursor: onClick ? 'pointer' : 'default',
+      }}
+    >
+      {PRIORIDADE_LABEL_CURTO[prioridade]}
     </span>
   )
 }
@@ -105,6 +128,7 @@ function LinhaResultado({ resultado, metricas, nivel, onSelecionar }: {
 function LinhaObjetivo({
   objetivo, nivel, todosObjetivos, todosResultados, metricas, tarefas,
   expandidos, toggleExpandido, onSelecionarObjetivo, onSelecionarResultado, onNovaMeta, onNovoResultado,
+  onAtualizarPeso, onAtualizarPrioridade,
 }: {
   objetivo: EstrategiaObjetivo
   nivel: number
@@ -118,6 +142,8 @@ function LinhaObjetivo({
   onSelecionarResultado: (r: EstrategiaResultado, objetivoTitulo: string) => void
   onNovaMeta: (parentId: string | null) => void
   onNovoResultado: (objetivoId: string) => void
+  onAtualizarPeso: (id: string, peso: number) => void
+  onAtualizarPrioridade: (id: string, prioridade: PrioridadeObjetivo) => void
 }) {
   const subObjetivos = todosObjetivos.filter((o) => o.parentId === objetivo.id)
   const resultadosDoObjetivo = todosResultados.filter((r) => r.objetivoId === objetivo.id)
@@ -149,6 +175,16 @@ function LinhaObjetivo({
             {aberto ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
           </button>
           <Target size={13} style={{ color: '#C9A84C', flexShrink: 0 }} />
+          {nivel === 0 && (
+            <PrioridadeBadge
+              prioridade={objetivo.prioridade}
+              onClick={(e) => {
+                e.stopPropagation()
+                const i = PRIORIDADE_OPCOES.indexOf(objetivo.prioridade)
+                onAtualizarPrioridade(objetivo.id, PRIORIDADE_OPCOES[(i + 1) % PRIORIDADE_OPCOES.length])
+              }}
+            />
+          )}
           <span style={{ fontSize: 13, fontWeight: nivel === 0 ? 700 : 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {objetivo.titulo}
           </span>
@@ -164,8 +200,18 @@ function LinhaObjetivo({
         <div onClick={() => onSelecionarObjetivo(objetivo)}>
           <BarraProgresso progresso={progresso} cor={STATUS_OBJETIVO_COR[objetivo.status]} />
         </div>
-        <div className="flex items-center justify-between" onClick={() => onSelecionarObjetivo(objetivo)}>
+        <div className="flex items-center justify-between gap-2" onClick={() => onSelecionarObjetivo(objetivo)}>
           <Avatar id={objetivo.responsavel} />
+          {nivel === 0 && (
+            <span onClick={(e) => e.stopPropagation()} style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', flexShrink: 0 }}>
+              <InlineEdit
+                value={objetivo.peso}
+                type="number"
+                placeholder="peso"
+                onSave={(v) => onAtualizarPeso(objetivo.id, Math.max(0, Math.min(100, Number(v) || 0)))}
+              />%
+            </span>
+          )}
         </div>
       </div>
 
@@ -186,6 +232,8 @@ function LinhaObjetivo({
               onSelecionarResultado={onSelecionarResultado}
               onNovaMeta={onNovaMeta}
               onNovoResultado={onNovoResultado}
+              onAtualizarPeso={onAtualizarPeso}
+              onAtualizarPrioridade={onAtualizarPrioridade}
             />
           ))}
           {resultadosDoObjetivo.map((r) => (
@@ -224,6 +272,7 @@ function LinhaObjetivo({
 export function MetaListaView({
   grupos, todosObjetivos, todosResultados, metricas, tarefas,
   onSelecionarObjetivo, onSelecionarResultado, onNovaMeta, onNovoResultado,
+  onAtualizarPeso, onAtualizarPrioridade,
 }: Props) {
   const [expandidos, setExpandidos] = useState<Set<string>>(new Set())
 
@@ -292,6 +341,8 @@ export function MetaListaView({
                 onSelecionarResultado={onSelecionarResultado}
                 onNovaMeta={onNovaMeta}
                 onNovoResultado={onNovoResultado}
+                onAtualizarPeso={onAtualizarPeso}
+                onAtualizarPrioridade={onAtualizarPrioridade}
               />
             ))}
           </div>

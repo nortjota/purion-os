@@ -25,6 +25,7 @@ export interface EstrategiaFase {
 }
 
 export type StatusObjetivo = 'em_dia' | 'em_risco' | 'em_atraso' | 'concluido' | 'pausado'
+export type PrioridadeObjetivo = 'P1' | 'P2' | 'P3'
 
 export interface EstrategiaObjetivo {
   id: string
@@ -42,6 +43,8 @@ export interface EstrategiaObjetivo {
   equipe: string | null
   dataAlvo: string | null
   createdAt: string
+  peso: number
+  prioridade: PrioridadeObjetivo
 }
 
 export type FonteAuto = 'vendas_total' | 'leads_clientes' | 'creators_ativos' | 'receita_total' | 'estoque_atual'
@@ -108,6 +111,8 @@ function toObjetivo(r: Row): EstrategiaObjetivo {
     equipe:        r.equipe ? String(r.equipe) : null,
     dataAlvo:      r.data_alvo ? String(r.data_alvo) : null,
     createdAt:     String(r.created_at ?? new Date().toISOString()),
+    peso:          Number(r.peso ?? 0),
+    prioridade:    (String(r.prioridade ?? 'P2')) as PrioridadeObjetivo,
   }
 }
 
@@ -361,6 +366,8 @@ export function useEstrategiaRoadmap() {
     responsavel?: PerfilUsuario | null
     equipe?: string | null
     dataAlvo?: string | null
+    peso?: number
+    prioridade?: PrioridadeObjetivo
   }): Promise<EstrategiaObjetivo | null> {
     const sb = supabase
     if (!sb) return null
@@ -375,6 +382,8 @@ export function useEstrategiaRoadmap() {
       responsavel: dados.responsavel ?? null,
       equipe:      dados.equipe ?? null,
       data_alvo:   dados.dataAlvo ?? null,
+      peso:        dados.peso ?? 0,
+      prioridade:  dados.prioridade ?? 'P2',
     }).select().single()
     dbLog('INSERT', 'estrategia_objetivos', error, data?.id)
     if (error) { toastError('Erro ao criar meta', error.message); return null }
@@ -394,7 +403,9 @@ export function useEstrategiaRoadmap() {
     equipe: string | null
     dataAlvo: string | null
     status: StatusObjetivo
-  }>) {
+    peso: number
+    prioridade: PrioridadeObjetivo
+  }>, opts?: { silencioso?: boolean }) {
     const sb = supabase
     if (!sb) return
     const { error } = await sb.from('estrategia_objetivos').update({
@@ -408,12 +419,14 @@ export function useEstrategiaRoadmap() {
       ...(dados.responsavel !== undefined && { responsavel: dados.responsavel }),
       ...(dados.equipe      !== undefined && { equipe: dados.equipe }),
       ...(dados.dataAlvo    !== undefined && { data_alvo: dados.dataAlvo }),
+      ...(dados.peso        !== undefined && { peso: dados.peso }),
+      ...(dados.prioridade  !== undefined && { prioridade: dados.prioridade }),
       // status setado manualmente aqui sempre vira override manual
       ...(dados.status      !== undefined && { status: dados.status, status_manual: true }),
     }).eq('id', id)
     dbLog('UPDATE', 'estrategia_objetivos', error, id)
     if (error) { toastError('Erro ao atualizar meta', error.message); return }
-    success('Meta atualizada')
+    if (!opts?.silencioso) success('Meta atualizada')
   }
 
   async function reverterStatusAutomatico(id: string) {

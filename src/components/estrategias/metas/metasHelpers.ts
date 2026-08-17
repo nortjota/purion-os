@@ -1,4 +1,40 @@
-import type { StatusObjetivo, FonteAuto } from '@/hooks/useEstrategia'
+import type { StatusObjetivo, FonteAuto, PrioridadeObjetivo, EstrategiaObjetivo } from '@/hooks/useEstrategia'
+
+export const PRIORIDADE_LABEL: Record<PrioridadeObjetivo, string> = {
+  P1: 'P1 — Prioridade máxima',
+  P2: 'P2 — Importante',
+  P3: 'P3 — Desejável',
+}
+
+export const PRIORIDADE_LABEL_CURTO: Record<PrioridadeObjetivo, string> = {
+  P1: 'P1', P2: 'P2', P3: 'P3',
+}
+
+export const PRIORIDADE_COR: Record<PrioridadeObjetivo, string> = {
+  P1: '#C9A84C', // dourado
+  P2: '#5B8FE8', // azul
+  P3: '#8A8A8A', // cinza
+}
+
+export const PRIORIDADE_OPCOES: PrioridadeObjetivo[] = ['P1', 'P2', 'P3']
+
+/** Ordena por prioridade (P1 primeiro) e, dentro da mesma prioridade, por peso decrescente. */
+export function ordenarPorPrioridadeEPeso(objetivos: EstrategiaObjetivo[]): EstrategiaObjetivo[] {
+  const ordem: Record<PrioridadeObjetivo, number> = { P1: 0, P2: 1, P3: 2 }
+  return [...objetivos].sort((a, b) => {
+    const diffPrioridade = ordem[a.prioridade] - ordem[b.prioridade]
+    if (diffPrioridade !== 0) return diffPrioridade
+    return b.peso - a.peso
+  })
+}
+
+/** Máximo de metas recomendado por sócio (regra do G4 — foco, não dispersão). */
+export const MAX_METAS_RECOMENDADO_POR_SOCIO = 5
+
+/** Soma dos pesos das metas — o G4 exige que feche em 100% por pessoa. */
+export function somaPesos(objetivos: EstrategiaObjetivo[]): number {
+  return objetivos.reduce((s, o) => s + (o.peso || 0), 0)
+}
 
 export const STATUS_OBJETIVO_LABEL: Record<StatusObjetivo, string> = {
   em_dia:    'Em dia',

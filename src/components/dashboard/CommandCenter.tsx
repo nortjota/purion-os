@@ -40,6 +40,7 @@ import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
 import { WidgetContador, WidgetDonut, WidgetBarras, WidgetLinha, WidgetLista, WidgetFunil, type ItemLista } from '@/components/dashboard/widgets'
+import { PainelMetasG4 } from '@/components/dashboard/PainelMetasG4'
 import { PERIODO_OPCOES, type Periodo, inicioPeriodo } from '@/components/dashboard/widgets/widgetHelpers'
 import { estagioNormalizado, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS } from '@/components/crm/crmHelpers'
 import { STATUS_OBJETIVO_COR, STATUS_OBJETIVO_LABEL } from '@/components/estrategias/metas/metasHelpers'
@@ -890,6 +891,9 @@ export function CommandCenter() {
         </Link>
         <Proximos7Dias eventos={eventos} limite={3} />
       </div>
+
+      {/* ── Painel de Metas do Ano — G4 ── */}
+      <PainelMetasG4 />
 
       {/* ── Meta de Faturamento ── */}
       {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}

@@ -10,13 +10,15 @@ import { TabSocial } from './TabSocial'
 import { TabCliente } from './TabCliente'
 import { TabDecisoes } from './TabDecisoes'
 import { TabMetas } from './metas/TabMetas'
+import { PainelRMR } from './rmr/PainelRMR'
 import { SecaoNotas } from './SecaoNotas'
 
-type TabId = 'visao-geral' | 'metas' | 'b2b' | 'social' | 'growth' | 'cliente' | 'decisoes'
+type TabId = 'visao-geral' | 'metas' | 'rmr' | 'b2b' | 'social' | 'growth' | 'cliente' | 'decisoes'
 
 const TABS: Array<{ id: TabId; label: string }> = [
   { id: 'visao-geral', label: 'Visão Geral' },
   { id: 'metas',       label: 'Metas' },
+  { id: 'rmr',         label: 'RMR' },
   { id: 'b2b',         label: 'B2B' },
   { id: 'social',      label: 'Social' },
   { id: 'growth',      label: 'Growth' },
@@ -46,6 +48,7 @@ export function EstrategiasPage() {
       <div>
         {aba === 'visao-geral' && <TabVisaoGeral />}
         {aba === 'metas' && <TabMetas />}
+        {aba === 'rmr' && <PainelRMR />}
         {aba === 'b2b' && <TabB2B />}
         {aba === 'social' && <TabSocial />}
         {aba === 'growth' && (

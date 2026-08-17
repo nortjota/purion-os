@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { X, Trash2, RotateCcw } from 'lucide-react'
 import type { PerfilUsuario } from '@/store'
-import type { EstrategiaObjetivo, EstrategiaFase, StatusObjetivo } from '@/hooks/useEstrategia'
+import type { EstrategiaObjetivo, EstrategiaFase, StatusObjetivo, PrioridadeObjetivo } from '@/hooks/useEstrategia'
 import { RESPONSAVEIS } from '@/components/calendario/calendarioHelpers'
-import { STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_OPCOES } from './metasHelpers'
+import { STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_OPCOES, PRIORIDADE_LABEL, PRIORIDADE_OPCOES } from './metasHelpers'
 
 export interface DadosObjetivo {
   titulo: string
@@ -17,6 +17,8 @@ export interface DadosObjetivo {
   responsavel: PerfilUsuario | null
   equipe: string | null
   dataAlvo: string | null
+  peso: number
+  prioridade: PrioridadeObjetivo
   status?: StatusObjetivo
 }
 
@@ -44,6 +46,8 @@ export function ModalObjetivo({
   const [responsavel, setResponsavel] = useState<PerfilUsuario | ''>(objetivo?.responsavel ?? '')
   const [equipe, setEquipe]         = useState(objetivo?.equipe ?? '')
   const [dataAlvo, setDataAlvo]     = useState(objetivo?.dataAlvo ?? '')
+  const [peso, setPeso]             = useState(objetivo?.peso ?? 0)
+  const [prioridade, setPrioridade] = useState<PrioridadeObjetivo>(objetivo?.prioridade ?? 'P2')
   const [statusOverride, setStatusOverride] = useState<StatusObjetivo | ''>('')
 
   function submeter(e: React.FormEvent) {
@@ -59,6 +63,8 @@ export function ModalObjetivo({
       responsavel: responsavel || null,
       equipe: equipe.trim() || null,
       dataAlvo: dataAlvo || null,
+      peso: Math.max(0, Math.min(100, peso)),
+      prioridade,
       ...(statusOverride && { status: statusOverride }),
     })
   }
@@ -130,6 +136,27 @@ export function ModalObjetivo({
               <input type="date" className="input-purion w-full" value={dataAlvo ?? ''} onChange={(e) => setDataAlvo(e.target.value)} />
             </div>
           </div>
+
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="kpi-label mb-1 block">Peso (%) — método G4</label>
+              <input
+                type="number" min={0} max={100} step={5}
+                className="input-purion w-full"
+                value={peso}
+                onChange={(e) => setPeso(Number(e.target.value))}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="kpi-label mb-1 block">Prioridade</label>
+              <select className="select-purion w-full" value={prioridade} onChange={(e) => setPrioridade(e.target.value as PrioridadeObjetivo)}>
+                {PRIORIDADE_OPCOES.map((p) => <option key={p} value={p}>{PRIORIDADE_LABEL[p]}</option>)}
+              </select>
+            </div>
+          </div>
+          <p style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: -6 }}>
+            O peso indica o quanto essa meta pesa no resultado geral da pessoa — a soma das metas de cada sócio deve fechar em 100%.
+          </p>
 
           <div>
             <label className="kpi-label mb-1 block">
