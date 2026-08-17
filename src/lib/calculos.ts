@@ -14,8 +14,16 @@ import type {
   Lead,
   Lote,
   ReuniaoItem,
-  ItemEstoque,
 } from '@/store'
+
+/** Forma mínima de um item de estoque para cálculos de alerta/health-score (aceita insumos legados ou novos). */
+interface EstoqueAlertavel {
+  id: string
+  nome: string
+  quantidadeAtual: number
+  quantidadeMinima: number
+  unidade: string
+}
 
 // ─────────────────────────────────────────────
 // FORMATADORES
@@ -347,7 +355,7 @@ export interface Alerta {
   detalhe?: string
 }
 
-export function calcularAlertas(kpis: KPIsMes, estoque: ItemEstoque[]): Alerta[] {
+export function calcularAlertas(kpis: KPIsMes, estoque: EstoqueAlertavel[]): Alerta[] {
   const alertas: Alerta[] = []
 
   if (kpis.roas > 0 && kpis.roas < 2.5) {
@@ -595,7 +603,7 @@ export function calcularHealthScore(
   receitas: Receita[],
   despesas: Despesa[],
   campanhas: CampanhaAds[],
-  estoque: ItemEstoque[]
+  estoque: EstoqueAlertavel[]
 ): HealthScore {
   const mesAtual = getMesAtual(receitas)
   const kpis = calcularKPIsMes(receitas, despesas, campanhas, mesAtual)

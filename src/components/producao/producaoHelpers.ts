@@ -1,4 +1,4 @@
-import type { StatusLote, ItemEstoque } from '@/store'
+import type { StatusLote } from '@/store'
 import { SOCIOS, socioInfo } from '@/components/tarefas/tarefasHelpers'
 
 export { SOCIOS, socioInfo }
@@ -56,40 +56,6 @@ export const CUSTO_UNITARIO_FRASCO = 28
 
 export function calcularCustoLote(quantidadeProduzida: number): number {
   return quantidadeProduzida * CUSTO_UNITARIO_FRASCO
-}
-
-// ─────────────────────────────────────────────
-// INSUMOS
-// ─────────────────────────────────────────────
-
-export const INSUMO_TIPO_LABEL: Record<ItemEstoque['tipo'], string> = {
-  essencia:  'Essência',
-  alcool:    'Álcool',
-  embalagem: 'Embalagem',
-  frasco:    'Frasco vazio',
-  tampa:     'Tampa/Válvula',
-  rotulo:    'Rótulo',
-  caixa:     'Caixa',
-  outro:     'Outro',
-}
-
-/** Quantos frascos ainda dá para produzir com o estoque atual deste insumo. */
-export function capacidadeFrascos(item: ItemEstoque): number {
-  const rendimento = item.rendimentoPorFrasco && item.rendimentoPorFrasco > 0 ? item.rendimentoPorFrasco : 1
-  return Math.floor(item.quantidadeAtual / rendimento)
-}
-
-/** Capacidade restante geral = o insumo mais limitante (gargalo). */
-export function capacidadeRestanteGeral(insumos: ItemEstoque[]): { capacidade: number; gargalo: ItemEstoque | null } {
-  const ativos = insumos.filter((i) => i.quantidadeAtual >= 0)
-  if (ativos.length === 0) return { capacidade: 0, gargalo: null }
-  let capacidade = Infinity
-  let gargalo: ItemEstoque | null = null
-  for (const item of ativos) {
-    const cap = capacidadeFrascos(item)
-    if (cap < capacidade) { capacidade = cap; gargalo = item }
-  }
-  return { capacidade: capacidade === Infinity ? 0 : capacidade, gargalo }
 }
 
 export function formatarMoeda(v: number): string {

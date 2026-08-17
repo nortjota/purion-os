@@ -12,15 +12,17 @@ import { ProducaoEstoqueView } from './ProducaoEstoqueView'
 import { ProducaoLotesView } from './ProducaoLotesView'
 import { ProducaoExpedicaoView } from './ProducaoExpedicaoView'
 import { ProducaoInsumosView } from './ProducaoInsumosView'
+import { ProducaoReceitaView } from './ProducaoReceitaView'
 import { ProducaoPainelView } from './ProducaoPainelView'
 
-type TabId = 'estoque' | 'lotes' | 'expedicao' | 'insumos' | 'painel'
+type TabId = 'estoque' | 'lotes' | 'expedicao' | 'insumos' | 'receita' | 'painel'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'estoque',    label: 'Estoque'            },
   { id: 'lotes',      label: 'Lotes de Produção'  },
   { id: 'expedicao',  label: 'Expedição'          },
   { id: 'insumos',    label: 'Insumos'            },
+  { id: 'receita',    label: 'Receita do Produto' },
   { id: 'painel',     label: 'Painel'             },
 ]
 
@@ -41,6 +43,7 @@ export function ProducaoDashboard() {
       {aba === 'lotes' && <ProducaoLotesView />}
       {aba === 'expedicao' && <ProducaoExpedicaoView />}
       {aba === 'insumos' && <ProducaoInsumosView />}
+      {aba === 'receita' && <ProducaoReceitaView />}
       {aba === 'painel' && <ProducaoPainelView />}
     </div>
   )

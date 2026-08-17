@@ -4,7 +4,8 @@ import { useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Package, Factory, TrendingDown, AlertTriangle, Boxes } from 'lucide-react'
 import { usePurionStore } from '@/store'
-import { ESTAGIOS_LOTE, normalizarStatusLote, capacidadeRestanteGeral, formatarMoeda } from './producaoHelpers'
+import { ESTAGIOS_LOTE, normalizarStatusLote, formatarMoeda } from './producaoHelpers'
+import { useInsumos, useBomReceita, capacidadeProducao, custoReceitaPorUnidade } from '@/hooks/useInsumosBOM'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
   background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
@@ -26,7 +27,9 @@ function KpiCard({ label, value, cor, sub, icon: Icon }: {
 }
 
 export function ProducaoPainelView() {
-  const { estoqueProduto, estoqueMovimentacoes, lotes, estoque } = usePurionStore()
+  const { estoqueProduto, estoqueMovimentacoes, lotes } = usePurionStore()
+  const { insumos, emAlerta, valorTotalInsumos } = useInsumos()
+  const { itens: receita } = useBomReceita()
 
   const metricas = useMemo(() => {
     const frascosProntos = estoqueProduto?.quantidadeAtual ?? 0
@@ -34,9 +37,10 @@ export function ProducaoPainelView() {
     const frascosVendidos = estoqueMovimentacoes.filter((m) => m.tipo === 'saida_venda').reduce((s, m) => s + m.quantidade, 0)
     const frascosDoados = estoqueMovimentacoes.filter((m) => m.tipo === 'saida_ugc').reduce((s, m) => s + m.quantidade, 0)
     const lotesAtivos = lotes.filter((l) => !['concluido', 'reprovado'].includes(normalizarStatusLote(l.status))).length
-    const insumosAlerta = estoque.filter((i) => i.quantidadeAtual < i.quantidadeMinima).length
-    const { capacidade } = capacidadeRestanteGeral(estoque)
+    const { capacidade } = capacidadeProducao(receita, insumos)
+    const custoReceita = custoReceitaPorUnidade(receita, insumos)
     const valorEstoquePronto = frascosProntos * (estoqueProduto?.custoUnitario ?? 0)
+    const valorTotalEstoque = valorEstoquePronto + valorTotalInsumos
 
     const porEstagioLote = ESTAGIOS_LOTE.map((e) => ({
       name: e.label, value: lotes.filter((l) => normalizarStatusLote(l.status) === e.id).length, cor: e.cor,
@@ -56,18 +60,23 @@ export function ProducaoPainelView() {
       .slice(-6)
       .map(([mes, v]) => ({ name: mes, Vendas: v.vendas, UGC: v.ugc }))
 
-    return { frascosProntos, frascosProduzidos, frascosVendidos, frascosDoados, lotesAtivos, insumosAlerta, capacidade, valorEstoquePronto, porEstagioLote, saidasChart }
-  }, [estoqueProduto, estoqueMovimentacoes, lotes, estoque])
+    return {
+      frascosProntos, frascosProduzidos, frascosVendidos, frascosDoados, lotesAtivos,
+      insumosAlerta: emAlerta.length, capacidade, custoReceita, valorEstoquePronto, valorTotalEstoque,
+      porEstagioLote, saidasChart,
+    }
+  }, [estoqueProduto, estoqueMovimentacoes, lotes, insumos, receita, emAlerta, valorTotalInsumos])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 1200 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12 }}>
+        <KpiCard label="Valor total em estoque" value={formatarMoeda(metricas.valorTotalEstoque)} icon={Package} cor="#C9A84C" sub="insumos + prontos" />
         <KpiCard label="Frascos prontos"        value={metricas.frascosProntos}    icon={Package} cor="#4CAF7A" sub={formatarMoeda(metricas.valorEstoquePronto) + ' em estoque'} />
-        <KpiCard label="Total produzido"        value={metricas.frascosProduzidos} icon={Factory} />
-        <KpiCard label="Vendidos + doados"      value={metricas.frascosVendidos + metricas.frascosDoados} icon={TrendingDown} cor="#5B8FE8" sub={`${metricas.frascosVendidos} vendidos · ${metricas.frascosDoados} UGC`} />
+        <KpiCard label="Capacidade restante"    value={`${metricas.capacidade} frascos`} icon={Package} cor="#C9A84C" sub="com os insumos atuais" />
+        <KpiCard label="Custo real / frasco"    value={formatarMoeda(metricas.custoReceita)} icon={Factory} sub="calculado da receita (BOM)" />
         <KpiCard label="Lotes ativos"           value={metricas.lotesAtivos}       icon={Boxes} cor="#E8A838" />
         <KpiCard label="Insumos em alerta"      value={metricas.insumosAlerta}     icon={AlertTriangle} cor={metricas.insumosAlerta > 0 ? '#E85238' : undefined} />
-        <KpiCard label="Capacidade restante"    value={`${metricas.capacidade} frascos`} icon={Package} cor="#C9A84C" sub="com os insumos atuais" />
+        <KpiCard label="Vendidos + doados"      value={metricas.frascosVendidos + metricas.frascosDoados} icon={TrendingDown} cor="#5B8FE8" sub={`${metricas.frascosVendidos} vendidos · ${metricas.frascosDoados} UGC`} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12 }}>

@@ -34,6 +34,7 @@ import { useGrowth } from '@/hooks/useGrowth'
 import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
 import { useEventosCalendario } from '@/hooks/useEventosCalendario'
 import { useEstoque } from '@/hooks/useEstoque'
+import { useInsumos } from '@/hooks/useInsumosBOM'
 import { useAuthContext } from '@/components/providers/AuthProvider'
 import { Proximos7Dias } from '@/components/calendario/Proximos7Dias'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
@@ -518,7 +519,7 @@ export function CommandCenter() {
   const isMobile = useMobile()
   const {
     receitas, despesas, campanhasAds,
-    tarefas, leads, lotes, reunioes, estoque,
+    tarefas, leads, lotes, reunioes,
     dailyEntries, vendas, doacoesUGC, metasDiarias,
     perfilAtivo, setPerfilAtivo,
     dashboardWidgets, estoqueProduto,
@@ -528,6 +529,7 @@ export function CommandCenter() {
   const { fases, objetivos } = useEstrategiaRoadmap()
   const { eventos } = useEventosCalendario()
   const { perfil } = useAuthContext()
+  const { insumos } = useInsumos()
   useEstoque()
   const faseAtual = fases.find((f) => f.status === 'atual')
 
@@ -555,8 +557,8 @@ export function CommandCenter() {
   // não mudam com o seletor de período abaixo, que é só para os KPIs/gráficos visíveis.
   const mesAtual     = useMemo(() => getMesAtual(receitas), [receitas])
   const kpis         = useMemo(() => calcularKPIsMes(receitas, despesas, campanhasAds, mesAtual), [receitas, despesas, campanhasAds, mesAtual])
-  const alertas      = useMemo(() => calcularAlertas(kpis, estoque), [kpis, estoque])
-  const healthScore  = useMemo(() => calcularHealthScore(receitas, despesas, campanhasAds, estoque), [receitas, despesas, campanhasAds, estoque])
+  const alertas      = useMemo(() => calcularAlertas(kpis, insumos), [kpis, insumos])
+  const healthScore  = useMemo(() => calcularHealthScore(receitas, despesas, campanhasAds, insumos), [receitas, despesas, campanhasAds, insumos])
   const feedAtividade = useMemo(() => gerarFeedAtividade(tarefas, leads, lotes, reunioes), [tarefas, leads, lotes, reunioes])
 
   // ── Seletor de período: Hoje / Semana / Mês / Trimestre ──

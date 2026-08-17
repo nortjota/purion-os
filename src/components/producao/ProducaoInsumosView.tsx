@@ -1,30 +1,31 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { AlertTriangle, Plus, Pencil, Trash2, X, PackageSearch } from 'lucide-react'
-import { usePurionStore } from '@/store'
-import type { ItemEstoque } from '@/store'
-import { useProducao } from '@/hooks/useProducao'
+import { AlertTriangle, Plus, Pencil, Trash2, X, PackageSearch, ShoppingCart, SlidersHorizontal } from 'lucide-react'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
-import { formatarDataBR } from '@/lib/calculos'
-import { INSUMO_TIPO_LABEL, capacidadeFrascos, capacidadeRestanteGeral, formatarMoeda } from './producaoHelpers'
-
-const TIPOS: ItemEstoque['tipo'][] = ['essencia', 'alcool', 'frasco', 'tampa', 'rotulo', 'caixa', 'embalagem', 'outro']
+import {
+  useInsumos, useBomReceita, capacidadeProducao, formatarMoedaBR,
+  CATEGORIA_LABEL, CATEGORIA_OPCOES,
+  type Insumo, type CategoriaInsumo,
+} from '@/hooks/useInsumosBOM'
 
 function ModalInsumo({ item, onSalvar, onFechar }: {
-  item?: ItemEstoque
-  onSalvar: (dados: Omit<ItemEstoque, 'id'>) => void
+  item?: Insumo
+  onSalvar: (dados: {
+    nome: string; categoria: CategoriaInsumo; unidade: string
+    quantidadeAtual: number; quantidadeMinima: number; custoUnitario: number
+    fornecedor: string | null; notas: string | null
+  }) => void
   onFechar: () => void
 }) {
   const [form, setForm] = useState({
     nome: item?.nome ?? '',
-    tipo: item?.tipo ?? 'outro' as ItemEstoque['tipo'],
-    fornecedor: item?.fornecedor ?? '',
+    categoria: item?.categoria ?? 'liquido' as CategoriaInsumo,
+    unidade: item?.unidade ?? (item?.categoria === 'liquido' ? 'ml' : 'un'),
     quantidadeAtual: String(item?.quantidadeAtual ?? ''),
-    unidade: item?.unidade ?? 'un',
     quantidadeMinima: String(item?.quantidadeMinima ?? ''),
     custoUnitario: String(item?.custoUnitario ?? ''),
-    rendimentoPorFrasco: String(item?.rendimentoPorFrasco ?? 1),
+    fornecedor: item?.fornecedor ?? '',
     notas: item?.notas ?? '',
   })
 
@@ -37,15 +38,13 @@ function ModalInsumo({ item, onSalvar, onFechar }: {
     if (!form.nome.trim()) return
     onSalvar({
       nome: form.nome.trim(),
-      tipo: form.tipo,
-      fornecedor: form.fornecedor.trim(),
-      quantidadeAtual: parseFloat(form.quantidadeAtual) || 0,
+      categoria: form.categoria,
       unidade: form.unidade.trim() || 'un',
+      quantidadeAtual: parseFloat(form.quantidadeAtual) || 0,
       quantidadeMinima: parseFloat(form.quantidadeMinima) || 0,
       custoUnitario: parseFloat(form.custoUnitario) || 0,
-      rendimentoPorFrasco: parseFloat(form.rendimentoPorFrasco) || 1,
-      ultimaEntrada: item?.ultimaEntrada ?? new Date().toISOString().slice(0, 10),
-      notas: form.notas,
+      fornecedor: form.fornecedor.trim() || null,
+      notas: form.notas.trim() || null,
     })
     onFechar()
   }
@@ -60,18 +59,18 @@ function ModalInsumo({ item, onSalvar, onFechar }: {
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-3">
           <div>
             <label className="label-purion">Nome*</label>
-            <input type="text" value={form.nome} onChange={(e) => set('nome', e.target.value)} className="input-purion" placeholder="Ex: Plástico bolha" autoFocus />
+            <input type="text" value={form.nome} onChange={(e) => set('nome', e.target.value)} className="input-purion" placeholder="Ex: Essência PURION" autoFocus />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label-purion">Tipo</label>
-              <select value={form.tipo} onChange={(e) => set('tipo', e.target.value as ItemEstoque['tipo'])} className="select-purion">
-                {TIPOS.map((t) => <option key={t} value={t}>{INSUMO_TIPO_LABEL[t]}</option>)}
+              <label className="label-purion">Categoria</label>
+              <select value={form.categoria} onChange={(e) => set('categoria', e.target.value as CategoriaInsumo)} className="select-purion">
+                {CATEGORIA_OPCOES.map((c) => <option key={c} value={c}>{CATEGORIA_LABEL[c]}</option>)}
               </select>
             </div>
             <div>
               <label className="label-purion">Unidade</label>
-              <input type="text" value={form.unidade} onChange={(e) => set('unidade', e.target.value)} className="input-purion" placeholder="un, ml, kg..." />
+              <input type="text" value={form.unidade} onChange={(e) => set('unidade', e.target.value)} className="input-purion" placeholder="ml, un..." />
             </div>
           </div>
           <div>
@@ -80,25 +79,21 @@ function ModalInsumo({ item, onSalvar, onFechar }: {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label-purion">Quantidade atual</label>
-              <input type="number" step="0.01" value={form.quantidadeAtual} onChange={(e) => set('quantidadeAtual', e.target.value)} className="input-purion" />
+              <label className="label-purion">Quantidade atual{item ? ' (não editar aqui)' : ''}</label>
+              <input type="number" step="0.01" disabled={!!item} value={form.quantidadeAtual} onChange={(e) => set('quantidadeAtual', e.target.value)} className="input-purion" />
             </div>
             <div>
               <label className="label-purion">Mínimo (alerta)</label>
               <input type="number" step="0.01" value={form.quantidadeMinima} onChange={(e) => set('quantidadeMinima', e.target.value)} className="input-purion" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="label-purion">Custo unitário (R$)</label>
-              <input type="number" step="0.01" value={form.custoUnitario} onChange={(e) => set('custoUnitario', e.target.value)} className="input-purion" />
-            </div>
-            <div>
-              <label className="label-purion">Consumo por frasco</label>
-              <input type="number" step="0.01" value={form.rendimentoPorFrasco} onChange={(e) => set('rendimentoPorFrasco', e.target.value)} className="input-purion" />
-            </div>
+          <div>
+            <label className="label-purion">Custo unitário (R$)</label>
+            <input type="number" step="0.01" value={form.custoUnitario} onChange={(e) => set('custoUnitario', e.target.value)} className="input-purion" />
           </div>
-          <p className="caption">Quantas unidades deste insumo são gastas para produzir 1 frasco.</p>
+          {item && (
+            <p className="caption">Para mudar a quantidade, use &ldquo;Registrar compra&rdquo; ou &ldquo;Ajuste manual&rdquo; — assim fica registrado no histórico.</p>
+          )}
           <div className="modal-footer" style={{ paddingLeft: 0, paddingRight: 0 }}>
             <button type="button" onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
             <button type="submit" className="btn btn-primary btn-sm">Salvar</button>
@@ -109,28 +104,86 @@ function ModalInsumo({ item, onSalvar, onFechar }: {
   )
 }
 
-export function ProducaoInsumosView() {
-  const { estoque } = usePurionStore()
-  const { adicionarInsumo, atualizarInsumo, deletarInsumo } = useProducao()
-  const [modalAberto, setModalAberto] = useState(false)
-  const [editando, setEditando] = useState<ItemEstoque | undefined>(undefined)
-  const [deletando, setDeletando] = useState<ItemEstoque | null>(null)
+function ModalMovimentacao({ item, modo, onConfirmar, onFechar }: {
+  item: Insumo
+  modo: 'compra' | 'ajuste'
+  onConfirmar: (valor: number, custoNovo?: number) => void
+  onFechar: () => void
+}) {
+  const [quantidade, setQuantidade] = useState('')
+  const [custoNovo, setCustoNovo] = useState(String(item.custoUnitario))
 
-  const { capacidade, gargalo } = useMemo(() => capacidadeRestanteGeral(estoque), [estoque])
-  const emAlerta = useMemo(() => estoque.filter((i) => i.quantidadeAtual < i.quantidadeMinima), [estoque])
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const v = parseFloat(quantidade)
+    if (Number.isNaN(v)) return
+    onConfirmar(v, modo === 'compra' ? (parseFloat(custoNovo) || item.custoUnitario) : undefined)
+    onFechar()
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={onFechar}>
+      <div className="modal-container max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">{modo === 'compra' ? 'Registrar compra' : 'Ajuste manual'}</h3>
+          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-3">
+          <p className="caption">{item.nome} — saldo atual: {item.quantidadeAtual} {item.unidade}</p>
+          <div>
+            <label className="label-purion">{modo === 'compra' ? `Quantidade comprada (${item.unidade})` : `Nova contagem (${item.unidade})`}</label>
+            <input type="number" step="0.01" autoFocus value={quantidade} onChange={(e) => setQuantidade(e.target.value)} className="input-purion" placeholder={modo === 'compra' ? 'ex: 500' : `ex: ${item.quantidadeAtual}`} />
+            {modo === 'ajuste' && <p className="caption mt-1">Informe a quantidade real após contagem física (correção de perda/sobra).</p>}
+          </div>
+          {modo === 'compra' && (
+            <div>
+              <label className="label-purion">Custo unitário desta compra (R$) — opcional</label>
+              <input type="number" step="0.01" value={custoNovo} onChange={(e) => setCustoNovo(e.target.value)} className="input-purion" />
+            </div>
+          )}
+          <div className="modal-footer" style={{ paddingLeft: 0, paddingRight: 0 }}>
+            <button type="button" onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
+            <button type="submit" className="btn btn-primary btn-sm">Confirmar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+export function ProducaoInsumosView() {
+  const { insumos, carregando, emAlerta, criarInsumo, atualizarInsumo, deletarInsumo, registrarCompra, ajustarManual } = useInsumos()
+  const { itens: receita } = useBomReceita()
+
+  const [modalCadastro, setModalCadastro] = useState<{ item?: Insumo } | null>(null)
+  const [modalMov, setModalMov] = useState<{ item: Insumo; modo: 'compra' | 'ajuste' } | null>(null)
+  const [deletando, setDeletando] = useState<Insumo | null>(null)
+
+  const { capacidade, gargalo } = useMemo(() => capacidadeProducao(receita, insumos), [receita, insumos])
+
+  const porCategoria = useMemo(() => {
+    return CATEGORIA_OPCOES.map((cat) => ({
+      categoria: cat,
+      itens: insumos.filter((i) => i.categoria === cat),
+    })).filter((g) => g.itens.length > 0)
+  }, [insumos])
+
+  if (carregando) {
+    return <div className="empty-state"><p className="empty-state-title">Carregando insumos…</p></div>
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Capacidade restante */}
-      {estoque.length > 0 && (
+      {/* Capacidade restante — a receita (BOM) já cruzada com os saldos */}
+      {receita.length > 0 && (
         <div className="card-purion" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)', color: '#C9A84C' }}>
             <PackageSearch size={20} />
           </div>
           <div>
-            <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Capacidade restante com os insumos atuais</p>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Capacidade de produção com os insumos atuais</p>
             <p style={{ fontSize: 24, fontWeight: 800, color: '#C9A84C' }}>{capacidade} frascos</p>
-            {gargalo && <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Gargalo: {gargalo.nome} ({gargalo.quantidadeAtual} {gargalo.unidade})</p>}
+            {gargalo && <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Limitado por: {gargalo.nome} ({gargalo.quantidadeAtual} {gargalo.unidade})</p>}
           </div>
         </div>
       )}
@@ -149,68 +202,90 @@ export function ProducaoInsumosView() {
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <p style={{ fontSize: 13, fontWeight: 600 }}>Insumos ({estoque.length})</p>
-        <button onClick={() => { setEditando(undefined); setModalAberto(true) }} className="btn btn-primary btn-sm">
+        <p style={{ fontSize: 13, fontWeight: 600 }}>Insumos ({insumos.length})</p>
+        <button onClick={() => setModalCadastro({})} className="btn btn-primary btn-sm">
           <Plus size={12} /> Novo insumo
         </button>
       </div>
 
-      {estoque.length === 0 ? (
+      {insumos.length === 0 ? (
         <div className="empty-state">
           <p className="empty-state-title">Nenhum insumo cadastrado</p>
-          <p className="empty-state-subtitle">Cadastre essência, frascos, tampas, rótulos, caixas...</p>
+          <p className="empty-state-subtitle">Cadastre líquidos da formulação, embalagem do produto, embalagem de envio e etiquetas.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
-          {estoque.map((item) => {
-            const alerta = item.quantidadeAtual < item.quantidadeMinima
-            const cap = capacidadeFrascos(item)
-            return (
-              <div key={item.id} className="card-purion" style={{ padding: '14px 16px', borderColor: alerta ? 'rgba(239,68,68,0.4)' : undefined }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <div>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      {INSUMO_TIPO_LABEL[item.tipo]}
-                    </span>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{item.nome}</p>
-                  </div>
-                  <div style={{ display: 'flex', gap: 2 }}>
-                    <button onClick={() => { setEditando(item); setModalAberto(true) }} className="icon-btn"><Pencil size={11} /></button>
-                    <button onClick={() => setDeletando(item)} className="icon-btn"><Trash2 size={11} /></button>
-                  </div>
-                </div>
-                <p style={{ fontSize: 22, fontWeight: 800, color: alerta ? '#EF4444' : 'var(--text-primary)' }}>
-                  {item.quantidadeAtual} <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-secondary)' }}>{item.unidade}</span>
-                </p>
-                {alerta && (
-                  <p style={{ fontSize: 11, color: '#EF4444', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                    <AlertTriangle size={10} /> Cobre só {cap} frascos — repor
-                  </p>
-                )}
-                <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Rende ~{cap} frascos</p>
-                <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Mín: {item.quantidadeMinima} {item.unidade}</p>
-                {item.fornecedor && <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{item.fornecedor}</p>}
-                <p style={{ fontSize: 10, color: '#8A8A8A', marginTop: 4 }}>
-                  {formatarMoeda(item.custoUnitario)}/{item.unidade} · atualizado {item.ultimaEntrada ? formatarDataBR(item.ultimaEntrada) : '—'}
-                </p>
+        <div className="flex flex-col gap-6">
+          {porCategoria.map((grupo) => (
+            <div key={grupo.categoria}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>
+                {CATEGORIA_LABEL[grupo.categoria]}
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 12 }}>
+                {grupo.itens.map((item) => {
+                  const alerta = item.quantidadeAtual <= item.quantidadeMinima
+                  return (
+                    <div key={item.id} className="card-purion" style={{ padding: '14px 16px', borderColor: alerta ? 'rgba(239,68,68,0.4)' : undefined }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{item.nome}</p>
+                        <div style={{ display: 'flex', gap: 2 }}>
+                          <button onClick={() => setModalCadastro({ item })} className="icon-btn" title="Editar cadastro"><Pencil size={11} /></button>
+                          <button onClick={() => setDeletando(item)} className="icon-btn" title="Excluir"><Trash2 size={11} /></button>
+                        </div>
+                      </div>
+                      <p style={{ fontSize: 22, fontWeight: 800, color: alerta ? '#EF4444' : 'var(--text-primary)' }}>
+                        {item.quantidadeAtual} <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-secondary)' }}>{item.unidade}</span>
+                      </p>
+                      {alerta && (
+                        <p style={{ fontSize: 11, color: '#EF4444', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                          <AlertTriangle size={10} /> Abaixo do mínimo — repor
+                        </p>
+                      )}
+                      <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Mín: {item.quantidadeMinima} {item.unidade}</p>
+                      {item.fornecedor && <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{item.fornecedor}</p>}
+                      <p style={{ fontSize: 10, color: '#8A8A8A', marginTop: 4, marginBottom: 10 }}>
+                        {formatarMoedaBR(item.custoUnitario)}/{item.unidade}
+                      </p>
+                      <div className="flex gap-2">
+                        <button onClick={() => setModalMov({ item, modo: 'compra' })} className="btn btn-secondary btn-sm" style={{ flex: 1, fontSize: 11 }}>
+                          <ShoppingCart size={11} /> Compra
+                        </button>
+                        <button onClick={() => setModalMov({ item, modo: 'ajuste' })} className="btn btn-secondary btn-sm" style={{ flex: 1, fontSize: 11 }}>
+                          <SlidersHorizontal size={11} /> Ajuste
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       )}
 
-      {modalAberto && (
+      {modalCadastro && (
         <ModalInsumo
-          item={editando}
-          onSalvar={(dados) => editando ? atualizarInsumo(editando.id, dados) : adicionarInsumo(dados)}
-          onFechar={() => setModalAberto(false)}
+          item={modalCadastro.item}
+          onSalvar={(dados) => modalCadastro.item ? atualizarInsumo(modalCadastro.item.id, dados) : criarInsumo(dados)}
+          onFechar={() => setModalCadastro(null)}
+        />
+      )}
+
+      {modalMov && (
+        <ModalMovimentacao
+          item={modalMov.item}
+          modo={modalMov.modo}
+          onConfirmar={(valor, custoNovo) => {
+            if (modalMov.modo === 'compra') registrarCompra(modalMov.item.id, valor, custoNovo)
+            else ajustarManual(modalMov.item.id, valor)
+          }}
+          onFechar={() => setModalMov(null)}
         />
       )}
 
       <ConfirmModal
         open={!!deletando}
         title="Excluir Insumo"
-        message={`Deseja excluir "${deletando?.nome}"?`}
+        message={`Deseja excluir "${deletando?.nome}"? Se ele estiver na receita, remova da receita antes.`}
         onConfirm={() => { if (deletando) { deletarInsumo(deletando.id); setDeletando(null) } }}
         onCancel={() => setDeletando(null)}
       />

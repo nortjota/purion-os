@@ -224,6 +224,7 @@ export interface Lote {
     unidade: string
   }>
   notas: string
+  custoProducao?: number
 }
 
 export interface ItemEstoque {

@@ -36,7 +36,7 @@ function carregarVisaoSalva(): Visao {
 export function ProducaoLotesView() {
   const isMobile = useMobile()
   const { lotes } = usePurionStore()
-  const { adicionarLote, atualizarLote, deletarLote } = useProducao()
+  const { registrarProducaoComBOM, atualizarLote, deletarLote } = useProducao()
 
   const [visao, setVisao] = useState<Visao>('quadro')
   const [modalNovoAberto, setModalNovoAberto] = useState(false)
@@ -88,7 +88,7 @@ export function ProducaoLotesView() {
       </div>
 
       {modalNovoAberto && (
-        <ProducaoModalNovoLote onCriar={adicionarLote} onFechar={() => setModalNovoAberto(false)} />
+        <ProducaoModalNovoLote onConfirmar={registrarProducaoComBOM} onFechar={() => setModalNovoAberto(false)} />
       )}
 
       {loteSelecionado && !isMobile && (
