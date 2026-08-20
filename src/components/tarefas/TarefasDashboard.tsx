@@ -103,6 +103,8 @@ export function TarefasDashboard() {
     }
   }
 
+  const px = isMobile ? 14 : 24
+
   const btnStyle = (active = false): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: 6,
     height: 30, padding: '0 10px', borderRadius: 6, fontSize: 12,
@@ -116,45 +118,61 @@ export function TarefasDashboard() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
       {/* ── Header ── */}
-      <div style={{ padding: '18px 24px 0', flexShrink: 0 }}>
+      <div style={{ padding: `16px ${px}px 0`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Tarefas</h1>
+          <h1 style={{ fontSize: isMobile ? 17 : 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+            Tarefas
+          </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {/* Mobile: filtros button */}
+            {isMobile && (
+              <button
+                onClick={() => setFiltrosAbertos(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  height: 34, padding: '0 12px', borderRadius: 8, fontSize: 13,
+                  border: `1px solid ${filtrosAtivosCount > 0 ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
+                  background: filtrosAtivosCount > 0 ? 'rgba(201,168,76,0.08)' : 'transparent',
+                  color: filtrosAtivosCount > 0 ? '#C9A84C' : 'var(--text-secondary)',
+                  cursor: 'pointer',
+                }}
+              >
+                <SlidersHorizontal size={15} />
+                {filtrosAtivosCount > 0 && (
+                  <span style={{
+                    width: 18, height: 18, borderRadius: '50%',
+                    background: '#C9A84C', color: '#0D0D0D',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 10, fontWeight: 700,
+                  }}>
+                    {filtrosAtivosCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* Desktop: Filtrar + Agrupar */}
             {!isMobile && (
               <>
-                {/* Filtrar */}
-                <button
-                  style={btnStyle(filtrosAtivosCount > 0)}
-                  onClick={() => setFiltrosAbertos((o) => !o)}
-                >
+                <button style={btnStyle(filtrosAtivosCount > 0)} onClick={() => setFiltrosAbertos((o) => !o)}>
                   <SlidersHorizontal size={13} />
                   Filtrar
                   {filtrosAtivosCount > 0 && (
-                    <span style={{
-                      background: '#C9A84C', color: '#0D0D0D',
-                      borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700,
-                    }}>
+                    <span style={{ background: '#C9A84C', color: '#0D0D0D', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700 }}>
                       {filtrosAtivosCount}
                     </span>
                   )}
                 </button>
 
-                {/* Agrupar */}
                 <div style={{ position: 'relative' }}>
-                  <button
-                    style={btnStyle(groupBy !== 'none')}
-                    onClick={() => setGroupMenuAberto((o) => !o)}
-                  >
+                  <button style={btnStyle(groupBy !== 'none')} onClick={() => setGroupMenuAberto((o) => !o)}>
                     <Layers size={13} />
                     Agrupar
                     <ChevronDown size={11} />
                   </button>
                   {groupMenuAberto && (
                     <>
-                      <div
-                        style={{ position: 'fixed', inset: 0, zIndex: 49 }}
-                        onClick={() => setGroupMenuAberto(false)}
-                      />
+                      <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setGroupMenuAberto(false)} />
                       <div style={{
                         position: 'absolute', top: '100%', right: 0, marginTop: 4,
                         background: 'var(--bg-surface)', border: '1px solid var(--border)',
@@ -162,9 +180,7 @@ export function TarefasDashboard() {
                         boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
                       }}>
                         {GROUP_OPTIONS.map(([v, label]) => (
-                          <button
-                            key={v}
-                            onClick={() => { setGroupBy(v); setGroupMenuAberto(false) }}
+                          <button key={v} onClick={() => { setGroupBy(v); setGroupMenuAberto(false) }}
                             style={{
                               display: 'block', width: '100%', textAlign: 'left',
                               padding: '8px 14px', fontSize: 13, border: 'none', cursor: 'pointer',
@@ -182,40 +198,60 @@ export function TarefasDashboard() {
               </>
             )}
 
-            {/* + Adicionar tarefa */}
-            <button
-              onClick={() => handleNovaTarefa()}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                height: 32, padding: '0 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-                background: '#C9A84C', color: '#0D0D0D', border: 'none', cursor: 'pointer',
-              }}
-            >
-              <Plus size={14} />
-              {!isMobile ? 'Adicionar tarefa' : ''}
-            </button>
+            {/* Desktop: "+ Adicionar tarefa" */}
+            {!isMobile && (
+              <button
+                onClick={() => handleNovaTarefa()}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  height: 32, padding: '0 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
+                  background: '#C9A84C', color: '#0D0D0D', border: 'none', cursor: 'pointer',
+                }}
+              >
+                <Plus size={14} />
+                Adicionar tarefa
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Tabs de visão */}
+        {/* ── Abas de visão ── */}
         {isMobile ? (
-          <select
-            value={visao}
-            onChange={(e) => mudarVisao(e.target.value)}
-            style={{
-              width: '100%', height: 36, borderRadius: 6, padding: '0 10px',
-              background: 'var(--bg-surface)', border: '1px solid var(--border)',
-              color: 'var(--text-primary)', fontSize: 13, marginBottom: 8,
-            }}
-          >
-            {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-          </select>
+          /* Pill tabs com scroll horizontal — muito mais mobile-friendly que um <select> */
+          <div style={{
+            display: 'flex', gap: 6, overflowX: 'auto',
+            paddingBottom: 10,
+            /* hide scrollbar */
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}>
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => mudarVisao(tab.id)}
+                style={{
+                  flexShrink: 0,
+                  height: 34, padding: '0 16px',
+                  borderRadius: 20,
+                  fontSize: 13, fontWeight: visao === tab.id ? 600 : 400,
+                  background: visao === tab.id ? '#C9A84C' : 'var(--bg-surface)',
+                  color: visao === tab.id ? '#0D0D0D' : 'var(--text-secondary)',
+                  border: `1px solid ${visao === tab.id ? '#C9A84C' : 'var(--border)'}`,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 150ms',
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         ) : (
           <InnerTabs tabs={TABS} activeTab={visao} onChange={mudarVisao} />
         )}
       </div>
 
-      {/* ── Painel de filtros (toggle inline) ── */}
+      {/* ── Painel de filtros (desktop inline) ── */}
       {filtrosAbertos && !isMobile && (
         <div style={{
           padding: '12px 24px', flexShrink: 0,
@@ -224,14 +260,7 @@ export function TarefasDashboard() {
           position: 'relative',
         }}>
           <TarefaFiltros tarefas={tarefasAtivas} filtros={filtros} onChange={setFiltros} />
-          <button
-            onClick={() => setFiltrosAbertos(false)}
-            style={{
-              position: 'absolute', top: 10, right: 20,
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: 'var(--text-secondary)',
-            }}
-          >
+          <button onClick={() => setFiltrosAbertos(false)} style={{ position: 'absolute', top: 10, right: 20, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
             <X size={14} />
           </button>
         </div>
@@ -241,7 +270,7 @@ export function TarefasDashboard() {
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
         {visao === 'lista' && (
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: `14px ${px}px ${isMobile ? 90 : 16}px` }}>
             <TarefaListaView
               tarefas={tarefasFiltradas}
               groupBy={groupBy}
@@ -253,7 +282,7 @@ export function TarefasDashboard() {
         )}
 
         {visao === 'quadro' && (
-          <div style={{ flex: 1, overflowX: 'auto', overflowY: 'hidden', padding: '16px 24px' }}>
+          <div style={{ flex: 1, overflowX: 'auto', overflowY: 'hidden', padding: `14px ${px}px` }}>
             <TarefaKanbanView
               tarefas={tarefasFiltradas}
               onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
@@ -281,18 +310,37 @@ export function TarefasDashboard() {
         )}
 
         {visao === 'painel' && (
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: `14px ${px}px ${isMobile ? 90 : 16}px` }}>
             <TarefaDashboardView tarefas={tarefasAtivas} />
           </div>
         )}
       </div>
 
-      {/* ── Filtros mobile ── */}
-      <BottomSheet
-        open={filtrosAbertos && isMobile}
-        onClose={() => setFiltrosAbertos(false)}
-        title="Filtros"
-      >
+      {/* ── FAB mobile — "+ Nova tarefa" flutuante acima da nav ── */}
+      {isMobile && (
+        <button
+          onClick={() => handleNovaTarefa()}
+          style={{
+            position: 'fixed',
+            bottom: 76,
+            right: 16,
+            width: 52, height: 52,
+            borderRadius: '50%',
+            background: '#C9A84C', color: '#0D0D0D',
+            border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 20px rgba(201,168,76,0.45)',
+            zIndex: 40,
+            fontSize: 22, fontWeight: 300,
+          }}
+          aria-label="Nova tarefa"
+        >
+          <Plus size={22} strokeWidth={2.5} />
+        </button>
+      )}
+
+      {/* ── Filtros mobile (bottom sheet) ── */}
+      <BottomSheet open={filtrosAbertos && isMobile} onClose={() => setFiltrosAbertos(false)} title="Filtros">
         <TarefaFiltros tarefas={tarefasAtivas} filtros={filtros} onChange={setFiltros} />
       </BottomSheet>
 

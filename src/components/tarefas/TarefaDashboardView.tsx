@@ -8,6 +8,7 @@ import {
 import { CheckSquare, Clock, AlertTriangle, ListTodo } from 'lucide-react'
 import type { Tarefa } from '@/store'
 import { isVencida, SOCIOS, PRIORIDADE_CONFIG, STATUS_LABEL, COLUNAS, MODULOS } from './tarefasHelpers'
+import { useMobile } from '@/hooks/useMobile'
 
 interface Props {
   tarefas: Tarefa[]
