@@ -5,7 +5,7 @@ import { Plus, X, Milestone, Trash2 } from 'lucide-react'
 import { useEstrategiaDecisoes, type NovaDecisao } from '@/hooks/useEstrategia'
 import { SecaoNotas } from './SecaoNotas'
 
-const CATEGORIAS: Array<{ id: string; label: string; cor: string }> = [
+export const CATEGORIAS: Array<{ id: string; label: string; cor: string }> = [
   { id: 'preco', label: 'Preço', cor: '#C9A84C' },
   { id: 'produto', label: 'Produto', cor: '#5B8FE8' },
   { id: 'marca', label: 'Marca', cor: '#A855F7' },
@@ -14,14 +14,14 @@ const CATEGORIAS: Array<{ id: string; label: string; cor: string }> = [
   { id: 'geral', label: 'Geral', cor: '#B8B8B8' },
 ]
 
-function corCategoria(id: string) {
+export function corCategoria(id: string) {
   return CATEGORIAS.find((c) => c.id === id)?.cor ?? '#B8B8B8'
 }
-function labelCategoria(id: string) {
+export function labelCategoria(id: string) {
   return CATEGORIAS.find((c) => c.id === id)?.label ?? id
 }
 
-function fmtData(iso: string) {
+export function fmtData(iso: string) {
   try {
     return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
   } catch {
@@ -34,7 +34,7 @@ const FORM_VAZIO: NovaDecisao = {
   titulo: '', justificativa: '', categoria: 'geral',
 }
 
-function ModalDecisao({ onFechar, onSalvar }: { onFechar: () => void; onSalvar: (d: NovaDecisao) => void }) {
+export function ModalDecisao({ onFechar, onSalvar }: { onFechar: () => void; onSalvar: (d: NovaDecisao) => void }) {
   const [form, setForm] = useState<NovaDecisao>(FORM_VAZIO)
 
   function set<K extends keyof NovaDecisao>(campo: K, val: NovaDecisao[K]) {
