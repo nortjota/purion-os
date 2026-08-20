@@ -30,9 +30,9 @@ export function usePreferenciasMenu() {
 
   async function alternarAba(abaKey: string, oculta: boolean) {
     const sb = supabase
-    if (!sb) return
+    if (!sb || !user) return
     const { error } = await sb.from('preferencias_menu').upsert(
-      { aba_key: abaKey, oculta, updated_at: new Date().toISOString() },
+      { user_id: user.id, aba_key: abaKey, oculta, updated_at: new Date().toISOString() },
       { onConflict: 'user_id,aba_key' }
     )
     dbLog('UPSERT', 'preferencias_menu', error, abaKey)
@@ -46,7 +46,7 @@ export function usePreferenciasMenu() {
 
   async function restaurarPadrao() {
     const sb = supabase
-    if (!sb) return
+    if (!sb || !user) return
     const { error } = await sb.from('preferencias_menu').delete().not('aba_key', 'is', null)
     dbLog('DELETE', 'preferencias_menu (restaurar padrão)', error, 'todas as abas do usuário')
     if (error) { toastError('Erro ao restaurar menu padrão', error.message); return }
