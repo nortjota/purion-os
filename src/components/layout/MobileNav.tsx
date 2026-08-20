@@ -7,10 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
-  Zap, BarChart2, Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
-  Compass, FlaskConical, Mail, CalendarDays,
+  Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
+  Compass, FlaskConical, Mail, CalendarDays, LayoutGrid,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
+import { usePreferenciasMenu } from '@/hooks/usePreferenciasMenu'
+import { hrefParaChave } from './navConfig'
+import { PersonalizarMenuModal } from './PersonalizarMenuModal'
 
 const MAIN_ITEMS = [
   { href: '/',            label: 'Início',     icon: LayoutDashboard },
@@ -66,11 +69,15 @@ const DRAWER_GROUPS: DrawerGroup[] = [
 export function MobileNav() {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [menuPersonalizarAberto, setMenuPersonalizarAberto] = useState(false)
   const { isMaster } = useIsMaster()
+  const { ocultas: abasOcultas } = usePreferenciasMenu()
+
+  const visibleMainItems = MAIN_ITEMS.filter((i) => !abasOcultas.has(hrefParaChave(i.href)))
 
   const visibleGroups = DRAWER_GROUPS.map((g) => ({
     ...g,
-    items: g.items.filter((i) => isMaster || !i.masterOnly),
+    items: g.items.filter((i) => (isMaster || !i.masterOnly) && !abasOcultas.has(hrefParaChave(i.href))),
   })).filter((g) => g.items.length > 0)
 
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
@@ -90,7 +97,7 @@ export function MobileNav() {
         display: 'flex', justifyContent: 'space-around', alignItems: 'center',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}>
-        {MAIN_ITEMS.map(({ href, label, icon: Icon }) => {
+        {visibleMainItems.map(({ href, label, icon: Icon }) => {
           const active = isActive(href)
           return (
             <Link
@@ -219,10 +226,26 @@ export function MobileNav() {
                   </div>
                 ))}
               </div>
+
+              {/* Footer */}
+              <div style={{ borderTop: '1px solid var(--border)', padding: 12, flexShrink: 0 }}>
+                <button
+                  onClick={() => { setMenuPersonalizarAberto(true); closeDrawer() }}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    height: 40, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent',
+                    cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)',
+                  }}
+                >
+                  <LayoutGrid size={14} /> Personalizar menu
+                </button>
+              </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
+
+      {menuPersonalizarAberto && <PersonalizarMenuModal onFechar={() => setMenuPersonalizarAberto(false)} />}
     </>
   )
 }

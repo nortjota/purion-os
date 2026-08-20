@@ -1,80 +1,20 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, Users, CheckSquare, TrendingUp,
-  Package, Users2, BarChart2, Calendar, Zap, Settings,
-  BookOpen, LogOut, Megaphone, X, ChevronLeft, ChevronRight, Link2, Headphones, Mail, KeyRound, ShoppingBag, Target, Shapes, FlaskConical, Compass, CalendarDays,
+  LogOut, X, ChevronLeft, ChevronRight, LayoutGrid,
 } from 'lucide-react'
 import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
 import { useMobile } from '@/hooks/useMobile'
 import { useIsMaster } from '@/hooks/useIsMaster'
+import { usePreferenciasMenu } from '@/hooks/usePreferenciasMenu'
+import { NAV_GROUPS } from './navConfig'
+import { PersonalizarMenuModal } from './PersonalizarMenuModal'
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
-
-type NavItem = {
-  href: string
-  label: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
-  masterOnly?: boolean
-}
-
-type NavGroup = {
-  label?: string
-  items: NavItem[]
-}
-
-const navGroups: NavGroup[] = [
-  {
-    label: 'PRINCIPAL',
-    items: [
-      { href: '/',            label: 'Início',       icon: LayoutDashboard },
-      { href: '/calendario',  label: 'Calendário',   icon: CalendarDays },
-      { href: '/estrategias', label: 'Estratégias',  icon: Compass },
-    ],
-  },
-  {
-    label: 'COMERCIAL',
-    items: [
-      { href: '/crm',        label: 'CRM B2B',      icon: Users },
-      { href: '/vendas',     label: 'Vendas',        icon: ShoppingBag },
-      { href: '/leads-site', label: 'Leads do Site', icon: Mail },
-    ],
-  },
-  {
-    label: 'OPERAÇÃO',
-    items: [
-      { href: '/tarefas',  label: 'Tarefas',       icon: CheckSquare },
-      { href: '/metas',    label: 'Metas',          icon: Target },
-      { href: '/quadros',  label: 'Quadros',        icon: Shapes },
-      { href: '/producao', label: 'Produção',       icon: Package },
-      { href: '/reunioes', label: 'Reuniões',       icon: Calendar },
-      { href: '/sac',      label: 'SAC',            icon: Headphones },
-    ],
-  },
-  {
-    label: 'CRESCIMENTO',
-    items: [
-      { href: '/marketing', label: 'Marketing',  icon: Megaphone },
-      { href: '/creators',  label: 'Creators',   icon: Users2 },
-      { href: '/growth',    label: 'Growth',     icon: FlaskConical },
-      { href: '/afiliados', label: 'Afiliados',  icon: Link2 },
-    ],
-  },
-  {
-    label: 'GESTÃO',
-    items: [
-      { href: '/financeiro',   label: 'Financeiro',            icon: TrendingUp },
-      { href: '/relatorios',   label: 'Relatórios',            icon: BarChart2 },
-      { href: '/conhecimento', label: 'Conhecimento',           icon: BookOpen },
-      { href: '/contas',       label: 'Contas & Acessos',      icon: KeyRound,  masterOnly: true },
-      { href: '/settings',     label: 'Configurações',          icon: Settings,  masterOnly: true },
-    ],
-  },
-]
 
 const DEMO_PERFIS: Array<{ id: PerfilUsuario; nome: string; cargo: string; inicial: string }> = [
   { id: 'matheus', nome: 'Matheus', cargo: 'Comercial', inicial: 'M' },
@@ -145,14 +85,17 @@ export function Sidebar() {
     [produtosSKU],
   )
 
+  const { ocultas: abasOcultas } = usePreferenciasMenu()
+  const [menuPersonalizarAberto, setMenuPersonalizarAberto] = useState(false)
+
   const visibleNavGroups = useMemo(
-    () => navGroups
+    () => NAV_GROUPS
       .map((g) => ({
         ...g,
-        items: g.items.filter((i) => isMaster || !i.masterOnly),
+        items: g.items.filter((i) => (isMaster || !i.masterOnly) && (i.essencial || !abasOcultas.has(i.key))),
       }))
       .filter((g) => g.items.length > 0),
-    [isMaster],
+    [isMaster, abasOcultas],
   )
 
   function getBadge(href: string) {
@@ -395,6 +338,32 @@ export function Sidebar() {
             </div>
           )}
 
+          <button
+            onClick={() => setMenuPersonalizarAberto(true)}
+            title="Personalizar menu"
+            style={{
+              width: '100%', height: 30, borderRadius: 6,
+              border: '1px solid var(--border)', background: 'transparent',
+              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              justifyContent: recolhida ? 'center' : 'flex-start',
+              gap: 6, padding: recolhida ? '0' : '0 8px',
+              fontSize: 12, color: 'var(--text-secondary)',
+              transition: 'background 120ms, color 120ms',
+              marginBottom: isMobile ? 0 : 6,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(201,168,76,0.08)'
+              e.currentTarget.style.color = '#C9A84C'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = 'var(--text-secondary)'
+            }}
+          >
+            <LayoutGrid size={14} />
+            {!recolhida && <span>Personalizar menu</span>}
+          </button>
+
           {!isMobile && (
             <button
               onClick={() => setSidebarRecolhida(!sidebarRecolhida)}
@@ -422,6 +391,8 @@ export function Sidebar() {
           )}
         </div>
       </aside>
+
+      {menuPersonalizarAberto && <PersonalizarMenuModal onFechar={() => setMenuPersonalizarAberto(false)} />}
     </>
   )
 }
