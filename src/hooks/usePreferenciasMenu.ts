@@ -30,12 +30,23 @@ export function usePreferenciasMenu() {
 
   async function alternarAba(abaKey: string, oculta: boolean) {
     const sb = supabase
-    if (!sb || !user) return
+    if (!sb) return
+
+    // Busca o usuário direto do Supabase (fonte autoritativa) em vez de confiar só no
+    // contexto do AuthProvider — evita salvar com user_id indefinido se o contexto
+    // ainda não propagou o usuário no momento do clique.
+    const { data: { user: authUser }, error: userErr } = await sb.auth.getUser()
+    console.log('[PURION] preferencias_menu — user_id ao salvar:', authUser?.id)
+    if (userErr || !authUser) {
+      toastError('Usuário não carregado', 'Aguarde o login terminar e tente de novo.')
+      return
+    }
+
     const { error } = await sb.from('preferencias_menu').upsert(
-      { user_id: user.id, aba_key: abaKey, oculta, updated_at: new Date().toISOString() },
+      { user_id: authUser.id, aba_key: abaKey, oculta, updated_at: new Date().toISOString() },
       { onConflict: 'user_id,aba_key' }
     )
-    dbLog('UPSERT', 'preferencias_menu', error, abaKey)
+    dbLog('UPSERT', 'preferencias_menu', error, `${abaKey} (user=${authUser.id})`)
     if (error) { toastError('Erro ao salvar preferência de menu', error.message); return }
     setOcultas((prev) => {
       const next = new Set(prev)
