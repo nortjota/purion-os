@@ -838,6 +838,7 @@ interface PurionState {
   setKbCategorias: (categorias: KbCategoria[]) => void
   setKbDocumentos: (documentos: KbDocumento[]) => void
   setKbBlocos: (blocos: KbBloco[]) => void
+  removerKbCategoria: (id: string) => void
   adicionarKbDocumento: (doc: KbDocumento) => void
   atualizarKbDocumento: (id: string, dados: Partial<KbDocumento>) => void
   removerKbDocumento: (id: string) => void
@@ -1140,6 +1141,8 @@ export const usePurionStore = create<PurionState>()(
         setKbCategorias: (kbCategorias) => set({ kbCategorias }),
         setKbDocumentos: (kbDocumentos) => set({ kbDocumentos }),
         setKbBlocos: (kbBlocos) => set({ kbBlocos }),
+        removerKbCategoria: (id) =>
+          set((s) => ({ kbCategorias: s.kbCategorias.filter((c) => c.id !== id) })),
         adicionarKbDocumento: (doc) =>
           set((s) => ({ kbDocumentos: [...s.kbDocumentos, doc] })),
         atualizarKbDocumento: (id, dados) =>

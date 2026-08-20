@@ -3,17 +3,22 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import { usePurionStore } from '@/store'
+import type { KbCategoria } from '@/store'
 import { useMobile } from '@/hooks/useMobile'
 import { useConhecimento } from '@/hooks/useConhecimento'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { ConhecimentoSidebar } from './ConhecimentoSidebar'
 import { DocumentoView } from './DocumentoView'
+import { ConhecimentoLixeira } from './ConhecimentoLixeira'
 
 export function ConhecimentoDashboard() {
   const isMobile = useMobile()
+  const { perfil } = useAuthContext()
+  const podeExcluir = perfil?.role === 'admin' || perfil?.role === 'master'
   const { kbCategorias, kbDocumentos, kbBlocos } = usePurionStore()
   const {
-    criarDocumento, atualizarDocumento, deletarDocumento,
+    criarDocumento, atualizarDocumento, deletarDocumento, deletarCategoria,
     criarBloco, atualizarBloco, deletarBloco, reordenarBlocos,
   } = useConhecimento()
 
@@ -21,6 +26,8 @@ export function ConhecimentoDashboard() {
   const [busca, setBusca] = useState('')
   const [sidebarMobileAberta, setSidebarMobileAberta] = useState(false)
   const [deletandoId, setDeletandoId] = useState<string | null>(null)
+  const [deletandoCategoria, setDeletandoCategoria] = useState<KbCategoria | null>(null)
+  const [arquivadosAberto, setArquivadosAberto] = useState(false)
 
   useEffect(() => {
     if (!documentoAtivoId && kbDocumentos.length > 0) {
@@ -35,6 +42,14 @@ export function ConhecimentoDashboard() {
   const blocosDoDocumento = useMemo(
     () => kbBlocos.filter((b) => b.documentoId === documentoAtivoId),
     [kbBlocos, documentoAtivoId]
+  )
+  const documentoParaExcluir = useMemo(
+    () => kbDocumentos.find((d) => d.id === deletandoId) ?? null,
+    [kbDocumentos, deletandoId]
+  )
+  const documentosDaCategoria = useMemo(
+    () => deletandoCategoria ? kbDocumentos.filter((d) => d.categoriaId === deletandoCategoria.id).length : 0,
+    [kbDocumentos, deletandoCategoria]
   )
 
   async function handleNovoDocumento(categoriaId: string | null) {
@@ -54,14 +69,26 @@ export function ConhecimentoDashboard() {
     setDeletandoId(id)
   }
 
-  function confirmarDelete() {
+  async function confirmarDelete() {
     if (!deletandoId) return
-    deletarDocumento(deletandoId)
+    const titulo = documentoParaExcluir?.titulo
+    await deletarDocumento(deletandoId, titulo)
     if (documentoAtivoId === deletandoId) {
       const restantes = kbDocumentos.filter((d) => d.id !== deletandoId)
       setDocumentoAtivoId(restantes[0]?.id ?? null)
     }
     setDeletandoId(null)
+  }
+
+  async function confirmarDeleteCategoria() {
+    if (!deletandoCategoria) return
+    const id = deletandoCategoria.id
+    await deletarCategoria(id, deletandoCategoria.nome)
+    if (documentoAtivo?.categoriaId === id) {
+      const restantes = kbDocumentos.filter((d) => d.categoriaId !== id)
+      setDocumentoAtivoId(restantes[0]?.id ?? null)
+    }
+    setDeletandoCategoria(null)
   }
 
   const sidebarContent = (
@@ -70,9 +97,12 @@ export function ConhecimentoDashboard() {
       documentos={kbDocumentos}
       documentoAtivoId={documentoAtivoId}
       busca={busca}
+      podeExcluir={podeExcluir}
       onBuscaChange={setBusca}
       onSelecionar={handleSelecionar}
       onNovoDocumento={handleNovoDocumento}
+      onExcluirCategoria={setDeletandoCategoria}
+      onAbrirArquivados={() => setArquivadosAberto(true)}
     />
   )
 
@@ -111,6 +141,7 @@ export function ConhecimentoDashboard() {
         <DocumentoView
           documento={documentoAtivo}
           blocos={blocosDoDocumento}
+          podeExcluir={podeExcluir}
           onAtualizarDocumento={atualizarDocumento}
           onDeletarDocumento={handleDeletarDocumento}
           onCriarBloco={criarBloco}
@@ -129,11 +160,21 @@ export function ConhecimentoDashboard() {
 
       <ConfirmModal
         open={!!deletandoId}
-        title="Excluir Documento"
-        message="Deseja excluir este documento e todos os seus blocos? Esta ação não pode ser desfeita."
+        title="Excluir documento"
+        message={`Excluir o documento "${documentoParaExcluir?.titulo ?? ''}"? Esta ação pode ser desfeita na lixeira (Arquivados).`}
         onConfirm={confirmarDelete}
         onCancel={() => setDeletandoId(null)}
       />
+
+      <ConfirmModal
+        open={!!deletandoCategoria}
+        title="Excluir guia"
+        message={`Excluir a guia "${deletandoCategoria?.nome ?? ''}" e ${documentosDaCategoria > 0 ? `os ${documentosDaCategoria} documento${documentosDaCategoria !== 1 ? 's' : ''} dela` : 'seus documentos'}? Pode ser desfeito na lixeira (Arquivados).`}
+        onConfirm={confirmarDeleteCategoria}
+        onCancel={() => setDeletandoCategoria(null)}
+      />
+
+      {arquivadosAberto && <ConhecimentoLixeira onFechar={() => setArquivadosAberto(false)} />}
     </div>
   )
 }

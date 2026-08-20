@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Search, Plus, Star } from 'lucide-react'
+import { Search, Plus, Star, Trash2, Archive } from 'lucide-react'
 import type { KbCategoria, KbDocumento } from '@/store'
 import { resolverIcone } from './conhecimentoHelpers'
 
@@ -10,13 +10,17 @@ interface ConhecimentoSidebarProps {
   documentos: KbDocumento[]
   documentoAtivoId: string | null
   busca: string
+  podeExcluir: boolean
   onBuscaChange: (v: string) => void
   onSelecionar: (id: string) => void
   onNovoDocumento: (categoriaId: string | null) => void
+  onExcluirCategoria: (categoria: KbCategoria) => void
+  onAbrirArquivados: () => void
 }
 
 export function ConhecimentoSidebar({
-  categorias, documentos, documentoAtivoId, busca, onBuscaChange, onSelecionar, onNovoDocumento,
+  categorias, documentos, documentoAtivoId, busca, podeExcluir,
+  onBuscaChange, onSelecionar, onNovoDocumento, onExcluirCategoria, onAbrirArquivados,
 }: ConhecimentoSidebarProps) {
   const documentosFiltrados = useMemo(() => {
     if (!busca.trim()) return documentos
@@ -64,13 +68,22 @@ export function ConhecimentoSidebar({
                   <Icon size={12} />
                   {cat.nome}
                 </span>
-                <button
-                  onClick={() => onNovoDocumento(cat.id)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Novo documento nesta categoria"
-                >
-                  <Plus size={12} className="text-[var(--text-secondary)]" />
-                </button>
+                <span className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => onNovoDocumento(cat.id)}
+                    title="Novo documento nesta categoria"
+                  >
+                    <Plus size={12} className="text-[var(--text-secondary)]" />
+                  </button>
+                  {podeExcluir && (
+                    <button
+                      onClick={() => onExcluirCategoria(cat)}
+                      title="Excluir guia"
+                    >
+                      <Trash2 size={12} className="text-[var(--text-secondary)] hover:text-[#E85238]" />
+                    </button>
+                  )}
+                </span>
               </div>
               {docsCategoria.map((doc) => (
                 <DocItem key={doc.id} doc={doc} ativo={documentoAtivoId === doc.id} onClick={() => onSelecionar(doc.id)} />
@@ -83,9 +96,16 @@ export function ConhecimentoSidebar({
         })}
       </div>
 
-      <div className="p-3 border-t border-[var(--border)] shrink-0">
+      <div className="p-3 border-t border-[var(--border)] shrink-0 flex flex-col gap-2">
         <button onClick={() => onNovoDocumento(null)} className="btn btn-primary btn-sm w-full">
           <Plus size={13} /> Novo documento
+        </button>
+        <button
+          onClick={onAbrirArquivados}
+          className="flex items-center justify-center gap-1.5"
+          style={{ fontSize: 11, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
+        >
+          <Archive size={11} /> Arquivados
         </button>
       </div>
     </div>

@@ -8,6 +8,7 @@ import { BlockEditor } from '@/components/blocks/BlockEditor'
 interface DocumentoViewProps {
   documento: KbDocumento
   blocos: KbBloco[]
+  podeExcluir: boolean
   onAtualizarDocumento: (id: string, dados: Partial<Pick<KbDocumento, 'titulo' | 'emoji' | 'resumo' | 'favorito'>>) => void
   onDeletarDocumento: (id: string) => void
   onCriarBloco: (documentoId: string, tipo: TipoBloco, conteudo: ConteudoBloco, ordem: number) => Promise<KbBloco | null>
@@ -17,7 +18,7 @@ interface DocumentoViewProps {
 }
 
 export function DocumentoView({
-  documento, blocos, onAtualizarDocumento, onDeletarDocumento,
+  documento, blocos, podeExcluir, onAtualizarDocumento, onDeletarDocumento,
   onCriarBloco, onAtualizarBloco, onDeletarBloco, onReordenarBlocos,
 }: DocumentoViewProps) {
   return (
@@ -47,9 +48,11 @@ export function DocumentoView({
               >
                 <Star size={16} fill={documento.favorito ? '#C9A84C' : 'none'} className={documento.favorito ? 'text-[#C9A84C]' : 'text-[var(--text-secondary)]'} />
               </button>
-              <button onClick={() => onDeletarDocumento(documento.id)} className="icon-btn border-0" title="Excluir documento">
-                <Trash2 size={15} className="text-[#E85238]" />
-              </button>
+              {podeExcluir && (
+                <button onClick={() => onDeletarDocumento(documento.id)} className="icon-btn border-0" title="Excluir documento">
+                  <Trash2 size={15} className="text-[#E85238]" />
+                </button>
+              )}
             </div>
           </div>
           <textarea
