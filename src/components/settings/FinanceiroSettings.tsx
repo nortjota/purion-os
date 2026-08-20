@@ -4,28 +4,47 @@ import { useState, useMemo } from 'react'
 import { usePurionStore } from '@/store'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
 import { useToast } from '@/components/ui/Toast'
-import { Save, Trash2, Plus, BarChart2, RefreshCw } from 'lucide-react'
+import { Save, Trash2, Plus, BarChart2, RefreshCw, AlertTriangle } from 'lucide-react'
 import { AportesSociosCard } from './AportesSociosCard'
 
 const SPLIT_COLORS = ['#C9A84C', '#3B82F6', '#22C55E', '#A855F7', '#EF4444']
 const SPLIT_LABELS = ['Estoque', 'Marketing', 'Caixa', 'Desenvolvimento', 'Societário']
 
+function formatarMoedaBR(v: number): string {
+  return `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
 export function FinanceiroSettings() {
   const { configuracoes } = usePurionStore()
   const { salvarConfiguracoes } = useConfiguracoes()
-  const { success, error } = useToast()
+  const { error } = useToast()
 
-  // Precificação
-  const [markup, setMarkup] = useState(Math.round(configuracoes.markupPadrao * 100))
+  // Precificação — o preço é definido comercialmente (não calculado por fórmula).
+  // Markup e margem real são DERIVADOS do custo × preço reais, recalculados ao vivo.
+  const [custoProduto, setCustoProduto] = useState(configuracoes.custoProdutoUnitario)
+  const [precoB2C, setPrecoB2C] = useState(configuracoes.precoB2C)
+  const [precoB2B, setPrecoB2B] = useState(configuracoes.precoB2B)
   const [margemMinima, setMargemMinima] = useState(Math.round(configuracoes.margemMinimaAlvo * 100))
   const [alertaMargem, setAlertaMargem] = useState(Math.round(configuracoes.alertaMargemAbaixoDe * 100))
-  const [formula, setFormula] = useState<'margem' | 'markup'>('margem')
-  const [custoProduto, setCustoProduto] = useState(50)
 
-  const precoSugerido = useMemo(() => {
-    if (formula === 'margem') return custoProduto / (1 - margemMinima / 100)
-    return custoProduto * (1 + markup / 100)
-  }, [formula, custoProduto, margemMinima, markup])
+  const precificacaoB2C = useMemo(() => {
+    // markup = quanto o preço é maior que o custo, em % do custo
+    const markup = custoProduto > 0 ? ((precoB2C - custoProduto) / custoProduto) * 100 : 0
+    // margem real = quanto do preço de venda vira lucro, em % do preço
+    const margemReal = precoB2C > 0 ? ((precoB2C - custoProduto) / precoB2C) * 100 : 0
+    const lucroPorFrasco = precoB2C - custoProduto
+    // referência apenas: se quiséssemos bater a margem mínima alvo, esse seria o piso de preço
+    const precoMinimoPelaMargemAlvo = margemMinima < 100 ? custoProduto / (1 - margemMinima / 100) : 0
+    const abaixoDoAlerta = margemReal < alertaMargem
+    return { markup, margemReal, lucroPorFrasco, precoMinimoPelaMargemAlvo, abaixoDoAlerta }
+  }, [custoProduto, precoB2C, margemMinima, alertaMargem])
+
+  const precificacaoB2B = useMemo(() => {
+    const markup = custoProduto > 0 ? ((precoB2B - custoProduto) / custoProduto) * 100 : 0
+    const margemReal = precoB2B > 0 ? ((precoB2B - custoProduto) / precoB2B) * 100 : 0
+    const contribuicaoPorFrasco = precoB2B - custoProduto
+    return { markup, margemReal, contribuicaoPorFrasco }
+  }, [custoProduto, precoB2B])
 
   // Splits
   const [splitEstoque, setSplitEstoque] = useState(Math.round(configuracoes.splitEstoque * 100))
@@ -56,7 +75,9 @@ export function FinanceiroSettings() {
       return
     }
     await salvarConfiguracoes({
-      markupPadrao: markup / 100,
+      custoProdutoUnitario: custoProduto,
+      precoB2C,
+      precoB2B,
       margemMinimaAlvo: margemMinima / 100,
       alertaMargemAbaixoDe: alertaMargem / 100,
       splitEstoque: splitEstoque / 100,
@@ -65,7 +86,6 @@ export function FinanceiroSettings() {
       splitReserva: splitDev / 100,
       splitSocietario: splitSocietario / 100,
     })
-    success('Configurações financeiras salvas')
   }
 
   return (
@@ -77,44 +97,87 @@ export function FinanceiroSettings() {
 
       {/* Precificação */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
-        <h2 className="text-sm font-bold text-[var(--text-primary)] mb-4">Precificação</h2>
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="text-xs text-[var(--text-secondary)] block mb-1">Markup %</label>
-              <input type="number" className="input-purion w-full" value={markup}
-                onChange={e => setMarkup(Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--text-secondary)] block mb-1">Margem mínima alvo %</label>
-              <input type="number" className="input-purion w-full" value={margemMinima}
-                onChange={e => setMargemMinima(Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--text-secondary)] block mb-1">Alerta margem abaixo de %</label>
-              <input type="number" className="input-purion w-full" value={alertaMargem}
-                onChange={e => setAlertaMargem(Number(e.target.value))} />
-            </div>
+        <h2 className="text-sm font-bold text-[var(--text-primary)] mb-1">Precificação</h2>
+        <p className="text-xs text-[var(--text-secondary)] mb-4">
+          O preço é definido comercialmente — markup e margem são calculados a partir dele, não o contrário.
+        </p>
+
+        {/* Custo x Preço real (B2C) — os dois campos que realmente importam */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Custo do produto (R$)</label>
+            <input type="number" step="0.01" className="input-purion w-full" value={custoProduto}
+              onChange={e => setCustoProduto(Number(e.target.value))} />
           </div>
           <div>
-            <label className="text-xs text-[var(--text-secondary)] block mb-1">Fórmula de precificação</label>
-            <select className="input-purion w-full" value={formula}
-              onChange={e => setFormula(e.target.value as 'margem' | 'markup')}>
-              <option value="margem">Custo / (1 - margem)</option>
-              <option value="markup">Custo × (1 + markup)</option>
-            </select>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Preço B2C — praticado (R$)</label>
+            <input type="number" step="0.01" className="input-purion w-full" value={precoB2C}
+              onChange={e => setPrecoB2C(Number(e.target.value))} />
           </div>
-          <div className="bg-[var(--bg-surface-2)] rounded-lg p-4 flex items-end gap-4">
-            <div className="flex-1">
-              <label className="text-xs text-[var(--text-secondary)] block mb-1">Custo do produto R$</label>
-              <input type="number" className="input-purion w-full" value={custoProduto}
-                onChange={e => setCustoProduto(Number(e.target.value))} />
+        </div>
+
+        {/* Calculado ao vivo */}
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="bg-[var(--bg-surface-2)] rounded-lg p-3">
+            <p className="text-xs text-[var(--text-secondary)] mb-1">Markup</p>
+            <p className="text-lg font-bold text-[#C9A84C]">{precificacaoB2C.markup.toFixed(0)}%</p>
+          </div>
+          <div className="bg-[var(--bg-surface-2)] rounded-lg p-3">
+            <p className="text-xs text-[var(--text-secondary)] mb-1">Margem real</p>
+            <p className={`text-lg font-bold ${precificacaoB2C.abaixoDoAlerta ? 'text-red-400' : 'text-[#22C55E]'}`}>
+              {precificacaoB2C.margemReal.toFixed(0)}%
+            </p>
+          </div>
+          <div className="bg-[var(--bg-surface-2)] rounded-lg p-3">
+            <p className="text-xs text-[var(--text-secondary)] mb-1">Lucro por frasco</p>
+            <p className="text-lg font-bold text-[var(--text-primary)]">{formatarMoedaBR(precificacaoB2C.lucroPorFrasco)}</p>
+          </div>
+        </div>
+
+        {precificacaoB2C.abaixoDoAlerta && (
+          <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2 mb-4">
+            <AlertTriangle size={14} />
+            Margem real ({precificacaoB2C.margemReal.toFixed(0)}%) abaixo do alerta ({alertaMargem}%) — revise custo ou preço.
+          </div>
+        )}
+
+        {/* Margem mínima / alerta — apenas referência, não define o preço */}
+        <div className="grid grid-cols-2 gap-4 mb-2">
+          <div>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Margem mínima alvo % (piso aceitável)</label>
+            <input type="number" className="input-purion w-full" value={margemMinima}
+              onChange={e => setMargemMinima(Number(e.target.value))} />
+          </div>
+          <div>
+            <label className="text-xs text-[var(--text-secondary)] block mb-1">Alertar se margem cair abaixo de %</label>
+            <input type="number" className="input-purion w-full" value={alertaMargem}
+              onChange={e => setAlertaMargem(Number(e.target.value))} />
+          </div>
+        </div>
+        <p className="text-xs text-[var(--text-secondary)] mb-6">
+          Referência: pela margem alvo de {margemMinima}%, o preço mínimo seria {formatarMoedaBR(precificacaoB2C.precoMinimoPelaMargemAlvo)} — não é o preço praticado.
+        </p>
+
+        {/* B2B — referência secundária */}
+        <div className="pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+          <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-3">B2B — referência</p>
+          <div className="grid grid-cols-4 gap-3 items-end">
+            <div>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1">Preço B2B (R$)</label>
+              <input type="number" step="0.01" className="input-purion w-full" value={precoB2B}
+                onChange={e => setPrecoB2B(Number(e.target.value))} />
             </div>
-            <div className="flex-1">
-              <p className="text-xs text-[var(--text-secondary)] mb-1">Preço sugerido</p>
-              <p className="text-xl font-bold text-[#C9A84C]">
-                R$ {precoSugerido.toFixed(2)}
-              </p>
+            <div>
+              <p className="text-xs text-[var(--text-secondary)] mb-1">Markup</p>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{precificacaoB2B.markup.toFixed(0)}%</p>
+            </div>
+            <div>
+              <p className="text-xs text-[var(--text-secondary)] mb-1">Margem</p>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{precificacaoB2B.margemReal.toFixed(0)}%</p>
+            </div>
+            <div>
+              <p className="text-xs text-[var(--text-secondary)] mb-1">Contribuição/frasco</p>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{formatarMoedaBR(precificacaoB2B.contribuicaoPorFrasco)}</p>
             </div>
           </div>
         </div>

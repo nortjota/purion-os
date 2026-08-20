@@ -55,7 +55,6 @@ export function MetasSettings() {
       metaVideosMes: videos,
       prazoMaxExpedicaoHoras: prazoExpedicao,
     })
-    success('Metas salvas')
   }
 
   const saveSnapshot = () => {

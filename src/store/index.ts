@@ -701,11 +701,15 @@ export interface MetaChecklistItem {
 // ─────────────────────────────────────────────
 
 export interface Configuracoes {
-  // Precificação
-  margemLucro: number            // 0.65 = 65%
-  markupPadrao: number           // calculado: 1 / (1 - margem)
-  margemMinimaAlvo: number       // 0.65 = 65%
-  alertaMargemAbaixoDe: number   // 0.60 = 60%
+  // Precificação — preço é definido comercialmente, não calculado por fórmula.
+  // markup/margem real são DERIVADOS de custo × preço (calculados ao vivo na UI, não persistidos).
+  custoProdutoUnitario: number    // R$ 28,00 — custo real de produção de 1 frasco
+  precoB2C: number                // R$ 109,90 — preço comercial real (B2C)
+  precoB2B: number                // R$ 60,00 — preço comercial real (B2B), referência
+  margemLucro: number             // legado — não usado no cálculo de preço
+  markupPadrao: number            // legado — não usado no cálculo de preço
+  margemMinimaAlvo: number        // 0.65 = 65% — piso aceitável, usado só para alerta/referência
+  alertaMargemAbaixoDe: number    // 0.60 = 60% — dispara alerta se a margem real cair abaixo disso
 
   // Split de Lucros (%)
   splitEstoque: number           // 0.40
@@ -940,8 +944,11 @@ interface PurionState {
 // ─────────────────────────────────────────────
 
 const configPadrao: Configuracoes = {
+  custoProdutoUnitario: 28,
+  precoB2C: 109.90,
+  precoB2B: 60,
   margemLucro: 0.65,
-  markupPadrao: 1 / (1 - 0.65), // ≈ 2.857
+  markupPadrao: 1 / (1 - 0.65), // ≈ 2.857 — legado, não usado no cálculo de preço
   margemMinimaAlvo: 0.65,
   alertaMargemAbaixoDe: 0.60,
 

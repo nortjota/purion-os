@@ -2,13 +2,10 @@
 
 import { useState } from 'react'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
-import { useToast } from '@/components/ui/Toast'
 import { Save, Building2, Globe } from 'lucide-react'
 
 export function GeralSettings() {
-  useConfiguracoes()
   const { salvarConfiguracoes } = useConfiguracoes()
-  const { success } = useToast()
 
   const [nomeEmpresa, setNomeEmpresa] = useState('PURION')
   const [slogan, setSlogan] = useState('Atmosfera que marca.')
@@ -20,7 +17,6 @@ export function GeralSettings() {
 
   const handleSave = async () => {
     await salvarConfiguracoes({})
-    success('Configurações gerais salvas')
   }
 
   return (

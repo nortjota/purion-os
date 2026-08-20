@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { usePurionStore } from '@/store'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
-import { useToast } from '@/components/ui/Toast'
 import { Save } from 'lucide-react'
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -20,7 +19,6 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 export function AlertasSettings() {
   const { configuracoes } = usePurionStore()
   const { salvarConfiguracoes } = useConfiguracoes()
-  const { success } = useToast()
 
   // Tráfego Pago
   const [roasMin, setRoasMin] = useState(configuracoes.roasMinimo)
@@ -65,7 +63,6 @@ export function AlertasSettings() {
       prazoMaxExpedicaoHoras: prazoExpedicao,
       diasSemPedidoAlerta: diasSemContato,
     })
-    success('Alertas salvos')
   }
 
   const Field = ({ label, value, onChange, step }: { label: string; value: number; onChange: (v: number) => void; step?: number }) => (
