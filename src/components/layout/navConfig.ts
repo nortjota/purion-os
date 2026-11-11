@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Settings,
   BookOpen, Megaphone, Link2, Headphones, Mail, KeyRound, ShoppingBag, Target, Shapes, FlaskConical, Compass, CalendarDays,
-  Truck,
+  Truck, HeartHandshake,
 } from 'lucide-react'
 
 export interface NavItemConfig {
@@ -38,6 +38,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     items: [
       { key: 'crm',        href: '/crm',        label: 'CRM B2B',      icon: Users },
       { key: 'vendas',     href: '/vendas',     label: 'Vendas',        icon: ShoppingBag },
+      { key: 'posvenda',   href: '/posvenda',   label: 'Pós-venda',     icon: HeartHandshake },
       { key: 'leads-site', href: '/leads-site', label: 'Leads do Site', icon: Mail },
     ],
   },

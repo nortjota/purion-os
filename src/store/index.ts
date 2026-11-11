@@ -584,6 +584,15 @@ export interface Venda {
   despachadoPor?: string | null
   despachadoPorNome?: string | null
   m02EnviadaEm?: string | null
+  /** Pós-venda (Playbook 360): consentimentos, contexto e feedback do cliente */
+  optInPesquisa?: boolean
+  optInMarketing?: boolean
+  optOutWhatsappMarketing?: boolean
+  compraPresente?: boolean
+  participaEstudo?: boolean
+  satisfacao?: number | null
+  feedbackEm?: string | null
+  sinalReposicao?: boolean
   cupom: string | null
   tipoCliente: TipoCliente
   notaFiscal: string | null

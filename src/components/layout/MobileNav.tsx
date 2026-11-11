@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
   Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
-  Compass, FlaskConical, Mail, CalendarDays, LayoutGrid, Truck,
+  Compass, FlaskConical, Mail, CalendarDays, LayoutGrid, Truck, HeartHandshake,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
 import { useIsLogistica } from '@/hooks/useIsLogistica'
@@ -39,6 +39,7 @@ const DRAWER_GROUPS: DrawerGroup[] = [
     label: 'COMERCIAL',
     items: [
       { href: '/crm',        label: 'CRM B2B',      icon: Users  },
+      { href: '/posvenda',   label: 'Pós-venda',    icon: HeartHandshake },
       { href: '/leads-site', label: 'Leads do Site', icon: Mail  },
     ],
   },

@@ -85,9 +85,8 @@ export function Sidebar() {
   }, [campanhasAds, configuracoes])
 
   const despachos = useMemo(() => {
-    const agora = Date.now()
     const fila = vendas.filter(aguardandoDespacho)
-    return { fila: fila.length, atrasados: fila.filter((v) => despachoAtrasado(v, agora)).length }
+    return { fila: fila.length, atrasados: fila.filter((v) => despachoAtrasado(v)).length }
   }, [vendas])
 
   const alertasEstoque = useMemo(

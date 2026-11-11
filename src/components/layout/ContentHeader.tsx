@@ -27,6 +27,7 @@ const MODULE_NAMES: Record<string, string> = {
   '/sac':              'SAC',
   '/planos':           'Planos',
   '/despacho':         'Despachos',
+  '/posvenda':         'Pós-venda',
   '/vendas':           'Vendas',
   '/metas':            'Metas',
 }
