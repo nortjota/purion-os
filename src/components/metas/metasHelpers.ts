@@ -9,12 +9,21 @@ export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inici
 }))
 
 export const CATEGORIAS: Array<{ id: CategoriaMeta; label: string; cor: string }> = [
-  { id: 'ads',      label: 'Ads',      cor: '#5B8FE8' },
-  { id: 'creators', label: 'Creators', cor: '#A855F7' },
-  { id: 'b2b',      label: 'B2B',      cor: '#E8A838' },
-  { id: 'producao', label: 'Produção', cor: '#22C55E' },
-  { id: 'vendas',   label: 'Vendas',   cor: '#C9A84C' },
-  { id: 'geral',    label: 'Geral',    cor: '#B8B8B8' },
+  // Matheus — comercial / caixa / pós-venda
+  { id: 'b2b',        label: 'B2B',          cor: '#E8A838' },
+  { id: 'vendas',     label: 'Vendas',       cor: '#C9A84C' },
+  { id: 'posvenda',   label: 'Pós-venda',    cor: '#E07A9B' },
+  { id: 'financeiro', label: 'Financeiro',   cor: '#4CC3A4' },
+  { id: 'logistica',  label: 'Logística',    cor: '#2E9E5B' },
+  // João — aquisição
+  { id: 'conteudo',   label: 'Conteúdo',     cor: '#F08A4B' },
+  { id: 'creators',   label: 'Creators',     cor: '#A855F7' },
+  { id: 'ads',        label: 'Ads',          cor: '#5B8FE8' },
+  { id: 'growth',     label: 'Site & Growth', cor: '#38BDF8' },
+  // Time / legado
+  { id: 'gestao',     label: 'Gestão',       cor: '#D4D4D4' },
+  { id: 'producao',   label: 'Produção',     cor: '#22C55E' },
+  { id: 'geral',      label: 'Geral',        cor: '#B8B8B8' },
 ]
 
 export function corCategoria(cat: CategoriaMeta): string {
@@ -192,11 +201,13 @@ export interface TemplateMeta {
 export const TEMPLATES_POR_SOCIO: Record<PerfilUsuario, TemplateMeta[]> = {
   joao: [
     { titulo: 'DMs para creators',    tipo: 'numerica', categoria: 'creators', valorAlvo: 5, unidade: 'DMs' },
-    { titulo: 'Criativo novo produzido', tipo: 'numerica', categoria: 'ads',   valorAlvo: 1, unidade: 'criativo' },
+    { titulo: 'Criativo novo produzido', tipo: 'numerica', categoria: 'conteudo', valorAlvo: 1, unidade: 'criativo' },
+    { titulo: 'Posts/stories publicados', tipo: 'numerica', categoria: 'conteudo', valorAlvo: 2, unidade: 'posts' },
   ],
   matheus: [
     { titulo: 'Abordagens B2B novas', tipo: 'numerica', categoria: 'b2b',    valorAlvo: 4, unidade: 'estéticas' },
     { titulo: 'Follow-ups B2B (D+21 e pipeline)', tipo: 'numerica', categoria: 'b2b', valorAlvo: 3, unidade: 'contatos' },
+    { titulo: 'Fechar oportunidades (ligações/propostas)', tipo: 'numerica', categoria: 'vendas', valorAlvo: 2, unidade: 'contatos' },
   ],
   gabriel: [], // arquivado
 }

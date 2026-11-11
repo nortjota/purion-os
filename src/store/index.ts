@@ -672,7 +672,9 @@ export interface QuadroConexao {
 
 export type TipoMeta     = 'numerica' | 'checklist'
 export type EscopoMeta   = 'individual' | 'time'
-export type CategoriaMeta = 'ads' | 'creators' | 'b2b' | 'producao' | 'vendas' | 'geral'
+export type CategoriaMeta =
+  | 'ads' | 'creators' | 'b2b' | 'producao' | 'vendas' | 'geral'
+  | 'posvenda' | 'financeiro' | 'logistica' | 'conteudo' | 'growth' | 'gestao'
 
 export interface MetaDiaria {
   id:          string
