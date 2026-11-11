@@ -10,6 +10,8 @@ import { useMobile } from '@/hooks/useMobile'
 import dynamic from 'next/dynamic'
 import { useFinanceiro } from '@/hooks/useFinanceiro'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
+import { MARGEM_MINIMA_ALVO_PCT as MARGEM_META } from '@/lib/precificacao'
 import {
   TrendingUp, TrendingDown, DollarSign, BarChart2,
   Plus, X, Calculator, ChevronDown, Filter, Pencil, Trash2,
@@ -75,31 +77,6 @@ const LABEL_RESPONSAVEL: Record<PerfilUsuario, string> = {
 // ─────────────────────────────────────────────
 // KPI CARD
 // ─────────────────────────────────────────────
-
-interface KPIFinProps {
-  label: string
-  valor: string
-  icon: React.ElementType
-  cor?: string
-  sub?: string
-}
-
-function KPIFin({ label, valor, icon: Icon, cor = '#D4FC3C', sub }: KPIFinProps) {
-  return (
-    <div className="kpi-card flex flex-col gap-4">
-      <div className="flex items-start justify-between">
-        <span className="kpi-label">{label}</span>
-        <div className="w-8 h-8 rounded-lg bg-[var(--bg-surface-2)] flex items-center justify-center shrink-0">
-          <Icon size={16} style={{ color: cor }} className="opacity-60" />
-        </div>
-      </div>
-      <div>
-        <span className="kpi-value" style={{ color: cor }}>{valor}</span>
-        {sub && <p className="caption mt-1">{sub}</p>}
-      </div>
-    </div>
-  )
-}
 
 // ─────────────────────────────────────────────
 // MODAL DE SPLIT
@@ -840,6 +817,7 @@ export function FinanceiroDashboard() {
   const [deletandoFin, setDeletandoFin] = useState<{ id: string; tipo: 'receita' | 'despesa'; descricao: string } | null>(null)
   const [editandoFin, setEditandoFin]   = useState<LinhaHistorico | null>(null)
 
+  const [painelAberto, setPainelAberto] = useState<'registrar' | 'calculadora' | null>(null)
   const [showModalSplit, setShowModalSplit] = useState(false)
   const [splitInfo, setSplitInfo] = useState<{ valor: number; items: ReturnType<typeof calcularSplit> } | null>(null)
 
@@ -867,96 +845,71 @@ export function FinanceiroDashboard() {
   }, [receitas, despesas])
 
   function handleRegistrado(tipo: TipoMovimentacao, valor: number) {
+    setPainelAberto(null)
     if (tipo === 'receita') {
       setSplitInfo({ valor, items: calcularSplit(valor, configuracoes) })
       setShowModalSplit(true)
     }
   }
 
-  const kpiCards = [
-    { label: 'Receita Total', valor: formatarMoeda(kpisGlobais.receitaTotal), icon: TrendingUp,  cor: '#8FD14F', sub: `Mês atual: ${mesAtual}` },
-    { label: 'Despesa Total', valor: formatarMoeda(kpisGlobais.despesaTotal), icon: TrendingDown, cor: '#E5544B', sub: `${formatarPercentual((kpisGlobais.despesaTotal / kpisGlobais.receitaTotal) * 100)} da receita` },
-    { label: 'Margem Bruta',  valor: formatarPercentual(kpisGlobais.margemMedia), icon: BarChart2, cor: '#D4FC3C', sub: 'Meta: 65%' },
-    { label: 'Saldo Atual',   valor: formatarMoeda(kpisGlobais.saldoTotal), icon: DollarSign, cor: kpisGlobais.saldoTotal >= 0 ? '#8FD14F' : '#E5544B', sub: 'Receita − Despesa' },
+  const pctDespesa = kpisGlobais.receitaTotal > 0 ? (kpisGlobais.despesaTotal / kpisGlobais.receitaTotal) * 100 : NaN
+  const metricas: MetricaFaixa[] = [
+    { label: 'Receita acumulada', valor: formatarMoeda(kpisGlobais.receitaTotal), sub: `último mês com receita: ${mesAtual.slice(5, 7)}/${mesAtual.slice(0, 4)}`, dica: 'Soma de todas as receitas registradas.' },
+    { label: 'Despesa acumulada', valor: formatarMoeda(kpisGlobais.despesaTotal), sub: `${formatarPercentual(pctDespesa)} da receita` },
+    { label: 'Saldo', valor: formatarMoeda(kpisGlobais.saldoTotal), sub: 'receita − despesa', tom: kpisGlobais.saldoTotal < 0 ? 'danger' : 'ok' },
+    { label: 'Margem bruta', valor: formatarPercentual(kpisGlobais.margemMedia), sub: `meta: ${MARGEM_META}%`, tom: kpisGlobais.margemMedia >= MARGEM_META ? 'ok' : 'warning', dica: 'Margem bruta média sobre a receita. A margem mínima oficial é 65%.' },
   ]
 
   return (
-    <div className="page-content section-gap">
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-      {/* Header */}
-      <div>
-        <h1 className="page-title">Financeiro</h1>
-        <p className="caption mt-1">Controle financeiro · Precificação · Projeções</p>
+      {/* Cabeçalho: título + as duas ações (antes ocupavam metade da tela, sempre abertas) */}
+      <div className="toolbar">
+        <h1 className="page-title" style={{ flex: '1 1 200px' }}>Financeiro</h1>
+        <button className="btn btn-secondary btn-sm" onClick={() => setPainelAberto('calculadora')}>
+          <Calculator size={13} /> Calculadora de preço
+        </button>
+        <button className="btn btn-accent btn-sm" onClick={() => setPainelAberto('registrar')}>
+          <Plus size={13} /> Registrar movimentação
+        </button>
       </div>
 
-      {/* KPIs */}
-      <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
-        {kpiCards.map((card) => <KPIFin key={card.label} {...card} />)}
-      </div>
+      <MetricStrip metricas={metricas} rotulo="Resumo financeiro" />
 
-      {/* Registrar + Calculadora */}
-      <div className="grid grid-cols-2 gap-4 grid-mobile-1">
+      {/* Evolução + projeção lado a lado */}
+      <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)' }}>
         <div className="card-purion card-section">
-          <div className="flex items-center gap-2 mb-5">
-            <Plus size={15} className="text-[var(--text-primary)]" />
-            <h2 className="section-title text-[15px]">Registrar Movimentação</h2>
-          </div>
-          <FormMovimentacao onRegistrado={handleRegistrado} />
+          <p className="kpi-label mb-4">Evolução · 6 meses</p>
+          <GraficoEvolucao dados={dadosGrafico} height={isMobile ? 200 : 280} />
         </div>
-        <div className="card-purion card-section">
-          <div className="flex items-center gap-2 mb-5">
-            <Calculator size={15} className="text-[var(--text-primary)]" />
-            <h2 className="section-title text-[15px]">Calculadora de Precificação</h2>
-          </div>
-          <CalculadoraPrecificacao />
-        </div>
-      </div>
 
-      {/* Gráfico */}
-      <div className="card-purion card-section">
-        <div className="flex items-center gap-2 mb-5">
-          <BarChart2 size={15} className="text-[var(--text-primary)]" />
-          <h2 className="section-title text-[15px]">Evolução Financeira — 6 Meses</h2>
-        </div>
-        <GraficoEvolucao dados={dadosGrafico} height={isMobile ? 200 : 280} />
-      </div>
-
-      {/* Projeções */}
-      <div>
-        <p className="kpi-label flex items-center gap-1.5 mb-4">
-          <TrendingUp size={11} /> Projeção — Média dos Últimos 30 Dias
-        </p>
-        <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
-          {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
-            <div key={dias} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 hover:border-[rgba(212,252,60,0.2)] transition-colors">
-              <div className="mb-3">
-                <span className="text-[10px] text-[#B8B8B8] uppercase tracking-wider font-medium">{dias} dias</span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-[#B8B8B8]">Receita proj.</span>
-                  <span className="text-sm font-black text-[var(--status-ok)]" style={{ fontFamily: 'var(--font-mono)' }}>{formatarMoeda(receitaProjetada)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-[#B8B8B8]">Despesa proj.</span>
-                  <span className="text-sm font-semibold text-[var(--status-danger)]">{formatarMoeda(despesaProjetada)}</span>
-                </div>
-                <div className="pt-1 border-t border-[var(--border)] flex justify-between items-center">
-                  <span className="text-xs text-[#B8B8B8]">Margem proj.</span>
-                  <span className="text-sm font-black text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-mono)' }}>{margemProjetada}%</span>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="card-purion card-section" title="Projeção linear a partir da média diária dos últimos 30 dias.">
+          <p className="kpi-label mb-2">Projeção · ritmo dos últimos 30 dias</p>
+          <table className="tabela-compacta">
+            <thead>
+              <tr><th>Horizonte</th><th>Receita</th><th>Despesa</th><th>Margem</th></tr>
+            </thead>
+            <tbody>
+              {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
+                <tr key={dias}>
+                  <td>{dias} dias</td>
+                  <td className="tnum">{formatarMoeda(receitaProjetada)}</td>
+                  <td className="tnum" style={{ color: 'var(--text-secondary)' }}>{formatarMoeda(despesaProjetada)}</td>
+                  <td className="tnum" style={{ color: Number(margemProjetada) >= MARGEM_META ? 'var(--status-ok)' : 'var(--status-warning)' }}>
+                    {String(margemProjetada).replace('.', ',')}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
       {/* Histórico */}
       <div className="card-purion card-section">
-        <div className="flex items-center gap-2 mb-5">
-          <BarChart2 size={15} className="text-[var(--text-primary)]" />
-          <h2 className="section-title text-[15px]">Histórico de Movimentações</h2>
-          <span className="caption ml-auto">{historico.length} registros</span>
+        <div className="flex items-center gap-2 mb-4">
+          <p className="kpi-label">Movimentações</p>
+          <span className="caption ml-auto tnum">{historico.length} registros</span>
         </div>
         <TabelaHistorico
           linhas={historico}
@@ -968,6 +921,19 @@ export function FinanceiroDashboard() {
           }}
         />
       </div>
+
+      {/* Registrar movimentação / Calculadora (sob demanda) */}
+      {painelAberto && (
+        <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) setPainelAberto(null) }}>
+          <div className="modal-container" style={{ maxWidth: 520 }}>
+            <div className="modal-header">
+              <h2 className="modal-title">{painelAberto === 'registrar' ? 'Registrar movimentação' : 'Calculadora de precificação'}</h2>
+              <button className="icon-btn" onClick={() => setPainelAberto(null)} aria-label="Fechar"><X size={14} /></button>
+            </div>
+            {painelAberto === 'registrar' ? <FormMovimentacao onRegistrado={handleRegistrado} /> : <CalculadoraPrecificacao />}
+          </div>
+        </div>
+      )}
 
       {/* Modal Edição */}
       {editandoFin && (

@@ -24,7 +24,7 @@ function FinanceiroPageInner() {
         tabs={TABS}
         activeTab={tab}
         onChange={(id) => router.push(`/financeiro?tab=${id}`)}
-        className="px-4"
+        className="px-2 md:px-6"
       />
       <div className="flex-1 overflow-y-auto">
         {tab === 'painel'        && <FinanceiroDashboard />}

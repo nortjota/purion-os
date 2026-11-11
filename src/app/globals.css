@@ -1287,3 +1287,18 @@
 .metric-strip-botao { border: none; background: transparent; cursor: pointer; text-align: left; font-family: inherit; }
 .metric-strip-botao:hover { background: color-mix(in srgb, var(--foreground) 5%, transparent); }
 .metric-strip-botao[data-ativo] { background: color-mix(in srgb, var(--foreground) 9%, transparent); box-shadow: -1px 0 0 var(--border), 0 -1px 0 var(--border), inset 0 -2px 0 var(--brand-accent); }
+
+/* Nota de regras recolhível (contexto que não precisa ocupar a tela o tempo todo) */
+.nota-regras { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+.nota-regras summary { cursor: pointer; width: fit-content; color: var(--text-secondary); }
+.nota-regras summary:hover { color: var(--text-primary); }
+.nota-regras p { margin-top: 6px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; }
+
+/* Tabela compacta dentro de cartões (projeções, resumos) */
+.tabela-compacta { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tabela-compacta th {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-secondary); text-align: right; padding: 8px 0;
+}
+.tabela-compacta th:first-child, .tabela-compacta td:first-child { text-align: left; color: var(--text-secondary); }
+.tabela-compacta td { text-align: right; padding: 10px 0; border-top: 1px solid var(--border); color: var(--text-primary); white-space: nowrap; }

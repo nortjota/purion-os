@@ -40,7 +40,9 @@ export function formatarMoedaCompacta(valor: number): string {
 }
 
 export function formatarPercentual(valor: number, casas = 1): string {
-  return `${valor.toFixed(casas)}%`
+  // pt-BR: vírgula decimal; divisão por zero (sem receita) vira "—" em vez de "NaN%"
+  if (!Number.isFinite(valor)) return '—'
+  return `${valor.toFixed(casas).replace('.', ',')}%`
 }
 
 export function formatarDataCurta(iso: string): string {

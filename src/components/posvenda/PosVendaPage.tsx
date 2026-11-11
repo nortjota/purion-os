@@ -5,16 +5,16 @@ import { Skeleton } from '@/components/motion/Skeleton'
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
-  HeartHandshake, CheckCircle2, BellOff, MessageCircle, Mail, Phone, BookOpen, AlertTriangle,
+  CheckCircle2, BellOff, MessageCircle, Mail, Phone, BookOpen, AlertTriangle,
   ChevronDown, ChevronUp, Star, Clock, ShieldAlert, RefreshCw,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { Venda } from '@/store'
 import { useMobile } from '@/hooks/useMobile'
-import { InnerTabs } from '@/components/ui/InnerTabs'
+import { MetricStrip } from '@/components/ui/MetricStrip'
 import { usePosVenda, hojeLocalISO, type SinaisCliente } from '@/hooks/usePosVenda'
 import { linkWhatsApp } from '@/hooks/useDespacho'
-import { AnimatedList, AnimatedItem, AnimatedNumber } from '@/components/motion'
+import { AnimatedList, AnimatedItem } from '@/components/motion'
 import {
   TIPO_FOLLOWUP, MENSAGENS, CANAL_LABEL, mensagemComercial, temReclamacaoAberta, MAX_LEMBRETES,
   type FollowUpTarefa,
@@ -274,68 +274,45 @@ export function PosVendaPage() {
   }
 
   return (
-    <div className="page-content section-gap">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 10, background: 'rgba(245,245,240,0.12)', border: '1px solid rgba(245,245,240,0.35)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>
-          <HeartHandshake size={20} style={{ color: ACENTO }} />
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div className="toolbar">
+        <div style={{ flex: '1 1 260px', minWidth: 0 }}>
+          <h1 className="page-title">Pós-venda</h1>
+          <p className="caption mt-1">Quem contatar hoje, com qual mensagem e por qual canal.</p>
         </div>
-        <div style={{ flex: 1, minWidth: 220 }}>
-          <h1 className="page-title" style={{ color: '#F5F5F5' }}>Pós-venda</h1>
-          <p style={{ fontSize: 13, color: '#B8B8B8', marginTop: 2 }}>
-            Jornada de follow-up do Playbook 360: quem contatar hoje, com qual mensagem e por qual canal.
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button className="btn btn-secondary btn-sm" onClick={() => recarregar()} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-            <RefreshCw size={13} /> Atualizar
-          </button>
-          <Link href="/conhecimento" className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, textDecoration: 'none' }}>
-            <BookOpen size={13} /> Biblioteca de Mensagens M01–M12
-          </Link>
-        </div>
+        <Link href="/conhecimento" className="btn btn-secondary btn-sm" style={{ textDecoration: 'none' }}>
+          <BookOpen size={13} /> Mensagens M01–M12
+        </Link>
+        <button className="icon-btn" onClick={() => recarregar()} title="Atualizar a fila" aria-label="Atualizar a fila">
+          <RefreshCw size={14} />
+        </button>
       </div>
 
       {tabelaAusente && (
-        <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(230,195,116,0.1)', border: '1px solid rgba(230,195,116,0.4)', color: 'var(--status-warning)', fontSize: 13 }}>
+        <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(230,195,116,0.1)', border: '1px solid rgba(230,195,116,0.4)', color: 'var(--status-warning)', fontSize: 13 }}>
           A tabela <strong>follow_up_tarefas</strong> ainda não existe. Rode <code>supabase/migration_pos_venda_followup.sql</code> no SQL Editor do Supabase.
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        {[
-          { label: 'Para contatar hoje', valor: filaHoje.length, cor: ACENTO, live: true },
-          { label: 'Atrasados', valor: atrasados.length, cor: atrasados.length ? '#E5544B' : '#E0E0E0', live: false },
-          { label: 'Próximos', valor: proximos.length, cor: '#E0E0E0', live: false },
-          { label: 'Feitos hoje', valor: feitosHoje, cor: '#8FD14F', live: false },
-        ].map((k) => (
-          <div key={k.label} className="kpi-card" style={{ flex: '1 1 140px', minWidth: 0 }}>
-            <span style={{ fontSize: 12, color: '#B8B8B8', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              {k.live && <span className="pulse" aria-hidden />}{k.label}
-            </span>
-            <AnimatedNumber value={k.valor} style={{ fontSize: 28, fontWeight: 700, color: k.cor, lineHeight: 1.2 }} />
-          </div>
-        ))}
-      </div>
-
-      <div style={{ padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', fontSize: 12, color: '#B8B8B8', lineHeight: 1.6 }}>
-        <strong style={{ color: '#E0E0E0' }}>Supressão sempre ativa:</strong> reclamação/troca/atraso em aberto suprime avaliação, oferta e pesquisa ·
-        opt-out de WhatsApp bloqueia mensagem comercial nesse canal · presente pesquisa a experiência de compra, não o consumo ·
-        sem resposta: no máximo 1 lembrete, depois encerra. <span style={{ color: 'var(--status-warning)' }}>M08 e M10 são comerciais e exigem opt-in.</span>
-      </div>
-
-      <InnerTabs
-        tabs={[
-          { id: 'hoje', label: 'Fila de hoje', badge: filaHoje.length },
-          { id: 'proximos', label: 'Próximos', badge: proximos.length },
-          { id: 'clientes', label: 'Clientes entregues (60d)', badge: entreguesRecentes.length },
-          { id: 'historico', label: 'Histórico' },
+      {/* A faixa de números é o seletor de abas */}
+      <MetricStrip
+        rotulo="Filas de pós-venda"
+        metricas={[
+          { label: 'Fila de hoje', valor: filaHoje.length, sub: atrasados.length > 0 ? `${atrasados.length} atrasado${atrasados.length > 1 ? 's' : ''}` : 'nenhum atrasado', tom: atrasados.length > 0 ? 'danger' : undefined, onClick: () => setAba('hoje'), ativo: aba === 'hoje' },
+          { label: 'Próximos', valor: proximos.length, sub: 'agendados', onClick: () => setAba('proximos'), ativo: aba === 'proximos' },
+          { label: 'Clientes entregues', valor: entreguesRecentes.length, sub: 'últimos 60 dias', onClick: () => setAba('clientes'), ativo: aba === 'clientes' },
+          { label: 'Histórico', valor: historico.length, sub: `${feitosHoje} feito${feitosHoje !== 1 ? 's' : ''} hoje`, onClick: () => setAba('historico'), ativo: aba === 'historico' },
         ]}
-        activeTab={aba}
-        onChange={(id) => setAba(id as Aba)}
       />
+
+      <details className="nota-regras">
+        <summary>Regras de supressão (sempre ativas)</summary>
+        <p>
+          Reclamação, troca ou atraso em aberto suprime avaliação, oferta e pesquisa · opt-out de WhatsApp bloqueia mensagem comercial nesse canal ·
+          presente pesquisa a experiência de compra, não o consumo · sem resposta: no máximo 1 lembrete, depois encerra.{' '}
+          <span style={{ color: 'var(--status-warning)' }}>M08 e M10 são comerciais e exigem opt-in.</span>
+        </p>
+      </details>
 
       {aba === 'hoje' && lista(filaHoje, 'Nenhum follow-up para hoje.')}
       {aba === 'proximos' && lista(proximos, 'Nenhum follow-up agendado.')}

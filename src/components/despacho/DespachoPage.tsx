@@ -1,23 +1,22 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Truck, AlertTriangle, CheckCircle2, Copy, MapPin, Phone, Package, MessageCircle, Clock } from 'lucide-react'
+import { Truck, CheckCircle2, Copy, MapPin, Phone, Package, MessageCircle, Clock } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { Venda } from '@/store'
 import { useIsLogistica } from '@/hooks/useIsLogistica'
 import { useMobile } from '@/hooks/useMobile'
 import { useToast } from '@/components/ui/Toast'
-import { InnerTabs } from '@/components/ui/InnerTabs'
+import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { PERFIS_INFO } from '@/lib/socios'
 import { frascosDaVenda } from '@/lib/escadaProdutos'
-import { AnimatedList, AnimatedItem, AnimatedNumber } from '@/components/motion'
+import { AnimatedList, AnimatedItem } from '@/components/motion'
 import {
   useDespacho, aguardandoDespacho, despachoAtrasado, despachadoHoje, horasDesde,
   mensagemM02, linkWhatsApp, TRANSPORTADORAS, HORAS_ALERTA_DESPACHO,
 } from '@/hooks/useDespacho'
 
 const VERDE = PERFIS_INFO.logistica.cor
-const ACENTO = '#D4FC3C'
 const VERMELHO = '#E5544B'
 
 function fmtDataHora(iso: string | null | undefined): string {
@@ -45,23 +44,6 @@ function enderecoCompleto(v: Venda): string {
 function nomeOperador(v: Venda): string {
   if (v.despachadoPor === 'logistica') return 'Logística · Goiânia'
   return v.despachadoPorNome || (v.despachadoPor ? PERFIS_INFO[v.despachadoPor as 'matheus']?.nome ?? v.despachadoPor : '—')
-}
-
-// ─────────────────────────────────────────────
-// KPI
-// ─────────────────────────────────────────────
-
-function Kpi({ label, valor, cor, sub, live }: { label: string; valor: number; cor: string; sub?: string; live?: boolean }) {
-  return (
-    <div className="kpi-card" style={{ flex: '1 1 150px', minWidth: 0 }}>
-      <span style={{ fontSize: 12, color: '#B8B8B8', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-        {live && <span className="pulse" aria-hidden />}{label}
-        {live && <span className="sr-only">(ao vivo)</span>}
-      </span>
-      <AnimatedNumber value={valor} style={{ fontSize: 28, fontWeight: 700, color: cor, lineHeight: 1.2 }} />
-      {sub && <span style={{ fontSize: 11, color: '#B8B8B8' }}>{sub}</span>}
-    </div>
-  )
 }
 
 // ─────────────────────────────────────────────
@@ -264,57 +246,35 @@ export function DespachoPage() {
     [vendas],
   )
 
-  const tabs = [
-    { id: 'fila', label: 'A despachar', badge: fila.length },
-    ...(!isLogistica ? [{ id: 'atrasados', label: `Atrasados (+${HORAS_ALERTA_DESPACHO}h)`, badge: atrasados.length }] : []),
-    { id: 'hoje', label: 'Despachados hoje', badge: hoje.length },
-    ...(!isLogistica ? [{ id: 'aviso', label: 'Avisar cliente (M02)', badge: semAviso.length }] : []),
+  const frascosHoje = hoje.reduce((s, v) => s + frascosDaVenda(v), 0)
+  // A faixa de números É o seletor de abas: um bloco só no lugar de alerta + cartões + abas.
+  const metricas: MetricaFaixa[] = [
+    { label: 'A despachar', valor: fila.length, sub: 'pagos, aguardando envio', onClick: () => setAba('fila'), ativo: aba === 'fila' },
+    ...(!isLogistica ? [{
+      label: `Atrasados (+${HORAS_ALERTA_DESPACHO}h)`, valor: atrasados.length, sub: 'pagos e ainda não enviados',
+      tom: atrasados.length > 0 ? 'danger' as const : undefined, onClick: () => setAba('atrasados'), ativo: aba === 'atrasados',
+    }] : []),
+    { label: 'Despachados hoje', valor: hoje.length, sub: `${frascosHoje} frasco${frascosHoje !== 1 ? 's' : ''}`, onClick: () => setAba('hoje'), ativo: aba === 'hoje' },
+    ...(!isLogistica ? [{
+      label: 'Avisar cliente (M02)', valor: semAviso.length, sub: 'rastreio ainda não enviado',
+      tom: semAviso.length > 0 ? 'warning' as const : undefined, onClick: () => setAba('aviso'), ativo: aba === 'aviso',
+    }] : []),
   ]
 
   const listaFila = aba === 'atrasados' ? atrasados : fila
 
   return (
-    <div className="page-content section-gap">
-      {/* Cabeçalho */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 10, background: `${VERDE}1F`, border: `1px solid ${VERDE}55`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>
-          <Truck size={20} style={{ color: VERDE }} />
-        </div>
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <h1 className="page-title" style={{ color: '#F5F5F5' }}>{isLogistica ? 'Fila de Despacho' : 'Despachos'}</h1>
-          <p style={{ fontSize: 13, color: '#B8B8B8', marginTop: 2 }}>
-            {isLogistica
-              ? 'Pedidos pagos para despachar em Goiânia. Informe transportadora e rastreio ao postar.'
-              : 'Acompanhe o trabalho da Logística · Goiânia: pedido pago → despacho → rastreio no CRM.'}
-          </p>
-        </div>
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div>
+        <h1 className="page-title">{isLogistica ? 'Fila de Despacho' : 'Despachos'}</h1>
+        <p className="caption mt-1">
+          {isLogistica
+            ? 'Pedidos pagos para despachar em Goiânia. Informe transportadora e rastreio ao postar.'
+            : 'Pedido pago → despacho em Goiânia → rastreio de volta no CRM.'}
+        </p>
       </div>
 
-      {/* Alerta de atraso */}
-      {atrasados.length > 0 && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 10,
-          background: 'rgba(229,84,75,0.10)', border: '1px solid rgba(229,84,75,0.35)', color: 'var(--status-danger)',
-        }}>
-          <AlertTriangle size={18} style={{ flexShrink: 0 }} />
-          <span style={{ fontSize: 14, fontWeight: 500 }}>
-            {atrasados.length} pedido{atrasados.length > 1 ? 's' : ''} pago{atrasados.length > 1 ? 's' : ''} há mais de {HORAS_ALERTA_DESPACHO}h sem despacho.
-          </span>
-        </div>
-      )}
-
-      {/* KPIs */}
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <Kpi label="A despachar" valor={fila.length} cor={ACENTO} sub="pagos, aguardando envio" live />
-        <Kpi label="Atrasados" valor={atrasados.length} cor={atrasados.length > 0 ? VERMELHO : '#E0E0E0'} sub={`pagos há +${HORAS_ALERTA_DESPACHO}h`} />
-        <Kpi label="Despachados hoje" valor={hoje.length} cor={VERDE} live sub={hoje.reduce((s, v) => s + frascosDaVenda(v), 0) + ' frascos'} />
-        {!isLogistica && <Kpi label="Sem aviso M02" valor={semAviso.length} cor={semAviso.length > 0 ? '#E6C374' : '#E0E0E0'} sub="rastreio não enviado ao cliente" />}
-      </div>
-
-      <InnerTabs tabs={tabs} activeTab={aba} onChange={(id) => setAba(id as Aba)} />
+      <MetricStrip metricas={metricas} rotulo="Filas de despacho" />
 
       {(aba === 'fila' || aba === 'atrasados') && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
