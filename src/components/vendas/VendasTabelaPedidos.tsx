@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { ArrowRight, Pencil, Trash2, Eye, ChevronDown, ChevronRight } from 'lucide-react'
+import { frascosDaVenda } from '@/lib/escadaProdutos'
 import type { Venda, StatusPagamentoVenda } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
 import { useMobile } from '@/hooks/useMobile'
@@ -65,7 +66,9 @@ export function VendasTabelaPedidos({
 
   const grupos = useMemo(() => agrupar(vendas, groupBy), [vendas, groupBy])
   const totalPedidos = vendas.length
-  const totalFrascos = useMemo(() => vendas.reduce((s, v) => s + v.quantidade, 0), [vendas])
+  const totalFrascos = useMemo(() => vendas.reduce((s, v) => s + frascosDaVenda(v), 0), [vendas])
+  // a coluna Afiliado só aparece quando algum pedido do recorte tem afiliado
+  const temAfiliado = useMemo(() => !!nomeAfiliado && vendas.some((v) => v.afiliadoCreatorId), [vendas, nomeAfiliado])
   const totalValor = useMemo(() => vendas.reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0), [vendas])
 
   if (vendas.length === 0) {
@@ -103,7 +106,7 @@ export function VendasTabelaPedidos({
                   </div>
                   <p className="caption mb-1">
                     {showCanal && <span className="badge badge-neutral" style={{ marginRight: 6 }}>{CANAL_LABEL[v.canal]}</span>}
-                    <span style={{ fontWeight: 700, color: 'var(--status-info)' }}>{v.quantidade} frasco{v.quantidade !== 1 ? 's' : ''}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{frascosDaVenda(v)} frasco{frascosDaVenda(v) !== 1 ? 's' : ''}</span>
                     {' · '}{formatarDataBR(v.dataVenda.slice(0, 10))}
                   </p>
                   <div className="flex items-center justify-between mb-2">
@@ -146,9 +149,9 @@ export function VendasTabelaPedidos({
             <th>Valor</th>
             <th>Pagamento</th>
             <th>Entrega</th>
-            <th>Afiliado</th>
+            {temAfiliado && <th>Afiliado</th>}
             <th>Data</th>
-            <th>Ações</th>
+            <th aria-label="Ações" />
           </tr>
         </thead>
         <tbody>
@@ -158,6 +161,7 @@ export function VendasTabelaPedidos({
               grupo={grupo}
               groupBy={groupBy}
               showCanal={showCanal}
+              temAfiliado={temAfiliado}
               collapsed={!!collapsed[grupo.id]}
               onToggle={() => setCollapsed((p) => ({ ...p, [grupo.id]: !p[grupo.id] }))}
               nomeAfiliado={nomeAfiliado}
@@ -181,7 +185,7 @@ export function VendasTabelaPedidos({
             <td style={{ fontSize: 12, fontWeight: 600, paddingTop: 8 }}>
               {fmtR(totalValor)}
             </td>
-            <td colSpan={showCanal ? 5 : 4} />
+            <td colSpan={(showCanal ? 5 : 4) - (temAfiliado ? 0 : 1)} />
           </tr>
         </tfoot>
       </table>
@@ -190,12 +194,13 @@ export function VendasTabelaPedidos({
 }
 
 function FragmentGrupo({
-  grupo, groupBy, showCanal, collapsed, onToggle, nomeAfiliado,
+  grupo, groupBy, showCanal, temAfiliado, collapsed, onToggle, nomeAfiliado,
   onVerDetalhes, onEditar, onExcluir, onAvancarEntrega, onMudarStatusPagamento,
 }: {
   grupo: Grupo
   groupBy: AgrupamentoVendas
   showCanal: boolean
+  temAfiliado: boolean
   collapsed: boolean
   onToggle: () => void
   nomeAfiliado?: (id: string | null) => string | null
@@ -205,7 +210,7 @@ function FragmentGrupo({
   onAvancarEntrega: (id: string, proximo: NonNullable<ReturnType<typeof proximoStatusEntrega>>) => void
   onMudarStatusPagamento: (id: string, status: StatusPagamentoVenda) => void
 }) {
-  const colSpan = showCanal ? 9 : 8
+  const colSpan = (showCanal ? 9 : 8) - (temAfiliado ? 0 : 1)
   return (
     <>
       {groupBy !== 'none' && (
@@ -237,33 +242,33 @@ function FragmentGrupo({
       {!collapsed && grupo.vendas.map((v) => {
         const proximo = proximoStatusEntrega(v.statusEntrega)
         return (
-          <tr key={v.id} className="purion-row">
+          <tr key={v.id} className="purion-row linha-clicavel" onClick={() => onVerDetalhes(v)} title="Abrir detalhes do pedido">
             <td>{v.clienteNome || '—'}</td>
             {showCanal && <td><span className={`badge ${CANAL_BADGE[v.canal]}`}>{CANAL_LABEL[v.canal]}</span></td>}
-            <td className="caption" style={{ fontWeight: 600 }}>{v.quantidade}</td>
+            <td className="tnum" style={{ fontSize: 13 }}>{frascosDaVenda(v)}</td>
             <td className="td-mono">{fmtR(v.valorTotal ?? v.valorLiquido)}</td>
-            <td>
+            <td onClick={(e) => e.stopPropagation()}>
               <select
                 value={v.statusPagamento}
                 onChange={(e) => onMudarStatusPagamento(v.id, e.target.value as StatusPagamentoVenda)}
-                className={`text-[10px] font-bold rounded-full px-2 py-1 border-none outline-none cursor-pointer ${STATUS_PAGAMENTO_BADGE[v.statusPagamento]}`}
+                aria-label="Status do pagamento"
+                className={`text-[11px] font-medium rounded-full px-2 py-1 outline-none cursor-pointer badge ${STATUS_PAGAMENTO_BADGE[v.statusPagamento]}`}
               >
                 {Object.entries(STATUS_PAGAMENTO_LABEL).map(([sv, l]) => <option key={sv} value={sv}>{l}</option>)}
               </select>
             </td>
             <td><span className={`badge ${STATUS_ENTREGA_BADGE[v.statusEntrega]}`}>{STATUS_ENTREGA_LABEL[v.statusEntrega]}</span></td>
-            <td className="caption">{nomeAfiliado?.(v.afiliadoCreatorId) ?? '—'}</td>
-            <td className="caption">{formatarDataBR(v.dataVenda.slice(0, 10))}</td>
-            <td>
-              <div className="flex items-center gap-1">
+            {temAfiliado && <td className="caption">{nomeAfiliado?.(v.afiliadoCreatorId) ?? '—'}</td>}
+            <td className="caption tnum">{formatarDataBR(v.dataVenda.slice(0, 10))}</td>
+            <td onClick={(e) => e.stopPropagation()}>
+              <div className="acoes-linha">
                 {proximo && (
-                  <button onClick={() => onAvancarEntrega(v.id, proximo)} title={`Avançar para ${STATUS_ENTREGA_LABEL[proximo]}`} className="icon-btn">
-                    <ArrowRight size={12} />
+                  <button onClick={() => onAvancarEntrega(v.id, proximo)} title={`Avançar entrega para "${STATUS_ENTREGA_LABEL[proximo]}"`} className="btn btn-secondary btn-sm acao-principal">
+                    <ArrowRight size={12} /> {STATUS_ENTREGA_LABEL[proximo]}
                   </button>
                 )}
-                <button onClick={() => onVerDetalhes(v)} title="Ver detalhes" className="icon-btn"><Eye size={12} /></button>
-                <button onClick={() => onEditar(v)} className="icon-btn"><Pencil size={12} /></button>
-                <button onClick={() => onExcluir(v.id)} className="icon-btn"><Trash2 size={12} /></button>
+                <button onClick={() => onEditar(v)} title="Editar" aria-label="Editar pedido" className="icon-btn acao-secundaria"><Pencil size={12} /></button>
+                <button onClick={() => onExcluir(v.id)} title="Excluir" aria-label="Excluir pedido" className="icon-btn acao-secundaria"><Trash2 size={12} /></button>
               </div>
             </td>
           </tr>

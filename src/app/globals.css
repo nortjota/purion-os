@@ -539,7 +539,7 @@
   }
   .table-purion td {
     padding: 0 16px;
-    height: 48px;
+    height: 44px;
     font-size: 14px;
     color: var(--text-primary);
     border-bottom: 1px solid var(--border);
@@ -563,6 +563,8 @@
 
   /* PAGE WRAPPER */
   .page-content {
+    /* width:100% — dentro do <main> em coluna, margin:auto sozinho encolhia a página ao conteúdo */
+    width: 100%;
     padding: 24px 32px 40px;
     max-width: 1480px;
     margin: 0 auto;
@@ -1143,7 +1145,9 @@
 .segmented button {
   height: 26px; padding: 0 12px; border-radius: 999px; border: none; background: transparent; cursor: pointer;
   font-size: 12px; font-weight: 500; color: var(--text-secondary); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
 }
+.segmented-contagem { font-size: 10.5px; opacity: 0.7; }
 .segmented button:hover { color: var(--text-primary); }
 .segmented button[data-ativo] { background: var(--primary); color: var(--primary-foreground); }
 @media (pointer: coarse) { .segmented button { height: 36px; } }
@@ -1218,3 +1222,68 @@
 @media (max-width: 767px) {
   .purion-quick-notes-btn { bottom: calc(72px + env(safe-area-inset-bottom)) !important; right: 14px !important; }
 }
+
+/* ══════════════════════════════════════════════
+   LISTAS — faixa de métricas, barra de ferramentas, filtros compactos
+══════════════════════════════════════════════ */
+.metric-strip {
+  display: flex; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 16px;
+  background: var(--bg-surface); overflow: hidden;
+}
+.metric-strip-item {
+  flex: 1 1 140px; min-width: 0; padding: 12px 18px; display: flex; flex-direction: column; gap: 2px;
+  box-shadow: -1px 0 0 var(--border), 0 -1px 0 var(--border);
+}
+.metric-strip-rotulo {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.metric-strip-valor { font-size: 19px; font-weight: 600; line-height: 1.2; color: var(--text-primary); white-space: nowrap; }
+.metric-strip-sub { font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.toolbar-espaco { flex: 1 1 0; min-width: 0; }
+
+/* Filtro compacto (select em pílula). data-ativo = filtro aplicado */
+.filtro {
+  height: 32px; padding: 0 28px 0 12px; border-radius: 999px; cursor: pointer; outline: none;
+  border: 1px solid var(--border); background-color: transparent; color: var(--text-secondary);
+  font-size: 12.5px; font-family: inherit; max-width: 220px;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23A7A9A6' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 11px center;
+}
+.filtro:hover { border-color: color-mix(in srgb, var(--foreground) 28%, transparent); color: var(--text-primary); }
+.filtro[data-ativo] { border-color: color-mix(in srgb, var(--foreground) 45%, transparent); color: var(--text-primary); background-color: color-mix(in srgb, var(--foreground) 6%, transparent); }
+.filtro option { background: var(--popover); color: var(--text-primary); }
+
+.busca {
+  display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid var(--border); color: var(--text-secondary); min-width: 200px;
+}
+.busca:focus-within { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 30%, transparent); }
+.busca input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--text-primary); font-size: 12.5px; font-family: inherit; box-shadow: none !important; }
+.busca input::placeholder { color: var(--text-secondary); opacity: 0.8; }
+
+.link-limpar { border: none; background: none; cursor: pointer; font-size: 12px; color: var(--text-secondary); text-decoration: underline; text-underline-offset: 3px; padding: 0 4px; }
+.link-limpar:hover { color: var(--text-primary); }
+
+.menu-flutuante {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 50; min-width: 180px; padding: 5px; border-radius: 12px;
+  background: var(--popover); border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent); box-shadow: var(--shadow-float);
+}
+
+@media (pointer: coarse) { .filtro, .busca { height: 40px; } }
+
+/* Linhas de tabela clicáveis: a linha abre o detalhe; ações secundárias só no hover */
+.linha-clicavel { cursor: pointer; }
+.acoes-linha { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+.acoes-linha .acao-secundaria { opacity: 0; border-color: transparent; }
+.linha-clicavel:hover .acao-secundaria,
+.acoes-linha:focus-within .acao-secundaria { opacity: 1; }
+@media (pointer: coarse) { .acoes-linha .acao-secundaria { opacity: 1; } }
+.table-purion select.badge { appearance: none; -webkit-appearance: none; }
+
+.metric-strip-botao { border: none; background: transparent; cursor: pointer; text-align: left; font-family: inherit; }
+.metric-strip-botao:hover { background: color-mix(in srgb, var(--foreground) 5%, transparent); }
+.metric-strip-botao[data-ativo] { background: color-mix(in srgb, var(--foreground) 9%, transparent); box-shadow: -1px 0 0 var(--border), 0 -1px 0 var(--border), inset 0 -2px 0 var(--brand-accent); }

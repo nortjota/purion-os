@@ -1,40 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { InnerTabs } from '@/components/ui/InnerTabs'
-import { VendasTodasView } from './VendasTodasView'
-import { VendasB2C } from './VendasB2C'
-import { VendasB2B } from './VendasB2B'
+import { usePurionStore } from '@/store'
+import { aguardandoDespacho } from '@/hooks/useDespacho'
+import { VendasPedidos } from './VendasPedidos'
 import { VendasDespachoLogistica } from './VendasDespachoLogistica'
 import { PainelMetricasVendas } from './PainelMetricasVendas'
 import { CatalogoProdutos } from './CatalogoProdutos'
 
-type TabId = 'todas' | 'b2c' | 'b2b' | 'despacho' | 'metricas' | 'produtos'
+type TabId = 'pedidos' | 'despacho' | 'metricas' | 'produtos'
 
-const TABS: { id: TabId; label: string }[] = [
-  { id: 'todas',    label: 'Todas as Vendas'     },
-  { id: 'b2c',      label: 'B2C'                 },
-  { id: 'b2b',      label: 'B2B'                 },
-  { id: 'despacho', label: 'Despacho & Logística' },
-  { id: 'metricas', label: 'Métricas'            },
-  { id: 'produtos', label: 'Produtos & Kits'     },
-]
-
+/**
+ * Vendas em 4 abas (eram 6): "Todas", "B2C" e "B2B" viraram uma lista só, com o canal como filtro,
+ * e a visão "Painel" saiu por repetir a aba Métricas.
+ */
 export function VendasPage() {
-  const [aba, setAba] = useState<TabId>('todas')
+  const [aba, setAba] = useState<TabId>('pedidos')
+  const { vendas } = usePurionStore()
+  const naFila = useMemo(() => vendas.filter(aguardandoDespacho).length, [vendas])
+
+  const tabs = [
+    { id: 'pedidos',  label: 'Pedidos' },
+    { id: 'despacho', label: 'Despacho', badge: naFila },
+    { id: 'metricas', label: 'Métricas' },
+    { id: 'produtos', label: 'Produtos & Kits' },
+  ]
 
   return (
-    <div className="page-content section-gap">
-      <div>
-        <h1 className="page-title">Vendas</h1>
-        <p className="caption mt-1">Pedidos B2C e B2B, despacho e métricas</p>
-      </div>
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <h1 className="page-title">Vendas</h1>
 
-      <InnerTabs tabs={TABS} activeTab={aba} onChange={(id) => setAba(id as TabId)} />
+      <InnerTabs tabs={tabs} activeTab={aba} onChange={(id) => setAba(id as TabId)} />
 
-      {aba === 'todas' && <VendasTodasView />}
-      {aba === 'b2c' && <VendasB2C />}
-      {aba === 'b2b' && <VendasB2B />}
+      {aba === 'pedidos' && <VendasPedidos />}
       {aba === 'despacho' && <VendasDespachoLogistica />}
       {aba === 'metricas' && <PainelMetricasVendas />}
       {aba === 'produtos' && <CatalogoProdutos />}

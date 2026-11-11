@@ -7,12 +7,14 @@
  */
 
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, SlidersHorizontal } from 'lucide-react'
+import { Plus, SlidersHorizontal, Columns3, List, Filter, CalendarDays, BarChart3, Archive } from 'lucide-react'
+import { Segmentado } from '@/components/ui/Segmentado'
+import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
+import { formatarMoeda } from '@/lib/calculos'
 import { usePurionStore } from '@/store'
 import type { Lead, StatusLead, TierLead } from '@/store'
 import { useMobile } from '@/hooks/useMobile'
 import { BottomSheet } from '@/components/ui/BottomSheet'
-import { InnerTabs } from '@/components/ui/InnerTabs'
 import { useCRM } from '@/hooks/useCRM'
 import { useIsMaster } from '@/hooks/useIsMaster'
 import { useBulkActions } from '@/hooks/useBulkActions'
@@ -28,16 +30,16 @@ import { CRMLeadDrawer } from './CRMLeadDrawer'
 import { CRMFiltrosBar, FILTROS_CRM_VAZIOS, aplicarFiltrosCRM, type FiltrosCRM } from './CRMFiltrosBar'
 import { CRMModalNovaLead } from './CRMModalNovaLead'
 import { FunilB2B } from './FunilB2B'
-import { ESTAGIOS } from './crmHelpers'
+import { ESTAGIOS, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS, estagioNormalizado } from './crmHelpers'
 
 type Visao = 'quadro' | 'lista' | 'funil' | 'calendario' | 'painel'
 
-const TABS = [
-  { id: 'quadro',     label: 'Quadro'     },
-  { id: 'lista',      label: 'Lista'      },
-  { id: 'funil',      label: 'Funil'      },
-  { id: 'calendario', label: 'Calendário' },
-  { id: 'painel',     label: 'Painel'     },
+const TABS: ReadonlyArray<{ id: Visao; label: string; icon: typeof List }> = [
+  { id: 'quadro',     label: 'Quadro',     icon: Columns3 },
+  { id: 'lista',      label: 'Lista',      icon: List },
+  { id: 'funil',      label: 'Funil',      icon: Filter },
+  { id: 'calendario', label: 'Calendário', icon: CalendarDays },
+  { id: 'painel',     label: 'Painel',     icon: BarChart3 },
 ]
 
 const VISOES_VALIDAS: Visao[] = ['quadro', 'lista', 'funil', 'calendario', 'painel']
@@ -48,7 +50,7 @@ function carregarVisaoSalva(): Visao {
   return VISOES_VALIDAS.includes(v as Visao) ? (v as Visao) : 'quadro'
 }
 
-export function CRMDashboard() {
+export function CRMDashboard({ onVerArquivados }: { onVerArquivados?: () => void } = {}) {
   const isMobile = useMobile()
   const { leads, perfilAtivo } = usePurionStore()
   const { adicionarLead, atualizarLead, deletarLead } = useCRM()
@@ -73,8 +75,8 @@ export function CRMDashboard() {
 
   useEffect(() => { setVisao(carregarVisaoSalva()) }, [])
 
-  function mudarVisao(v: string) {
-    setVisao(v as Visao)
+  function mudarVisao(v: Visao) {
+    setVisao(v)
     if (typeof window !== 'undefined') localStorage.setItem('purion:view:crm-pipeline', v)
   }
 
@@ -137,88 +139,90 @@ export function CRMDashboard() {
     success('Contato registrado')
   }
 
-  const px = isMobile ? 14 : 24
+  const px = isMobile ? 14 : 32
+
+  // ── Números do pipeline (sempre da base inteira; clicar aplica o filtro correspondente) ──
+  const metricas = useMemo<MetricaFaixa[]>(() => {
+    const hoje = new Date().toISOString().slice(0, 10)
+    const ativos = leads.filter((l) => ESTAGIOS_ATIVOS.includes(estagioNormalizado(l.status)))
+    const ganhos = leads.filter((l) => ESTAGIOS_GANHOS.includes(estagioNormalizado(l.status)))
+    const abertos = leads.filter((l) => estagioNormalizado(l.status) !== 'perdido')
+    const fuHoje = abertos.filter((l) => l.proximoPassoData?.slice(0, 10) === hoje).length
+    const fuAtrasado = abertos.filter((l) => l.proximoPassoData && l.proximoPassoData.slice(0, 10) < hoje).length
+    const reposicao = ganhos.filter((l) => {
+      const dias = Math.floor((Date.now() - new Date(l.updatedAt).getTime()) / 86_400_000)
+      return dias >= 14 && dias <= 35
+    }).length
+    const potencial = ativos.reduce((s, l) => s + (l.valorMedioMensal || 0), 0)
+    const recorrente = ganhos.reduce((s, l) => s + (l.valorMedioMensal || 0), 0)
+    const alternarFollowUp = (v: 'hoje' | 'atrasado') => setFiltros((f) => ({ ...f, followUp: f.followUp === v ? 'todos' : v }))
+    return [
+      { label: 'Em negociação', valor: ativos.length, sub: `${formatarMoeda(potencial)}/mês em potencial`, dica: 'Leads de Prospecto a Oportunidade. Potencial = soma do valor médio mensal estimado.' },
+      { label: 'Parceiros ativos', valor: ganhos.length, sub: `${formatarMoeda(recorrente)}/mês estimado`, dica: 'Leads em Cliente ou Recorrente.' },
+      { label: 'Follow-up hoje', valor: fuHoje, sub: 'clique para filtrar', onClick: () => alternarFollowUp('hoje'), ativo: filtros.followUp === 'hoje' },
+      { label: 'Follow-up atrasado', valor: fuAtrasado, sub: 'clique para filtrar', tom: fuAtrasado > 0 ? 'danger' : undefined, onClick: () => alternarFollowUp('atrasado'), ativo: filtros.followUp === 'atrasado' },
+      { label: 'Reposição a oferecer', valor: reposicao, sub: 'parceiros entre D+14 e D+35', tom: reposicao > 0 ? 'warning' : undefined, dica: 'Parceiros cujo último movimento foi há 14–35 dias: hora de oferecer reposição (alvo D+21).' },
+    ]
+  }, [leads, filtros.followUp])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
-      {/* ── Header ── */}
-      <div style={{ padding: `16px ${px}px 0`, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, gap: 8, flexWrap: 'wrap' }}>
-          <div>
-            <h1 style={{ fontSize: isMobile ? 17 : 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-              CRM B2B — Pipeline
-            </h1>
-            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
-              {leadsFiltrados.length} lead{leadsFiltrados.length !== 1 ? 's' : ''} · Máquina de Vendas
-            </p>
+      {/* ── Cabeçalho: título, visão e ações em UMA linha ── */}
+      <div style={{ padding: `${isMobile ? 14 : 24}px ${px}px 0`, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="toolbar">
+          <div style={{ marginRight: 8 }}>
+            <h1 className="page-title">CRM B2B</h1>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <button
-              onClick={() => setFiltrosAbertos((o) => !o)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                height: isMobile ? 34 : 32, padding: '0 12px', borderRadius: 6, fontSize: 12,
-                border: `1px solid ${filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
-                background: filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.08)' : 'transparent',
-                color: filtrosAtivosCount > 0 ? 'var(--brand-accent)' : 'var(--text-secondary)',
-                cursor: 'pointer',
-              }}
-            >
-              <SlidersHorizontal size={13} />
-              {!isMobile && 'Filtrar'}
-              {filtrosAtivosCount > 0 && (
-                <span style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700 }}>
-                  {filtrosAtivosCount}
-                </span>
-              )}
-            </button>
+          <span className="caption tnum">
+            {leadsFiltrados.length} lead{leadsFiltrados.length !== 1 ? 's' : ''}{filtrosAtivosCount > 0 ? ' no filtro' : ''}
+          </span>
+          <span className="toolbar-espaco" />
 
-            {visao === 'lista' && !isMobile && (
-              <select
-                className="select-purion"
-                style={{ width: 'auto', height: 32 }}
-                value={groupBy}
-                onChange={(e) => setGroupBy(e.target.value as LeadGroupBy)}
-              >
-                <option value="estagio">Agrupar por estágio</option>
-                <option value="tier">Agrupar por tier</option>
-                <option value="none">Sem agrupamento</option>
-              </select>
+          {visao === 'lista' && !isMobile && (
+            <select className="filtro" value={groupBy} onChange={(e) => setGroupBy(e.target.value as LeadGroupBy)} aria-label="Agrupar por">
+              <option value="estagio">Agrupar: estágio</option>
+              <option value="tier">Agrupar: tier</option>
+              <option value="none">Sem agrupar</option>
+            </select>
+          )}
+          <button
+            onClick={() => setFiltrosAbertos((o) => !o)}
+            className="btn btn-secondary btn-sm" aria-expanded={filtrosAbertos}
+            style={filtrosAtivosCount > 0 ? { borderColor: 'color-mix(in srgb, var(--foreground) 45%, transparent)' } : undefined}
+          >
+            <SlidersHorizontal size={13} />
+            {!isMobile && 'Filtros'}
+            {filtrosAtivosCount > 0 && (
+              <span className="tnum" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 999, padding: '0 6px', fontSize: 10, fontWeight: 700, lineHeight: '16px' }}>
+                {filtrosAtivosCount}
+              </span>
             )}
-
-            <button
-              onClick={() => setModalNovaAberto(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                height: isMobile ? 34 : 32, padding: '0 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-                background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer',
-              }}
-            >
-              <Plus size={14} />
-              {!isMobile && 'Nova lead'}
+          </button>
+          {onVerArquivados && !isMobile && (
+            <button onClick={onVerArquivados} className="btn btn-ghost btn-sm" title="Leads arquivados">
+              <Archive size={13} /> Arquivados
             </button>
-          </div>
+          )}
+          <button onClick={() => setModalNovaAberto(true)} className="btn btn-accent btn-sm">
+            <Plus size={14} />
+            {!isMobile && 'Nova lead'}
+          </button>
         </div>
 
-        {/* ── Abas de visão ── */}
-        {isMobile ? (
-          <select
-            className="select-purion"
-            style={{ width: '100%', marginBottom: 10 }}
-            value={visao}
-            onChange={(e) => mudarVisao(e.target.value)}
-          >
-            {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-          </select>
-        ) : (
-          <InnerTabs tabs={TABS} activeTab={visao} onChange={mudarVisao} />
-        )}
+        {!isMobile && <MetricStrip metricas={metricas} rotulo="Resumo do pipeline" />}
+
+        <div className="toolbar" style={{ paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
+          <Segmentado
+            rotulo="Visão" valor={visao} onChange={mudarVisao}
+            opcoes={isMobile ? TABS.map((t) => ({ id: t.id, label: '', icon: t.icon })) : TABS}
+          />
+        </div>
       </div>
 
       {/* ── Filtros (desktop inline) ── */}
       {filtrosAbertos && !isMobile && (
-        <div style={{ padding: '12px 24px', flexShrink: 0, borderBottom: '1px solid var(--border)', background: 'var(--bg-surface)' }}>
+        <div style={{ padding: '12px 32px', flexShrink: 0, borderBottom: '1px solid var(--border)' }}>
           <CRMFiltrosBar leads={leads} filtros={filtros} onChange={setFiltros} />
         </div>
       )}

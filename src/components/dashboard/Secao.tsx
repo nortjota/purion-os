@@ -34,20 +34,4 @@ export function Secao({ titulo, sub, acao, recolhida = false, onAlternar, childr
   )
 }
 
-/** Controle segmentado (período etc.) — o item ativo é o único uso do acento no bloco. */
-export function Segmentado<T extends string | number>({ opcoes, valor, onChange, rotulo }: {
-  opcoes: ReadonlyArray<{ id: T; label: string }>
-  valor: T
-  onChange: (v: T) => void
-  rotulo?: string
-}) {
-  return (
-    <div className="segmented" role="group" aria-label={rotulo}>
-      {opcoes.map((o) => (
-        <button key={String(o.id)} type="button" data-ativo={o.id === valor || undefined} aria-pressed={o.id === valor} onClick={() => onChange(o.id)}>
-          {o.label}
-        </button>
-      ))}
-    </div>
-  )
-}
+export { Segmentado } from '@/components/ui/Segmentado'
