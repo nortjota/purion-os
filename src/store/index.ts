@@ -584,6 +584,9 @@ export interface Venda {
   despachadoPor?: string | null
   despachadoPorNome?: string | null
   m02EnviadaEm?: string | null
+  /** Escada de produtos: SKU vendido e frascos de estoque por unidade (Kit 3 = 3). Legado sem SKU = 1. */
+  skuCodigo?: string | null
+  frascosPorUnidade?: number | null
   /** Pós-venda (Playbook 360): consentimentos, contexto e feedback do cliente */
   optInPesquisa?: boolean
   optInMarketing?: boolean

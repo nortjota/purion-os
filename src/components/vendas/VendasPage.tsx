@@ -7,8 +7,9 @@ import { VendasB2C } from './VendasB2C'
 import { VendasB2B } from './VendasB2B'
 import { VendasDespachoLogistica } from './VendasDespachoLogistica'
 import { PainelMetricasVendas } from './PainelMetricasVendas'
+import { CatalogoProdutos } from './CatalogoProdutos'
 
-type TabId = 'todas' | 'b2c' | 'b2b' | 'despacho' | 'metricas'
+type TabId = 'todas' | 'b2c' | 'b2b' | 'despacho' | 'metricas' | 'produtos'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'todas',    label: 'Todas as Vendas'     },
@@ -16,6 +17,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'b2b',      label: 'B2B'                 },
   { id: 'despacho', label: 'Despacho & Logística' },
   { id: 'metricas', label: 'Métricas'            },
+  { id: 'produtos', label: 'Produtos & Kits'     },
 ]
 
 export function VendasPage() {
@@ -35,6 +37,7 @@ export function VendasPage() {
       {aba === 'b2b' && <VendasB2B />}
       {aba === 'despacho' && <VendasDespachoLogistica />}
       {aba === 'metricas' && <PainelMetricasVendas />}
+      {aba === 'produtos' && <CatalogoProdutos />}
     </div>
   )
 }
