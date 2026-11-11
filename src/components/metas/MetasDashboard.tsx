@@ -11,6 +11,9 @@ import { MetaCard } from './MetaCard'
 import { MetaHeatmap } from './MetaHeatmap'
 import { ModalMetaCompleta, type NovaMetaCompleta } from './ModalMetaCompleta'
 import { ModalTemplates } from './ModalTemplates'
+import { RotinaSocios } from './RotinaSocios'
+import { InnerTabs } from '@/components/ui/InnerTabs'
+import { isSocioAtivo } from '@/lib/socios'
 import {
   SOCIOS, CATEGORIAS, corSocio,
   hojeISO, deslocarData, formatarDataExtensa,
@@ -224,7 +227,8 @@ function ColunaMetas({ chaveOrdem, titulo, subtitulo, cor, avatar, metas, pct, s
 
 export function MetasDashboard() {
   const isMobile = useMobile()
-  const { metasDiarias } = usePurionStore()
+  const { metasDiarias, perfilAtivo } = usePurionStore()
+  const [aba, setAba] = useState<'metas' | 'rotina'>('metas')
   const {
     criarMeta, incrementarProgresso, decrementarProgresso, atualizarProgresso, editarMeta,
     concluirMeta, deletarMeta, adicionarItemChecklist, removerItemChecklist, marcarItem,
@@ -347,8 +351,29 @@ export function MetasDashboard() {
     )
   })
 
+  if (aba === 'rotina') {
+    return (
+      <div className="page-content section-gap">
+        <InnerTabs
+          tabs={[{ id: 'metas', label: 'Metas do dia' }, { id: 'rotina', label: 'Minha Rotina (4h)' }]}
+          activeTab={aba}
+          onChange={(id) => setAba(id as 'metas' | 'rotina')}
+        />
+        <RotinaSocios
+          socioPrimeiro={isSocioAtivo(perfilAtivo) ? perfilAtivo : undefined}
+          onVerCategoria={(c) => { setFiltroCategoria(c); setSelectedDate(hojeISO()); setAba('metas') }}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="page-content section-gap">
+      <InnerTabs
+        tabs={[{ id: 'metas', label: 'Metas do dia' }, { id: 'rotina', label: 'Minha Rotina (4h)' }]}
+        activeTab={aba}
+        onChange={(id) => setAba(id as 'metas' | 'rotina')}
+      />
       {/* ── HERO DO DIA ── */}
       <div className="card-purion" style={{
         padding: '24px 28px', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
