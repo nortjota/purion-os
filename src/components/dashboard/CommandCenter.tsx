@@ -46,6 +46,7 @@ import { PERIODO_OPCOES, type Periodo, inicioPeriodo } from '@/components/dashbo
 import { estagioNormalizado, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS } from '@/components/crm/crmHelpers'
 import { STATUS_OBJETIVO_COR, STATUS_OBJETIVO_LABEL } from '@/components/estrategias/metas/metasHelpers'
 import { PERFIS_INFO, SOCIOS_ATIVOS, SOCIOS_ATIVOS_IDS, corPerfil, type SocioAtivo } from '@/lib/socios'
+import { KpisPlaybook } from './KpisPlaybook'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -810,6 +811,9 @@ export function CommandCenter() {
 
       {/* ── Resumo de hoje ── */}
       <ResumoDiario />
+
+      {/* ── KPIs oficiais do Playbook 360 + North Star ── */}
+      <KpisPlaybook />
 
       {/* ══════════════════════════════════════════════════════════
           PAINEL EXECUTIVO — estilo Asana

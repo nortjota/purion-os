@@ -750,6 +750,8 @@ export interface Configuracoes {
   // Alertas de tráfego
   diasSemPedidoAlerta: number    // padrão: 15
   estoqueMinimoPadrao: number
+  /** Sessões do site nos últimos 30 dias (GA4/Shopify) — base da conversão do site (KPI Playbook 360) */
+  sessoesSite30d?: number
   roasMinimo: number             // 2.5
   cpaMaximo: number              // 30
   orcamentoDiarioMeta: number    // 80
