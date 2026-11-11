@@ -1,5 +1,6 @@
 'use client'
 
+import { Segmentado } from '@/components/ui/Segmentado'
 import { useState, useEffect, useMemo } from 'react'
 import { ChevronLeft, ChevronRight, Plus, AlertTriangle, ExternalLink, RefreshCw } from 'lucide-react'
 import type { EventoCalendario, TipoEvento, PerfilUsuario } from '@/store'
@@ -87,95 +88,56 @@ export function CalendarioPage() {
   }
 
   return (
-    <div className="page-content section-gap">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h1 className="page-title">Calendário</h1>
-          <p className="caption mt-1">Reuniões, prazos, follow-ups B2B e datas importantes num só lugar</p>
-        </div>
-        <button onClick={() => { setModalDia(new Date()); setModalEvento(null); setCriandoNovo(true) }} className="btn btn-primary btn-sm">
-          <Plus size={12} /> Novo evento
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Uma barra só: título, navegação, filtros, visão e ação (antes eram 4 faixas) */}
+      <div className="toolbar">
+        <h1 className="page-title" style={{ marginRight: 8 }}>Calendário</h1>
+        <span className="toolbar-espaco" />
+        {googleStatus?.configurado && googleStatus.link && (
+          <a href={googleStatus.link} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ textDecoration: 'none' }} title="Calendário central conectado (puriongt@gmail.com)">
+            <ExternalLink size={12} /> Assinar no meu Gmail
+          </a>
+        )}
+        <button onClick={() => { setModalDia(new Date()); setModalEvento(null); setCriandoNovo(true) }} className="btn btn-accent btn-sm">
+          <Plus size={13} /> Novo evento
         </button>
+      </div>
+
+      <div className="toolbar">
+        <button onClick={anterior} className="icon-btn" aria-label="Anterior"><ChevronLeft size={14} /></button>
+        <span style={{ fontSize: 14, fontWeight: 600, textTransform: 'capitalize', minWidth: 150, textAlign: 'center' }}>
+          {visao === 'agenda' ? 'Próximos eventos' : formatarMesAno(referencia)}
+        </span>
+        <button onClick={proximo} className="icon-btn" aria-label="Próximo"><ChevronRight size={14} /></button>
+        <button onClick={irParaHoje} className="btn btn-secondary btn-sm">Hoje</button>
+
+        <select className="filtro" data-ativo={filtroTipo !== 'todos' || undefined} aria-label="Tipo de evento"
+          value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value as TipoEvento | 'todos')}>
+          <option value="todos">Todos os tipos</option>
+          {(Object.keys(TIPO_EVENTO_LABEL) as TipoEvento[]).map((t) => <option key={t} value={t}>{TIPO_EVENTO_LABEL[t]}</option>)}
+        </select>
+        <select className="filtro" data-ativo={filtroResponsavel !== 'todos' || undefined} aria-label="Responsável"
+          value={filtroResponsavel} onChange={(e) => setFiltroResponsavel(e.target.value as PerfilUsuario | 'todos')}>
+          <option value="todos">Todos os sócios</option>
+          {RESPONSAVEIS.map((r) => <option key={r.id} value={r.id}>{r.nome}</option>)}
+        </select>
+
+        <span className="toolbar-espaco" />
+        <Segmentado
+          rotulo="Visão" valor={visao} onChange={setVisao}
+          opcoes={[{ id: 'mes', label: 'Mês' }, { id: 'semana', label: 'Semana' }, { id: 'agenda', label: 'Agenda' }]}
+        />
       </div>
 
       {googleStatus && !googleStatus.configurado && (
-        <div className="card-purion" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, borderColor: 'rgba(230,195,116,0.3)', background: 'rgba(230,195,116,0.05)' }}>
-          <AlertTriangle size={16} style={{ color: 'var(--status-warning)', flexShrink: 0 }} />
-          <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-            O calendário interno já funciona sozinho. Para os eventos também aparecerem no Google Calendar da PURION (<strong>puriongt@gmail.com</strong>) e no celular dos sócios, configure a integração — veja o passo a passo em <code>INTEGRACAO_GOOGLE.md</code>.
+        <details className="nota-regras">
+          <summary>Google Calendar não conectado — o calendário interno funciona normalmente</summary>
+          <p>
+            Para os eventos também aparecerem no Google Calendar da PURION (<strong>puriongt@gmail.com</strong>) e no celular dos sócios,
+            configure a integração — o passo a passo está em <code>INTEGRACAO_GOOGLE.md</code>.
           </p>
-        </div>
+        </details>
       )}
-      {googleStatus?.configurado && googleStatus.link && (
-        <div className="card-purion" style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Calendário central conectado (puriongt@gmail.com).</span>
-          <a href={googleStatus.link} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
-            <ExternalLink size={11} /> Assinar no meu Gmail
-          </a>
-        </div>
-      )}
-
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-2">
-          <button onClick={anterior} className="icon-btn"><ChevronLeft size={14} /></button>
-          <span style={{ fontSize: 14, fontWeight: 700, textTransform: 'capitalize', minWidth: 140 }}>
-            {visao === 'agenda' ? 'Próximos eventos' : formatarMesAno(referencia)}
-          </span>
-          <button onClick={proximo} className="icon-btn"><ChevronRight size={14} /></button>
-          <button onClick={irParaHoje} className="btn btn-secondary btn-sm">hoje</button>
-        </div>
-
-        <div className="flex gap-1 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit">
-          {(['mes', 'semana', 'agenda'] as Visao[]).map((v) => (
-            <button
-              key={v}
-              onClick={() => setVisao(v)}
-              className="px-3 py-1.5 rounded-md text-xs font-medium capitalize"
-              style={visao === v ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-1 flex-wrap">
-        <button
-          onClick={() => setFiltroTipo('todos')}
-          className="px-3 py-1.5 rounded-md text-xs font-medium"
-          style={filtroTipo === 'todos' ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
-        >
-          Todos os tipos
-        </button>
-        {(Object.keys(TIPO_EVENTO_LABEL) as TipoEvento[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setFiltroTipo(t)}
-            className="px-3 py-1.5 rounded-md text-xs font-medium"
-            style={filtroTipo === t ? { background: `${COR_TIPO_EVENTO[t]}22`, color: COR_TIPO_EVENTO[t] } : { color: 'var(--text-secondary)' }}
-          >
-            {TIPO_EVENTO_LABEL[t]}
-          </button>
-        ))}
-        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 4px' }} />
-        <button
-          onClick={() => setFiltroResponsavel('todos')}
-          className="px-3 py-1.5 rounded-md text-xs font-medium"
-          style={filtroResponsavel === 'todos' ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
-        >
-          Todos
-        </button>
-        {RESPONSAVEIS.map((r) => (
-          <button
-            key={r.id}
-            onClick={() => setFiltroResponsavel(r.id)}
-            className="px-3 py-1.5 rounded-md text-xs font-medium"
-            style={filtroResponsavel === r.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
-          >
-            {r.nome}
-          </button>
-        ))}
-      </div>
 
       <div className="grid gap-5" style={{ gridTemplateColumns: visao === 'agenda' ? '1fr' : '1fr 260px' }}>
         <div>
@@ -186,7 +148,7 @@ export function CalendarioPage() {
 
         {visao !== 'agenda' && (
           <div className="card-purion" style={{ padding: '14px 16px', height: 'fit-content' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>Próximos 7 dias</p>
+            <p className="kpi-label mb-3">Próximos 7 dias</p>
             <Proximos7Dias eventos={eventosFiltrados} onClickEvento={abrirEvento} />
           </div>
         )}
