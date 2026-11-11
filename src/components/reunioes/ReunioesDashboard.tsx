@@ -5,6 +5,7 @@
  * Daily assíncrono, reuniões semanais, log de decisões estratégicas.
  */
 
+import { Segmentado } from '@/components/ui/Segmentado'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Trash2, Pencil, CalendarCheck2, CalendarOff, CalendarPlus } from 'lucide-react'
 import { useMobile } from '@/hooks/useMobile'
@@ -712,6 +713,7 @@ export function ReunioesDashboard() {
   const [modalDecisao, setModalDecisao] = useState(false)
   const [reuniaoExpandida, setReuniaoExpandida] = useState<string | null>(null)
   const [editandoReuniao, setEditandoReuniao] = useState<ReuniaoItem | null>(null)
+  const [secao, setSecao] = useState<'reunioes' | 'daily' | 'decisoes'>('reunioes')
   const [filtroReuniao, setFiltroReuniao] = useState<'proximas' | 'historico'>('proximas')
   const [diaSelecionado, setDiaSelecionado] = useState<string | null>(null)
   const [linkCalendario, setLinkCalendario] = useState<string | null>(null)
@@ -744,26 +746,33 @@ export function ReunioesDashboard() {
   }
 
   return (
-    <div className="page-content section-gap">
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-      {/* ── Header ── */}
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="page-title">Reuniões & Decisões</h1>
-          <p className="caption mt-1">Daily assíncrono, reuniões semanais e decisões estratégicas</p>
-        </div>
+      {/* ── Cabeçalho: uma seção por vez (antes eram três blocos empilhados numa página longa) ── */}
+      <div className="toolbar">
+        <h1 className="page-title" style={{ marginRight: 8 }}>Reuniões</h1>
+        <span className="toolbar-espaco" />
         {linkCalendario && (
-          <a href={linkCalendario} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm">
+          <a href={linkCalendario} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ textDecoration: 'none' }}>
             <CalendarPlus size={13} /> Adicionar ao meu Google
           </a>
         )}
+        <Segmentado
+          rotulo="Seção" valor={secao} onChange={setSecao}
+          opcoes={[
+            { id: 'reunioes', label: 'Reuniões', contagem: reunioesProximas.length },
+            { id: 'daily', label: 'Daily' },
+            { id: 'decisoes', label: 'Decisões', contagem: decisoes.filter((d) => d.status === 'aberta').length },
+          ]}
+        />
       </div>
 
       {/* ══════════════════════════════════════
           SEÇÃO 1 — DAILY ASSÍNCRONO
       ══════════════════════════════════════ */}
-      <section>
-        <p className="kpi-label mb-4">Daily Assíncrono</p>
+      {secao === 'daily' && (
+      <section data-secao>
+        <p className="kpi-label mb-4">Daily assíncrono · o que cada sócio fez e fará</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {SOCIOS.map((socio) => (
             <DailyCard
@@ -775,18 +784,20 @@ export function ReunioesDashboard() {
           ))}
         </div>
       </section>
+      )}
 
       {/* ══════════════════════════════════════
           SEÇÃO 2 — REUNIÕES SEMANAIS
       ══════════════════════════════════════ */}
-      <section>
+      {secao === 'reunioes' && (
+      <section data-secao>
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <p className="kpi-label">
             Reuniões ({reunioes.length})
           </p>
           <button
             onClick={() => setModalReuniao(true)}
-            className="btn btn-primary btn-sm"
+            className="btn btn-accent btn-sm"
           >
             <Plus size={12} />
             Registrar reunião
@@ -934,18 +945,20 @@ export function ReunioesDashboard() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ══════════════════════════════════════
           SEÇÃO 3 — DECISÕES ESTRATÉGICAS
       ══════════════════════════════════════ */}
-      <section>
+      {secao === 'decisoes' && (
+      <section data-secao>
         <div className="flex items-center justify-between mb-3">
           <p className="kpi-label">
             Log de Decisões Estratégicas
           </p>
           <button
             onClick={() => setModalDecisao(true)}
-            className="btn btn-primary btn-sm"
+            className="btn btn-accent btn-sm"
           >
             <Plus size={12} />
             Nova decisão
@@ -1097,6 +1110,7 @@ export function ReunioesDashboard() {
           })}
         </div>
       </section>
+      )}
 
       {/* ── Modais ── */}
       {modalReuniao && (

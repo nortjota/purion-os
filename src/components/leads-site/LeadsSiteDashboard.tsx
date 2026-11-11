@@ -1,5 +1,9 @@
 'use client'
 
+import { MetricStrip } from '@/components/ui/MetricStrip'
+import { dbLog } from '@/lib/dbLog'
+import { linkWhatsApp } from '@/hooks/useDespacho'
+import { MessageCircle } from 'lucide-react'
 import { useState, useMemo, useCallback } from 'react'
 import { Search, RefreshCw, Mail, ShoppingCart, CheckCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -42,6 +46,12 @@ function timeAgo(iso: string) {
   return `${Math.floor(m / 1440)}d`
 }
 
+/** Texto-base de recuperação de carrinho (o sócio revisa antes de enviar — nada é enviado automaticamente). */
+function mensagemRecuperacao(nome: string | null | undefined): string {
+  const primeiro = (nome ?? '').trim().split(' ')[0]
+  return `Oi${primeiro ? `, ${primeiro}` : ''}! Aqui é da PURION. Vi que você começou um pedido do PURION GT e não finalizou. Ficou alguma dúvida ou posso te ajudar a concluir?`
+}
+
 function formatBRL(v: number) {
   return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
@@ -66,6 +76,8 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
       supabase.from('leads_site').select('*').order('criado_em', { ascending: false }),
       supabase.from('carrinhos_abandonados').select('*').order('criado_em', { ascending: false }),
     ])
+    dbLog('SELECT', 'leads_site', leadsRes.error, `${leadsRes.data?.length ?? 0} rows`)
+    dbLog('SELECT', 'carrinhos_abandonados', carrinhosRes.error, `${carrinhosRes.data?.length ?? 0} rows`)
     if (leadsRes.data) setLeads(leadsRes.data as LeadSite[])
     if (carrinhosRes.data) setCarrinhos(carrinhosRes.data as CarrinhoAbandonado[])
     setCarregando(false)
@@ -94,66 +106,38 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
 
   return (
     <div className="page-content">
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>
-            Aquisição
-          </p>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Leads do Site</h1>
-        </div>
-        <button onClick={carregar} disabled={carregando}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface)', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)' }}>
-          <RefreshCw size={13} style={{ animation: carregando ? 'spin 1s linear infinite' : 'none' }} />
-          Atualizar
+      <div className="toolbar" style={{ marginBottom: 18 }}>
+        <h1 className="page-title" style={{ flex: '1 1 200px' }}>Leads do Site</h1>
+        <button onClick={carregar} disabled={carregando} className="icon-btn" title="Atualizar" aria-label="Atualizar">
+          <RefreshCw size={14} style={{ animation: carregando ? 'spin 1s linear infinite' : 'none' }} />
         </button>
       </div>
 
-      {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
-        {[
-          { label: 'Leads capturados',        value: totalLeads,             color: '#9CC3DB' },
-          { label: 'Carrinhos abandonados',   value: totalCarrinhos,         color: '#E6C374' },
-          { label: 'Em aberto',               value: carrinhosAbertos,       color: '#E5544B' },
-          { label: 'Valor em aberto',         value: formatBRL(valorEmAberto), color: '#D4FC3C' },
-        ].map(({ label, value, color }) => (
-          <div key={label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
-            <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 6px' }}>{label}</p>
-            <p style={{ fontSize: 22, fontWeight: 700, color, margin: 0 }}>{value}</p>
-          </div>
-        ))}
+      {/* Números = seletor de lista */}
+      <div style={{ marginBottom: 14 }}>
+        <MetricStrip
+          rotulo="Leads e carrinhos"
+          metricas={[
+            { label: 'Leads capturados', valor: totalLeads, sub: 'e-mails pelo cupom do site', onClick: () => setTab('leads'), ativo: tab === 'leads' },
+            { label: 'Carrinhos em aberto', valor: carrinhosAbertos, sub: `${formatBRL(valorEmAberto)} parados`, tom: carrinhosAbertos > 0 ? 'warning' : undefined, onClick: () => { setTab('carrinhos'); setSoNaoRecuperados(true) }, ativo: tab === 'carrinhos' && soNaoRecuperados },
+            { label: 'Todos os carrinhos', valor: totalCarrinhos, sub: `${totalCarrinhos - carrinhosAbertos} recuperado${totalCarrinhos - carrinhosAbertos !== 1 ? 's' : ''}`, onClick: () => { setTab('carrinhos'); setSoNaoRecuperados(false) }, ativo: tab === 'carrinhos' && !soNaoRecuperados },
+            { label: 'Taxa de recuperação', valor: totalCarrinhos > 0 ? `${Math.round(((totalCarrinhos - carrinhosAbertos) / totalCarrinhos) * 100)}%` : '—', sub: 'recuperados ÷ abandonados' },
+          ]}
+        />
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-        <button onClick={() => setTab('leads')}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: tab === 'leads' ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: tab === 'leads' ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: tab === 'leads' ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 12, fontWeight: tab === 'leads' ? 600 : 400, cursor: 'pointer' }}>
-          <Mail size={13} /> Leads (E-mail)
-        </button>
-        <button onClick={() => setTab('carrinhos')}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: tab === 'carrinhos' ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: tab === 'carrinhos' ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: tab === 'carrinhos' ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 12, fontWeight: tab === 'carrinhos' ? 600 : 400, cursor: 'pointer' }}>
-          <ShoppingCart size={13} /> Carrinhos Abandonados
-        </button>
-      </div>
-
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '0 12px', flex: 1, minWidth: 200 }}>
-          <Search size={13} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
-          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder={tab === 'leads' ? 'Buscar por e-mail ou cupom…' : 'Buscar por nome ou e-mail…'}
-            style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--text-primary)', width: '100%', padding: '9px 0' }} />
-        </div>
-        {tab === 'carrinhos' && (
-          <button onClick={() => setSoNaoRecuperados(p => !p)}
-            style={{ padding: '7px 12px', borderRadius: 7, border: soNaoRecuperados ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: soNaoRecuperados ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: soNaoRecuperados ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 11, fontWeight: soNaoRecuperados ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-            Só não recuperados
-          </button>
-        )}
+      <div className="toolbar" style={{ marginBottom: 14 }}>
+        <label className="busca" style={{ flex: '1 1 240px', maxWidth: 380 }}>
+          <Search size={13} aria-hidden />
+          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder={tab === 'leads' ? 'Buscar por e-mail ou cupom' : 'Buscar por nome ou e-mail'} aria-label="Buscar" />
+        </label>
+        <span className="toolbar-espaco" />
+        <span className="caption tnum">{tab === 'leads' ? leadsFiltrados.length : carrinhosFiltrados.length} resultado{(tab === 'leads' ? leadsFiltrados.length : carrinhosFiltrados.length) !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Leads table */}
       {tab === 'leads' && (
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           {leadsFiltrados.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 13 }}>
               Nenhum lead encontrado
@@ -189,7 +173,7 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
 
       {/* Carrinhos table */}
       {tab === 'carrinhos' && (
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           {carrinhosFiltrados.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 13 }}>
               Nenhum carrinho encontrado
@@ -199,7 +183,7 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}>
-                    {['Cliente', 'Contato', 'Parou em', 'Valor', 'Status', 'Abandonado'].map(h => (
+                    {['Cliente', 'Contato', 'Parou em', 'Valor', 'Status', 'Abandonado', ''].map(h => (
                       <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
@@ -224,6 +208,14 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
                             : <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--status-danger)' }}>Em aberto</span>}
                         </td>
                         <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap' }}>{timeAgo(c.criado_em)}</td>
+                        <td style={{ padding: '6px 14px', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                          {!c.recuperado && (() => {
+                            const wa = c.telefone ? linkWhatsApp(c.telefone, mensagemRecuperacao(c.nome)) : null
+                            if (wa) return <a href={wa} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm" style={{ textDecoration: 'none' }}><MessageCircle size={12} /> Recuperar</a>
+                            if (c.email) return <a href={`mailto:${c.email}?subject=${encodeURIComponent('Seu PURION GT ficou no carrinho')}&body=${encodeURIComponent(mensagemRecuperacao(c.nome))}`} className="btn btn-secondary btn-sm" style={{ textDecoration: 'none' }}><Mail size={12} /> Recuperar</a>
+                            return null
+                          })()}
+                        </td>
                       </tr>
                     )
                   })}
