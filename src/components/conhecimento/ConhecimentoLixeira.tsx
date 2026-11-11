@@ -68,7 +68,7 @@ export function ConhecimentoLixeira({ onFechar }: Props) {
       >
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <span className="flex items-center gap-2" style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-            <Archive size={16} style={{ color: '#C9A84C' }} /> Arquivados
+            <Archive size={16} style={{ color: 'var(--text-primary)' }} /> Arquivados
           </span>
           <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
         </div>
@@ -156,11 +156,11 @@ function ItemArquivado({ icon: Icon, item, isMaster, onRestaurar, onExcluirPerma
         <p style={{ fontSize: 13, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.titulo}</p>
         <p style={{ fontSize: 10, color: 'var(--text-secondary)' }}>Excluído em {formatarDataBR(item.deletedAt.slice(0, 10))}</p>
       </div>
-      <button onClick={onRestaurar} className="icon-btn" title="Restaurar" style={{ color: '#22C55E' }}>
+      <button onClick={onRestaurar} className="icon-btn" title="Restaurar" style={{ color: 'var(--status-ok)' }}>
         <RotateCcw size={13} />
       </button>
       {isMaster && (
-        <button onClick={onExcluirPermanente} className="icon-btn" title="Excluir permanentemente (master)" style={{ color: '#E85238' }}>
+        <button onClick={onExcluirPermanente} className="icon-btn" title="Excluir permanentemente (master)" style={{ color: 'var(--status-danger)' }}>
           <Trash2 size={13} />
         </button>
       )}

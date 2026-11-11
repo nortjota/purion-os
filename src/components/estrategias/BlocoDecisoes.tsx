@@ -25,12 +25,12 @@ export function BlocoDecisoes() {
         onClick={() => setModalRegistro(true)}
         className="flex items-center justify-center gap-2"
         style={{
-          width: '100%', height: 56, borderRadius: 14, border: '1.5px dashed rgba(201,168,76,0.45)',
-          background: 'rgba(201,168,76,0.06)', color: '#C9A84C', cursor: 'pointer',
+          width: '100%', height: 56, borderRadius: 14, border: '1.5px dashed rgba(212,252,60,0.45)',
+          background: 'rgba(245,245,240,0.06)', color: 'var(--text-primary)', cursor: 'pointer',
           fontSize: 15, fontWeight: 700, transition: 'background 150ms, border-color 150ms',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,0.12)'; e.currentTarget.style.borderColor = '#C9A84C' }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,0.06)'; e.currentTarget.style.borderColor = 'rgba(201,168,76,0.45)' }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(212,252,60,0.12)'; e.currentTarget.style.borderColor = 'var(--brand-accent)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(212,252,60,0.06)'; e.currentTarget.style.borderColor = 'rgba(212,252,60,0.45)' }}
       >
         <Plus size={18} /> Registrar nova decisão
       </button>

@@ -81,25 +81,25 @@ export function OnboardingChecklist() {
   return (
     <div style={{
       background: 'var(--bg-surface)', border: '1px solid var(--border)',
-      borderLeft: '3px solid #C9A84C', borderRadius: 12,
+      borderLeft: '3px solid var(--border)', borderRadius: 12,
       margin: '0 0 24px', overflow: 'hidden',
       boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
-          <Sparkles size={16} style={{ color: '#C9A84C', flexShrink: 0 }} />
+          <Sparkles size={16} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
                 {todos ? '🎉 PURION OS configurado!' : 'Configure o PURION OS'}
               </p>
-              <span style={{ fontSize: 11, color: '#C9A84C', fontWeight: 600 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-primary)', fontWeight: 600 }}>
                 {concluidos}/{total}
               </span>
             </div>
             <div style={{ height: 4, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${pct}%`, background: todos ? '#10B981' : '#C9A84C', borderRadius: 4, transition: 'width 400ms ease' }} />
+              <div style={{ height: '100%', width: `${pct}%`, background: todos ? 'var(--status-ok)' : 'var(--brand-accent)', borderRadius: 4, transition: 'width 400ms ease' }} />
             </div>
           </div>
         </div>
@@ -129,14 +129,14 @@ export function OnboardingChecklist() {
               <div key={p.id} style={{
                 display: 'flex', alignItems: 'center', gap: 14,
                 padding: '10px 20px',
-                background: feito ? 'rgba(16,185,129,0.03)' : 'transparent',
+                background: feito ? 'rgba(143,209,79,0.03)' : 'transparent',
                 borderBottom: i < PASSOS.length - 1 ? '1px solid var(--border)' : 'none',
               }}>
                 {/* Checkbox */}
                 <div style={{
                   width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-                  border: feito ? '2px solid #10B981' : '2px solid var(--border)',
-                  background: feito ? '#10B981' : 'transparent',
+                  border: feito ? '2px solid var(--status-ok)' : '2px solid var(--border)',
+                  background: feito ? 'var(--status-ok)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {feito && <Check size={11} color="#fff" strokeWidth={3} />}
@@ -154,7 +154,7 @@ export function OnboardingChecklist() {
                 {!feito && (
                   <button
                     onClick={() => handleIr(p)}
-                    style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid rgba(201,168,76,0.4)', background: 'rgba(201,168,76,0.06)', color: '#C9A84C', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                    style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid rgba(245,245,240,0.4)', background: 'rgba(245,245,240,0.06)', color: 'var(--text-primary)', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
                   >
                     {p.cta}
                   </button>

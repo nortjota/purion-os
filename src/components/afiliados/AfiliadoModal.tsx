@@ -166,7 +166,7 @@ export function AfiliadoModal({ afiliado, onSalvar, onFechar }: Props) {
           {PASSOS.map((_, i) => (
             <div key={i} style={{
               flex: 1, height: 3, borderRadius: 2,
-              background: i <= passo ? '#C9A84C' : 'var(--border)',
+              background: i <= passo ? 'var(--brand-accent)' : 'var(--border)',
               transition: 'background 300ms',
             }} />
           ))}
@@ -313,16 +313,16 @@ export function AfiliadoModal({ afiliado, onSalvar, onFechar }: Props) {
               </div>
 
               {linkGerado && (
-                <div style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+                <div style={{ background: 'rgba(245,245,240,0.08)', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
                   <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 6px' }}>Link de afiliado gerado</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <code style={{ fontSize: 12, color: '#C9A84C', flex: 1, wordBreak: 'break-all' }}>{linkGerado}</code>
+                    <code style={{ fontSize: 12, color: 'var(--text-primary)', flex: 1, wordBreak: 'break-all' }}>{linkGerado}</code>
                     <button
                       onClick={copiarLink}
                       style={{
-                        padding: '4px 10px', borderRadius: 6, border: '1px solid rgba(201,168,76,0.3)',
+                        padding: '4px 10px', borderRadius: 6, border: '1px solid rgba(245,245,240,0.3)',
                         background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                        fontSize: 11, color: '#C9A84C', whiteSpace: 'nowrap',
+                        fontSize: 11, color: 'var(--text-primary)', whiteSpace: 'nowrap',
                       }}
                     >
                       {copiado ? <><Check size={11} /> Copiado</> : <><Copy size={11} /> Copiar</>}
@@ -334,7 +334,7 @@ export function AfiliadoModal({ afiliado, onSalvar, onFechar }: Props) {
           )}
 
           {erro && (
-            <p style={{ fontSize: 12, color: '#EF4444', marginTop: 8, padding: '8px 12px', background: 'rgba(239,68,68,0.08)', borderRadius: 6 }}>
+            <p style={{ fontSize: 12, color: 'var(--status-danger)', marginTop: 8, padding: '8px 12px', background: 'rgba(229,84,75,0.08)', borderRadius: 6 }}>
               {erro}
             </p>
           )}
@@ -360,7 +360,7 @@ export function AfiliadoModal({ afiliado, onSalvar, onFechar }: Props) {
               onClick={avancar}
               style={{
                 padding: '8px 20px', borderRadius: 8, border: 'none',
-                background: '#C9A84C', color: '#0D0D0D', fontWeight: 600,
+                background: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 600,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13,
               }}
             >
@@ -372,7 +372,7 @@ export function AfiliadoModal({ afiliado, onSalvar, onFechar }: Props) {
               disabled={salvando}
               style={{
                 padding: '8px 20px', borderRadius: 8, border: 'none',
-                background: '#C9A84C', color: '#0D0D0D', fontWeight: 600,
+                background: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 600,
                 cursor: salvando ? 'not-allowed' : 'pointer', opacity: salvando ? 0.7 : 1, fontSize: 13,
               }}
             >

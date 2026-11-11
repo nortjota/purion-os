@@ -144,7 +144,7 @@ function ColunaMetas({ chaveOrdem, titulo, subtitulo, cor, avatar, metas, pct, s
           {subtitulo && <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{subtitulo}</p>}
         </div>
         {streak > 0 && (
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#E8A838', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--status-warning)', display: 'flex', alignItems: 'center', gap: 2 }}>
             <Flame size={12} /> {streak}
           </span>
         )}
@@ -288,10 +288,10 @@ export function MetasDashboard() {
       chaveOrdem="time"
       titulo="Metas do Time"
       subtitulo="Escopo compartilhado"
-      cor="#C9A84C"
+      cor="#D4FC3C"
       avatar={
-        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <TrendingUp size={16} style={{ color: '#C9A84C' }} />
+        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(245,245,240,0.12)', border: '1px solid rgba(245,245,240,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <TrendingUp size={16} style={{ color: 'var(--text-primary)' }} />
         </div>
       }
       metas={metasTime}
@@ -360,8 +360,8 @@ export function MetasDashboard() {
       {/* ── HERO DO DIA ── */}
       <div className="card-purion" style={{
         padding: '24px 28px', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.08), transparent)',
-        borderColor: 'rgba(201,168,76,0.25)',
+        background: 'linear-gradient(135deg, rgba(245,245,240,0.08), transparent)',
+        borderColor: 'rgba(245,245,240,0.25)',
       }}>
         <AnelProgresso pct={pctGeralHoje} />
         <div style={{ flex: 1, minWidth: 220 }}>
@@ -379,11 +379,11 @@ export function MetasDashboard() {
           </div>
           <h1 className="page-title">{saudacao()}, time PURION 👋</h1>
           <p style={{ fontSize: 15, marginTop: 6 }}>
-            <strong style={{ color: '#C9A84C' }}><AnimatedNumber value={totaisHoje.feitas} /> de <AnimatedNumber value={totaisHoje.total} /></strong>
+            <strong style={{ color: 'var(--text-primary)' }}><AnimatedNumber value={totaisHoje.feitas} /> de <AnimatedNumber value={totaisHoje.total} /></strong>
             <span style={{ color: 'var(--text-secondary)' }}> metas batidas hoje</span>
           </p>
           {streakTime > 0 && (
-            <p style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6, color: '#E8A838', fontWeight: 600 }}>
+            <p style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--status-warning)', fontWeight: 600 }}>
               <Flame size={15} /> {streakTime} dia{streakTime !== 1 ? 's' : ''} seguido{streakTime !== 1 ? 's' : ''} do time
             </p>
           )}
@@ -395,7 +395,7 @@ export function MetasDashboard() {
         <button
           onClick={() => setFiltroCategoria('todas')}
           className="px-3 py-1.5 rounded-md text-xs font-medium"
-          style={filtroCategoria === 'todas' ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+          style={filtroCategoria === 'todas' ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
         >
           Todas categorias
         </button>
@@ -425,7 +425,7 @@ export function MetasDashboard() {
                   key={e}
                   onClick={() => setAbaMobile(e)}
                   className="px-3 py-1.5 rounded-md text-xs font-medium"
-                  style={abaMobile === e ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+                  style={abaMobile === e ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
                 >
                   {nome}
                 </button>
@@ -479,7 +479,7 @@ export function MetasDashboard() {
                     key={e}
                     onClick={() => setEscopoHistorico(e)}
                     className="px-2 py-0.5 rounded text-[10px] font-medium"
-                    style={escopoHistorico === e ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+                    style={escopoHistorico === e ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
                   >
                     {nome}
                   </button>

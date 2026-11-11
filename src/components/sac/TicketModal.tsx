@@ -129,7 +129,7 @@ export function TicketModal({ onCriado, onFechar }: Props) {
           </div>
         </div>
 
-        {erro && <p style={{ fontSize: 12, color: '#EF4444', marginTop: 12 }}>{erro}</p>}
+        {erro && <p style={{ fontSize: 12, color: 'var(--status-danger)', marginTop: 12 }}>{erro}</p>}
 
         <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
           <button onClick={onFechar} className="btn btn-secondary" style={{ flex: 1 }}>

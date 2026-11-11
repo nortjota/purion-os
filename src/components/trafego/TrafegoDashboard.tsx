@@ -71,14 +71,14 @@ function BannerErro({ status, plataforma, ultimaAtualizacao }: {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
         <div className="w-12 h-12 rounded-full bg-[var(--bg-surface)] flex items-center justify-center">
-          <Settings size={20} className="text-[#C9A84C]" />
+          <Settings size={20} className="text-[var(--text-primary)]" />
         </div>
         <div>
           <p className="text-sm font-semibold text-[var(--text-primary)]">Configure a API de {plataforma}</p>
           <p className="text-xs text-[#B8B8B8] mt-1">As credenciais não foram preenchidas em Configurações.</p>
         </div>
         <Link href="/settings"
-          className="text-xs font-bold text-[#0A0A0A] bg-[#C9A84C] px-4 py-2 rounded-lg hover:bg-[#D4B568] transition-colors">
+          className="text-xs font-bold text-[var(--primary-foreground)] bg-[var(--primary)] px-4 py-2 rounded-lg hover:bg-[var(--brand-accent)]/85 transition-colors">
           Ir para Configurações
         </Link>
       </div>
@@ -135,7 +135,7 @@ function KpiCard({ label, valor, destaque, alerta, aviso }: {
   return (
     <div className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-xl px-4 py-3">
       <p className="text-[9px] text-[#B8B8B8] uppercase tracking-widest mb-1">{label}</p>
-      <p className={`text-lg font-black ${alerta ? 'text-red-400' : aviso ? 'text-amber-400' : destaque ? 'text-[#C9A84C]' : 'text-[var(--text-primary)]'}`}>
+      <p className={`text-lg font-black ${alerta ? 'text-red-400' : aviso ? 'text-amber-400' : destaque ? 'text-[var(--brand-accent)]' : 'text-[var(--text-primary)]'}`}>
         {valor}
       </p>
       {alerta && <span className="text-[8px] font-bold text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded mt-1 inline-block">ACIMA DO LIMITE</span>}
@@ -333,7 +333,7 @@ export function TrafegoDashboard() {
         <div className="flex gap-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-1">
           {PERIODOS.map(({ value, label }) => (
             <button key={value} onClick={() => setPeriod(value)}
-              className={`text-[10px] font-bold px-3 py-1.5 rounded-md transition-colors ${period === value ? 'bg-[#C9A84C] text-[#0A0A0A]' : 'text-[#B8B8B8] hover:text-[var(--text-primary)]'}`}>
+              className={`text-[10px] font-bold px-3 py-1.5 rounded-md transition-colors ${period === value ? 'bg-[var(--brand-accent)] text-[#0B0B0B]' : 'text-[#B8B8B8] hover:text-[var(--text-primary)]'}`}>
               {label}
             </button>
           ))}
@@ -344,7 +344,7 @@ export function TrafegoDashboard() {
       <div className="flex gap-1 border-b border-[var(--border)]">
         {([{ id: 'painel' as const, label: 'Painel Unificado' }, ...PLATAFORMAS.map((p) => ({ id: p.id, label: p.label }))]).map(({ id, label }) => (
           <button key={id} onClick={() => setActiveTab(id)}
-            className={`text-[11px] font-bold px-4 py-2.5 border-b-2 transition-colors ${activeTab === id ? 'border-[#C9A84C] text-[#C9A84C]' : 'border-transparent text-[#B8B8B8] hover:text-[var(--text-primary)]'}`}>
+            className={`text-[11px] font-bold px-4 py-2.5 border-b-2 transition-colors ${activeTab === id ? 'border-[var(--brand-accent)] text-[var(--brand-accent)]' : 'border-transparent text-[#B8B8B8] hover:text-[var(--text-primary)]'}`}>
             {label}
           </button>
         ))}
@@ -400,10 +400,10 @@ export function TrafegoDashboard() {
                       <span className="text-xs font-semibold text-[var(--text-primary)]">{label}</span>
                     </div>
                     {isLoading ? (
-                      <div className="col-span-5 h-4 bg-[#2A2A2A] rounded animate-pulse" />
+                      <div className="col-span-5 h-4 bg-[#2A2C2B] rounded animate-pulse" />
                     ) : (
                       <>
-                        <span className="text-xs font-bold text-[#C9A84C]">{fmtR(d.gasto)}</span>
+                        <span className="text-xs font-bold text-[var(--text-primary)]">{fmtR(d.gasto)}</span>
                         <span className="text-xs text-[var(--text-secondary)]">{fmtN(d.cliques)}</span>
                         <span className={`text-xs font-bold ${d.cpa > cpaMaximo && d.cpa > 0 ? 'text-amber-400' : 'text-[var(--text-primary)]'}`}>
                           {d.cpa > 0 ? fmtR(d.cpa) : '—'}

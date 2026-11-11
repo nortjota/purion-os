@@ -13,7 +13,7 @@ const R$n = (v: number | null) => (v == null ? '—' : <AnimatedNumber value={v}
 /** Fração 0–1 como % com count-up ou "—". */
 const Pctn = (v: number | null) => (v == null ? '—' : <AnimatedNumber value={v * 100} suffix="%" decimals={1} />)
 
-const DOURADO = '#C9A84C'
+const ACENTO = '#D4FC3C'
 
 const fmtPct = (v: number | null) => (v == null ? '—' : formatPercent(v * 100, 1))
 
@@ -46,7 +46,7 @@ function EditorSessoes({ valor }: { valor: number }) {
   if (!editando) {
     return (
       <button onClick={() => { setTexto(String(valor || '')); setEditando(true) }} style={{
-        marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, color: DOURADO,
+        marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, color: ACENTO,
         background: 'none', border: 'none', cursor: 'pointer', padding: 0,
       }}>
         <Pencil size={10} /> {valor > 0 ? `${formatNumber(valor)} sessões (30d)` : 'informar sessões (30d)'}
@@ -99,7 +99,7 @@ export function KpisPlaybook() {
         <div style={{ display: 'flex', gap: 4 }}>
           {([30, 90] as const).map((d) => (
             <button key={d} onClick={() => setDias(d)} className="px-3 py-1 rounded-md text-xs font-medium"
-              style={dias === d ? { background: 'rgba(201,168,76,0.15)', color: DOURADO } : { color: '#B8B8B8' }}>
+              style={dias === d ? { background: 'rgba(212,252,60,0.15)', color: ACENTO } : { color: '#B8B8B8' }}>
               {d} dias
             </button>
           ))}
@@ -109,24 +109,24 @@ export function KpisPlaybook() {
       {/* North Star em destaque */}
       <div className="card-purion" style={{
         padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.02))',
-        borderColor: 'rgba(201,168,76,0.4)',
+        background: 'linear-gradient(135deg, rgba(245,245,240,0.12), rgba(245,245,240,0.02))',
+        borderColor: 'rgba(245,245,240,0.4)',
       }} title="North Star = clientes (B2C) e parceiros (B2B) com 2 ou mais pedidos pagos e o último pedido nos últimos 90 dias.">
         <div style={{
-          width: 48, height: 48, borderRadius: 12, flexShrink: 0, background: 'rgba(201,168,76,0.15)',
+          width: 48, height: 48, borderRadius: 12, flexShrink: 0, background: 'rgba(245,245,240,0.15)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Repeat size={22} style={{ color: DOURADO }} />
+          <Repeat size={22} style={{ color: ACENTO }} />
         </div>
         <div style={{ flex: '1 1 220px', minWidth: 0 }}>
-          <p style={{ fontSize: 12, color: DOURADO, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>North Star</p>
+          <p style={{ fontSize: 12, color: ACENTO, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>North Star</p>
           <p style={{ fontSize: 15, color: '#F5F5F5', fontWeight: 600 }}>Clientes e parceiros ativos que recompram</p>
           <p style={{ fontSize: 12, color: '#B8B8B8', marginTop: 2 }}>≥ 2 pedidos pagos, último nos últimos 90 dias</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-          <AnimatedNumber value={k.northStar.total} mode="odometer" style={{ fontSize: 40, fontWeight: 800, color: DOURADO, lineHeight: 1 }} />
+          <AnimatedNumber value={k.northStar.total} mode="odometer" style={{ fontSize: 40, fontWeight: 800, color: ACENTO, lineHeight: 1 }} />
           <span style={{ fontSize: 13, color: '#E0E0E0' }}>{k.northStar.b2c} B2C · {k.northStar.b2b} B2B</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: nsDelta > 0 ? '#86EFAC' : nsDelta < 0 ? '#FCA5A5' : '#B8B8B8' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: nsDelta > 0 ? 'var(--status-ok)' : nsDelta < 0 ? 'var(--status-danger)' : '#B8B8B8' }}>
             {nsDelta > 0 ? '+' : ''}{nsDelta} vs 30 dias atrás
           </span>
         </div>
@@ -135,15 +135,15 @@ export function KpisPlaybook() {
       <Stagger key={dias} className="cards-gap grid-mobile-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))' }}>
         <Kpi label="Pedidos pagos" valor={<AnimatedNumber value={k.pedidosPagos} />} sub={`últimos ${dias} dias`}
           formula="Pedidos pagos = nº de order_id ÚNICOS com status de pagamento 'pago' (order_id = pedido da loja ou id do pedido manual)." />
-        <Kpi label="Receita líquida" valor={R$n(k.receitaLiquida)} cor={DOURADO}
+        <Kpi label="Receita líquida" valor={R$n(k.receitaLiquida)} cor={ACENTO}
           sub={`itens ${formatCurrency(k.itensPagos)} − desc. ${formatCurrency(k.descontos)} − reemb. ${formatCurrency(k.reembolsos)}`}
           formula="Receita líquida = Σ itens pagos (valor unitário × quantidade) − Σ descontos − Σ reembolsos/estornos do período." />
         <Kpi label="Ticket médio" valor={R$n(k.ticketMedio)}
           formula="Ticket médio = receita líquida ÷ pedidos pagos." />
-        <Kpi label="Contribuição B2C" valor={R$n(b2c.contribuicao)} cor={b2c.contribuicao >= 0 ? '#86EFAC' : '#FCA5A5'}
+        <Kpi label="Contribuição B2C" valor={R$n(b2c.contribuicao)} cor={b2c.contribuicao >= 0 ? '#8FD14F' : '#E5544B'}
           sub={`margem ${fmtPct(b2c.margem)} · mídia+creators+frete ${formatCurrency(b2c.custosVariaveis)}`}
           formula="Contribuição B2C = receita líquida B2C − CMV (custo unitário × unidades) − taxas de pagamento − mídia paga (Meta/Google) − creators/UGC − logística rateada por unidades." />
-        <Kpi label="Contribuição B2B" valor={R$n(b2b.contribuicao)} cor={b2b.contribuicao >= 0 ? '#86EFAC' : '#FCA5A5'}
+        <Kpi label="Contribuição B2B" valor={R$n(b2b.contribuicao)} cor={b2b.contribuicao >= 0 ? '#8FD14F' : '#E5544B'}
           sub={`margem ${fmtPct(b2b.margem)} · CMV ${formatCurrency(b2b.cmv)}`}
           formula="Contribuição B2B = receita líquida B2B − CMV (custo unitário × unidades) − taxas de pagamento − logística rateada por unidades." />
         <Kpi label="CAC novos compradores" valor={R$n(k.cac)}

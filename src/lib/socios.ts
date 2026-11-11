@@ -22,7 +22,7 @@ export interface InfoPerfil {
   arquivado: boolean
 }
 
-export const COR_MATHEUS   = '#C9A84C'
+export const COR_MATHEUS   = '#F5F5F0'
 export const COR_JOAO      = '#4A90D9'
 export const COR_LOGISTICA = '#2E9E5B'
 export const COR_ARQUIVADO = '#8A8A8A'

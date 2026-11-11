@@ -40,7 +40,7 @@ export function SettingsNav() {
               href={href}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 active
-                  ? 'bg-[rgba(201,168,76,0.12)] text-[#C9A84C] border-l-2 border-[#C9A84C]'
+                  ? 'bg-[rgba(212,252,60,0.12)] text-[var(--brand-accent)] border-l-2 border-[var(--brand-accent)]'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)]'
               }`}
             >
@@ -61,7 +61,7 @@ export function SettingsNav() {
               href={href}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                 active
-                  ? 'bg-[rgba(201,168,76,0.12)] text-[#C9A84C] border border-[#C9A84C]'
+                  ? 'bg-[rgba(212,252,60,0.12)] text-[var(--brand-accent)] border border-[var(--brand-accent)]'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)] border border-transparent'
               }`}
             >

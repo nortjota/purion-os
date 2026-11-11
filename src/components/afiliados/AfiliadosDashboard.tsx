@@ -28,10 +28,10 @@ const fmt   = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', curr
 const fmtPc = (v: number) => `${v.toFixed(1)}%`
 
 const STATUS_BADGE: Record<string, { label: string; color: string; bg: string }> = {
-  ativo:     { label: 'Ativo',     color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
-  pausado:   { label: 'Pausado',   color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-  pendente:  { label: 'Pendente',  color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
-  bloqueado: { label: 'Bloqueado', color: '#EF4444', bg: 'rgba(239,68,68,0.1)'  },
+  ativo:     { label: 'Ativo',     color: '#8FD14F', bg: 'rgba(143,209,79,0.1)' },
+  pausado:   { label: 'Pausado',   color: '#E6C374', bg: 'rgba(230,195,116,0.1)' },
+  pendente:  { label: 'Pendente',  color: '#9CC3DB', bg: 'rgba(156,195,219,0.1)' },
+  bloqueado: { label: 'Bloqueado', color: '#E5544B', bg: 'rgba(229,84,75,0.1)'  },
 }
 
 function plataformaPrincipal(a: Afiliado) {
@@ -134,12 +134,12 @@ export function AfiliadosDashboard() {
   }
 
   const KPI_CARDS = [
-    { label: 'Afiliados ativos',       value: String(kpis.ativos),              icon: Users,     cor: '#3B82F6' },
-    { label: 'Vendas via afiliados',    value: fmt(kpis.receitaMes),             icon: TrendingUp, cor: '#10B981', sub: 'no mês' },
-    { label: 'Comissões a pagar',       value: fmt(kpis.comPendentes),           icon: DollarSign, cor: '#F59E0B' },
-    { label: 'Comissões pagas no mês',  value: fmt(kpis.comPagasMes),            icon: Check,     cor: '#10B981' },
-    { label: 'Melhor afiliado do mês',  value: kpis.melhor?.nome.split(' ')[0] ?? '—', icon: Award, cor: '#C9A84C', sub: kpis.melhorVal > 0 ? fmt(kpis.melhorVal) : undefined },
-    { label: 'Taxa de conversão média', value: fmtPc(kpis.taxaConv),            icon: BarChart2, cor: '#8B5CF6' },
+    { label: 'Afiliados ativos',       value: String(kpis.ativos),              icon: Users,     cor: '#9CC3DB' },
+    { label: 'Vendas via afiliados',    value: fmt(kpis.receitaMes),             icon: TrendingUp, cor: '#8FD14F', sub: 'no mês' },
+    { label: 'Comissões a pagar',       value: fmt(kpis.comPendentes),           icon: DollarSign, cor: '#E6C374' },
+    { label: 'Comissões pagas no mês',  value: fmt(kpis.comPagasMes),            icon: Check,     cor: '#8FD14F' },
+    { label: 'Melhor afiliado do mês',  value: kpis.melhor?.nome.split(' ')[0] ?? '—', icon: Award, cor: '#D4FC3C', sub: kpis.melhorVal > 0 ? fmt(kpis.melhorVal) : undefined },
+    { label: 'Taxa de conversão média', value: fmtPc(kpis.taxaConv),            icon: BarChart2, cor: '#A7A9A6' },
   ]
 
   if (carregando) {
@@ -271,8 +271,8 @@ export function AfiliadosDashboard() {
                       >
                         <div style={{
                           width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-                          background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)',
-                          color: '#C9A84C', fontSize: 12, fontWeight: 700,
+                          background: 'rgba(245,245,240,0.15)', border: '1px solid rgba(245,245,240,0.3)',
+                          color: 'var(--text-primary)', fontSize: 12, fontWeight: 700,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}>
                           {a.nome[0]?.toUpperCase()}
@@ -284,13 +284,13 @@ export function AfiliadosDashboard() {
                       </div>
                     </td>
                     <td style={{ padding: '12px 14px' }}>
-                      <code style={{ fontSize: 11, background: 'var(--bg-surface-2)', padding: '2px 6px', borderRadius: 4, color: '#C9A84C' }}>{a.codigo}</code>
+                      <code style={{ fontSize: 11, background: 'var(--bg-surface-2)', padding: '2px 6px', borderRadius: 4, color: 'var(--text-primary)' }}>{a.codigo}</code>
                     </td>
                     <td style={{ padding: '12px 14px', color: 'var(--text-secondary)' }}>{plataformaPrincipal(a)}</td>
                     <td style={{ padding: '12px 14px', color: 'var(--text-primary)', fontWeight: 500 }}>{m.totalCliques.toLocaleString('pt-BR')}</td>
                     <td style={{ padding: '12px 14px', color: 'var(--text-primary)', fontWeight: 500 }}>{m.totalVendas}</td>
                     <td style={{ padding: '12px 14px', color: 'var(--text-primary)', fontWeight: 600 }}>{fmt(m.receita)}</td>
-                    <td style={{ padding: '12px 14px', color: m.comPendente > 0 ? '#F59E0B' : 'var(--text-secondary)', fontWeight: m.comPendente > 0 ? 600 : 400 }}>
+                    <td style={{ padding: '12px 14px', color: m.comPendente > 0 ? 'var(--status-warning)' : 'var(--text-secondary)', fontWeight: m.comPendente > 0 ? 600 : 400 }}>
                       {fmt(m.comPendente)}
                     </td>
                     <td style={{ padding: '12px 14px' }}>
@@ -305,7 +305,7 @@ export function AfiliadosDashboard() {
                           <ExternalLink size={13} />
                         </button>
                         <button onClick={() => copiarLink(a)} title="Copiar link"
-                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: copiado === a.id ? '#10B981' : 'var(--text-secondary)' }}>
+                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: copiado === a.id ? 'var(--status-ok)' : 'var(--text-secondary)' }}>
                           {copiado === a.id ? <Check size={13} /> : <Copy size={13} />}
                         </button>
                         <button onClick={() => { setEditando(a); setModalAberto(true) }} title="Editar"
@@ -317,7 +317,7 @@ export function AfiliadosDashboard() {
                           {a.status === 'ativo' ? <Pause size={13} /> : <Play size={13} />}
                         </button>
                         <button onClick={() => setDeletando(a)} title="Excluir"
-                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EF4444' }}>
+                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-danger)' }}>
                           <Trash2 size={13} />
                         </button>
                       </div>

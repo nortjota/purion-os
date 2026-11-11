@@ -9,7 +9,7 @@ export function GeralSettings() {
 
   const [nomeEmpresa, setNomeEmpresa] = useState('PURION')
   const [slogan, setSlogan] = useState('Atmosfera que marca.')
-  const [corDestaque, setCorDestaque] = useState('#C9A84C')
+  const [corDestaque, setCorDestaque] = useState('#D4FC3C')
   const [fuso, setFuso] = useState('America/Sao_Paulo')
   const [moeda, setMoeda] = useState('BRL (R$)')
   const [formatoData, setFormatoData] = useState('DD/MM/YYYY')
@@ -29,7 +29,7 @@ export function GeralSettings() {
       {/* Company Info */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Building2 size={16} className="text-[#C9A84C]" />
+          <Building2 size={16} className="text-[var(--text-primary)]" />
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Informações da Empresa</h2>
         </div>
         <div className="space-y-4">
@@ -78,7 +78,7 @@ export function GeralSettings() {
       {/* Regional */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Globe size={16} className="text-[#C9A84C]" />
+          <Globe size={16} className="text-[var(--text-primary)]" />
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Regional</h2>
         </div>
         <div className="space-y-4">

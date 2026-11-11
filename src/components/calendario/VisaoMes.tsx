@@ -41,18 +41,18 @@ export function VisaoMes({ mesReferencia, eventos, onClickDia, onClickEvento }: 
               onClick={() => onClickDia(dia)}
               style={{
                 minHeight: 84, textAlign: 'left', borderRadius: 8, padding: '6px 6px',
-                background: hoje ? 'rgba(201,168,76,0.06)' : 'var(--bg-surface)',
-                border: `1px solid ${hoje ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
+                background: hoje ? 'rgba(212,252,60,0.06)' : 'var(--bg-surface)',
+                border: `1px solid ${hoje ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
                 opacity: doMes ? 1 : 0.4,
                 cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3,
               }}
             >
               <span style={{
                 fontSize: 11, fontWeight: hoje ? 800 : 500,
-                color: hoje ? '#C9A84C' : 'var(--text-primary)',
+                color: hoje ? 'var(--brand-accent)' : 'var(--text-primary)',
                 width: 20, height: 20, borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: hoje ? 'rgba(201,168,76,0.15)' : 'transparent',
+                background: hoje ? 'rgba(212,252,60,0.15)' : 'transparent',
               }}>
                 {formatarDiaCurto(dia)}
               </span>

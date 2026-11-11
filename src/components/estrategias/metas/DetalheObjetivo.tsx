@@ -19,7 +19,7 @@ import {
 import { ReguaMensal } from './ReguaMensal'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
+  background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
 }
 
 interface Props {
@@ -42,9 +42,9 @@ interface Props {
 function RitmoBadge({ ritmo }: { ritmo: 'adiantado' | 'no_ritmo' | 'atrasado' | null }) {
   if (!ritmo) return null
   const cfg = {
-    adiantado: { cor: '#4CAF7A', Icon: TrendingUp },
-    no_ritmo:  { cor: '#5B8FE8', Icon: Minus },
-    atrasado:  { cor: '#E85238', Icon: TrendingDown },
+    adiantado: { cor: '#8FD14F', Icon: TrendingUp },
+    no_ritmo:  { cor: '#9CC3DB', Icon: Minus },
+    atrasado:  { cor: '#E5544B', Icon: TrendingDown },
   }[ritmo]
   return (
     <span className="flex items-center gap-1" style={{ fontSize: 11, fontWeight: 600, color: cfg.cor }}>
@@ -87,7 +87,7 @@ export function DetalheObjetivo({
           </span>
           <div className="flex items-center gap-1">
             <button onClick={onEditar} className="icon-btn" title="Editar"><Pencil size={14} /></button>
-            <button onClick={onDeletar} className="icon-btn" title="Excluir" style={{ color: '#E85238' }}><Trash2 size={14} /></button>
+            <button onClick={onDeletar} className="icon-btn" title="Excluir" style={{ color: 'var(--status-danger)' }}><Trash2 size={14} /></button>
           </div>
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.3 }}>{objetivo.titulo}</h2>
@@ -180,7 +180,7 @@ export function DetalheObjetivo({
       <div>
         <div className="flex items-center justify-between mb-2">
           <span style={{ fontSize: 13, fontWeight: 700 }}>Sub-metas</span>
-          <button onClick={onNovaSubMeta} className="flex items-center gap-1" style={{ fontSize: 11, color: '#C9A84C', background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button onClick={onNovaSubMeta} className="flex items-center gap-1" style={{ fontSize: 11, color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer' }}>
             <Plus size={11} /> Adicionar
           </button>
         </div>
@@ -194,7 +194,7 @@ export function DetalheObjetivo({
               return (
                 <div key={sub.id} onClick={() => onSelecionarSubMeta(sub)} className="card-purion" style={{ padding: '10px 12px', cursor: 'pointer' }}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="flex items-center gap-1" style={{ fontSize: 12, fontWeight: 600 }}><Target size={11} style={{ color: '#C9A84C' }} /> {sub.titulo}</span>
+                    <span className="flex items-center gap-1" style={{ fontSize: 12, fontWeight: 600 }}><Target size={11} style={{ color: 'var(--text-primary)' }} /> {sub.titulo}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: c }}>{p}%</span>
                   </div>
                   <div style={{ height: 3, borderRadius: 999, background: 'var(--bg-surface-2)', overflow: 'hidden' }}>
@@ -211,7 +211,7 @@ export function DetalheObjetivo({
       <div>
         <div className="flex items-center justify-between mb-2">
           <span style={{ fontSize: 13, fontWeight: 700 }}>Resultados-chave</span>
-          <button onClick={onNovoResultado} className="flex items-center gap-1" style={{ fontSize: 11, color: '#C9A84C', background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button onClick={onNovoResultado} className="flex items-center gap-1" style={{ fontSize: 11, color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer' }}>
             <Plus size={11} /> Adicionar
           </button>
         </div>
@@ -226,16 +226,16 @@ export function DetalheObjetivo({
                 <div key={r.id} className="card-purion" style={{ padding: '10px 12px' }}>
                   <div className="flex items-center justify-between mb-1 gap-2">
                     <span onClick={() => onSelecionarResultado(r)} style={{ fontSize: 12, fontWeight: 600, cursor: 'pointer', flex: 1 }}>
-                      {r.descricao} {r.fonteAuto && <span style={{ fontSize: 9, fontWeight: 700, color: '#5B8FE8' }}>· AUTO</span>}
+                      {r.descricao} {r.fonteAuto && <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--status-info)' }}>· AUTO</span>}
                     </span>
-                    <button onClick={() => onDeletarResultado(r.id)} className="icon-btn" style={{ color: '#E85238', width: 22, height: 22 }}><Trash2 size={11} /></button>
+                    <button onClick={() => onDeletarResultado(r.id)} className="icon-btn" style={{ color: 'var(--status-danger)', width: 22, height: 22 }}><Trash2 size={11} /></button>
                   </div>
                   <div className="flex items-center justify-between mb-1">
                     <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{formatNumber(atual)} / {formatNumber(r.meta)} {r.unidade ?? ''}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#C9A84C' }}>{p}%</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)' }}>{p}%</span>
                   </div>
                   <div style={{ height: 3, borderRadius: 999, background: 'var(--bg-surface-2)', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${p}%`, background: '#C9A84C', borderRadius: 999 }} />
+                    <div style={{ height: '100%', width: `${p}%`, background: 'var(--brand-accent)', borderRadius: 999 }} />
                   </div>
                 </div>
               )
@@ -255,7 +255,7 @@ export function DetalheObjetivo({
             <div className="flex flex-col gap-1.5">
               {tarefasVinculadas.map((t) => (
                 <div key={t.id} className="flex items-center gap-2" style={{ fontSize: 12 }}>
-                  <CheckSquare size={12} style={{ color: t.status === 'concluida' ? '#4CAF7A' : 'var(--text-secondary)' }} />
+                  <CheckSquare size={12} style={{ color: t.status === 'concluida' ? 'var(--status-ok)' : 'var(--text-secondary)' }} />
                   <span style={{
                     flex: 1, color: t.status === 'concluida' ? 'var(--text-secondary)' : 'var(--text-primary)',
                     textDecoration: t.status === 'concluida' ? 'line-through' : 'none',

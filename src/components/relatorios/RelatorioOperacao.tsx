@@ -15,7 +15,7 @@ const STATUS_TAREFA_LABEL: Record<string, string> = {
   pendente: 'Pendente', em_andamento: 'Em andamento', concluida: 'Concluída', cancelada: 'Cancelada', bloqueada: 'Bloqueada',
 }
 const STATUS_TAREFA_COR: Record<string, string> = {
-  pendente: '#B8B8B8', em_andamento: '#5B8FE8', concluida: '#4CAF7A', cancelada: '#E85238', bloqueada: '#E8A838',
+  pendente: '#B8B8B8', em_andamento: '#9CC3DB', concluida: '#8FD14F', cancelada: '#E5544B', bloqueada: '#E6C374',
 }
 
 export function RelatorioOperacao({ periodo }: Props) {
@@ -42,7 +42,7 @@ export function RelatorioOperacao({ periodo }: Props) {
     return vendas
       .filter((v) => v.statusPagamento === 'pago' && !['postado', 'em_transito', 'entregue', 'devolvido'].includes(v.statusEntrega) && new Date(v.dataVenda) >= inicio)
       .slice(0, 6)
-      .map((v) => ({ id: v.id, titulo: v.clienteNome || 'Cliente', subtitulo: `${v.quantidade} frasco${v.quantidade !== 1 ? 's' : ''}`, valor: formatarMoeda(v.valorTotal ?? v.valorLiquido), cor: '#E8A838' }))
+      .map((v) => ({ id: v.id, titulo: v.clienteNome || 'Cliente', subtitulo: `${v.quantidade} frasco${v.quantidade !== 1 ? 's' : ''}`, valor: formatarMoeda(v.valorTotal ?? v.valorLiquido), cor: '#E6C374' }))
   }, [vendas, periodo])
 
   return (

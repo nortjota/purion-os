@@ -23,7 +23,7 @@ function TabNav({ aba, onChange }: { aba: TabId; onChange: (id: TabId) => void }
           onClick={() => onChange(t.id)}
           className="px-3 py-1.5 rounded-md text-xs font-medium"
           style={aba === t.id
-            ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+            ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
             : { color: 'var(--text-secondary)' }}
         >
           {t.label}

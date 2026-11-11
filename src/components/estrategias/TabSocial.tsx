@@ -49,7 +49,7 @@ function DonutPilares({ pilares, selecionado, onSelecionar }: {
               {pilares.map((p) => (
                 <Cell
                   key={p.id}
-                  fill={p.cor ?? '#C9A84C'}
+                  fill={p.cor ?? '#D4FC3C'}
                   opacity={selecionado && selecionado.id !== p.id ? 0.35 : 1}
                   stroke="var(--bg-surface-2)"
                   strokeWidth={2}
@@ -58,7 +58,7 @@ function DonutPilares({ pilares, selecionado, onSelecionar }: {
             </Pie>
             <Tooltip
               formatter={(v) => [`${v}%`, 'Mix']}
-              contentStyle={{ background: '#1A1A1A', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+              contentStyle={{ background: '#1B1D1C', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -75,9 +75,9 @@ function DonutPilares({ pilares, selecionado, onSelecionar }: {
               cursor: 'pointer', textAlign: 'left',
             }}
           >
-            <span style={{ width: 10, height: 10, borderRadius: 999, background: p.cor ?? '#C9A84C', flexShrink: 0 }} />
+            <span style={{ width: 10, height: 10, borderRadius: 999, background: p.cor ?? 'var(--brand-accent)', flexShrink: 0 }} />
             <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{p.nome}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: p.cor ?? '#C9A84C' }}>{p.percentual}%</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: p.cor ?? 'var(--brand-accent)' }}>{p.percentual}%</span>
           </button>
         ))}
       </div>
@@ -120,7 +120,7 @@ function ModalPilar({ pilar, onFechar, onSalvar }: {
           <div>
             <label className="kpi-label mb-1 block">Percentual do mix — {percentual}%</label>
             <input type="range" min={0} max={100} value={percentual}
-              onChange={(e) => setPercentual(Number(e.target.value))} style={{ width: '100%', accentColor: pilar.cor ?? '#C9A84C' }} />
+              onChange={(e) => setPercentual(Number(e.target.value))} style={{ width: '100%', accentColor: pilar.cor ?? 'var(--brand-accent)' }} />
           </div>
           <div>
             <label className="kpi-label mb-1 block">Descrição</label>
@@ -226,7 +226,7 @@ function CardPost({ item, onEditar, onDeletar }: { item: SocialCalendarioItem; o
   return (
     <div className="card-purion" style={{ padding: '10px 12px', fontSize: 11 }}>
       <div className="flex items-center justify-between mb-1">
-        <span style={{ fontWeight: 700, color: '#C9A84C' }}>{item.rede}</span>
+        <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{item.rede}</span>
         <div className="flex gap-1">
           <button onClick={onEditar} className="icon-btn" style={{ width: 20, height: 20 }}><Pencil size={10} /></button>
           <button onClick={onDeletar} className="icon-btn" style={{ width: 20, height: 20 }}><Trash2 size={10} /></button>
@@ -282,7 +282,7 @@ export function TabSocial() {
       {/* Pilares de conteúdo */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <Layers size={15} style={{ color: '#C9A84C' }} />
+          <Layers size={15} style={{ color: 'var(--text-primary)' }} />
           <p style={{ fontSize: 14, fontWeight: 700 }}>5 Pilares de Conteúdo</p>
         </div>
         {pilares.length === 0 ? (
@@ -295,7 +295,7 @@ export function TabSocial() {
             {ativo && (
               <div className="card-purion" style={{ padding: '14px 16px', marginTop: 12, borderColor: ativo.cor ?? undefined }}>
                 <div className="flex items-center justify-between mb-2">
-                  <p style={{ fontSize: 13, fontWeight: 700, color: ativo.cor ?? '#C9A84C' }}>{ativo.nome} — {ativo.percentual}%</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: ativo.cor ?? 'var(--brand-accent)' }}>{ativo.nome} — {ativo.percentual}%</p>
                   <button onClick={() => setEditandoPilar(ativo)} className="icon-btn"><Pencil size={12} /></button>
                 </div>
                 {ativo.descricao && <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>{ativo.descricao}</p>}

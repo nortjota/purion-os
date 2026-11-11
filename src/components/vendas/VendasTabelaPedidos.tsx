@@ -15,8 +15,8 @@ interface Grupo { id: string; label: string; cor?: string; vendas: Venda[] }
 
 const ENTREGA_ORDEM: Array<Venda['statusEntrega']> = ['aguardando', 'separando', 'postado', 'em_transito', 'entregue', 'devolvido']
 const ENTREGA_COR: Record<Venda['statusEntrega'], string> = {
-  aguardando: '#B8B8B8', separando: '#E8A838', postado: '#5B8FE8',
-  em_transito: '#5B8FE8', entregue: '#4CAF7A', devolvido: '#E85238',
+  aguardando: '#B8B8B8', separando: '#E6C374', postado: '#9CC3DB',
+  em_transito: '#9CC3DB', entregue: '#8FD14F', devolvido: '#E5544B',
 }
 
 function agrupar(vendas: Venda[], groupBy: AgrupamentoVendas): Grupo[] {
@@ -103,11 +103,11 @@ export function VendasTabelaPedidos({
                   </div>
                   <p className="caption mb-1">
                     {showCanal && <span className="badge badge-neutral" style={{ marginRight: 6 }}>{CANAL_LABEL[v.canal]}</span>}
-                    <span style={{ fontWeight: 700, color: '#5B8FE8' }}>{v.quantidade} frasco{v.quantidade !== 1 ? 's' : ''}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--status-info)' }}>{v.quantidade} frasco{v.quantidade !== 1 ? 's' : ''}</span>
                     {' · '}{formatarDataBR(v.dataVenda.slice(0, 10))}
                   </p>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[13px] font-semibold" style={{ color: '#C9A84C' }}>{fmtR(v.valorTotal ?? v.valorLiquido)}</span>
+                    <span className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>{fmtR(v.valorTotal ?? v.valorLiquido)}</span>
                     <span className={`badge ${STATUS_ENTREGA_BADGE[v.statusEntrega]}`}>{STATUS_ENTREGA_LABEL[v.statusEntrega]}</span>
                   </div>
                   {nomeAfiliado?.(v.afiliadoCreatorId) && <p className="caption mb-2">Afiliado: {nomeAfiliado(v.afiliadoCreatorId)}</p>}
@@ -128,7 +128,7 @@ export function VendasTabelaPedidos({
         ))}
         <div style={{ padding: '10px 4px', borderTop: '1px solid var(--border)', display: 'flex', gap: 16 }}>
           <span className="caption"><strong>{totalPedidos}</strong> pedidos</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C' }}>{totalFrascos} frascos</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{totalFrascos} frascos</span>
           <span className="caption">{fmtR(totalValor)} faturado</span>
         </div>
       </div>
@@ -175,7 +175,7 @@ export function VendasTabelaPedidos({
               {totalPedidos} pedidos
             </td>
             {showCanal && <td />}
-            <td style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C', paddingTop: 8 }}>
+            <td style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', paddingTop: 8 }}>
               {totalFrascos} frascos
             </td>
             <td style={{ fontSize: 12, fontWeight: 600, paddingTop: 8 }}>

@@ -23,13 +23,13 @@ function LinhaMeta({ meta, itens }: { meta: MetaDiaria; itens: MetaChecklistItem
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0' }}>
       {meta.concluida
-        ? <CheckCircle2 size={14} style={{ color: '#4CAF7A', flexShrink: 0 }} />
+        ? <CheckCircle2 size={14} style={{ color: 'var(--status-ok)', flexShrink: 0 }} />
         : <Circle size={14} style={{ color: '#8A8A8A', flexShrink: 0 }} />}
       <span style={{ flex: 1, fontSize: 13, color: meta.concluida ? '#B8B8B8' : '#F5F5F5', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {meta.titulo}
       </span>
       <span style={{ fontSize: 12, color: '#B8B8B8', flexShrink: 0 }}>{detalhe}</span>
-      <span style={{ fontSize: 12, fontWeight: 600, color: pct === 100 ? '#4CAF7A' : '#E0E0E0', width: 38, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: pct === 100 ? 'var(--status-ok)' : '#E0E0E0', width: 38, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
     </div>
   )
 }
@@ -66,7 +66,7 @@ function CardBloco({
           <p style={{ fontSize: 13, color: '#B8B8B8', marginTop: 2 }}>{bloco.descricao}</p>
         </div>
         {metas.length > 0 && (
-          <span style={{ fontSize: 12, fontWeight: 600, color: feitas === metas.length ? '#4CAF7A' : '#E0E0E0' }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: feitas === metas.length ? 'var(--status-ok)' : '#E0E0E0' }}>
             {feitas}/{metas.length} metas
           </span>
         )}

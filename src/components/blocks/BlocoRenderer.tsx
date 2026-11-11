@@ -62,7 +62,7 @@ export function BlocoRenderer({
             onKeyDown={handleKeyDownLinha}
             placeholder="Subtítulo"
             className={`${textoBase} text-[18px] font-semibold`}
-            style={{ color: '#C9A84C' }}
+            style={{ color: 'var(--text-primary)' }}
           />
         )
       }
@@ -86,7 +86,7 @@ export function BlocoRenderer({
       case 'citacao': {
         const c = bloco.conteudo as { texto: string }
         return (
-          <div className="pl-4" style={{ borderLeft: '3px solid #C9A84C' }}>
+          <div className="pl-4" style={{ borderLeft: '3px solid var(--border)' }}>
             <textarea
               value={c.texto}
               onChange={(e) => onAtualizar({ texto: e.target.value })}
@@ -106,14 +106,14 @@ export function BlocoRenderer({
             placeholder="código…"
             rows={Math.max(2, c.texto.split('\n').length)}
             className={`${textoBase} text-[13px] p-3 rounded-lg`}
-            style={{ fontFamily: 'var(--font-geist-mono), monospace', background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
+            style={{ fontFamily: 'var(--font-mono)', background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}
           />
         )
       }
       case 'callout': {
         const c = bloco.conteudo as { texto: string; emoji: string }
         return (
-          <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)' }}>
+          <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: 'rgba(245,245,240,0.06)', border: '1px solid rgba(245,245,240,0.2)' }}>
             <input
               value={c.emoji}
               onChange={(e) => onAtualizar({ ...c, emoji: e.target.value.slice(0, 2) })}
@@ -195,13 +195,13 @@ export function BlocoRenderer({
                   onClick={() => onAtualizar({ itens: c.itens.filter((_, i) => i !== idx) })}
                   className="opacity-0 group-hover/item:opacity-100 transition-opacity mt-1"
                 >
-                  <X size={12} className="text-[#E85238]" />
+                  <X size={12} className="text-[var(--status-danger)]" />
                 </button>
               </div>
             ))}
             <button
               onClick={() => onAtualizar({ itens: [...c.itens, ''] })}
-              className="text-[12px] text-[var(--text-secondary)] hover:text-[#C9A84C] text-left mt-0.5"
+              className="text-[12px] text-[var(--text-secondary)] hover:text-[var(--brand-accent)] text-left mt-0.5"
             >
               + adicionar item
             </button>
@@ -222,7 +222,7 @@ export function BlocoRenderer({
                     onAtualizar({ itens: novos })
                   }}
                   className="mt-1.5"
-                  style={{ accentColor: '#C9A84C', width: 14, height: 14, cursor: 'pointer' }}
+                  style={{ accentColor: 'var(--text-primary)', width: 14, height: 14, cursor: 'pointer' }}
                 />
                 <input
                   value={item.texto}
@@ -244,13 +244,13 @@ export function BlocoRenderer({
                   onClick={() => onAtualizar({ itens: c.itens.filter((_, i) => i !== idx) })}
                   className="opacity-0 group-hover/item:opacity-100 transition-opacity mt-1"
                 >
-                  <X size={12} className="text-[#E85238]" />
+                  <X size={12} className="text-[var(--status-danger)]" />
                 </button>
               </div>
             ))}
             <button
               onClick={() => onAtualizar({ itens: [...c.itens, { texto: '', feito: false }] })}
-              className="text-[12px] text-[var(--text-secondary)] hover:text-[#C9A84C] text-left mt-0.5"
+              className="text-[12px] text-[var(--text-secondary)] hover:text-[var(--brand-accent)] text-left mt-0.5"
             >
               + adicionar item
             </button>
@@ -301,7 +301,7 @@ export function BlocoRenderer({
                     ))}
                     <td>
                       <button onClick={() => onAtualizar({ ...c, linhas: c.linhas.filter((_, i) => i !== li) })}>
-                        <X size={11} className="text-[#E85238]" />
+                        <X size={11} className="text-[var(--status-danger)]" />
                       </button>
                     </td>
                   </tr>
@@ -310,7 +310,7 @@ export function BlocoRenderer({
             </table>
             <button
               onClick={() => onAtualizar({ ...c, linhas: [...c.linhas, c.colunas.map(() => '')] })}
-              className="text-[12px] text-[var(--text-secondary)] hover:text-[#C9A84C] mt-2"
+              className="text-[12px] text-[var(--text-secondary)] hover:text-[var(--brand-accent)] mt-2"
             >
               + adicionar linha
             </button>
@@ -341,7 +341,7 @@ export function BlocoRenderer({
           <Plus size={13} />
         </button>
         <button onClick={onDeletar} className="icon-btn border-0" style={{ width: 24, height: 24 }} title="Excluir bloco">
-          <Trash2 size={13} className="text-[#E85238]" />
+          <Trash2 size={13} className="text-[var(--status-danger)]" />
         </button>
 
         {menuAberto && (

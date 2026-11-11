@@ -50,8 +50,8 @@ function ModalQuadro({
                   onClick={() => setEmoji(e)}
                   style={{
                     width: 36, height: 36, borderRadius: 8, fontSize: 20,
-                    background: emoji === e ? 'rgba(201,168,76,0.15)' : 'var(--bg-surface-2)',
-                    border: `2px solid ${emoji === e ? '#C9A84C' : 'var(--border)'}`,
+                    background: emoji === e ? 'rgba(212,252,60,0.15)' : 'var(--bg-surface-2)',
+                    border: `2px solid ${emoji === e ? 'var(--brand-accent)' : 'var(--border)'}`,
                     cursor: 'pointer',
                   }}
                 >
@@ -108,7 +108,7 @@ function CardQuadro({ quadro, onEditar, onDeletar }: { quadro: Quadro; onEditar:
       style={{
         position: 'relative',
         background: 'var(--bg-surface)',
-        border: `1px solid ${hover ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
+        border: `1px solid ${hover ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
         borderRadius: 14,
         overflow: 'hidden',
         transition: 'border-color 0.2s, transform 0.15s, box-shadow 0.2s',
@@ -117,7 +117,7 @@ function CardQuadro({ quadro, onEditar, onDeletar }: { quadro: Quadro; onEditar:
       }}
     >
       {/* Color bar */}
-      <div style={{ height: 4, background: 'linear-gradient(90deg, #C9A84C, #8B5CF6)' }} />
+      <div style={{ height: 4, background: 'linear-gradient(90deg, #D4FC3C, #A7A9A6)' }} />
 
       {/* Actions (hover) */}
       {hover && (
@@ -134,7 +134,7 @@ function CardQuadro({ quadro, onEditar, onDeletar }: { quadro: Quadro; onEditar:
             className="icon-btn"
             onClick={(e) => { e.preventDefault(); onDeletar() }}
             title="Deletar"
-            style={{ width: 28, height: 28, borderRadius: 6, color: '#EF4444' }}
+            style={{ width: 28, height: 28, borderRadius: 6, color: 'var(--status-danger)' }}
           >
             <Trash2 size={13} />
           </button>
@@ -185,7 +185,7 @@ export function QuadrosPage() {
     <div className="page-content">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Brain size={22} style={{ color: '#C9A84C' }} />
+          <Brain size={22} style={{ color: 'var(--text-primary)' }} />
           <div>
             <h1 className="page-title" style={{ margin: 0 }}>Quadros</h1>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>
@@ -238,7 +238,7 @@ export function QuadrosPage() {
               color: 'var(--text-secondary)',
               transition: 'border-color 0.2s, color 0.2s',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#C9A84C'; e.currentTarget.style.color = '#C9A84C' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--brand-accent)'; e.currentTarget.style.color = 'var(--brand-accent)' }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)' }}
           >
             <Plus size={22} />

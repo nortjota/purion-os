@@ -207,8 +207,8 @@ export function TarefaTimelineView({ tarefas, onAbrirTarefa, onAtualizarTarefa }
             <button key={z} onClick={() => setZoom(z)} style={{
               height: 26, padding: '0 10px', borderRadius: 5, fontSize: 11, fontWeight: 500,
               cursor: 'pointer', border: 'none', textTransform: 'capitalize',
-              background: zoom === z ? '#C9A84C' : 'transparent',
-              color: zoom === z ? '#0D0D0D' : 'var(--text-secondary)',
+              background: zoom === z ? 'var(--brand-accent)' : 'transparent',
+              color: zoom === z ? '#0B0B0B' : 'var(--text-secondary)',
             }}>
               {z.charAt(0).toUpperCase() + z.slice(1)}
             </button>
@@ -248,7 +248,7 @@ export function TarefaTimelineView({ tarefas, onAbrirTarefa, onAtualizarTarefa }
                     borderBottom: '1px solid var(--border)',
                     transition: 'background 100ms',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,0.04)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(212,252,60,0.04)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
                 >
                   <span style={{
@@ -343,7 +343,7 @@ export function TarefaTimelineView({ tarefas, onAbrirTarefa, onAtualizarTarefa }
                   position: 'absolute',
                   left: hojeOffset * cellW + cellW / 2,
                   top: 0, bottom: 0, width: 2,
-                  background: 'rgba(201,168,76,0.7)',
+                  background: 'rgba(245,245,240,0.7)',
                   zIndex: 10, pointerEvents: 'none',
                   borderRadius: 1,
                 }} />
@@ -381,7 +381,7 @@ export function TarefaTimelineView({ tarefas, onAbrirTarefa, onAtualizarTarefa }
                       }}
                     >
                       <span style={{
-                        fontSize: 10, fontWeight: 600, color: '#0D0D0D',
+                        fontSize: 10, fontWeight: 600, color: '#0B0B0B',
                         padding: '0 6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                       }}>
                         {width > 40 ? task.titulo : ''}

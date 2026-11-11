@@ -11,12 +11,12 @@ import { useCatalogoSKU } from '@/hooks/useCatalogoSKU'
 import { EscadaMetricas } from './EscadaMetricas'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
+  background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
 }
 
 const ORIGEM_COR: Record<OrigemVenda, string> = {
-  organico: '#4CAF7A', meta_ads: '#5B8FE8', tiktok: '#E85238',
-  indicacao: '#A855F7', b2b_presencial: '#C9A84C', afiliado: '#E8A838',
+  organico: '#8FD14F', meta_ads: '#9CC3DB', tiktok: '#E5544B',
+  indicacao: '#A7A9A6', b2b_presencial: '#D4FC3C', afiliado: '#E6C374',
 }
 
 type Periodo = 'hoje' | '7d' | '30d' | '90d' | 'mes' | 'todos'
@@ -170,7 +170,7 @@ export function PainelMetricasVendas() {
           {PERIODOS.map((p) => (
             <button key={p.id} onClick={() => setPeriodo(p.id)}
               className="px-2 py-1 rounded-md text-[11px] font-medium transition-colors whitespace-nowrap"
-              style={periodo === p.id ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}>
+              style={periodo === p.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}>
               {p.label}
             </button>
           ))}
@@ -179,7 +179,7 @@ export function PainelMetricasVendas() {
           {CANAIS.map((c) => (
             <button key={c.id} onClick={() => setCanal(c.id)}
               className="px-2 py-1 rounded-md text-[11px] font-medium transition-colors whitespace-nowrap"
-              style={canal === c.id ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}>
+              style={canal === c.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}>
               {c.label}
             </button>
           ))}
@@ -190,7 +190,7 @@ export function PainelMetricasVendas() {
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 10px', borderRadius: 8, border: '1px solid var(--border)',
             background: 'var(--bg-surface)', cursor: 'pointer', fontSize: 11, fontWeight: 500,
-            color: incluirUGC ? '#C9A84C' : 'var(--text-secondary)',
+            color: incluirUGC ? 'var(--brand-accent)' : 'var(--text-secondary)',
           }}>
           {incluirUGC ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
           Incluir UGC no estoque
@@ -200,7 +200,7 @@ export function PainelMetricasVendas() {
       {/* 3 Blocos */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         {/* BLOCO 1 — PEDIDOS */}
-        <Bloco titulo="Pedidos (transações)" cor="#C9A84C">
+        <Bloco titulo="Pedidos (transações)" cor="#D4FC3C">
           <Linha
             label="Total de pedidos"
             valor={m.pedidos}
@@ -221,7 +221,7 @@ export function PainelMetricasVendas() {
         </Bloco>
 
         {/* BLOCO 2 — FRASCOS VENDIDOS */}
-        <Bloco titulo="Frascos Vendidos (unidades)" cor="#5B8FE8">
+        <Bloco titulo="Frascos Vendidos (unidades)" cor="#9CC3DB">
           <Linha
             label="Total de frascos vendidos"
             valor={m.frascosTotais}
@@ -252,7 +252,7 @@ export function PainelMetricasVendas() {
         </Bloco>
 
         {/* BLOCO 3 — LOGÍSTICA / ESTOQUE */}
-        <Bloco titulo="Logística / Saída do Estoque" cor="#22C55E">
+        <Bloco titulo="Logística / Saída do Estoque" cor="#8FD14F">
           <Linha
             label="Frascos despachados"
             valor={m.fracsosDespachados}
@@ -271,7 +271,7 @@ export function PainelMetricasVendas() {
             tip="Frascos enviados a creators — não são venda, mas saem do estoque"
           />
           <div style={{
-            background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.2)',
+            background: 'rgba(143,209,79,0.07)', border: '1px solid rgba(143,209,79,0.2)',
             borderRadius: 8, padding: '8px 10px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
@@ -280,7 +280,7 @@ export function PainelMetricasVendas() {
               </span>
               <Tip text={incluirUGC ? 'Despachados + doados UGC' : 'Só despachados (UGC excluído pelo toggle acima)'} />
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#22C55E', lineHeight: 1 }}>{m.totalSaiu}</div>
+            <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--status-ok)', lineHeight: 1 }}>{m.totalSaiu}</div>
             <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 4 }}>
               {m.fracsosDespachados} vendidos + {m.frascosUGC} doados UGC
             </div>
@@ -288,7 +288,7 @@ export function PainelMetricasVendas() {
         </Bloco>
 
         {/* BLOCO 4 — MARGEM */}
-        <Bloco titulo="Contribuição" cor="#A855F7">
+        <Bloco titulo="Contribuição" cor="#A7A9A6">
           <Linha
             label="Contribuição total"
             valor={fmtR(m.margemTotal)}
@@ -323,7 +323,7 @@ export function PainelMetricasVendas() {
                 <BarChart data={m.porOrigem} barGap={4}>
                   <XAxis dataKey="name" tick={{ fill: '#B8B8B8', fontSize: 10 }} axisLine={false} tickLine={false} interval={0} angle={-15} textAnchor="end" height={40} />
                   <YAxis tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                  <RTooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(201,168,76,0.05)' }} />
+                  <RTooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(245,245,240,0.05)' }} />
                   <Bar dataKey="value" name="Pedidos" radius={[3, 3, 0, 0]}>
                     {m.porOrigem.map((entry, i) => <Cell key={i} fill={entry.cor} />)}
                   </Bar>
@@ -348,25 +348,25 @@ export function PainelMetricasVendas() {
             <PieChart>
               <Pie
                 data={[
-                  { name: TIPO_CLIENTE_LABEL.novo, value: m.novos, cor: '#5B8FE8' },
-                  { name: TIPO_CLIENTE_LABEL.recompra, value: m.recompras, cor: '#4CAF7A' },
+                  { name: TIPO_CLIENTE_LABEL.novo, value: m.novos, cor: '#9CC3DB' },
+                  { name: TIPO_CLIENTE_LABEL.recompra, value: m.recompras, cor: '#8FD14F' },
                 ]}
                 cx="50%" cy="50%" innerRadius={32} outerRadius={50} dataKey="value" paddingAngle={3}
               >
-                <Cell fill="#5B8FE8" />
-                <Cell fill="#4CAF7A" />
+                <Cell fill="#9CC3DB" />
+                <Cell fill="#8FD14F" />
               </Pie>
               <RTooltip contentStyle={TOOLTIP_STYLE} />
             </PieChart>
           </ResponsiveContainer>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#5B8FE8', flexShrink: 0 }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--status-info)', flexShrink: 0 }} />
               <span style={{ fontSize: 11, color: 'var(--text-secondary)', flex: 1 }}>{TIPO_CLIENTE_LABEL.novo}</span>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)' }}>{m.novos}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4CAF7A', flexShrink: 0 }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--status-ok)', flexShrink: 0 }} />
               <span style={{ fontSize: 11, color: 'var(--text-secondary)', flex: 1 }}>{TIPO_CLIENTE_LABEL.recompra}</span>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)' }}>{m.recompras}</span>
             </div>

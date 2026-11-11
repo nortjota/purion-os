@@ -76,7 +76,7 @@ export function TarefaModalNova({ statusInicial, perfilAtivo, onCriar, onFechar 
         <div className="modal-header">
           <div>
             <h3 className="modal-title">Nova Tarefa</h3>
-            <p className="caption mt-0.5">Coluna: <span className="text-[#C9A84C]">{colLabel}</span></p>
+            <p className="caption mt-0.5">Coluna: <span className="text-[var(--text-primary)]">{colLabel}</span></p>
           </div>
           <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
         </div>
@@ -158,18 +158,18 @@ export function TarefaModalNova({ statusInicial, perfilAtivo, onCriar, onFechar 
 
           {/* Motivo bloqueio */}
           {statusInicial === 'bloqueada' && (
-            <div className="bg-[rgba(232,168,56,0.06)] border border-[rgba(232,168,56,0.2)] rounded-xl p-4 space-y-2">
-              <div className="flex items-center gap-1.5 text-[11px] text-[#E8A838] font-semibold">
+            <div className="bg-[rgba(230,195,116,0.06)] border border-[rgba(230,195,116,0.2)] rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-1.5 text-[11px] text-[var(--status-warning)] font-semibold">
                 <AlertTriangle size={12} /> Motivo do bloqueio — obrigatório
               </div>
               <textarea value={form.motivoBloqueio} onChange={(e) => set('motivoBloqueio', e.target.value)}
                 placeholder="Descreva o que está impedindo o avanço desta tarefa..." rows={3}
-                className="w-full bg-[var(--bg-primary)] border border-[rgba(232,168,56,0.2)] rounded-lg px-3 py-2.5 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] resize-none focus:outline-none focus:border-[rgba(232,168,56,0.5)] transition-colors"
+                className="w-full bg-[var(--bg-primary)] border border-[rgba(230,195,116,0.2)] rounded-lg px-3 py-2.5 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] resize-none focus:outline-none focus:border-[rgba(230,195,116,0.5)] transition-colors"
                 maxLength={400} />
             </div>
           )}
 
-          {erro && <p className="text-xs text-[#E85238]">{erro}</p>}
+          {erro && <p className="text-xs text-[var(--status-danger)]">{erro}</p>}
 
           <div className="modal-footer">
             <button type="button" onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>

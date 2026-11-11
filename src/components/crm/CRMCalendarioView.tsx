@@ -112,8 +112,8 @@ export function CRMCalendarioView({ leads, onAbrirLead, onAgendarPasso }: Props)
               height: isMobile ? 30 : 26, padding: isMobile ? '0 12px' : '0 10px',
               borderRadius: 5, fontSize: isMobile ? 12 : 11, fontWeight: 500, cursor: 'pointer',
               border: 'none',
-              background: mode === m ? '#C9A84C' : 'transparent',
-              color: mode === m ? '#0D0D0D' : 'var(--text-secondary)',
+              background: mode === m ? 'var(--brand-accent)' : 'transparent',
+              color: mode === m ? '#0B0B0B' : 'var(--text-secondary)',
             }}>
               {m === 'mes' ? 'Mês' : 'Semana'}
             </button>
@@ -147,7 +147,7 @@ export function CRMCalendarioView({ leads, onAbrirLead, onAgendarPasso }: Props)
                   borderRight: '1px solid var(--border)',
                   borderBottom: '1px solid var(--border)',
                   padding: isMobile ? '3px 4px' : '4px 6px',
-                  background: isDragOver ? 'rgba(201,168,76,0.06)' : outroMes ? 'rgba(0,0,0,0.05)' : 'transparent',
+                  background: isDragOver ? 'rgba(212,252,60,0.06)' : outroMes ? 'rgba(0,0,0,0.05)' : 'transparent',
                   transition: 'background 120ms',
                 }}
                 onDragOver={(e) => { e.preventDefault(); setDragOverDate(key) }}
@@ -158,8 +158,8 @@ export function CRMCalendarioView({ leads, onAbrirLead, onAgendarPasso }: Props)
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: isMobile ? 22 : 24, height: isMobile ? 22 : 24, borderRadius: '50%',
                   fontSize: isMobile ? 11 : 12, fontWeight: ehHoje ? 700 : 400,
-                  background: ehHoje ? '#C9A84C' : 'transparent',
-                  color: ehHoje ? '#0D0D0D' : outroMes ? 'rgba(184,184,184,0.3)' : 'var(--text-primary)',
+                  background: ehHoje ? 'var(--brand-accent)' : 'transparent',
+                  color: ehHoje ? '#0B0B0B' : outroMes ? 'rgba(184,184,184,0.3)' : 'var(--text-primary)',
                   marginBottom: 2,
                 }}>
                   {format(dia, 'd')}
@@ -203,7 +203,7 @@ export function CRMCalendarioView({ leads, onAbrirLead, onAgendarPasso }: Props)
                     )
                   })}
                   {extra > 0 && (
-                    <span style={{ fontSize: 10, color: '#C9A84C', paddingLeft: 4, fontWeight: 600 }}>
+                    <span style={{ fontSize: 10, color: 'var(--text-primary)', paddingLeft: 4, fontWeight: 600 }}>
                       +{extra}
                     </span>
                   )}

@@ -17,11 +17,11 @@ const TIPO_LABEL: Record<TipoMovimentacao, string> = {
 }
 
 const TIPO_COR: Record<TipoMovimentacao, string> = {
-  entrada:     '#4CAF7A',
-  saida_venda: '#5B8FE8',
-  saida_ugc:   '#A855F7',
-  ajuste:      '#E8A838',
-  perda:       '#E85238',
+  entrada:     '#8FD14F',
+  saida_venda: '#9CC3DB',
+  saida_ugc:   '#A7A9A6',
+  ajuste:      '#E6C374',
+  perda:       '#E5544B',
 }
 
 function ModalAjuste({ atual, onSalvar, onFechar }: {
@@ -49,7 +49,7 @@ function ModalAjuste({ atual, onSalvar, onFechar }: {
             <label className="label-purion">Novo saldo</label>
             <input type="number" min={0} value={valor} onChange={(e) => setValor(e.target.value)} className="input-purion" autoFocus />
             {delta !== 0 && (
-              <p style={{ fontSize: 11, marginTop: 4, color: delta > 0 ? '#4CAF7A' : '#E85238' }}>
+              <p style={{ fontSize: 11, marginTop: 4, color: delta > 0 ? 'var(--status-ok)' : 'var(--status-danger)' }}>
                 {delta > 0 ? `+${delta}` : delta} frascos
               </p>
             )}
@@ -114,25 +114,25 @@ export function ProducaoEstoqueView({ registrarMovimentacao }: Props) {
         style={{
           padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           flexWrap: 'wrap', gap: 16,
-          borderColor: alerta ? 'rgba(239,68,68,0.4)' : undefined,
-          background: alerta ? 'rgba(239,68,68,0.04)' : undefined,
+          borderColor: alerta ? 'rgba(229,84,75,0.4)' : undefined,
+          background: alerta ? 'rgba(229,84,75,0.04)' : undefined,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{
             width: 56, height: 56, borderRadius: 14, flexShrink: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: alerta ? 'rgba(239,68,68,0.12)' : 'rgba(76,175,122,0.12)',
-            color: alerta ? '#EF4444' : '#4CAF7A',
+            background: alerta ? 'rgba(229,84,75,0.12)' : 'rgba(143,209,79,0.12)',
+            color: alerta ? 'var(--status-danger)' : 'var(--status-ok)',
           }}>
             <Package size={26} />
           </div>
           <div>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Frascos prontos em estoque</p>
-            <p style={{ fontSize: 36, fontWeight: 800, lineHeight: 1.1, color: alerta ? '#EF4444' : 'var(--text-primary)' }}>
+            <p style={{ fontSize: 36, fontWeight: 800, lineHeight: 1.1, color: alerta ? 'var(--status-danger)' : 'var(--text-primary)' }}>
               {estoqueProduto?.quantidadeAtual ?? 0}
             </p>
-            <p style={{ fontSize: 12, color: alerta ? '#EF4444' : 'var(--text-secondary)' }}>
+            <p style={{ fontSize: 12, color: alerta ? 'var(--status-danger)' : 'var(--text-secondary)' }}>
               {alerta
                 ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><AlertTriangle size={12} /> Abaixo do mínimo ({estoqueProduto?.quantidadeMinima})</span>
                 : `Mínimo: ${estoqueProduto?.quantidadeMinima ?? 0} · OK`}
@@ -160,8 +160,8 @@ export function ProducaoEstoqueView({ registrarMovimentacao }: Props) {
             <LineChart data={evolucao}>
               <XAxis dataKey="data" tick={{ fill: '#B8B8B8', fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-              <Tooltip contentStyle={{ background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5' }} />
-              <Line type="monotone" dataKey="saldo" name="Saldo" stroke="#C9A84C" strokeWidth={2} dot={false} />
+              <Tooltip contentStyle={{ background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5' }} />
+              <Line type="monotone" dataKey="saldo" name="Saldo" stroke="#D4FC3C" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -191,7 +191,7 @@ export function ProducaoEstoqueView({ registrarMovimentacao }: Props) {
                           {TIPO_LABEL[m.tipo]}
                         </span>
                       </td>
-                      <td className="td-mono" style={{ color: positivo ? '#4CAF7A' : '#E85238' }}>
+                      <td className="td-mono" style={{ color: positivo ? 'var(--status-ok)' : 'var(--status-danger)' }}>
                         {positivo ? '+' : '−'}{m.quantidade}
                       </td>
                       <td className="td-mono">{m.saldoApos}</td>

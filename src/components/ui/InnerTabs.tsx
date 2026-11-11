@@ -57,7 +57,7 @@ export function InnerTabs({ tabs, activeTab, onChange, className = '', style }: 
               {tab.badge != null && tab.badge > 0 && (
                 <span style={{
                   fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 10,
-                  background: 'rgba(201,168,76,0.2)', color: '#C9A84C',
+                  background: 'rgba(245,245,240,0.2)', color: 'var(--text-primary)',
                 }}>
                   {tab.badge}
                 </span>

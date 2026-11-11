@@ -77,11 +77,11 @@ function TooltipLinha({ active, payload, label }: {
 // COMPONENTE PRINCIPAL
 // ─────────────────────────────────────────────
 
-export default function TrafegoGraficos({ tipo, empilhadoData = [], linhaData = [], cor = '#C9A84C' }: Props) {
+export default function TrafegoGraficos({ tipo, empilhadoData = [], linhaData = [], cor = '#D4FC3C' }: Props) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
+  const gridStroke = isDark ? '#2A2C2B' : '#E0DFDB'
   const tickFill   = isDark ? '#A0A0A0' : '#6B6B66'
 
   if (tipo === 'empilhado') {

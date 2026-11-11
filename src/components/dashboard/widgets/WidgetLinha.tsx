@@ -21,7 +21,7 @@ interface Props {
   formatarValor?: (v: number) => string
 }
 
-export function WidgetLinha({ title, icon, data, cor = '#C9A84C', height = 200, isLoading, href, formatarValor }: Props) {
+export function WidgetLinha({ title, icon, data, cor = '#D4FC3C', height = 200, isLoading, href, formatarValor }: Props) {
   const isEmpty = data.length === 0 || data.every((d) => d.valor === 0)
   const gradId = `grad-${title.replace(/\s+/g, '-').toLowerCase()}`
   const anim = useChartAnim(1)

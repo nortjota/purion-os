@@ -71,7 +71,7 @@ export function ModalMedicaoMensal({ objetivoTitulo, ano, mes, medicaoExistente,
               type="button"
               onClick={usarSugestaoAuto}
               className="flex items-center gap-1.5"
-              style={{ fontSize: 11, color: '#5B8FE8', background: 'rgba(91,143,232,0.08)', border: '1px solid rgba(91,143,232,0.2)', borderRadius: 6, padding: '6px 10px', cursor: 'pointer', width: 'fit-content' }}
+              style={{ fontSize: 11, color: 'var(--status-info)', background: 'rgba(156,195,219,0.08)', border: '1px solid rgba(156,195,219,0.2)', borderRadius: 6, padding: '6px 10px', cursor: 'pointer', width: 'fit-content' }}
             >
               <Zap size={11} /> Usar valor automático do CRM neste mês: {sugestaoAuto.toLocaleString('pt-BR')}
             </button>

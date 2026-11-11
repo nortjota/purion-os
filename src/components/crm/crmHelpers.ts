@@ -15,12 +15,12 @@ export interface EstagioConfig {
 
 export const ESTAGIOS: EstagioConfig[] = [
   { id: 'prospecto',        label: 'Prospecto',        cor: '#B8B8B8' },
-  { id: 'abordado',         label: 'Abordado',         cor: '#5B8FE8' },
-  { id: 'reuniao_agendada', label: 'Reunião Agendada', cor: '#8B5CF6' },
-  { id: 'oportunidade',     label: 'Oportunidade',     cor: '#E8A838' },
-  { id: 'cliente',          label: 'Cliente',          cor: '#4CAF7A' },
-  { id: 'recorrente',       label: 'Recorrente',       cor: '#C9A84C' },
-  { id: 'perdido',          label: 'Perdido',          cor: '#E85238' },
+  { id: 'abordado',         label: 'Abordado',         cor: '#9CC3DB' },
+  { id: 'reuniao_agendada', label: 'Reunião Agendada', cor: '#A7A9A6' },
+  { id: 'oportunidade',     label: 'Oportunidade',     cor: '#E6C374' },
+  { id: 'cliente',          label: 'Cliente',          cor: '#8FD14F' },
+  { id: 'recorrente',       label: 'Recorrente',       cor: '#D4FC3C' },
+  { id: 'perdido',          label: 'Perdido',          cor: '#E5544B' },
 ]
 
 /** Mapeia estágios legados (pré-migração) para os novos, para contagens/kanban consistentes. */
@@ -45,13 +45,13 @@ export const ESTAGIOS_ATIVOS: StatusLead[] = ['prospecto', 'abordado', 'reuniao_
 export const ESTAGIOS_GANHOS: StatusLead[] = ['cliente', 'recorrente']
 
 // ─────────────────────────────────────────────
-// TIER — A dourado, B prata, C bronze
+// TIER — A acento, B prata, C grafite
 // ─────────────────────────────────────────────
 
 export const TIER_CONFIG: Record<TierLead, { label: string; cor: string; bg: string }> = {
-  A: { label: 'Tier A', cor: '#C9A84C', bg: 'rgba(201,168,76,0.18)' },
+  A: { label: 'Tier A', cor: '#D4FC3C', bg: 'rgba(212,252,60,0.18)' },
   B: { label: 'Tier B', cor: '#C7CCD6', bg: 'rgba(199,204,214,0.16)' },
-  C: { label: 'Tier C', cor: '#B08D57', bg: 'rgba(176,141,87,0.16)' },
+  C: { label: 'Tier C', cor: '#8A8C89', bg: 'rgba(138,140,137,0.16)' },
 }
 
 // ─────────────────────────────────────────────
@@ -111,9 +111,9 @@ export function urgenciaProximoPasso(dataISO: string | null | undefined): Urgenc
 }
 
 export const URGENCIA_COR: Record<UrgenciaPasso, string> = {
-  vencido: '#E85238',
-  hoje:    '#E8A838',
-  futuro:  '#4CAF7A',
+  vencido: '#E5544B',
+  hoje:    '#E6C374',
+  futuro:  '#8FD14F',
 }
 
 export const RESPONSAVEIS: PerfilUsuario[] = SOCIOS.map((s) => s.id)

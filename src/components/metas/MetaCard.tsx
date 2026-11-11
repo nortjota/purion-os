@@ -97,8 +97,8 @@ export function MetaCard({
       style={{
         padding: '14px 16px',
         position: 'relative',
-        borderColor: meta.concluida ? 'rgba(34,197,94,0.4)' : undefined,
-        background: meta.concluida ? 'rgba(34,197,94,0.04)' : undefined,
+        borderColor: meta.concluida ? 'rgba(143,209,79,0.4)' : undefined,
+        background: meta.concluida ? 'rgba(143,209,79,0.04)' : undefined,
         opacity: isDragging ? 0.4 : 1,
         cursor: draggable ? 'grab' : undefined,
         transition: 'opacity 150ms ease, border-color 200ms ease, background 200ms ease',
@@ -147,8 +147,8 @@ export function MetaCard({
           className="icon-btn"
           style={{
             width: 24, height: 24, flexShrink: 0,
-            color: meta.concluida ? '#22C55E' : 'var(--text-secondary)',
-            background: meta.concluida ? 'rgba(34,197,94,0.12)' : undefined,
+            color: meta.concluida ? 'var(--status-ok)' : 'var(--text-secondary)',
+            background: meta.concluida ? 'rgba(143,209,79,0.12)' : undefined,
           }}
         >
           <Check size={13} />
@@ -217,14 +217,14 @@ export function MetaCard({
                 <Plus size={11} />
               </button>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: meta.concluida ? '#22C55E' : cor }}>{pct}%</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: meta.concluida ? 'var(--status-ok)' : cor }}>{pct}%</span>
           </div>
           <div style={{ height: 5, background: 'var(--bg-surface-2)', borderRadius: 999, overflow: 'hidden' }}>
             <motion.div
               initial={false}
               animate={{ scaleX: pct / 100 }}
               transition={{ type: 'spring', stiffness: 200, damping: 30 }}
-              style={{ height: '100%', width: '100%', transformOrigin: 'left center', background: meta.concluida ? '#22C55E' : cor, borderRadius: 999 }}
+              style={{ height: '100%', width: '100%', transformOrigin: 'left center', background: meta.concluida ? 'var(--status-ok)' : cor, borderRadius: 999 }}
             />
           </div>
         </div>
@@ -234,14 +234,14 @@ export function MetaCard({
             <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
               {meusItens.filter((i) => i.feito).length} / {meusItens.length} itens
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: meta.concluida ? '#22C55E' : cor }}>{pct}%</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: meta.concluida ? 'var(--status-ok)' : cor }}>{pct}%</span>
           </div>
           <div style={{ height: 5, background: 'var(--bg-surface-2)', borderRadius: 999, overflow: 'hidden', marginBottom: 8 }}>
             <motion.div
               initial={false}
               animate={{ scaleX: pct / 100 }}
               transition={{ type: 'spring', stiffness: 200, damping: 30 }}
-              style={{ height: '100%', width: '100%', transformOrigin: 'left center', background: meta.concluida ? '#22C55E' : cor, borderRadius: 999 }}
+              style={{ height: '100%', width: '100%', transformOrigin: 'left center', background: meta.concluida ? 'var(--status-ok)' : cor, borderRadius: 999 }}
             />
           </div>
           <div className="flex flex-col gap-1">

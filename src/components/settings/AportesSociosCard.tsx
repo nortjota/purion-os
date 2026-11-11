@@ -30,7 +30,7 @@ export function AportesSociosCard() {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
       <div className="flex items-center gap-2 mb-1">
-        <HandCoins size={16} className="text-[#C9A84C]" />
+        <HandCoins size={16} className="text-[var(--text-primary)]" />
         <h2 className="text-sm font-bold text-[var(--text-primary)]">Aportes dos Sócios</h2>
       </div>
       <p className="text-xs text-[var(--text-secondary)] mb-4">Quanto cada sócio colocou do próprio bolso na empresa — não entra no faturamento.</p>
@@ -56,7 +56,7 @@ export function AportesSociosCard() {
       </div>
       <div className="flex items-center justify-between mb-5 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
         <span className="text-xs text-[var(--text-secondary)]">Total aportado</span>
-        <span className="text-sm font-bold text-[#C9A84C]">{formatarMoeda(totalGeral)}</span>
+        <span className="text-sm font-bold text-[var(--text-primary)]">{formatarMoeda(totalGeral)}</span>
       </div>
 
       {/* Formulário de novo aporte */}
@@ -105,7 +105,7 @@ export function AportesSociosCard() {
                   <p className="text-xs text-[var(--text-primary)] truncate">{a.descricao || `Aporte de ${s?.nome ?? a.socio}`}</p>
                   <p className="text-[10px] text-[var(--text-secondary)]">{formatarDataBR(a.data)}</p>
                 </div>
-                <span className="text-sm font-bold" style={{ color: s?.cor ?? '#C9A84C' }}>{formatarMoeda(a.valor)}</span>
+                <span className="text-sm font-bold" style={{ color: s?.cor ?? 'var(--brand-accent)' }}>{formatarMoeda(a.valor)}</span>
                 <button onClick={() => setDeletando(a.id)} className="text-red-400 hover:text-red-300 p-1">
                   <Trash2 size={13} />
                 </button>

@@ -10,7 +10,7 @@ interface Props {
 }
 
 const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
+  background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
 }
 
 function KpiCard({ label, value, cor, sub }: { label: string; value: string | number; cor?: string; sub?: string }) {
@@ -56,9 +56,9 @@ export function ProducaoLotesPainel({ lotes }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 1200 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12 }}>
         <KpiCard label="Unidades produzidas" value={metricas.totalUnidades} />
-        <KpiCard label="Unidades envasadas" value={metricas.totalEnvasado} cor="#4CAF7A" />
-        <KpiCard label="Custo total" value={formatarMoeda(metricas.custoTotal)} cor="#C9A84C" />
-        <KpiCard label="Lotes concluídos" value={metricas.concluidos} cor="#5B8FE8" />
+        <KpiCard label="Unidades envasadas" value={metricas.totalEnvasado} cor="#8FD14F" />
+        <KpiCard label="Custo total" value={formatarMoeda(metricas.custoTotal)} cor="#D4FC3C" />
+        <KpiCard label="Lotes concluídos" value={metricas.concluidos} cor="#9CC3DB" />
         <KpiCard label="Duração média" value={metricas.duracaoMedia > 0 ? `${metricas.duracaoMedia.toFixed(1)}d` : '—'} sub="do início à conclusão" />
       </div>
 
@@ -72,8 +72,8 @@ export function ProducaoLotesPainel({ lotes }: Props) {
               <BarChart data={metricas.producaoPorMes}>
                 <XAxis dataKey="name" tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(201,168,76,0.05)' }} />
-                <Bar dataKey="unidades" fill="rgba(201,168,76,0.75)" radius={[3, 3, 0, 0]} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(245,245,240,0.05)' }} />
+                <Bar dataKey="unidades" fill="rgba(245,245,240,0.75)" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}

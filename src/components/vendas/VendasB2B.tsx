@@ -69,10 +69,10 @@ export function VendasB2B() {
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
             padding: '12px 16px', borderRadius: 10,
-            background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.3)',
+            background: 'rgba(245,245,240,0.08)', border: '1px solid rgba(245,245,240,0.3)',
           }}>
             <div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#C9A84C' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
                 {vendasZeroB2B.length} venda{vendasZeroB2B.length > 1 ? 's' : ''} B2B de R$0,00
               </span>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 8 }}>
@@ -92,10 +92,10 @@ export function VendasB2B() {
         <div>
           <p style={{ fontSize: 13, fontWeight: 600 }}>Vendas B2B</p>
           <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.1 }}>
-            <span style={{ color: '#C9A84C' }}>{vendasFiltradas.length}</span>
+            <span style={{ color: 'var(--text-primary)' }}>{vendasFiltradas.length}</span>
             <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>pedidos</span>
             <span style={{ color: 'var(--border)', margin: '0 8px' }}>·</span>
-            <span style={{ color: '#5B8FE8' }}>{kpis.unidades}</span>
+            <span style={{ color: 'var(--status-info)' }}>{kpis.unidades}</span>
             <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>frascos vendidos</span>
           </p>
         </div>
@@ -107,7 +107,7 @@ export function VendasB2B() {
       {/* KPIs */}
       <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Total em Lotes</span><DollarSign size={14} className="text-[var(--gold)] opacity-70" /></div>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Total em Lotes</span><DollarSign size={14} className="text-[var(--brand-accent)] opacity-70" /></div>
           <span className="kpi-value">{fmtR(kpis.totalLotes)}</span>
         </div>
         <div className="kpi-card">
@@ -115,12 +115,12 @@ export function VendasB2B() {
           <span className="kpi-value">{kpis.parceiros}</span>
         </div>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Frascos Vendidos</span><Package size={14} className="text-[#5B8FE8] opacity-70" /></div>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Frascos Vendidos</span><Package size={14} className="text-[var(--status-info)] opacity-70" /></div>
           <span className="kpi-value">{kpis.unidades}</span>
           <span className="caption">unidades (soma das qtds)</span>
         </div>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Ticket Médio do Lote</span><TrendingUp size={14} className="text-[#4CAF7A] opacity-70" /></div>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Ticket Médio do Lote</span><TrendingUp size={14} className="text-[var(--status-ok)] opacity-70" /></div>
           <span className="kpi-value">{fmtR(kpis.ticketMedio)}</span>
         </div>
       </div>

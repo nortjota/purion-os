@@ -28,17 +28,17 @@ const QRCodeCanvas = dynamic(
 const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 const STATUS_COM: Record<string, { label: string; color: string }> = {
-  pendente:  { label: 'Pendente',  color: '#F59E0B' },
-  aprovada:  { label: 'Aprovada',  color: '#3B82F6' },
-  paga:      { label: 'Paga',      color: '#10B981' },
-  cancelada: { label: 'Cancelada', color: '#EF4444' },
+  pendente:  { label: 'Pendente',  color: '#E6C374' },
+  aprovada:  { label: 'Aprovada',  color: '#9CC3DB' },
+  paga:      { label: 'Paga',      color: '#8FD14F' },
+  cancelada: { label: 'Cancelada', color: '#E5544B' },
 }
 
 const STATUS_BADGE = {
-  ativo:     { c: '#10B981', b: 'rgba(16,185,129,0.15)',  label: 'Ativo'     },
-  pausado:   { c: '#F59E0B', b: 'rgba(245,158,11,0.15)',  label: 'Pausado'   },
-  pendente:  { c: '#3B82F6', b: 'rgba(59,130,246,0.15)',  label: 'Pendente'  },
-  bloqueado: { c: '#EF4444', b: 'rgba(239,68,68,0.15)',   label: 'Bloqueado' },
+  ativo:     { c: '#8FD14F', b: 'rgba(143,209,79,0.15)',  label: 'Ativo'     },
+  pausado:   { c: '#E6C374', b: 'rgba(230,195,116,0.15)',  label: 'Pausado'   },
+  pendente:  { c: '#9CC3DB', b: 'rgba(156,195,219,0.15)',  label: 'Pendente'  },
+  bloqueado: { c: '#E5544B', b: 'rgba(229,84,75,0.15)',   label: 'Bloqueado' },
 }
 
 function CopyTextBlock({ label, texto }: { label: string; texto: string }) {
@@ -52,7 +52,7 @@ function CopyTextBlock({ label, texto }: { label: string; texto: string }) {
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
         <span style={{ fontSize: 11, color: 'rgba(229,229,229,0.5)', fontWeight: 500 }}>{label}</span>
-        <button onClick={copiar} style={{ fontSize: 11, color: copiado ? '#10B981' : '#C9A84C', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+        <button onClick={copiar} style={{ fontSize: 11, color: copiado ? 'var(--status-ok)' : 'var(--brand-accent)', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
           {copiado ? '✓ Copiado' : 'Copiar'}
         </button>
       </div>
@@ -139,7 +139,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
   const st = STATUS_BADGE[afiliado.status as keyof typeof STATUS_BADGE] ?? STATUS_BADGE.pendente
 
   const CARD: React.CSSProperties = {
-    background: '#161616',
+    background: '#1B1D1C',
     border: '1px solid rgba(255,255,255,0.07)',
     borderRadius: 16,
     padding: 20,
@@ -147,10 +147,10 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0D0D0D', color: '#E5E5E5', fontFamily: 'var(--font-sans, Inter, system-ui, sans-serif)' }}>
+    <div style={{ minHeight: '100vh', background: '#0B0B0B', color: '#E5E5E5', fontFamily: 'var(--font-body, Inter, system-ui, sans-serif)' }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(201,168,76,0.2)', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 10, position: 'sticky', top: 0, background: 'rgba(13,13,13,0.95)', backdropFilter: 'blur(8px)', zIndex: 10 }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: '#C9A84C', letterSpacing: '0.12em' }}>PURION</span>
+      <div style={{ borderBottom: '1px solid rgba(245,245,240,0.2)', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 10, position: 'sticky', top: 0, background: 'rgba(11,11,11,0.95)', backdropFilter: 'blur(8px)', zIndex: 10 }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.12em' }}>PURION</span>
         <span style={{ fontSize: 11, color: 'rgba(229,229,229,0.3)' }}>|</span>
         <span style={{ fontSize: 12, color: 'rgba(229,229,229,0.5)' }}>Portal do Afiliado</span>
       </div>
@@ -175,12 +175,12 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
         </div>
 
         {/* Link de afiliado */}
-        <div style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.25)', borderRadius: 16, padding: 20, marginBottom: 16 }}>
-          <p style={{ fontSize: 10, fontWeight: 700, color: '#C9A84C', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 10px' }}>
+        <div style={{ background: 'rgba(245,245,240,0.06)', border: '1px solid rgba(245,245,240,0.25)', borderRadius: 16, padding: 20, marginBottom: 16 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 10px' }}>
             Seu link de afiliado
           </p>
-          <div style={{ background: 'rgba(201,168,76,0.08)', borderRadius: 10, padding: '10px 14px', marginBottom: 14 }}>
-            <p style={{ fontSize: 13, color: '#C9A84C', wordBreak: 'break-all', margin: 0, fontFamily: 'monospace' }}>
+          <div style={{ background: 'rgba(245,245,240,0.08)', borderRadius: 10, padding: '10px 14px', marginBottom: 14 }}>
+            <p style={{ fontSize: 13, color: 'var(--text-primary)', wordBreak: 'break-all', margin: 0, fontFamily: 'monospace' }}>
               {linkAfiliado}
             </p>
           </div>
@@ -189,8 +189,8 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
               onClick={copiarLink}
               style={{
                 height: 44, borderRadius: 10, border: 'none',
-                background: copiado ? '#10B981' : '#C9A84C',
-                color: '#0D0D0D', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                background: copiado ? 'var(--status-ok)' : 'var(--brand-accent)',
+                color: '#0B0B0B', fontWeight: 700, fontSize: 14, cursor: 'pointer',
                 transition: 'background 200ms',
               }}
             >
@@ -200,8 +200,8 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
               onClick={compartilhar}
               style={{
                 height: 44, borderRadius: 10,
-                border: '1px solid rgba(201,168,76,0.35)',
-                background: 'transparent', color: '#C9A84C',
+                border: '1px solid rgba(245,245,240,0.35)',
+                background: 'transparent', color: 'var(--text-primary)',
                 fontWeight: 600, fontSize: 14, cursor: 'pointer',
               }}
             >
@@ -219,7 +219,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
             </p>
           </div>
 
-          <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(201,168,76,0.04)', borderRadius: 8, borderLeft: '2px solid rgba(201,168,76,0.3)' }}>
+          <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(245,245,240,0.04)', borderRadius: 8, borderLeft: '2px solid rgba(245,245,240,0.3)' }}>
             <p style={{ fontSize: 12, color: 'rgba(229,229,229,0.5)', margin: 0, lineHeight: 1.6 }}>
               Use este link em <strong style={{ color: 'rgba(229,229,229,0.7)' }}>todas as suas publicações</strong> sobre a PURION — Instagram, TikTok, bio, Stories e WhatsApp.
             </p>
@@ -238,8 +238,8 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
                   style={{
                     padding: '4px 12px', borderRadius: 6, border: 'none',
                     cursor: 'pointer', fontSize: 12, fontWeight: 500,
-                    background: periodo === p ? '#C9A84C' : 'transparent',
-                    color: periodo === p ? '#0D0D0D' : 'rgba(229,229,229,0.5)',
+                    background: periodo === p ? 'var(--brand-accent)' : 'transparent',
+                    color: periodo === p ? '#0B0B0B' : 'rgba(229,229,229,0.5)',
                     transition: 'all 150ms',
                   }}
                 >
@@ -251,10 +251,10 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
             {[
-              { label: 'Cliques',        value: metricas.totalCliques.toLocaleString('pt-BR'), color: '#3B82F6' },
-              { label: 'Vendas',         value: String(metricas.totalVendas),                   color: '#10B981' },
-              { label: 'Receita gerada', value: fmt(metricas.receita),                          color: '#C9A84C' },
-              { label: 'Sua comissão',   value: fmt(metricas.comissao),                         color: '#C9A84C' },
+              { label: 'Cliques',        value: metricas.totalCliques.toLocaleString('pt-BR'), color: '#9CC3DB' },
+              { label: 'Vendas',         value: String(metricas.totalVendas),                   color: '#8FD14F' },
+              { label: 'Receita gerada', value: fmt(metricas.receita),                          color: '#D4FC3C' },
+              { label: 'Sua comissão',   value: fmt(metricas.comissao),                         color: '#D4FC3C' },
             ].map(({ label, value, color }) => (
               <div key={label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 14 }}>
                 <p style={{ fontSize: 11, color: 'rgba(229,229,229,0.4)', margin: '0 0 6px' }}>{label}</p>
@@ -274,7 +274,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
                   title={`${d.dia}: ${d.count} cliques`}
                   style={{
                     width: '100%', borderRadius: '3px 3px 0 0',
-                    background: d.count > 0 ? 'rgba(201,168,76,0.65)' : 'rgba(255,255,255,0.05)',
+                    background: d.count > 0 ? 'rgba(212,252,60,0.65)' : 'rgba(255,255,255,0.05)',
                     height: `${Math.max(3, (d.count / maxCliques) * 52)}px`,
                     transition: 'height 400ms ease',
                   }}
@@ -291,13 +291,13 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
         <div style={CARD}>
           <p style={{ fontSize: 13, fontWeight: 600, color: '#E5E5E5', margin: '0 0 14px' }}>Comissões</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-            <div style={{ background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 12, padding: 14 }}>
-              <p style={{ fontSize: 11, color: '#F59E0B', margin: '0 0 4px', fontWeight: 600 }}>Pendente</p>
-              <p style={{ fontSize: 18, fontWeight: 700, color: '#F59E0B', margin: 0 }}>{fmt(comPendente)}</p>
+            <div style={{ background: 'rgba(230,195,116,0.07)', border: '1px solid rgba(230,195,116,0.2)', borderRadius: 12, padding: 14 }}>
+              <p style={{ fontSize: 11, color: 'var(--status-warning)', margin: '0 0 4px', fontWeight: 600 }}>Pendente</p>
+              <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--status-warning)', margin: 0 }}>{fmt(comPendente)}</p>
             </div>
-            <div style={{ background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 12, padding: 14 }}>
-              <p style={{ fontSize: 11, color: '#10B981', margin: '0 0 4px', fontWeight: 600 }}>Recebida</p>
-              <p style={{ fontSize: 18, fontWeight: 700, color: '#10B981', margin: 0 }}>{fmt(comPaga)}</p>
+            <div style={{ background: 'rgba(143,209,79,0.07)', border: '1px solid rgba(143,209,79,0.2)', borderRadius: 12, padding: 14 }}>
+              <p style={{ fontSize: 11, color: 'var(--status-ok)', margin: '0 0 4px', fontWeight: 600 }}>Recebida</p>
+              <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--status-ok)', margin: 0 }}>{fmt(comPaga)}</p>
             </div>
           </div>
 
@@ -314,7 +314,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
                       {p.data_pagamento ? new Date(p.data_pagamento).toLocaleDateString('pt-BR') : '—'} · {p.metodo?.toUpperCase() ?? '—'}
                     </p>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981', background: 'rgba(16,185,129,0.1)', padding: '3px 10px', borderRadius: 20 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--status-ok)', background: 'rgba(143,209,79,0.1)', padding: '3px 10px', borderRadius: 20 }}>
                     Pago
                   </span>
                 </div>
@@ -353,7 +353,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
                         <td style={{ padding: '9px 8px', color: 'rgba(229,229,229,0.45)', whiteSpace: 'nowrap' }}>{new Date(v.data_venda).toLocaleDateString('pt-BR')}</td>
                         <td style={{ padding: '9px 8px', color: '#E5E5E5' }}>{v.pedido_ref ?? v.pedido_id.slice(0, 8)}</td>
                         <td style={{ padding: '9px 8px', color: '#E5E5E5', fontWeight: 600, whiteSpace: 'nowrap' }}>{fmt(v.valor_liquido)}</td>
-                        <td style={{ padding: '9px 8px', color: '#C9A84C', fontWeight: 700, whiteSpace: 'nowrap' }}>{fmt(v.comissao_valor)}</td>
+                        <td style={{ padding: '9px 8px', color: 'var(--text-primary)', fontWeight: 700, whiteSpace: 'nowrap' }}>{fmt(v.comissao_valor)}</td>
                         <td style={{ padding: '9px 8px', whiteSpace: 'nowrap' }}>
                           <span style={{ fontSize: 10, fontWeight: 700, color: sc.color }}>{sc.label}</span>
                         </td>
@@ -375,7 +375,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 10, marginBottom: 16 }}>
               {materiais.map(m => (
                 <div key={m.id} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, overflow: 'hidden' }}>
-                  <div style={{ height: 72, background: 'rgba(201,168,76,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ height: 72, background: 'rgba(245,245,240,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{ fontSize: 28 }}>
                       {m.tipo === 'imagem' ? '🖼' : m.tipo === 'video' ? '🎥' : '📄'}
                     </span>
@@ -383,7 +383,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
                   <div style={{ padding: '10px 10px 12px' }}>
                     <p style={{ fontSize: 11, color: '#E5E5E5', margin: '0 0 8px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.titulo}</p>
                     <a href={m.url} download target="_blank" rel="noopener noreferrer"
-                      style={{ display: 'block', textAlign: 'center', padding: '6px', borderRadius: 6, background: 'rgba(201,168,76,0.15)', color: '#C9A84C', fontSize: 11, fontWeight: 700, textDecoration: 'none' }}>
+                      style={{ display: 'block', textAlign: 'center', padding: '6px', borderRadius: 6, background: 'rgba(245,245,240,0.15)', color: 'var(--text-primary)', fontSize: 11, fontWeight: 700, textDecoration: 'none' }}>
                       Download
                     </a>
                   </div>
@@ -397,8 +397,8 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
           )}
 
           {/* Textos prontos */}
-          <div style={{ padding: 14, background: 'rgba(201,168,76,0.04)', border: '1px solid rgba(201,168,76,0.12)', borderRadius: 12 }}>
-            <p style={{ fontSize: 10, fontWeight: 700, color: '#C9A84C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 12px' }}>
+          <div style={{ padding: 14, background: 'rgba(245,245,240,0.04)', border: '1px solid rgba(245,245,240,0.12)', borderRadius: 12 }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 12px' }}>
               Legendas prontas para copiar
             </p>
             <CopyTextBlock
@@ -440,15 +440,15 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
 
           <a
             href={`/portal/${afiliado.codigo}/instrucoes`}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 16, height: 40, borderRadius: 10, border: '1px solid rgba(201,168,76,0.3)', color: '#C9A84C', fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'background 150ms' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 16, height: 40, borderRadius: 10, border: '1px solid rgba(245,245,240,0.3)', color: 'var(--text-primary)', fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'background 150ms' }}
           >
             Como usar meu link →
           </a>
         </div>
 
         {/* Dicas */}
-        <div style={{ background: 'rgba(201,168,76,0.03)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: 16, padding: 20 }}>
-          <p style={{ fontSize: 14, fontWeight: 700, color: '#C9A84C', margin: '0 0 4px' }}>Como gerar mais vendas com seu link</p>
+        <div style={{ background: 'rgba(245,245,240,0.03)', border: '1px solid rgba(245,245,240,0.15)', borderRadius: 16, padding: 20 }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 4px' }}>Como gerar mais vendas com seu link</p>
           <p style={{ fontSize: 12, color: 'rgba(229,229,229,0.4)', margin: '0 0 16px' }}>Dicas da PURION para maximizar seus resultados</p>
           {[
             { titulo: 'Stories diários', desc: 'Histórias autênticas mostrando o produto em uso convertem muito mais do que posts comuns.' },
@@ -458,7 +458,7 @@ export function PortalPage({ afiliado, vendas, cliques, pagamentos, materiais }:
             { titulo: 'Horários ideais', desc: '18h–22h nos dias de semana e 10h–14h nos fins de semana são os melhores momentos.' },
           ].map(({ titulo, desc }, i) => (
             <div key={titulo} style={{ display: 'flex', gap: 12, marginBottom: i < 4 ? 14 : 0 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#C9A84C', flexShrink: 0, marginTop: 6 }} />
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--primary)', flexShrink: 0, marginTop: 6 }} />
               <div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#E5E5E5', margin: '0 0 2px' }}>{titulo}</p>
                 <p style={{ fontSize: 12, color: 'rgba(229,229,229,0.45)', margin: 0, lineHeight: 1.5 }}>{desc}</p>

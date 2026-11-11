@@ -61,7 +61,7 @@ export function FunilB2B() {
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('abordagem'))?.metaSemanal ?? 18,
       realizado: novosSemana,
       total: contadores.abordagens,
-      cor: '#5B8FE8',
+      cor: '#9CC3DB',
       desc: 'Contatos novos esta semana',
     },
     {
@@ -69,7 +69,7 @@ export function FunilB2B() {
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('reuni'))?.metaSemanal ?? 4,
       realizado: leads.filter((l) => estagioNormalizado(l.status) === 'reuniao_agendada' && new Date(l.updatedAt) >= inicioSemana).length,
       total: contadores.reunioes,
-      cor: '#C9A84C',
+      cor: '#D4FC3C',
       desc: 'Prospects que aceitaram conversar',
     },
     {
@@ -77,7 +77,7 @@ export function FunilB2B() {
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('oportunidade'))?.metaSemanal ?? 3,
       realizado: leads.filter((l) => estagioNormalizado(l.status) === 'oportunidade' && new Date(l.updatedAt) >= inicioSemana).length,
       total: contadores.oportunidades,
-      cor: '#E8A838',
+      cor: '#E6C374',
       desc: 'Proposta enviada / negociando',
     },
     {
@@ -85,7 +85,7 @@ export function FunilB2B() {
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('ganho'))?.metaSemanal ?? 2,
       realizado: leads.filter((l) => ['cliente', 'recorrente'].includes(estagioNormalizado(l.status)) && new Date(l.updatedAt) >= inicioSemana).length,
       total: contadores.ganhos,
-      cor: '#4CAF7A',
+      cor: '#8FD14F',
       desc: 'Fechamentos confirmados',
     },
     {
@@ -93,7 +93,7 @@ export function FunilB2B() {
       meta: funilMetas.find((m) => m.etapa.toLowerCase().includes('reposição') || m.etapa.toLowerCase().includes('reposicao'))?.metaSemanal ?? 1,
       realizado: reposicoesPendentes.length,
       total: reposicoesPendentes.length,
-      cor: '#A855F7',
+      cor: '#A7A9A6',
       desc: 'Clientes em ciclo de reposição',
     },
   ]
@@ -140,7 +140,7 @@ export function FunilB2B() {
                         <span style={{ color: etapa.cor }}>{etapa.total}</span>
                         <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 4 }}>total</span>
                       </p>
-                      <p style={{ fontSize: 11, color: atingiu ? '#4CAF7A' : 'var(--text-secondary)' }}>
+                      <p style={{ fontSize: 11, color: atingiu ? 'var(--status-ok)' : 'var(--text-secondary)' }}>
                         {etapa.realizado}/{etapa.meta} semana
                         {atingiu && ' ✓'}
                       </p>
@@ -164,11 +164,11 @@ export function FunilB2B() {
       {/* D+21 Reposições */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <Bell size={14} style={{ color: reposicoesPendentes.length > 0 ? '#E8A838' : 'var(--text-secondary)' }} />
+          <Bell size={14} style={{ color: reposicoesPendentes.length > 0 ? 'var(--status-warning)' : 'var(--text-secondary)' }} />
           <p style={{ fontSize: 14, fontWeight: 700 }}>
             Reposições D+21
             {reposicoesPendentes.length > 0 && (
-              <span style={{ marginLeft: 8, fontSize: 12, color: '#E8A838', fontWeight: 600 }}>
+              <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--status-warning)', fontWeight: 600 }}>
                 {reposicoesPendentes.length} pendente{reposicoesPendentes.length !== 1 ? 's' : ''}
               </span>
             )}
@@ -186,14 +186,14 @@ export function FunilB2B() {
               return (
                 <div key={lead.id} className="card-purion" style={{
                   padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  borderColor: urgente ? 'rgba(232,168,56,0.4)' : 'var(--border)',
+                  borderColor: urgente ? 'rgba(230,195,116,0.4)' : 'var(--border)',
                 }}>
                   <div>
                     <p style={{ fontSize: 13, fontWeight: 600 }}>{lead.nomeEmpresa}</p>
                     <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{lead.cidade} · {lead.regiao}</p>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: urgente ? '#E8A838' : '#4CAF7A' }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: urgente ? 'var(--status-warning)' : 'var(--status-ok)' }}>
                       D+{dias}
                     </p>
                     <p style={{ fontSize: 10, color: 'var(--text-secondary)' }}>
@@ -214,39 +214,39 @@ export function FunilB2B() {
           <div className="kpi-card">
             <div className="flex items-center justify-between mb-2">
               <span className="kpi-label">Ganhos no mês</span>
-              <CheckCircle2 size={14} style={{ color: '#4CAF7A', opacity: 0.7 }} />
+              <CheckCircle2 size={14} style={{ color: 'var(--status-ok)', opacity: 0.7 }} />
             </div>
-            <span className="kpi-value" style={{ color: '#4CAF7A' }}>{contadores.ganhos}</span>
+            <span className="kpi-value" style={{ color: 'var(--status-ok)' }}>{contadores.ganhos}</span>
             <span className="caption">meta: {metaMes.ganhos} ({metaMes.mes})</span>
             <div style={{ height: 4, background: 'var(--border)', borderRadius: 999, marginTop: 8, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${pctGanhos}%`, background: '#4CAF7A', borderRadius: 999 }} />
+              <div style={{ height: '100%', width: `${pctGanhos}%`, background: 'var(--status-ok)', borderRadius: 999 }} />
             </div>
           </div>
           <div className="kpi-card">
             <div className="flex items-center justify-between mb-2">
               <span className="kpi-label">Receita B2B</span>
-              <TrendingUp size={14} style={{ color: '#C9A84C', opacity: 0.7 }} />
+              <TrendingUp size={14} style={{ color: 'var(--text-primary)', opacity: 0.7 }} />
             </div>
             <span className="kpi-value">{fmtR(receitaMes)}</span>
             <span className="caption">meta: {fmtR(metaMes.receita)}</span>
             <div style={{ height: 4, background: 'var(--border)', borderRadius: 999, marginTop: 8, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${pctReceita}%`, background: '#C9A84C', borderRadius: 999 }} />
+              <div style={{ height: '100%', width: `${pctReceita}%`, background: 'var(--brand-accent)', borderRadius: 999 }} />
             </div>
           </div>
           <div className="kpi-card">
             <div className="flex items-center justify-between mb-2">
               <span className="kpi-label">Pipeline total</span>
-              <Users size={14} style={{ color: '#5B8FE8', opacity: 0.7 }} />
+              <Users size={14} style={{ color: 'var(--status-info)', opacity: 0.7 }} />
             </div>
-            <span className="kpi-value" style={{ color: '#5B8FE8' }}>{leads.length}</span>
+            <span className="kpi-value" style={{ color: 'var(--status-info)' }}>{leads.length}</span>
             <span className="caption">{contadores.oportunidades} em negociação ativa</span>
           </div>
           <div className="kpi-card">
             <div className="flex items-center justify-between mb-2">
               <span className="kpi-label">Conv. Abord.→Ganho</span>
-              <AlertCircle size={14} style={{ color: '#A855F7', opacity: 0.7 }} />
+              <AlertCircle size={14} style={{ color: 'var(--status-neutral)', opacity: 0.7 }} />
             </div>
-            <span className="kpi-value" style={{ color: '#A855F7' }}>
+            <span className="kpi-value" style={{ color: 'var(--status-neutral)' }}>
               {contadores.abordagens > 0 ? Math.round((contadores.ganhos / contadores.abordagens) * 100) : 0}%
             </span>
             <span className="caption">meta: ~8% (18→1-2)</span>
@@ -257,11 +257,11 @@ export function FunilB2B() {
       {/* Ritual de Sexta */}
       <div style={{
         padding: '16px', borderRadius: 12,
-        background: 'rgba(201,168,76,0.05)', border: '1px solid rgba(201,168,76,0.2)',
+        background: 'rgba(245,245,240,0.05)', border: '1px solid rgba(245,245,240,0.2)',
       }}>
         <div className="flex items-center gap-2 mb-3">
-          <Calendar size={14} style={{ color: '#C9A84C' }} />
-          <p style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C' }}>Ritual de Sexta — Resumo Semanal</p>
+          <Calendar size={14} style={{ color: 'var(--text-primary)' }} />
+          <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Ritual de Sexta — Resumo Semanal</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
           {[
@@ -275,10 +275,10 @@ export function FunilB2B() {
               <div key={item.label} style={{ textAlign: 'center' }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: 999, margin: '0 auto 6px',
-                  background: ok ? 'rgba(76,175,122,0.15)' : 'rgba(232,82,56,0.12)',
+                  background: ok ? 'rgba(143,209,79,0.15)' : 'rgba(229,84,75,0.12)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: ok ? '#4CAF7A' : '#E85238' }}>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: ok ? 'var(--status-ok)' : 'var(--status-danger)' }}>
                     {item.realizado}
                   </span>
                 </div>

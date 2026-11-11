@@ -29,9 +29,9 @@ export type CarrinhoAbandonado = {
 }
 
 const ETAPA_CFG: Record<CarrinhoAbandonado['etapa'], { label: string; color: string }> = {
-  dados:     { label: 'Dados',     color: '#3B82F6' },
-  endereco:  { label: 'Endereço',  color: '#F59E0B' },
-  pagamento: { label: 'Pagamento', color: '#EF4444' },
+  dados:     { label: 'Dados',     color: '#9CC3DB' },
+  endereco:  { label: 'Endereço',  color: '#E6C374' },
+  pagamento: { label: 'Pagamento', color: '#E5544B' },
 }
 
 function timeAgo(iso: string) {
@@ -112,10 +112,10 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
         {[
-          { label: 'Leads capturados',        value: totalLeads,             color: '#3B82F6' },
-          { label: 'Carrinhos abandonados',   value: totalCarrinhos,         color: '#F59E0B' },
-          { label: 'Em aberto',               value: carrinhosAbertos,       color: '#EF4444' },
-          { label: 'Valor em aberto',         value: formatBRL(valorEmAberto), color: '#C9A84C' },
+          { label: 'Leads capturados',        value: totalLeads,             color: '#9CC3DB' },
+          { label: 'Carrinhos abandonados',   value: totalCarrinhos,         color: '#E6C374' },
+          { label: 'Em aberto',               value: carrinhosAbertos,       color: '#E5544B' },
+          { label: 'Valor em aberto',         value: formatBRL(valorEmAberto), color: '#D4FC3C' },
         ].map(({ label, value, color }) => (
           <div key={label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 6px' }}>{label}</p>
@@ -127,11 +127,11 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
         <button onClick={() => setTab('leads')}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: tab === 'leads' ? '1px solid #C9A84C' : '1px solid var(--border)', background: tab === 'leads' ? 'rgba(201,168,76,0.08)' : 'var(--bg-surface)', color: tab === 'leads' ? '#C9A84C' : 'var(--text-secondary)', fontSize: 12, fontWeight: tab === 'leads' ? 600 : 400, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: tab === 'leads' ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: tab === 'leads' ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: tab === 'leads' ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 12, fontWeight: tab === 'leads' ? 600 : 400, cursor: 'pointer' }}>
           <Mail size={13} /> Leads (E-mail)
         </button>
         <button onClick={() => setTab('carrinhos')}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: tab === 'carrinhos' ? '1px solid #C9A84C' : '1px solid var(--border)', background: tab === 'carrinhos' ? 'rgba(201,168,76,0.08)' : 'var(--bg-surface)', color: tab === 'carrinhos' ? '#C9A84C' : 'var(--text-secondary)', fontSize: 12, fontWeight: tab === 'carrinhos' ? 600 : 400, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: tab === 'carrinhos' ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: tab === 'carrinhos' ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: tab === 'carrinhos' ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 12, fontWeight: tab === 'carrinhos' ? 600 : 400, cursor: 'pointer' }}>
           <ShoppingCart size={13} /> Carrinhos Abandonados
         </button>
       </div>
@@ -145,7 +145,7 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
         </div>
         {tab === 'carrinhos' && (
           <button onClick={() => setSoNaoRecuperados(p => !p)}
-            style={{ padding: '7px 12px', borderRadius: 7, border: soNaoRecuperados ? '1px solid #C9A84C' : '1px solid var(--border)', background: soNaoRecuperados ? 'rgba(201,168,76,0.08)' : 'var(--bg-surface)', color: soNaoRecuperados ? '#C9A84C' : 'var(--text-secondary)', fontSize: 11, fontWeight: soNaoRecuperados ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            style={{ padding: '7px 12px', borderRadius: 7, border: soNaoRecuperados ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: soNaoRecuperados ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: soNaoRecuperados ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 11, fontWeight: soNaoRecuperados ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap' }}>
             Só não recuperados
           </button>
         )}
@@ -173,7 +173,7 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
                     <tr key={l.id} style={{ borderBottom: '1px solid var(--border)' }}>
                       <td style={{ padding: '10px 14px', color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap' }}>{l.email}</td>
                       <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>
-                        {l.cupom && <span style={{ fontSize: 11, fontWeight: 600, color: '#C9A84C', background: 'rgba(201,168,76,0.1)', padding: '3px 8px', borderRadius: 20 }}>{l.cupom}</span>}
+                        {l.cupom && <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--brand-accent)', background: 'rgba(212,252,60,0.1)', padding: '3px 8px', borderRadius: 20 }}>{l.cupom}</span>}
                       </td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{l.utm_source || '—'}</td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.pagina || '—'}</td>
@@ -220,8 +220,8 @@ export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
                         <td style={{ padding: '10px 14px', color: 'var(--text-primary)', fontWeight: 600, whiteSpace: 'nowrap' }}>{formatBRL(c.valor_total)}</td>
                         <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>
                           {c.recuperado
-                            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#10B981' }}><CheckCircle size={12} /> Recuperado</span>
-                            : <span style={{ fontSize: 11, fontWeight: 600, color: '#EF4444' }}>Em aberto</span>}
+                            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--status-ok)' }}><CheckCircle size={12} /> Recuperado</span>
+                            : <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--status-danger)' }}>Em aberto</span>}
                         </td>
                         <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap' }}>{timeAgo(c.criado_em)}</td>
                       </tr>

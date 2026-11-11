@@ -39,16 +39,16 @@ const TABS: { id: TabId; label: string }[] = [
 ]
 
 const STATUS_VENDA: Record<string, { label: string; color: string }> = {
-  pendente:   { label: 'Pendente',   color: '#F59E0B' },
-  confirmada: { label: 'Confirmada', color: '#10B981' },
-  cancelada:  { label: 'Cancelada',  color: '#EF4444' },
-  devolvida:  { label: 'Devolvida',  color: '#8B5CF6' },
+  pendente:   { label: 'Pendente',   color: '#E6C374' },
+  confirmada: { label: 'Confirmada', color: '#8FD14F' },
+  cancelada:  { label: 'Cancelada',  color: '#E5544B' },
+  devolvida:  { label: 'Devolvida',  color: '#A7A9A6' },
 }
 const STATUS_COM: Record<string, { label: string; color: string }> = {
-  pendente:  { label: 'Pendente',  color: '#F59E0B' },
-  aprovada:  { label: 'Aprovada',  color: '#3B82F6' },
-  paga:      { label: 'Paga',      color: '#10B981' },
-  cancelada: { label: 'Cancelada', color: '#EF4444' },
+  pendente:  { label: 'Pendente',  color: '#E6C374' },
+  aprovada:  { label: 'Aprovada',  color: '#9CC3DB' },
+  paga:      { label: 'Paga',      color: '#8FD14F' },
+  cancelada: { label: 'Cancelada', color: '#E5544B' },
 }
 
 export function AfiliadoPerfil({ id }: { id: string }) {
@@ -153,14 +153,14 @@ export function AfiliadoPerfil({ id }: { id: string }) {
     return (
       <div className="page-content" style={{ textAlign: 'center', paddingTop: 80 }}>
         <p style={{ color: 'var(--text-secondary)' }}>Afiliado não encontrado.</p>
-        <button onClick={() => router.push('/afiliados')} style={{ marginTop: 16, color: '#C9A84C', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 13 }}>
+        <button onClick={() => router.push('/afiliados')} style={{ marginTop: 16, color: 'var(--text-primary)', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 13 }}>
           ← Voltar
         </button>
       </div>
     )
   }
 
-  const stBadge = { ativo: { c: '#10B981', b: 'rgba(16,185,129,0.1)' }, pausado: { c: '#F59E0B', b: 'rgba(245,158,11,0.1)' }, pendente: { c: '#3B82F6', b: 'rgba(59,130,246,0.1)' }, bloqueado: { c: '#EF4444', b: 'rgba(239,68,68,0.1)' } }
+  const stBadge = { ativo: { c: '#8FD14F', b: 'rgba(143,209,79,0.1)' }, pausado: { c: '#E6C374', b: 'rgba(230,195,116,0.1)' }, pendente: { c: '#9CC3DB', b: 'rgba(156,195,219,0.1)' }, bloqueado: { c: '#E5544B', b: 'rgba(229,84,75,0.1)' } }
   const st = stBadge[afiliado.status] ?? stBadge.pendente
 
   return (
@@ -173,13 +173,13 @@ export function AfiliadoPerfil({ id }: { id: string }) {
       {/* Header do perfil */}
       <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 24, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, flexWrap: 'wrap' }}>
-          <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#C9A84C', color: '#0D0D0D', fontSize: 22, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: 22, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {afiliado.nome[0]?.toUpperCase()}
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
               <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{afiliado.nome}</h2>
-              <code style={{ fontSize: 12, background: 'rgba(201,168,76,0.1)', color: '#C9A84C', padding: '2px 8px', borderRadius: 6 }}>{afiliado.codigo}</code>
+              <code style={{ fontSize: 12, background: 'rgba(245,245,240,0.1)', color: 'var(--text-primary)', padding: '2px 8px', borderRadius: 6 }}>{afiliado.codigo}</code>
               <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 20, color: st.c, background: st.b, textTransform: 'capitalize' }}>{afiliado.status}</span>
             </div>
             {afiliado.nicho && <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 10px' }}>{afiliado.nicho}</p>}
@@ -198,14 +198,14 @@ export function AfiliadoPerfil({ id }: { id: string }) {
               )}
               {afiliado.youtube && (
                 <a href={`https://youtube.com/${afiliado.youtube}`} target="_blank" rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#EF4444', textDecoration: 'none' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--status-danger)', textDecoration: 'none' }}>
                   <Play size={13} /> {afiliado.youtube}
                 </a>
               )}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button onClick={copiarLink} className="btn btn-secondary btn-sm" style={copiado ? { color: '#22C55E', borderColor: 'rgba(34,197,94,0.3)' } : {}}>
+            <button onClick={copiarLink} className="btn btn-secondary btn-sm" style={copiado ? { color: 'var(--status-ok)', borderColor: 'rgba(143,209,79,0.3)' } : {}}>
               {copiado ? <Check size={13} /> : <Copy size={13} />} {copiado ? 'Copiado' : 'Copiar link'}
             </button>
             <button onClick={() => setModalEditar(true)} className="btn btn-secondary btn-sm">
@@ -221,12 +221,12 @@ export function AfiliadoPerfil({ id }: { id: string }) {
       {/* Métricas */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 20 }}>
         {[
-          { label: 'Cliques totais',    value: metricas.totalCliques.toLocaleString('pt-BR'), cor: '#3B82F6' },
-          { label: 'Vendas totais',     value: metricas.totalVendas,                          cor: '#10B981' },
-          { label: 'Taxa de conversão', value: fmtPc(metricas.taxaConv),                      cor: '#8B5CF6' },
-          { label: 'Receita gerada',    value: fmt(metricas.receitaTotal),                    cor: '#C9A84C' },
-          { label: 'Comissão pendente', value: fmt(metricas.comPendente),                     cor: '#F59E0B' },
-          { label: 'Comissão paga',     value: fmt(metricas.comPaga),                         cor: '#10B981' },
+          { label: 'Cliques totais',    value: metricas.totalCliques.toLocaleString('pt-BR'), cor: '#9CC3DB' },
+          { label: 'Vendas totais',     value: metricas.totalVendas,                          cor: '#8FD14F' },
+          { label: 'Taxa de conversão', value: fmtPc(metricas.taxaConv),                      cor: '#A7A9A6' },
+          { label: 'Receita gerada',    value: fmt(metricas.receitaTotal),                    cor: '#D4FC3C' },
+          { label: 'Comissão pendente', value: fmt(metricas.comPendente),                     cor: '#E6C374' },
+          { label: 'Comissão paga',     value: fmt(metricas.comPaga),                         cor: '#8FD14F' },
         ].map(({ label, value, cor }) => (
           <div key={label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 14 }}>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 6px' }}>{label}</p>
@@ -248,8 +248,8 @@ export function AfiliadoPerfil({ id }: { id: string }) {
             <button key={t.id} onClick={() => setAba(t.id)}
               style={{
                 padding: '10px 18px', border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 13, color: aba === t.id ? '#C9A84C' : 'var(--text-secondary)',
-                borderBottom: aba === t.id ? '2px solid #C9A84C' : '2px solid transparent',
+                fontSize: 13, color: aba === t.id ? 'var(--brand-accent)' : 'var(--text-secondary)',
+                borderBottom: aba === t.id ? '2px solid var(--brand-accent)' : '2px solid transparent',
                 fontWeight: aba === t.id ? 600 : 400, whiteSpace: 'nowrap', transition: 'color 150ms',
               }}>{t.label}
             </button>
@@ -279,13 +279,13 @@ export function AfiliadoPerfil({ id }: { id: string }) {
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{new Date(v.data_venda).toLocaleDateString('pt-BR')}</td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-primary)' }}>{v.pedido_ref ?? v.pedido_id.slice(0, 8)}</td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-primary)', fontWeight: 600 }}>{fmt(v.valor_liquido)}</td>
-                      <td style={{ padding: '10px 14px', color: '#C9A84C', fontWeight: 600 }}>{fmt(v.comissao_valor)}</td>
+                      <td style={{ padding: '10px 14px', color: 'var(--text-primary)', fontWeight: 600 }}>{fmt(v.comissao_valor)}</td>
                       <td style={{ padding: '10px 14px' }}><span style={{ fontSize: 11, fontWeight: 600, color: sv.color }}>{sv.label}</span></td>
                       <td style={{ padding: '10px 14px' }}><span style={{ fontSize: 11, fontWeight: 600, color: sc.color }}>{sc.label}</span></td>
                       <td style={{ padding: '10px 14px' }}>
                         {v.status_comissao === 'pendente' && (
                           <button onClick={() => aprovarComissao(v.id)}
-                            style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: '1px solid #3B82F6', background: 'transparent', color: '#3B82F6', cursor: 'pointer' }}>
+                            style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: '1px solid var(--status-info)', background: 'transparent', color: 'var(--status-info)', cursor: 'pointer' }}>
                             Aprovar
                           </button>
                         )}
@@ -302,7 +302,7 @@ export function AfiliadoPerfil({ id }: { id: string }) {
       {aba === 'pagamentos' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-            <button onClick={() => setModalPagar(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: 'none', background: '#C9A84C', color: '#0D0D0D', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+            <button onClick={() => setModalPagar(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
               <DollarSign size={13} /> Registrar pagamento
             </button>
           </div>
@@ -324,11 +324,11 @@ export function AfiliadoPerfil({ id }: { id: string }) {
                         {new Date(p.periodo_inicio).toLocaleDateString('pt-BR')} – {new Date(p.periodo_fim).toLocaleDateString('pt-BR')}
                       </td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-primary)' }}>{p.vendas_ids?.length ?? 0}</td>
-                      <td style={{ padding: '10px 14px', color: '#C9A84C', fontWeight: 700 }}>{fmt(p.valor_total)}</td>
+                      <td style={{ padding: '10px 14px', color: 'var(--text-primary)', fontWeight: 700 }}>{fmt(p.valor_total)}</td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>{p.metodo ?? '—'}</td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{p.data_pagamento ? new Date(p.data_pagamento).toLocaleDateString('pt-BR') : '—'}</td>
                       <td style={{ padding: '10px 14px' }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: p.status === 'pago' ? '#10B981' : '#F59E0B', textTransform: 'capitalize' }}>{p.status}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: p.status === 'pago' ? 'var(--status-ok)' : 'var(--status-warning)', textTransform: 'capitalize' }}>{p.status}</span>
                       </td>
                     </tr>
                   ))}
@@ -364,7 +364,7 @@ export function AfiliadoPerfil({ id }: { id: string }) {
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.referrer || '—'}</td>
                       <td style={{ padding: '10px 14px' }}>
                         {c.converteu
-                          ? <span style={{ fontSize: 11, color: '#10B981', fontWeight: 600 }}>✓ Sim</span>
+                          ? <span style={{ fontSize: 11, color: 'var(--status-ok)', fontWeight: 600 }}>✓ Sim</span>
                           : <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Não</span>}
                       </td>
                     </tr>
@@ -404,7 +404,7 @@ export function AfiliadoPerfil({ id }: { id: string }) {
                 <span style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500 }}>{v}</span>
               </div>
             ))}
-            <button onClick={() => setModalEditar(true)} style={{ marginTop: 16, width: '100%', padding: '10px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', fontSize: 13, color: '#C9A84C', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <button onClick={() => setModalEditar(true)} style={{ marginTop: 16, width: '100%', padding: '10px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--brand-accent)', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               <Pencil size={13} /> Editar dados
             </button>
           </div>

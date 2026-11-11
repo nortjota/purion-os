@@ -27,7 +27,7 @@ function OptionGroup<T extends string>({
             onClick={() => onChange(opt.value)}
             className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
               value === opt.value
-                ? 'bg-[rgba(201,168,76,0.12)] text-[#C9A84C] border-[#C9A84C]'
+                ? 'bg-[rgba(212,252,60,0.12)] text-[var(--brand-accent)] border-[var(--brand-accent)]'
                 : 'text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--text-secondary)]'
             }`}
           >
@@ -43,7 +43,7 @@ export function AparenciaSettings() {
   const { success } = useToast()
 
   const [tema, setTema] = useState<Tema>('dark')
-  const [corDestaque, setCorDestaque] = useState('#C9A84C')
+  const [corDestaque, setCorDestaque] = useState('#D4FC3C')
   const [densidade, setDensidade] = useState<Densidade>('normal')
   const [fonte, setFonte] = useState<Fonte>('inter')
   const [animacoes, setAnimacoes] = useState<Animacoes>('ativadas')

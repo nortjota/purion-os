@@ -35,8 +35,8 @@ export function PainelPorPessoa({ responsavel, objetivos }: Props) {
           <span style={{ fontSize: 13, fontWeight: 700 }}>{socio?.nome ?? responsavel} — {objetivos.length} meta{objetivos.length !== 1 ? 's' : ''}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          {pesoFechado ? <CheckCircle2 size={13} style={{ color: '#22C55E' }} /> : <AlertTriangle size={13} style={{ color: '#E8A838' }} />}
-          <span style={{ fontSize: 13, fontWeight: 800, color: pesoFechado ? '#22C55E' : '#E8A838' }}>{soma}%</span>
+          {pesoFechado ? <CheckCircle2 size={13} style={{ color: 'var(--status-ok)' }} /> : <AlertTriangle size={13} style={{ color: 'var(--status-warning)' }} />}
+          <span style={{ fontSize: 13, fontWeight: 800, color: pesoFechado ? 'var(--status-ok)' : 'var(--status-warning)' }}>{soma}%</span>
           <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>de peso somado</span>
         </div>
       </div>
@@ -53,7 +53,7 @@ export function PainelPorPessoa({ responsavel, objetivos }: Props) {
       </div>
 
       {!pesoFechado && (
-        <p style={{ fontSize: 11, color: '#E8A838', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <p style={{ fontSize: 11, color: 'var(--status-warning)', display: 'flex', alignItems: 'center', gap: 6 }}>
           <AlertTriangle size={11} />
           {soma < 100
             ? `Faltam ${(100 - soma).toFixed(0)}% de peso para fechar 100% — o método G4 exige que a soma das metas de cada pessoa feche redondo.`
@@ -62,7 +62,7 @@ export function PainelPorPessoa({ responsavel, objetivos }: Props) {
       )}
 
       {excessoFoco && (
-        <p style={{ fontSize: 11, color: '#E85238', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <p style={{ fontSize: 11, color: 'var(--status-danger)', display: 'flex', alignItems: 'center', gap: 6 }}>
           <AlertTriangle size={11} />
           {objetivos.length} metas é foco disperso — o G4 recomenda no máximo {MAX_METAS_RECOMENDADO_POR_SOCIO} metas por pessoa.
         </p>

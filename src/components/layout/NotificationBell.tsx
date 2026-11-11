@@ -95,7 +95,7 @@ export function NotificationBell() {
           <span style={{
             position: 'absolute', top: 2, right: 2,
             width: 16, height: 16, borderRadius: '50%',
-            background: '#EF4444', color: '#fff',
+            background: 'var(--status-danger)', color: '#fff',
             fontSize: 9, fontWeight: 700,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             lineHeight: 1,
@@ -119,7 +119,7 @@ export function NotificationBell() {
             <div style={{ display: 'flex', gap: 8 }}>
               {naoLidas > 0 && (
                 <button onClick={marcarTodas} title="Marcar todas como lidas"
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#C9A84C', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600 }}>
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600 }}>
                   <CheckCheck size={13} /> Marcar todas
                 </button>
               )}
@@ -142,12 +142,12 @@ export function NotificationBell() {
                 padding: '12px 16px',
                 borderBottom: '1px solid var(--border)',
                 cursor: 'pointer',
-                background: n.lida ? 'transparent' : 'rgba(201,168,76,0.04)',
+                background: n.lida ? 'transparent' : 'rgba(212,252,60,0.04)',
                 display: 'flex', alignItems: 'flex-start', gap: 10,
               }}
             >
               {!n.lida && (
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#C9A84C', flexShrink: 0, marginTop: 4 }} />
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--primary)', flexShrink: 0, marginTop: 4 }} />
               )}
               <div style={{ flex: 1, marginLeft: n.lida ? 17 : 0 }}>
                 <p style={{ fontSize: 12, fontWeight: n.lida ? 400 : 600, color: 'var(--text-primary)', margin: '0 0 2px' }}>{n.titulo}</p>

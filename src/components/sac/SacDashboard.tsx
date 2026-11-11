@@ -26,18 +26,18 @@ export type Ticket = {
 }
 
 const STATUS_CFG: Record<Ticket['status'], { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  aberto:            { label: 'Aberto',             color: '#3B82F6', bg: 'rgba(59,130,246,0.1)',  icon: AlertCircle    },
-  em_atendimento:    { label: 'Em atendimento',     color: '#C9A84C', bg: 'rgba(201,168,76,0.1)', icon: MessageSquare  },
-  aguardando_cliente:{ label: 'Aguard. cliente',    color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)', icon: Clock          },
-  resolvido:         { label: 'Resolvido',           color: '#10B981', bg: 'rgba(16,185,129,0.1)', icon: CheckCircle    },
+  aberto:            { label: 'Aberto',             color: '#9CC3DB', bg: 'rgba(156,195,219,0.1)',  icon: AlertCircle    },
+  em_atendimento:    { label: 'Em atendimento',     color: '#D4FC3C', bg: 'rgba(212,252,60,0.1)', icon: MessageSquare  },
+  aguardando_cliente:{ label: 'Aguard. cliente',    color: '#A7A9A6', bg: 'rgba(167,169,166,0.1)', icon: Clock          },
+  resolvido:         { label: 'Resolvido',           color: '#8FD14F', bg: 'rgba(143,209,79,0.1)', icon: CheckCircle    },
   encerrado:         { label: 'Encerrado',           color: '#6B7280', bg: 'rgba(107,114,128,0.1)',icon: CheckCircle    },
 }
 
 const PRIO_CFG: Record<Ticket['prioridade'], { label: string; color: string }> = {
   baixa:   { label: 'Baixa',   color: '#6B7280' },
-  normal:  { label: 'Normal',  color: '#3B82F6' },
-  alta:    { label: 'Alta',    color: '#F59E0B' },
-  urgente: { label: 'Urgente', color: '#EF4444' },
+  normal:  { label: 'Normal',  color: '#9CC3DB' },
+  alta:    { label: 'Alta',    color: '#E6C374' },
+  urgente: { label: 'Urgente', color: '#E5544B' },
 }
 
 const CANAL_EMOJI: Record<string, string> = { whatsapp: '💬', email: '📧', instagram: '📷', manual: '✏️' }
@@ -130,10 +130,10 @@ export function SacDashboard({ ticketsInicial }: Props) {
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
         {[
-          { label: 'Abertos',            value: abertos,         color: '#3B82F6' },
-          { label: 'Em atendimento',     value: emAtendimento,   color: '#C9A84C' },
-          { label: 'Resolvidos hoje',    value: resolvidosHoje,  color: '#10B981' },
-          { label: 'CSAT médio',         value: `${csatMedio}⭐`, color: '#F59E0B' },
+          { label: 'Abertos',            value: abertos,         color: '#9CC3DB' },
+          { label: 'Em atendimento',     value: emAtendimento,   color: '#D4FC3C' },
+          { label: 'Resolvidos hoje',    value: resolvidosHoje,  color: '#8FD14F' },
+          { label: 'CSAT médio',         value: `${csatMedio}⭐`, color: '#E6C374' },
         ].map(({ label, value, color }) => (
           <div key={label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 6px' }}>{label}</p>
@@ -152,7 +152,7 @@ export function SacDashboard({ ticketsInicial }: Props) {
         <div style={{ display: 'flex', gap: 4 }}>
           {['todos', 'aberto', 'em_atendimento', 'aguardando_cliente', 'resolvido'].map(s => (
             <button key={s} onClick={() => setFiltro(s)}
-              style={{ padding: '7px 12px', borderRadius: 7, border: filtroStatus === s ? '1px solid #C9A84C' : '1px solid var(--border)', background: filtroStatus === s ? 'rgba(201,168,76,0.08)' : 'var(--bg-surface)', color: filtroStatus === s ? '#C9A84C' : 'var(--text-secondary)', fontSize: 11, fontWeight: filtroStatus === s ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              style={{ padding: '7px 12px', borderRadius: 7, border: filtroStatus === s ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: filtroStatus === s ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: filtroStatus === s ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 11, fontWeight: filtroStatus === s ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap' }}>
               {s === 'todos' ? 'Todos' : STATUS_CFG[s as Ticket['status']]?.label ?? s}
             </button>
           ))}
@@ -182,9 +182,9 @@ export function SacDashboard({ ticketsInicial }: Props) {
                   const urg = isUrgenteSemResposta(t)
                   return (
                     <tr key={t.id} onClick={() => setDetalhe(t)}
-                      style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', background: urg ? 'rgba(239,68,68,0.04)' : 'transparent' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = urg ? 'rgba(239,68,68,0.08)' : 'rgba(201,168,76,0.04)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = urg ? 'rgba(239,68,68,0.04)' : 'transparent' }}>
+                      style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', background: urg ? 'rgba(229,84,75,0.04)' : 'transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = urg ? 'rgba(229,84,75,0.08)' : 'rgba(212,252,60,0.04)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = urg ? 'rgba(229,84,75,0.04)' : 'transparent' }}>
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: 11, whiteSpace: 'nowrap' }}>
                         {urg && <span style={{ marginRight: 4, animation: 'pulse 1s infinite' }}>🔴</span>}
                         {t.numero}

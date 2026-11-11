@@ -27,7 +27,7 @@ import type { QuadroNo, QuadroConexao } from '@/store'
 
 // ── Handle style ──────────────────────────────────────────────────────────────
 const HANDLE_STYLE: React.CSSProperties = {
-  background: 'rgba(201,168,76,0.8)',
+  background: 'rgba(245,245,240,0.8)',
   border: '2px solid rgba(255,255,255,0.4)',
   width: 10,
   height: 10,
@@ -43,7 +43,7 @@ function isDark(hex: string): boolean {
   return (r * 299 + g * 587 + b * 114) / 1000 < 140
 }
 
-const CORES = ['#FFD93D', '#C9A84C', '#3B82F6', '#4CAF7A', '#EC4899', '#8B5CF6', '#2A2A2A']
+const CORES = ['#FFD93D', '#D4FC3C', '#9CC3DB', '#8FD14F', '#EC4899', '#A7A9A6', '#2A2C2B']
 
 const textareaBase: React.CSSProperties = {
   width: '100%',
@@ -64,13 +64,13 @@ const PostItNode = memo(function PostItNode({ data, selected }: NodeProps) {
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState(conteudo)
   useEffect(() => { setText(conteudo) }, [conteudo])
-  const textColor = isDark(cor) ? '#fff' : '#1a1a1a'
+  const textColor = isDark(cor) ? '#fff' : '#1B1D1C'
 
   return (
     <div style={{
       background: cor, minHeight: 120, padding: '10px 12px', borderRadius: 8,
       border: `2px solid ${selected ? 'rgba(255,255,255,0.8)' : 'transparent'}`,
-      boxShadow: selected ? '0 0 0 3px rgba(201,168,76,0.5),0 6px 20px rgba(0,0,0,0.5)' : '0 4px 14px rgba(0,0,0,0.45)',
+      boxShadow: selected ? '0 0 0 3px rgba(212,252,60,0.5),0 6px 20px rgba(0,0,0,0.5)' : '0 4px 14px rgba(0,0,0,0.45)',
       fontFamily: 'inherit',
     }}>
       <Handle type="target" position={Position.Top}    style={HANDLE_STYLE} />
@@ -98,7 +98,7 @@ const PostItNode = memo(function PostItNode({ data, selected }: NodeProps) {
 // ── CaixaNode ─────────────────────────────────────────────────────────────────
 const CaixaNode = memo(function CaixaNode({ data, selected }: NodeProps) {
   const conteudo = (data.conteudo ?? '') as string
-  const cor = (data.cor ?? '#C9A84C') as string
+  const cor = (data.cor ?? '#D4FC3C') as string
   const onChange = data.onChange as ((v: string) => void) | undefined
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState(conteudo)
@@ -106,10 +106,10 @@ const CaixaNode = memo(function CaixaNode({ data, selected }: NodeProps) {
 
   return (
     <div style={{
-      background: 'var(--bg-surface,#1C1C1E)',
-      border: `2px solid ${selected ? '#C9A84C' : cor}`,
+      background: 'var(--bg-surface,#1B1D1C)',
+      border: `2px solid ${selected ? '#D4FC3C' : cor}`,
       borderRadius: 10, minHeight: 100, overflow: 'hidden',
-      boxShadow: selected ? '0 0 0 2px rgba(201,168,76,0.35)' : '0 2px 10px rgba(0,0,0,0.4)',
+      boxShadow: selected ? '0 0 0 2px rgba(212,252,60,0.35)' : '0 2px 10px rgba(0,0,0,0.4)',
       fontFamily: 'inherit',
     }}>
       <Handle type="target" position={Position.Top}    style={HANDLE_STYLE} />
@@ -140,7 +140,7 @@ const CaixaNode = memo(function CaixaNode({ data, selected }: NodeProps) {
 // ── TextoNode ─────────────────────────────────────────────────────────────────
 const TextoNode = memo(function TextoNode({ data, selected }: NodeProps) {
   const conteudo = (data.conteudo ?? '') as string
-  const cor = (data.cor ?? '#C9A84C') as string
+  const cor = (data.cor ?? '#D4FC3C') as string
   const onChange = data.onChange as ((v: string) => void) | undefined
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState(conteudo)
@@ -191,7 +191,7 @@ function conexaoToEdge(c: QuadroConexao): Edge {
     target: c.destinoId,
     label: c.label || undefined,
     type: 'smoothstep',
-    style: { stroke: '#C9A84C', strokeWidth: 2 },
+    style: { stroke: '#D4FC3C', strokeWidth: 2 },
   }
 }
 
@@ -268,7 +268,7 @@ export function CanvasEditor({ quadroId }: { quadroId: string }) {
     if (!params.source || !params.target) return
     const conexao = await criarConexao(quadroId, params.source, params.target)
     if (conexao) {
-      setEdges((eds) => addEdge({ ...params, id: conexao.id, type: 'smoothstep', style: { stroke: '#C9A84C', strokeWidth: 2 } }, eds))
+      setEdges((eds) => addEdge({ ...params, id: conexao.id, type: 'smoothstep', style: { stroke: '#D4FC3C', strokeWidth: 2 } }, eds))
     }
   }, [quadroId, criarConexao, setEdges])
 
@@ -305,7 +305,7 @@ export function CanvasEditor({ quadroId }: { quadroId: string }) {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '0 16px', height: 52, flexShrink: 0,
-        background: 'var(--bg-surface,#1C1C1E)',
+        background: 'var(--bg-surface,#1B1D1C)',
         borderBottom: '1px solid var(--border,rgba(255,255,255,0.08))',
       }}>
         <Link href="/quadros" style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-secondary,#888)', textDecoration: 'none', padding: '4px 10px', borderRadius: 6, fontSize: 13, border: '1px solid var(--border)', marginRight: 6 }}>
@@ -343,14 +343,14 @@ export function CanvasEditor({ quadroId }: { quadroId: string }) {
           deleteKeyCode="Delete"
           fitView
           fitViewOptions={{ padding: 0.3 }}
-          style={{ background: '#111111' }}
+          style={{ background: '#0B0B0B' }}
           attributionPosition="bottom-right"
         >
-          <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="#2a2a2a" />
-          <Controls style={{ background: 'var(--bg-surface,#1C1C1E)', border: '1px solid var(--border,rgba(255,255,255,0.1))', borderRadius: 8 }} />
+          <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="#2A2C2B" />
+          <Controls style={{ background: 'var(--bg-surface,#1B1D1C)', border: '1px solid var(--border,rgba(255,255,255,0.1))', borderRadius: 8 }} />
           <MiniMap
-            style={{ background: 'var(--bg-surface,#1C1C1E)', border: '1px solid var(--border,rgba(255,255,255,0.1))', borderRadius: 8 }}
-            nodeColor={(n) => ((n.data as Record<string, unknown>).cor as string) || '#C9A84C'}
+            style={{ background: 'var(--bg-surface,#1B1D1C)', border: '1px solid var(--border,rgba(255,255,255,0.1))', borderRadius: 8 }}
+            nodeColor={(n) => ((n.data as Record<string, unknown>).cor as string) || '#D4FC3C'}
             maskColor="rgba(0,0,0,0.5)"
           />
         </ReactFlow>

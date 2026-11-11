@@ -57,7 +57,7 @@ export function ProducaoLotesCronograma({ lotes, onAbrirLote }: Props) {
           return (
             <div key={lote.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ width: 130, flexShrink: 0 }}>
-                <p style={{ fontSize: 11, fontFamily: 'monospace', color: '#C9A84C' }}>{lote.codigo}</p>
+                <p style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{lote.codigo}</p>
                 <p style={{ fontSize: 11, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lote.produto}</p>
               </div>
               <div style={{ position: 'relative', flex: 1, height: 22, background: 'var(--bg-surface-2)', borderRadius: 6 }}>

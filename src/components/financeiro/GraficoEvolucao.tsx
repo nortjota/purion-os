@@ -93,10 +93,10 @@ export function GraficoEvolucao({ dados, height = 280 }: GraficoEvolucaoProps) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const gridStroke  = isDark ? '#1E1E1E' : '#E0DFDB'
-  const axisStroke  = isDark ? '#2A2A2A' : '#D4D3CF'
+  const gridStroke  = isDark ? '#242726' : '#E0DFDB'
+  const axisStroke  = isDark ? '#2A2C2B' : '#D4D3CF'
   const tickFill    = isDark ? '#A0A0A0' : '#888880'
-  const dotStroke   = isDark ? '#0D0D0D' : '#FAFAF8'
+  const dotStroke   = isDark ? '#0B0B0B' : '#F5F5F0'
 
   return (
     <ResponsiveContainer width="100%" height={height}>
@@ -144,26 +144,26 @@ export function GraficoEvolucao({ dados, height = 280 }: GraficoEvolucaoProps) {
           }}
         />
 
-        {/* Linha Receita — dourado */}
+        {/* Linha Receita — acento */}
         <Line
           yAxisId="moeda"
           type="monotone"
           dataKey="receita"
-          stroke="#C9A84C"
+          stroke="#D4FC3C"
           strokeWidth={2.5}
-          dot={{ fill: '#C9A84C', strokeWidth: 0, r: 3 }}
-          activeDot={{ r: 5, fill: '#C9A84C', stroke: dotStroke, strokeWidth: 2 }}
+          dot={{ fill: '#D4FC3C', strokeWidth: 0, r: 3 }}
+          activeDot={{ r: 5, fill: '#D4FC3C', stroke: dotStroke, strokeWidth: 2 }}
         />
         {/* Linha Despesa — vermelho suave */}
         <Line
           yAxisId="moeda"
           type="monotone"
           dataKey="despesa"
-          stroke="#E85238"
+          stroke="#E5544B"
           strokeWidth={2}
           strokeOpacity={0.7}
-          dot={{ fill: '#E85238', strokeWidth: 0, r: 3 }}
-          activeDot={{ r: 5, fill: '#E85238', stroke: dotStroke, strokeWidth: 2 }}
+          dot={{ fill: '#E5544B', strokeWidth: 0, r: 3 }}
+          activeDot={{ r: 5, fill: '#E5544B', stroke: dotStroke, strokeWidth: 2 }}
         />
         {/* Linha Margem % — cinza */}
         <Line

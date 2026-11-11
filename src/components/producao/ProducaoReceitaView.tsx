@@ -35,12 +35,12 @@ export function ProducaoReceitaView() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div className="card-purion" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)', color: '#C9A84C' }}>
+        <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(245,245,240,0.12)', color: 'var(--text-primary)' }}>
           <FlaskConical size={20} />
         </div>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Custo de 1 frasco PURION (calculado da receita)</p>
-          <p style={{ fontSize: 24, fontWeight: 800, color: '#C9A84C' }}>{formatarMoedaBR(custoTotal)}</p>
+          <p style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)' }}>{formatarMoedaBR(custoTotal)}</p>
         </div>
       </div>
 
@@ -89,8 +89,8 @@ export function ProducaoReceitaView() {
                   /> {insumo?.unidade}
                 </span>
                 <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{formatarMoedaBR(insumo?.custoUnitario ?? 0)}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C' }}>{formatarMoedaBR(subtotal)}</span>
-                <button onClick={() => removerDaReceita(r.insumoId)} className="icon-btn" style={{ color: '#E85238' }} title="Remover da receita">
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{formatarMoedaBR(subtotal)}</span>
+                <button onClick={() => removerDaReceita(r.insumoId)} className="icon-btn" style={{ color: 'var(--status-danger)' }} title="Remover da receita">
                   <Trash2 size={12} />
                 </button>
               </div>
@@ -102,7 +102,7 @@ export function ProducaoReceitaView() {
           }}>
             <span style={{ fontSize: 12, fontWeight: 700 }}>Total / frasco</span>
             <span /><span />
-            <span style={{ fontSize: 14, fontWeight: 800, color: '#C9A84C' }}>{formatarMoedaBR(custoTotal)}</span>
+            <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-primary)' }}>{formatarMoedaBR(custoTotal)}</span>
             <span />
           </div>
         </div>

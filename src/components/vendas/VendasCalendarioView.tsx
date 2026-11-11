@@ -97,7 +97,7 @@ export function VendasCalendarioView({ vendas, onAbrirVenda }: Props) {
                   borderRight: '1px solid var(--border)',
                   borderBottom: '1px solid var(--border)',
                   padding: isMobile ? '3px 4px' : '6px 8px',
-                  background: diaSelecionado === key ? 'rgba(201,168,76,0.1)' : outroMes ? 'rgba(0,0,0,0.05)' : 'transparent',
+                  background: diaSelecionado === key ? 'rgba(212,252,60,0.1)' : outroMes ? 'rgba(0,0,0,0.05)' : 'transparent',
                   cursor: vendasDia.length > 0 ? 'pointer' : 'default',
                 }}
               >
@@ -105,8 +105,8 @@ export function VendasCalendarioView({ vendas, onAbrirVenda }: Props) {
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 22, height: 22, borderRadius: '50%',
                   fontSize: 12, fontWeight: ehHoje ? 700 : 400,
-                  background: ehHoje ? '#C9A84C' : 'transparent',
-                  color: ehHoje ? '#0D0D0D' : outroMes ? 'rgba(184,184,184,0.3)' : 'var(--text-primary)',
+                  background: ehHoje ? 'var(--brand-accent)' : 'transparent',
+                  color: ehHoje ? '#0B0B0B' : outroMes ? 'rgba(184,184,184,0.3)' : 'var(--text-primary)',
                   marginBottom: 4,
                 }}>
                   {format(dia, 'd')}
@@ -115,11 +115,11 @@ export function VendasCalendarioView({ vendas, onAbrirVenda }: Props) {
                   <div
                     style={{
                       borderRadius: 6, padding: '3px 6px',
-                      background: `rgba(201,168,76,${0.08 + intensidade * 0.3})`,
-                      border: '1px solid rgba(201,168,76,0.25)',
+                      background: `rgba(245,245,240,${0.08 + intensidade * 0.3})`,
+                      border: '1px solid rgba(245,245,240,0.25)',
                     }}
                   >
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#C9A84C' }}>{vendasDia.length} pedido{vendasDia.length !== 1 ? 's' : ''}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)' }}>{vendasDia.length} pedido{vendasDia.length !== 1 ? 's' : ''}</div>
                     <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{frascos} frasco{frascos !== 1 ? 's' : ''}</div>
                   </div>
                 )}
@@ -150,7 +150,7 @@ export function VendasCalendarioView({ vendas, onAbrirVenda }: Props) {
                 }}
               >
                 <span style={{ fontSize: 12, color: 'var(--text-primary)' }}>{v.clienteNome || 'Cliente'} · {v.quantidade}fr</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#C9A84C' }}>{fmtR(v.valorTotal ?? v.valorLiquido)}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{fmtR(v.valorTotal ?? v.valorLiquido)}</span>
               </button>
             ))}
           </div>

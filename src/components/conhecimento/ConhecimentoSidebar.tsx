@@ -80,7 +80,7 @@ export function ConhecimentoSidebar({
                       onClick={() => onExcluirCategoria(cat)}
                       title="Excluir guia"
                     >
-                      <Trash2 size={12} className="text-[var(--text-secondary)] hover:text-[#E85238]" />
+                      <Trash2 size={12} className="text-[var(--text-secondary)] hover:text-[var(--status-danger)]" />
                     </button>
                   )}
                 </span>
@@ -118,13 +118,13 @@ function DocItem({ doc, ativo, onClick }: { doc: KbDocumento; ativo: boolean; on
       onClick={onClick}
       className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors duration-150"
       style={{
-        background: ativo ? 'rgba(201,168,76,0.1)' : 'transparent',
-        color: ativo ? '#C9A84C' : 'var(--text-secondary)',
+        background: ativo ? 'rgba(212,252,60,0.1)' : 'transparent',
+        color: ativo ? 'var(--brand-accent)' : 'var(--text-secondary)',
       }}
     >
       <span className="shrink-0">{doc.emoji}</span>
       <span className="text-[13px] truncate flex-1">{doc.titulo}</span>
-      {doc.favorito && <Star size={11} fill="#C9A84C" className="text-[#C9A84C] shrink-0" />}
+      {doc.favorito && <Star size={11} fill="#D4FC3C" className="text-[var(--brand-accent)] shrink-0" />}
     </button>
   )
 }

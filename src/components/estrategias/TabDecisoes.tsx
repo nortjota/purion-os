@@ -8,11 +8,11 @@ import { useEstrategiaDecisoes, type NovaDecisao } from '@/hooks/useEstrategia'
 import { SecaoNotas } from './SecaoNotas'
 
 export const CATEGORIAS: Array<{ id: string; label: string; cor: string }> = [
-  { id: 'preco', label: 'Preço', cor: '#C9A84C' },
-  { id: 'produto', label: 'Produto', cor: '#5B8FE8' },
-  { id: 'marca', label: 'Marca', cor: '#A855F7' },
-  { id: 'operacao', label: 'Operação', cor: '#4CAF7A' },
-  { id: 'growth', label: 'Growth', cor: '#E8A838' },
+  { id: 'preco', label: 'Preço', cor: '#D4FC3C' },
+  { id: 'produto', label: 'Produto', cor: '#9CC3DB' },
+  { id: 'marca', label: 'Marca', cor: '#A7A9A6' },
+  { id: 'operacao', label: 'Operação', cor: '#8FD14F' },
+  { id: 'growth', label: 'Growth', cor: '#E6C374' },
   { id: 'geral', label: 'Geral', cor: '#B8B8B8' },
 ]
 
@@ -108,7 +108,7 @@ export function TabDecisoes() {
           <button
             onClick={() => setFiltro('todas')}
             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-            style={filtro === 'todas' ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+            style={filtro === 'todas' ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
           >
             Todas
           </button>

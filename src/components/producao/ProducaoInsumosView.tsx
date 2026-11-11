@@ -179,12 +179,12 @@ export function ProducaoInsumosView() {
       {/* Capacidade restante — a receita (BOM) já cruzada com os saldos */}
       {receita.length > 0 && (
         <div className="card-purion" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.12)', color: '#C9A84C' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(245,245,240,0.12)', color: 'var(--text-primary)' }}>
             <PackageSearch size={20} />
           </div>
           <div>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Capacidade de produção com os insumos atuais</p>
-            <p style={{ fontSize: 24, fontWeight: 800, color: '#C9A84C' }}>{capacidade} frascos</p>
+            <p style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)' }}>{capacidade} frascos</p>
             {gargalo && <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Limitado por: {gargalo.nome} ({gargalo.quantidadeAtual} {gargalo.unidade})</p>}
           </div>
         </div>
@@ -193,8 +193,8 @@ export function ProducaoInsumosView() {
       {emAlerta.length > 0 && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-          borderRadius: 10, padding: '12px 16px', color: '#EF4444',
+          background: 'rgba(229,84,75,0.1)', border: '1px solid rgba(229,84,75,0.3)',
+          borderRadius: 10, padding: '12px 16px', color: 'var(--status-danger)',
         }}>
           <AlertTriangle size={16} />
           <span style={{ fontSize: 13 }}>
@@ -226,7 +226,7 @@ export function ProducaoInsumosView() {
                 {grupo.itens.map((item) => {
                   const alerta = item.quantidadeAtual <= item.quantidadeMinima
                   return (
-                    <div key={item.id} className="card-purion" style={{ padding: '14px 16px', borderColor: alerta ? 'rgba(239,68,68,0.4)' : undefined }}>
+                    <div key={item.id} className="card-purion" style={{ padding: '14px 16px', borderColor: alerta ? 'rgba(229,84,75,0.4)' : undefined }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
                         <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{item.nome}</p>
                         <div style={{ display: 'flex', gap: 2 }}>
@@ -234,11 +234,11 @@ export function ProducaoInsumosView() {
                           <button onClick={() => setDeletando(item)} className="icon-btn" title="Excluir"><Trash2 size={11} /></button>
                         </div>
                       </div>
-                      <p style={{ fontSize: 22, fontWeight: 800, color: alerta ? '#EF4444' : 'var(--text-primary)' }}>
+                      <p style={{ fontSize: 22, fontWeight: 800, color: alerta ? 'var(--status-danger)' : 'var(--text-primary)' }}>
                         {item.quantidadeAtual} <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-secondary)' }}>{item.unidade}</span>
                       </p>
                       {alerta && (
-                        <p style={{ fontSize: 11, color: '#EF4444', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                        <p style={{ fontSize: 11, color: 'var(--status-danger)', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                           <AlertTriangle size={10} /> Abaixo do mínimo — repor
                         </p>
                       )}

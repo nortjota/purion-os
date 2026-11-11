@@ -75,10 +75,10 @@ export function VendasB2C() {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
           padding: '12px 16px', borderRadius: 10,
-          background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.3)',
+          background: 'rgba(245,245,240,0.08)', border: '1px solid rgba(245,245,240,0.3)',
         }}>
           <div>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#C9A84C' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
               {vendasZeroB2C.length} venda{vendasZeroB2C.length > 1 ? 's' : ''} de R$0,00 encontrada{vendasZeroB2C.length > 1 ? 's'  : ''}
             </span>
             <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 8 }}>
@@ -103,10 +103,10 @@ export function VendasB2C() {
         <div>
           <p style={{ fontSize: 13, fontWeight: 600 }}>Vendas B2C</p>
           <p style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.1 }}>
-            <span style={{ color: '#C9A84C' }}>{kpis.totalPedidos}</span>
+            <span style={{ color: 'var(--text-primary)' }}>{kpis.totalPedidos}</span>
             <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>pedidos</span>
             <span style={{ color: 'var(--border)', margin: '0 8px' }}>·</span>
-            <span style={{ color: '#5B8FE8' }}>{kpis.totalFrascos}</span>
+            <span style={{ color: 'var(--status-info)' }}>{kpis.totalFrascos}</span>
             <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 4 }}>frascos vendidos</span>
           </p>
         </div>
@@ -118,7 +118,7 @@ export function VendasB2C() {
       {/* KPIs */}
       <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Faturamento</span><DollarSign size={14} className="text-[var(--gold)] opacity-70" /></div>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Faturamento</span><DollarSign size={14} className="text-[var(--brand-accent)] opacity-70" /></div>
           <span className="kpi-value">{fmtR(kpis.faturamento)}</span>
         </div>
         <div className="kpi-card">
@@ -132,17 +132,17 @@ export function VendasB2C() {
           <span className="caption">1 pedido pode ter vários frascos</span>
         </div>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Frascos Vendidos</span><Package size={14} className="text-[#5B8FE8] opacity-70" /></div>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">Frascos Vendidos</span><Package size={14} className="text-[var(--status-info)] opacity-70" /></div>
           <span className="kpi-value">{kpis.totalFrascos}</span>
           <span className="caption">unidades (soma das qtds)</span>
         </div>
         <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2"><span className="kpi-label">% Entregues</span><Truck size={14} className="text-[#4CAF7A] opacity-70" /></div>
+          <div className="flex items-center justify-between mb-2"><span className="kpi-label">% Entregues</span><Truck size={14} className="text-[var(--status-ok)] opacity-70" /></div>
           <span className="kpi-value">{kpis.pctEntregues.toFixed(0)}%</span>
         </div>
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2"><span className="kpi-label">A Receber</span></div>
-          <span className="kpi-value" style={{ color: '#E8A838' }}>{fmtR(kpis.aReceber)}</span>
+          <span className="kpi-value" style={{ color: 'var(--status-warning)' }}>{fmtR(kpis.aReceber)}</span>
         </div>
       </div>
 

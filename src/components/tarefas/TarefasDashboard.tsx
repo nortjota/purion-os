@@ -108,9 +108,9 @@ export function TarefasDashboard() {
   const btnStyle = (active = false): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: 6,
     height: 30, padding: '0 10px', borderRadius: 6, fontSize: 12,
-    border: `1px solid ${active ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
+    border: `1px solid ${active ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
     background: 'transparent',
-    color: active ? '#C9A84C' : 'var(--text-secondary)',
+    color: active ? '#D4FC3C' : 'var(--text-secondary)',
     cursor: 'pointer', whiteSpace: 'nowrap' as const,
   })
 
@@ -131,9 +131,9 @@ export function TarefasDashboard() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
                   height: 34, padding: '0 12px', borderRadius: 8, fontSize: 13,
-                  border: `1px solid ${filtrosAtivosCount > 0 ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
-                  background: filtrosAtivosCount > 0 ? 'rgba(201,168,76,0.08)' : 'transparent',
-                  color: filtrosAtivosCount > 0 ? '#C9A84C' : 'var(--text-secondary)',
+                  border: `1px solid ${filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
+                  background: filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.08)' : 'transparent',
+                  color: filtrosAtivosCount > 0 ? 'var(--brand-accent)' : 'var(--text-secondary)',
                   cursor: 'pointer',
                 }}
               >
@@ -141,7 +141,7 @@ export function TarefasDashboard() {
                 {filtrosAtivosCount > 0 && (
                   <span style={{
                     width: 18, height: 18, borderRadius: '50%',
-                    background: '#C9A84C', color: '#0D0D0D',
+                    background: 'var(--primary)', color: 'var(--primary-foreground)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 10, fontWeight: 700,
                   }}>
@@ -158,7 +158,7 @@ export function TarefasDashboard() {
                   <SlidersHorizontal size={13} />
                   Filtrar
                   {filtrosAtivosCount > 0 && (
-                    <span style={{ background: '#C9A84C', color: '#0D0D0D', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700 }}>
+                    <span style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700 }}>
                       {filtrosAtivosCount}
                     </span>
                   )}
@@ -184,8 +184,8 @@ export function TarefasDashboard() {
                             style={{
                               display: 'block', width: '100%', textAlign: 'left',
                               padding: '8px 14px', fontSize: 13, border: 'none', cursor: 'pointer',
-                              background: groupBy === v ? 'rgba(201,168,76,0.08)' : 'transparent',
-                              color: groupBy === v ? '#C9A84C' : 'var(--text-primary)',
+                              background: groupBy === v ? 'rgba(212,252,60,0.08)' : 'transparent',
+                              color: groupBy === v ? 'var(--brand-accent)' : 'var(--text-primary)',
                             }}
                           >
                             {label}
@@ -205,7 +205,7 @@ export function TarefasDashboard() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   height: 32, padding: '0 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-                  background: '#C9A84C', color: '#0D0D0D', border: 'none', cursor: 'pointer',
+                  background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer',
                 }}
               >
                 <Plus size={14} />
@@ -234,9 +234,9 @@ export function TarefasDashboard() {
                   height: 34, padding: '0 16px',
                   borderRadius: 20,
                   fontSize: 13, fontWeight: visao === tab.id ? 600 : 400,
-                  background: visao === tab.id ? '#C9A84C' : 'var(--bg-surface)',
-                  color: visao === tab.id ? '#0D0D0D' : 'var(--text-secondary)',
-                  border: `1px solid ${visao === tab.id ? '#C9A84C' : 'var(--border)'}`,
+                  background: visao === tab.id ? 'var(--brand-accent)' : 'var(--bg-surface)',
+                  color: visao === tab.id ? '#0B0B0B' : 'var(--text-secondary)',
+                  border: `1px solid ${visao === tab.id ? 'var(--brand-accent)' : 'var(--border)'}`,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   transition: 'all 150ms',
@@ -326,10 +326,10 @@ export function TarefasDashboard() {
             right: 16,
             width: 52, height: 52,
             borderRadius: '50%',
-            background: '#C9A84C', color: '#0D0D0D',
+            background: 'var(--primary)', color: 'var(--primary-foreground)',
             border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(201,168,76,0.45)',
+            boxShadow: '0 4px 20px rgba(245,245,240,0.45)',
             zIndex: 40,
             fontSize: 22, fontWeight: 300,
           }}

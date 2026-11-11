@@ -47,7 +47,7 @@ function LinhaLead({ lead, onAbrirLead, onMudarEstagio, onMudarTier }: {
   const info = socioInfo(lead.responsavel)
 
   return (
-    <tr onClick={() => onAbrirLead(lead.id)} style={{ cursor: 'pointer' }} className="hover:bg-[rgba(201,168,76,0.03)]">
+    <tr onClick={() => onAbrirLead(lead.id)} style={{ cursor: 'pointer' }} className="hover:bg-[rgba(212,252,60,0.03)]">
       <td style={{ maxWidth: 220 }}>
         <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{lead.nomeEmpresa}</span>
       </td>
@@ -88,7 +88,7 @@ function LinhaLead({ lead, onAbrirLead, onMudarEstagio, onMudarTier }: {
         </select>
       </td>
       <td>
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#C9A84C' }}>{formatarMoeda(lead.valorMedioMensal)}/mês</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{formatarMoeda(lead.valorMedioMensal)}/mês</span>
       </td>
       <td>
         {lead.proximoPassoData ? (
@@ -161,7 +161,7 @@ export function CRMListaView({ leads, groupBy, onAbrirLead, onMudarEstagio, onMu
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{lead.cidade} · {lead.regiao}</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: '#C9A84C' }}>{formatarMoeda(lead.valorMedioMensal)}/mês</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-primary)' }}>{formatarMoeda(lead.valorMedioMensal)}/mês</span>
                   </div>
                 </button>
               )

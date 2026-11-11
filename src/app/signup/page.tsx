@@ -70,17 +70,17 @@ export default function SignupPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', height: '42px', backgroundColor: '#0D0D0D',
-    border: '1px solid #252525', borderRadius: '8px', padding: '0 12px',
-    fontSize: '14px', color: '#FAFAF8', outline: 'none', boxSizing: 'border-box',
+    width: '100%', height: '42px', backgroundColor: '#0B0B0B',
+    border: '1px solid #2A2C2B', borderRadius: '8px', padding: '0 12px',
+    fontSize: '14px', color: '#F5F5F0', outline: 'none', boxSizing: 'border-box',
     transition: 'border-color 150ms, box-shadow 150ms',
   }
   const focus = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.style.border = '1px solid #C9A84C'
-    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,168,76,0.15)'
+    e.currentTarget.style.border = '1px solid var(--border)'
+    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(245,245,240,0.15)'
   }
   const blur = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.style.border = '1px solid #252525'
+    e.currentTarget.style.border = '1px solid #2A2C2B'
     e.currentTarget.style.boxShadow = 'none'
   }
 
@@ -93,17 +93,17 @@ export default function SignupPage() {
   ]
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0D0D0D', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ width: '100%', maxWidth: '420px', backgroundColor: '#141414', border: '1px solid #1E1E1E', borderRadius: '16px', padding: '40px' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#0B0B0B', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ width: '100%', maxWidth: '420px', backgroundColor: '#1B1D1C', border: '1px solid #242726', borderRadius: '16px', padding: '40px' }}>
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <div style={{ fontSize: '28px', fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em', lineHeight: 1 }}>PURION</div>
+          <div style={{ fontSize: '28px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.15em', lineHeight: 1 }}>PURION</div>
           <div style={{ fontSize: '12px', color: '#B8B8B8', letterSpacing: '0.2em', marginTop: '2px' }}>OS</div>
-          <div style={{ width: '40px', height: '1px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)', margin: '12px auto 0' }} />
+          <div style={{ width: '40px', height: '1px', background: 'linear-gradient(90deg, transparent, #D4FC3C, transparent)', margin: '12px auto 0' }} />
         </div>
 
-        <h2 style={{ fontSize: '17px', fontWeight: 600, color: '#FAFAF8', marginBottom: '4px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '17px', fontWeight: 600, color: '#F5F5F0', marginBottom: '4px', textAlign: 'center' }}>
           Criar sua conta
         </h2>
         <p style={{ fontSize: '13px', color: '#B8B8B8', textAlign: 'center', marginBottom: '24px' }}>
@@ -130,7 +130,7 @@ export default function SignupPage() {
           ))}
 
           {error && (
-            <p style={{ fontSize: '12px', color: '#EF4444', textAlign: 'center', margin: 0 }}>
+            <p style={{ fontSize: '12px', color: 'var(--status-danger)', textAlign: 'center', margin: 0 }}>
               {error}
             </p>
           )}
@@ -140,8 +140,8 @@ export default function SignupPage() {
             disabled={loading}
             style={{
               width: '100%', height: '44px',
-              backgroundColor: loading ? '#8B7435' : '#C9A84C',
-              color: '#0D0D0D', border: 'none', borderRadius: '8px',
+              backgroundColor: loading ? '#A9CA30' : 'var(--brand-accent)',
+              color: '#0B0B0B', border: 'none', borderRadius: '999px',
               fontSize: '14px', fontWeight: 600,
               cursor: loading ? 'not-allowed' : 'pointer',
               marginTop: '6px',
@@ -151,7 +151,7 @@ export default function SignupPage() {
             {loading ? (
               <>
                 <svg width="14" height="14" viewBox="0 0 24 24" style={{ animation: 'spin 1s linear infinite' }}>
-                  <circle cx="12" cy="12" r="10" stroke="#0D0D0D" strokeWidth="3" fill="none" strokeDasharray="60" strokeDashoffset="20" />
+                  <circle cx="12" cy="12" r="10" stroke="#0B0B0B" strokeWidth="3" fill="none" strokeDasharray="60" strokeDashoffset="20" />
                 </svg>
                 Criando sua conta…
               </>
@@ -161,7 +161,7 @@ export default function SignupPage() {
 
         <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: '#A0A0A0' }}>
           Já tem uma conta?{' '}
-          <a href="/login" style={{ color: '#C9A84C', textDecoration: 'none' }}>Entrar</a>
+          <a href="/login" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Entrar</a>
         </p>
 
         <p style={{ textAlign: 'center', marginTop: '12px', fontSize: '11px', color: '#888888' }}>

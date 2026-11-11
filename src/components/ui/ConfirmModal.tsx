@@ -107,7 +107,7 @@ export function ConfirmModal({
             } ${
               danger
                 ? 'bg-red-500 hover:bg-red-600 text-white'
-                : 'bg-[#C9A84C] hover:bg-[#D4B55E] text-[#0D0D0D]'
+                : 'bg-[var(--brand-accent)] hover:bg-[var(--brand-accent)]/85 text-[#0B0B0B]'
             }`}
           >
             {confirmLabel}

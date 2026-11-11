@@ -89,14 +89,14 @@ export function AdvancedFilters({ filters, values, onChange, moduleKey }: Advanc
               style={{
                 display: 'flex', alignItems: 'center', gap: 4,
                 padding: '4px 10px', borderRadius: 20,
-                background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)',
-                fontSize: 12, color: '#C9A84C',
+                background: 'rgba(245,245,240,0.1)', border: '1px solid rgba(245,245,240,0.3)',
+                fontSize: 12, color: 'var(--text-primary)',
               }}
             >
-              <button onClick={() => handleApplySaved(sf)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C9A84C', fontSize: 12 }}>
+              <button onClick={() => handleApplySaved(sf)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: 12 }}>
                 {sf.name}
               </button>
-              <button onClick={() => handleRemoveSaved(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C9A84C', display: 'flex', alignItems: 'center' }}>
+              <button onClick={() => handleRemoveSaved(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', display: 'flex', alignItems: 'center' }}>
                 <X size={10} />
               </button>
             </div>
@@ -111,16 +111,16 @@ export function AdvancedFilters({ filters, values, onChange, moduleKey }: Advanc
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '7px 14px', borderRadius: 8,
-            background: expanded ? 'rgba(201,168,76,0.1)' : 'var(--bg-surface-2)',
-            border: `1px solid ${expanded ? 'rgba(201,168,76,0.3)' : 'var(--border)'}`,
-            cursor: 'pointer', fontSize: 13, color: expanded ? '#C9A84C' : 'var(--text-secondary)',
+            background: expanded ? 'rgba(212,252,60,0.1)' : 'var(--bg-surface-2)',
+            border: `1px solid ${expanded ? 'rgba(212,252,60,0.3)' : 'var(--border)'}`,
+            cursor: 'pointer', fontSize: 13, color: expanded ? 'var(--brand-accent)' : 'var(--text-secondary)',
           }}
         >
           <SlidersHorizontal size={13} />
           Filtros
           {activeCount > 0 && (
             <span style={{
-              background: '#C9A84C', color: '#0D0D0D',
+              background: 'var(--primary)', color: 'var(--primary-foreground)',
               borderRadius: '50%', width: 16, height: 16,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 10, fontWeight: 700,
@@ -217,7 +217,7 @@ export function AdvancedFilters({ filters, values, onChange, moduleKey }: Advanc
             onClick={handleSaveCurrent}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              fontSize: 12, color: '#C9A84C',
+              fontSize: 12, color: 'var(--text-primary)',
               background: 'none', border: 'none', cursor: 'pointer',
             }}
           >

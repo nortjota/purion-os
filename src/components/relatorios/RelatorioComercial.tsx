@@ -47,8 +47,8 @@ export function RelatorioComercial({ periodo }: Props) {
   }, [vendasPeriodo, periodo])
 
   const porCanal = useMemo(() => ([
-    { name: 'B2C', value: vendasPeriodo.filter((v) => v.canal === 'b2c').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0), cor: '#C9A84C' },
-    { name: 'B2B', value: vendasPeriodo.filter((v) => v.canal === 'b2b').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0), cor: '#5B8FE8' },
+    { name: 'B2C', value: vendasPeriodo.filter((v) => v.canal === 'b2c').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0), cor: '#D4FC3C' },
+    { name: 'B2B', value: vendasPeriodo.filter((v) => v.canal === 'b2b').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0), cor: '#9CC3DB' },
   ]), [vendasPeriodo])
 
   const porSocio = useMemo(() => {
@@ -63,10 +63,10 @@ export function RelatorioComercial({ periodo }: Props) {
   const funilEtapas = useMemo(() => {
     const norm = leads.map((l) => estagioNormalizado(l.status))
     return [
-      { label: 'Abordagens',    valor: norm.filter((s) => s === 'prospecto' || s === 'abordado').length, cor: '#5B8FE8' },
-      { label: 'Reuniões',      valor: norm.filter((s) => s === 'reuniao_agendada').length, cor: '#C9A84C' },
-      { label: 'Oportunidades', valor: norm.filter((s) => s === 'oportunidade').length, cor: '#E8A838' },
-      { label: 'Ganhos',        valor: norm.filter((s) => ESTAGIOS_GANHOS.includes(s)).length, cor: '#4CAF7A' },
+      { label: 'Abordagens',    valor: norm.filter((s) => s === 'prospecto' || s === 'abordado').length, cor: '#9CC3DB' },
+      { label: 'Reuniões',      valor: norm.filter((s) => s === 'reuniao_agendada').length, cor: '#D4FC3C' },
+      { label: 'Oportunidades', valor: norm.filter((s) => s === 'oportunidade').length, cor: '#E6C374' },
+      { label: 'Ganhos',        valor: norm.filter((s) => ESTAGIOS_GANHOS.includes(s)).length, cor: '#8FD14F' },
     ]
   }, [leads])
 

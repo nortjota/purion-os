@@ -28,13 +28,13 @@ function LoteCard({ lote, isDragging, onDragStart, onDragEnd, onAbrir }: CardPro
       className={`
         rounded-xl border p-3 cursor-pointer select-none
         bg-[var(--bg-surface)] border-[var(--border)]
-        hover:border-[rgba(201,168,76,0.25)]
+        hover:border-[rgba(212,252,60,0.25)]
         transition-all duration-150
         ${isDragging ? 'opacity-40 scale-95' : ''}
       `}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <span className="text-xs font-mono font-bold text-[#C9A84C]">{lote.codigo}</span>
+        <span className="text-xs font-mono font-bold text-[var(--text-primary)]">{lote.codigo}</span>
         <span className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0" style={{ backgroundColor: `${info.cor}25`, color: info.cor }} title={info.nome}>
           {info.inicial}
         </span>
@@ -42,13 +42,13 @@ function LoteCard({ lote, isDragging, onDragStart, onDragEnd, onAbrir }: CardPro
       <p className="text-xs text-[var(--text-primary)] mb-2 leading-snug">{lote.produto}</p>
       <div className="flex items-center justify-between text-[10px] mb-1.5">
         <span className="text-[#B8B8B8]">{lote.quantidadeProduzida} un. produzidas</span>
-        <span className="font-semibold text-[#C9A84C]">{formatarMoeda(calcularCustoLote(lote.quantidadeProduzida))}</span>
+        <span className="font-semibold text-[var(--text-primary)]">{formatarMoeda(calcularCustoLote(lote.quantidadeProduzida))}</span>
       </div>
       {(testesAprovados > 0 || testesReprovados > 0) && (
         <div className="flex items-center gap-1 text-[10px] text-[#A0A0A0] mb-1.5">
           <Flag size={9} />
           {testesAprovados} aprovado{testesAprovados !== 1 ? 's' : ''}
-          {testesReprovados > 0 && <span style={{ color: '#E85238' }}> · {testesReprovados} reprovado{testesReprovados !== 1 ? 's' : ''}</span>}
+          {testesReprovados > 0 && <span style={{ color: 'var(--status-danger)' }}> · {testesReprovados} reprovado{testesReprovados !== 1 ? 's' : ''}</span>}
         </div>
       )}
       <div className="text-[10px] text-[#8A8A8A]">{formatarDataBR(lote.dataInicio)}</div>
@@ -76,7 +76,7 @@ function Coluna({ estagio, lotes, isDragOver, dragId, onDragStart, onDragEnd, on
       className={`
         flex flex-col min-w-[230px] max-w-[240px] rounded-xl border
         transition-all duration-150
-        ${isDragOver ? 'border-[rgba(201,168,76,0.4)] bg-[rgba(201,168,76,0.04)]' : 'border-[var(--border)] bg-[var(--bg-surface-2)]'}
+        ${isDragOver ? 'border-[rgba(212,252,60,0.4)] bg-[rgba(212,252,60,0.04)]' : 'border-[var(--border)] bg-[var(--bg-surface-2)]'}
       `}
       onDragOver={(e) => onDragOver(e, estagio.id)}
       onDragLeave={onDragLeave}
@@ -98,8 +98,8 @@ function Coluna({ estagio, lotes, isDragOver, dragId, onDragStart, onDragEnd, on
           <LoteCard key={l.id} lote={l} isDragging={dragId === l.id} onDragStart={onDragStart} onDragEnd={onDragEnd} onAbrir={onAbrir} />
         ))}
         {lotes.length === 0 && isDragOver && (
-          <div className="flex-1 rounded-lg border border-dashed border-[rgba(201,168,76,0.3)] flex items-center justify-center min-h-[80px]">
-            <span className="text-[10px] text-[#C9A84C]">Soltar aqui</span>
+          <div className="flex-1 rounded-lg border border-dashed border-[rgba(245,245,240,0.3)] flex items-center justify-center min-h-[80px]">
+            <span className="text-[10px] text-[var(--text-primary)]">Soltar aqui</span>
           </div>
         )}
       </div>

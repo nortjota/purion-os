@@ -56,7 +56,7 @@ export function PainelMetasG4() {
       <section className="card-purion lift p-4 cursor-pointer">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <span className="flex items-center gap-2" style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-            <Target size={14} style={{ color: '#C9A84C' }} /> Painel de Metas do Ano — método G4
+            <Target size={14} style={{ color: 'var(--text-primary)' }} /> Painel de Metas do Ano — método G4
           </span>
           {percentualGeral != null ? (
             <ProgressRing value={percentualGeral} size={56} stroke={5} labelSize={13}
@@ -68,10 +68,10 @@ export function PainelMetasG4() {
 
         {/* Distribuição verde/amarelo/vermelho */}
         <div className="flex items-center gap-4 mb-4 flex-wrap">
-          <DistribuicaoItem cor="#22C55E" label="Verdes" valor={distribuicao.verde} />
-          <DistribuicaoItem cor="#E8A838" label="Amarelas" valor={distribuicao.amarelo} />
-          <DistribuicaoItem cor="#E85238" label="Vermelhas" valor={distribuicao.vermelho} />
-          <DistribuicaoItem cor="#3A3A3A" label="Sem dados" valor={distribuicao.semDados} />
+          <DistribuicaoItem cor="#8FD14F" label="Verdes" valor={distribuicao.verde} />
+          <DistribuicaoItem cor="#E6C374" label="Amarelas" valor={distribuicao.amarelo} />
+          <DistribuicaoItem cor="#E5544B" label="Vermelhas" valor={distribuicao.vermelho} />
+          <DistribuicaoItem cor="#2E312F" label="Sem dados" valor={distribuicao.semDados} />
         </div>
 
         {/* Por sócio */}
@@ -99,13 +99,13 @@ export function PainelMetasG4() {
         {/* Alerta metas vermelhas */}
         {metasVermelhas.length > 0 && (
           <div style={{ paddingTop: 10, borderTop: '1px solid var(--border)' }}>
-            <p className="flex items-center gap-1.5 mb-1.5" style={{ fontSize: 11, fontWeight: 700, color: '#E85238' }}>
+            <p className="flex items-center gap-1.5 mb-1.5" style={{ fontSize: 11, fontWeight: 700, color: 'var(--status-danger)' }}>
               <AlertTriangle size={11} /> Precisam de atenção
             </p>
             <div className="flex flex-col gap-1">
               {metasVermelhas.slice(0, 4).map((o) => (
                 <span key={o.id} style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                  · {o.titulo} <span style={{ color: '#E85238', fontWeight: 700 }}>{getPct(o.id)}%</span>
+                  · {o.titulo} <span style={{ color: 'var(--status-danger)', fontWeight: 700 }}>{getPct(o.id)}%</span>
                 </span>
               ))}
               {metasVermelhas.length > 4 && (

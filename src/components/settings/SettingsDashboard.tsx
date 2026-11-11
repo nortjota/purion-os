@@ -45,9 +45,9 @@ function InputNum({
   return (
     <div>
       <label className="text-xs text-[var(--text-secondary)] block mb-1">{label}</label>
-      <div className="flex items-center bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C] transition-colors">
+      <div className="flex items-center bg-[var(--bg-primary)] border border-[#2E312F] rounded-lg overflow-hidden focus-within:border-[var(--ring)] transition-colors">
         {prefix && (
-          <span className="px-2.5 py-2 text-xs text-[#A0A0A0] border-r border-[#3A3A3A] bg-[var(--bg-surface-2)]">
+          <span className="px-2.5 py-2 text-xs text-[#A0A0A0] border-r border-[#2E312F] bg-[var(--bg-surface-2)]">
             {prefix}
           </span>
         )}
@@ -61,7 +61,7 @@ function InputNum({
           className="flex-1 px-3 py-2 text-sm text-[var(--text-primary)] bg-transparent outline-none"
         />
         {suffix && (
-          <span className="px-2.5 py-2 text-xs text-[#A0A0A0] border-l border-[#3A3A3A] bg-[var(--bg-surface-2)]">
+          <span className="px-2.5 py-2 text-xs text-[#A0A0A0] border-l border-[#2E312F] bg-[var(--bg-surface-2)]">
             {suffix}
           </span>
         )}
@@ -80,7 +80,7 @@ function InputPwd({
   return (
     <div>
       <label className="text-xs text-[var(--text-secondary)] block mb-1">{label}</label>
-      <div className="flex items-center bg-[var(--bg-primary)] border border-[#3A3A3A] rounded-lg overflow-hidden focus-within:border-[#C9A84C]">
+      <div className="flex items-center bg-[var(--bg-primary)] border border-[#2E312F] rounded-lg overflow-hidden focus-within:border-[var(--ring)]">
         <input
           type={visible ? 'text' : 'password'}
           placeholder={placeholder ?? '••••••••••••'}
@@ -91,7 +91,7 @@ function InputPwd({
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="px-2.5 text-[#B8B8B8] hover:text-[#C9A84C]"
+          className="px-2.5 text-[#B8B8B8] hover:text-[var(--brand-accent)]"
         >
           {visible ? <EyeOff size={13} /> : <Eye size={13} />}
         </button>
@@ -295,7 +295,7 @@ export function SettingsDashboard() {
       {isMobile && abaAtiva ? (
         <button
           onClick={() => setAbaAtiva(null)}
-          className="flex items-center gap-2 text-sm text-[#C9A84C] mb-6"
+          className="flex items-center gap-2 text-sm text-[var(--text-primary)] mb-6"
         >
           <ChevronLeft size={16} />
           {TABS.find((t) => t.id === abaAtiva)?.label}
@@ -400,11 +400,11 @@ export function SettingsDashboard() {
             {/* Barra visual do split */}
             <div className="mt-4 h-3 rounded-full overflow-hidden flex gap-0.5">
               {[
-                { val: finForm.splitEstoque,        color: '#C9A84C' },
-                { val: finForm.splitMarketing,       color: '#8B5CF6' },
-                { val: finForm.splitCaixa,           color: '#3B82F6' },
-                { val: finForm.splitDesenvolvimento, color: '#10B981' },
-                { val: finForm.splitSocietario,      color: '#F59E0B' },
+                { val: finForm.splitEstoque,        color: '#D4FC3C' },
+                { val: finForm.splitMarketing,       color: '#A7A9A6' },
+                { val: finForm.splitCaixa,           color: '#9CC3DB' },
+                { val: finForm.splitDesenvolvimento, color: '#8FD14F' },
+                { val: finForm.splitSocietario,      color: '#E6C374' },
               ].map(({ val, color }, i) => (
                 <div
                   key={i}
@@ -413,16 +413,16 @@ export function SettingsDashboard() {
                 />
               ))}
               {totalSplit < 100 && (
-                <div className="h-full flex-1 bg-[#2A2A2A]" />
+                <div className="h-full flex-1 bg-[#2A2C2B]" />
               )}
             </div>
             <div className="flex flex-wrap gap-3 mt-2">
               {[
-                { label: 'Estoque', color: '#C9A84C',  val: finForm.splitEstoque },
-                { label: 'Marketing', color: '#8B5CF6', val: finForm.splitMarketing },
-                { label: 'Caixa', color: '#3B82F6',    val: finForm.splitCaixa },
-                { label: 'Desenvolvimento', color: '#10B981', val: finForm.splitDesenvolvimento },
-                { label: 'Societário', color: '#F59E0B', val: finForm.splitSocietario },
+                { label: 'Estoque', color: '#D4FC3C',  val: finForm.splitEstoque },
+                { label: 'Marketing', color: '#A7A9A6', val: finForm.splitMarketing },
+                { label: 'Caixa', color: '#9CC3DB',    val: finForm.splitCaixa },
+                { label: 'Desenvolvimento', color: '#8FD14F', val: finForm.splitDesenvolvimento },
+                { label: 'Societário', color: '#E6C374', val: finForm.splitSocietario },
               ].map(({ label, color, val }) => (
                 <div key={label} className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
@@ -608,7 +608,7 @@ export function SettingsDashboard() {
                     className={`bg-[var(--bg-surface-2)] border rounded-lg p-3 ${alerta ? 'border-red-500/40' : 'border-[var(--border)]'}`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-black text-[#C9A84C] tracking-widest">
+                      <span className="text-[10px] font-black text-[var(--text-primary)] tracking-widest">
                         {sku.sku.toUpperCase()}
                       </span>
                       {alerta && (
@@ -696,7 +696,7 @@ export function SettingsDashboard() {
           {/* TikTok Ads */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-5 h-5 rounded bg-[var(--bg-surface)] border border-[#3A3A3A] flex items-center justify-center">
+              <div className="w-5 h-5 rounded bg-[var(--bg-surface)] border border-[#2E312F] flex items-center justify-center">
                 <span className="text-[8px] font-black text-[var(--text-primary)]">TT</span>
               </div>
               <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">TikTok Ads</h3>

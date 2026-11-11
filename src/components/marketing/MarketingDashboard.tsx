@@ -36,8 +36,8 @@ const STATUS_KIT_LABEL: Record<string, string> = {
 }
 
 const STATUS_KIT_COLOR: Record<string, string> = {
-  contatado:    'text-[#B8B8B8] bg-[#2A2A2A]',
-  negociando:   'text-[#B8B8B8] bg-[#2A2A2A]',
+  contatado:    'text-[#B8B8B8] bg-[#2A2C2B]',
+  negociando:   'text-[#B8B8B8] bg-[#2A2C2B]',
   kit_enviado:  'text-blue-400 bg-blue-400/10',
   postado:      'text-emerald-400 bg-emerald-400/10',
   pago:         'text-emerald-400 bg-emerald-400/10',
@@ -73,7 +73,7 @@ const SOCIO_INICIAL: Record<PerfilUsuario, string> = {
 }
 
 const SOCIO_COLOR: Record<PerfilUsuario, string> = {
-  matheus: 'bg-[#C9A84C] text-[#0D0D0D]',
+  matheus: 'bg-[#F5F5F0] text-[#0B0B0B]',
   joao:    'bg-[#4A90D9] text-white',
   gabriel: 'bg-[#8A8A8A] text-white',
 }
@@ -407,7 +407,7 @@ export function MarketingDashboard() {
                   <span className="caption">/ {META_KITS}</span>
                 </div>
               </div>
-              <span className="text-xs font-semibold text-[#C9A84C]">
+              <span className="text-xs font-semibold text-[var(--text-primary)]">
                 {Math.round((kitsEnviados / META_KITS) * 100)}%
               </span>
             </div>
@@ -427,7 +427,7 @@ export function MarketingDashboard() {
                   <span className="caption">/ {META_VIDEOS}</span>
                 </div>
               </div>
-              <span className="text-xs font-semibold text-[#C9A84C]">
+              <span className="text-xs font-semibold text-[var(--text-primary)]">
                 {Math.round((videosPublicados / META_VIDEOS) * 100)}%
               </span>
             </div>
@@ -454,7 +454,7 @@ export function MarketingDashboard() {
               <select
                 value={filtroPlatforma}
                 onChange={(e) => setFiltroPlatforma(e.target.value)}
-                className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[#C9A84C]"
+                className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[var(--ring)]"
               >
                 <option value="todos">Todas plataformas</option>
                 <option value="instagram">Instagram</option>
@@ -465,7 +465,7 @@ export function MarketingDashboard() {
             <select
               value={filtroStatus}
               onChange={(e) => setFiltroStatus(e.target.value)}
-              className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[#C9A84C]"
+              className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[var(--ring)]"
             >
               <option value="todos">Todos os status</option>
               <option value="Não enviado">Não enviado</option>
@@ -553,7 +553,7 @@ export function MarketingDashboard() {
                     href={linkConteudo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-[#C9A84C] hover:text-[#D4B568] truncate"
+                    className="flex items-center gap-1 text-xs text-[var(--text-primary)] hover:text-[var(--brand-accent)]/85 truncate"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <ExternalLink size={11} />
@@ -580,7 +580,7 @@ export function MarketingDashboard() {
             {/* Navegação de semana */}
             <button
               onClick={() => setSemanaBase((d) => addDays(d, -7))}
-              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[#C9A84C] hover:bg-[rgba(201,168,76,0.08)]"
+              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[var(--brand-accent)] hover:bg-[rgba(212,252,60,0.08)]"
             >
               <ChevronLeft size={14} />
             </button>
@@ -589,7 +589,7 @@ export function MarketingDashboard() {
             </span>
             <button
               onClick={() => setSemanaBase((d) => addDays(d, 7))}
-              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[#C9A84C] hover:bg-[rgba(201,168,76,0.08)]"
+              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[var(--brand-accent)] hover:bg-[rgba(212,252,60,0.08)]"
             >
               <ChevronRight size={14} />
             </button>
@@ -648,7 +648,7 @@ export function MarketingDashboard() {
                   {/* Botão add no dia */}
                   <button
                     onClick={() => setModalConteudo(key)}
-                    className="text-[10px] text-[#8A8A8A] hover:text-[#C9A84C] py-1 text-center rounded transition-colors"
+                    className="text-[10px] text-[#8A8A8A] hover:text-[var(--brand-accent)] py-1 text-center rounded transition-colors"
                   >
                     + add
                   </button>

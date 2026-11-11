@@ -22,8 +22,8 @@ const CONTA_DO_MILHAO = {
 }
 
 const STATUS_COR: Record<StatusFase, string> = {
-  concluida: '#4CAF7A',
-  atual: '#C9A84C',
+  concluida: '#8FD14F',
+  atual: '#D4FC3C',
   futura: '#B8B8B8',
 }
 
@@ -45,8 +45,8 @@ function RoadmapCard({ fase }: { fase: EstrategiaFase }) {
         className="card-purion"
         style={{
           padding: '14px 16px',
-          borderColor: fase.status === 'atual' ? '#C9A84C' : 'var(--border)',
-          background: fase.status === 'atual' ? 'rgba(201,168,76,0.06)' : undefined,
+          borderColor: fase.status === 'atual' ? 'var(--brand-accent)' : 'var(--border)',
+          background: fase.status === 'atual' ? 'rgba(212,252,60,0.06)' : undefined,
         }}
       >
         <div className="flex items-center gap-2 mb-2">
@@ -118,12 +118,12 @@ export function TabVisaoGeral() {
       {/* North Star */}
       <div style={{
         padding: '20px 24px', borderRadius: 14,
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.03))',
-        border: '1px solid rgba(201,168,76,0.35)',
+        background: 'linear-gradient(135deg, rgba(245,245,240,0.12), rgba(245,245,240,0.03))',
+        border: '1px solid rgba(245,245,240,0.35)',
       }}>
         <div className="flex items-center gap-2 mb-2">
-          <Star size={16} style={{ color: '#C9A84C' }} fill="#C9A84C" />
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#C9A84C', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <Star size={16} style={{ color: 'var(--text-primary)' }} fill="var(--text-primary)" />
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             North Star
           </span>
         </div>
@@ -139,21 +139,21 @@ export function TabVisaoGeral() {
       {faseAtual && (
         <div className="flex flex-wrap gap-3">
           <div className="card-purion" style={{ padding: '12px 16px', flex: 1, minWidth: 200, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Target size={16} style={{ color: '#C9A84C' }} />
+            <Target size={16} style={{ color: 'var(--text-primary)' }} />
             <div>
               <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>Fase atual</span>
               <span style={{ fontSize: 14, fontWeight: 700 }}>{faseAtual.nome}</span>
             </div>
           </div>
           <div className="card-purion" style={{ padding: '12px 16px', flex: 1, minWidth: 200, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <CalendarClock size={16} style={{ color: '#5B8FE8' }} />
+            <CalendarClock size={16} style={{ color: 'var(--status-info)' }} />
             <div>
               <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>Dias até o fim da fase</span>
               <span style={{ fontSize: 14, fontWeight: 700 }}>{diasAteFim !== null ? `${diasAteFim} dias` : '—'}</span>
             </div>
           </div>
           <div className="card-purion" style={{ padding: '12px 16px', flex: 1, minWidth: 200, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Flag size={16} style={{ color: '#4CAF7A' }} />
+            <Flag size={16} style={{ color: 'var(--status-ok)' }} />
             <div>
               <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>Próximo marco</span>
               <span style={{ fontSize: 13, fontWeight: 700 }}>
@@ -203,7 +203,7 @@ export function TabVisaoGeral() {
                           </span>
                         </div>
                         <div style={{ height: 3, background: 'var(--border)', borderRadius: 999, marginTop: 3, overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${pct}%`, background: '#C9A84C', borderRadius: 999 }} />
+                          <div style={{ height: '100%', width: `${pct}%`, background: 'var(--brand-accent)', borderRadius: 999 }} />
                         </div>
                       </div>
                     )
@@ -219,10 +219,10 @@ export function TabVisaoGeral() {
       <div>
         <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>A Conta do Milhão</p>
         <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
-          <MiniCard icon={DollarSign} label="Preço oficial" valor={formatCurrency(CONTA_DO_MILHAO.preco)} sub="por frasco" cor="#C9A84C" />
-          <MiniCard icon={Percent} label="Contribuição" valor={formatCurrency(CONTA_DO_MILHAO.contribuicao)} sub="margem por unidade" cor="#4CAF7A" />
-          <MiniCard icon={Scale} label="Ponto de equilíbrio" valor={`${CONTA_DO_MILHAO.pontoEquilibrioMes}`} sub="frascos/mês para zerar" cor="#5B8FE8" />
-          <MiniCard icon={Package} label="Conta do milhão" valor={`~${formatNumber(CONTA_DO_MILHAO.frascosMilhao)}`} sub="frascos/mês" cor="#A855F7" />
+          <MiniCard icon={DollarSign} label="Preço oficial" valor={formatCurrency(CONTA_DO_MILHAO.preco)} sub="por frasco" cor="#D4FC3C" />
+          <MiniCard icon={Percent} label="Contribuição" valor={formatCurrency(CONTA_DO_MILHAO.contribuicao)} sub="margem por unidade" cor="#8FD14F" />
+          <MiniCard icon={Scale} label="Ponto de equilíbrio" valor={`${CONTA_DO_MILHAO.pontoEquilibrioMes}`} sub="frascos/mês para zerar" cor="#9CC3DB" />
+          <MiniCard icon={Package} label="Conta do milhão" valor={`~${formatNumber(CONTA_DO_MILHAO.frascosMilhao)}`} sub="frascos/mês" cor="#A7A9A6" />
         </div>
       </div>
 

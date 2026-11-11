@@ -46,7 +46,7 @@ export function RelatorioMarketing({ periodo }: Props) {
       .map((c) => ({
         id: c.id, titulo: c.nome, subtitulo: `${c.nichoPrincipal || 'Sem nicho'} · ${c.postagens.length} post(s)`,
         valor: c.seguidores >= 1000 ? `${(c.seguidores / 1000).toFixed(1)}k` : String(c.seguidores),
-        cor: '#C9A84C',
+        cor: '#D4FC3C',
       }))
   }, [creators])
 

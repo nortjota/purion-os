@@ -185,7 +185,7 @@ export function ModalObjetivo({
           <div className="flex justify-between gap-2 mt-2">
             <div>
               {objetivo && onDeletar && (
-                <button type="button" onClick={onDeletar} className="btn btn-sm" style={{ background: 'rgba(232,82,56,0.15)', color: '#E85238' }}>
+                <button type="button" onClick={onDeletar} className="btn btn-sm" style={{ background: 'rgba(229,84,75,0.15)', color: 'var(--status-danger)' }}>
                   <Trash2 size={12} /> Excluir
                 </button>
               )}

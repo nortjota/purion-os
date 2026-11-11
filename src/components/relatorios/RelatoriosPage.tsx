@@ -34,7 +34,7 @@ export function RelatoriosPage() {
           {PERIODO_OPCOES.map((p) => (
             <button key={p.id} onClick={() => setPeriodo(p.id)}
               className="px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors"
-              style={periodo === p.id ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}>
+              style={periodo === p.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}>
               {p.label}
             </button>
           ))}

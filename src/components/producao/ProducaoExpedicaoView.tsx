@@ -54,7 +54,7 @@ export function ProducaoExpedicaoView() {
           <p style={{ fontSize: 13, fontWeight: 600 }}>
             Vendas a expedir ({vendasAExpedir.length})
           </p>
-          <Link href="/vendas" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#C9A84C' }}>
+          <Link href="/vendas" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--text-primary)' }}>
             Despacho em lote (Vendas) <ArrowUpRight size={12} />
           </Link>
         </div>
@@ -85,7 +85,7 @@ export function ProducaoExpedicaoView() {
               <tbody>
                 {pedidosExpedicao.map((p) => (
                   <tr key={p.id}>
-                    <td className="td-mono" style={{ color: '#C9A84C' }}>{p.numeroPedido}</td>
+                    <td className="td-mono" style={{ color: 'var(--text-primary)' }}>{p.numeroPedido}</td>
                     <td>{p.destinatario}</td>
                     <td className="caption">{formatarDataBR(p.dataPedido.slice(0, 10))}</td>
                     <td>

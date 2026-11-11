@@ -15,10 +15,10 @@ export interface EstagioLoteConfig {
 
 export const ESTAGIOS_LOTE: EstagioLoteConfig[] = [
   { id: 'planejado',           label: 'Planejado',         cor: '#B8B8B8' },
-  { id: 'em_producao',         label: 'Em Produção',       cor: '#5B8FE8' },
-  { id: 'controle_qualidade',  label: 'Controle de Qualidade', cor: '#E8A838' },
-  { id: 'concluido',           label: 'Concluído',         cor: '#4CAF7A' },
-  { id: 'reprovado',           label: 'Reprovado',         cor: '#E85238' },
+  { id: 'em_producao',         label: 'Em Produção',       cor: '#9CC3DB' },
+  { id: 'controle_qualidade',  label: 'Controle de Qualidade', cor: '#E6C374' },
+  { id: 'concluido',           label: 'Concluído',         cor: '#8FD14F' },
+  { id: 'reprovado',           label: 'Reprovado',         cor: '#E5544B' },
 ]
 
 const LEGADO_PARA_NOVO: Partial<Record<StatusLote, StatusLote>> = {

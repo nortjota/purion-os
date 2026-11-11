@@ -27,7 +27,7 @@ export function SecaoNotas({ secao }: { secao: SecaoEstrategia }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <NotebookPen size={15} style={{ color: '#C9A84C' }} />
+        <NotebookPen size={15} style={{ color: 'var(--text-primary)' }} />
         <p style={{ fontSize: 14, fontWeight: 700 }}>Notas & Documentação</p>
       </div>
       <div className="card-purion" style={{ padding: '18px 20px' }}>

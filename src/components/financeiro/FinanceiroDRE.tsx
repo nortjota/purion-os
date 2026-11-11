@@ -41,7 +41,7 @@ function VarBadge({ pct, inverso = false }: { pct: number | null; inverso?: bool
   if (pct === null) return null
   const positivo = inverso ? pct <= 0 : pct >= 0
   return (
-    <span className="text-[10px] font-semibold" style={{ color: positivo ? '#4CAF7A' : '#E85238' }}>
+    <span className="text-[10px] font-semibold" style={{ color: positivo ? 'var(--status-ok)' : 'var(--status-danger)' }}>
       {pct >= 0 ? '+' : ''}{pct.toFixed(1)}%
     </span>
   )
@@ -169,10 +169,10 @@ export function FinanceiroDRE() {
         <div className="kpi-card flex flex-col gap-3">
           <div className="flex items-start justify-between">
             <span className="kpi-label">Receitas</span>
-            <TrendingUp size={16} style={{ color: '#4CAF7A' }} className="opacity-60" />
+            <TrendingUp size={16} style={{ color: 'var(--status-ok)' }} className="opacity-60" />
           </div>
           <div>
-            <span className="kpi-value" style={{ color: '#4CAF7A' }}>{formatarMoeda(totalRec)}</span>
+            <span className="kpi-value" style={{ color: 'var(--status-ok)' }}>{formatarMoeda(totalRec)}</span>
             {mesPrev && (
               <p className="caption mt-1 flex items-center gap-1">
                 vs {formatarMes(mesPrev, true)} <VarBadge pct={varRec} />
@@ -183,10 +183,10 @@ export function FinanceiroDRE() {
         <div className="kpi-card flex flex-col gap-3">
           <div className="flex items-start justify-between">
             <span className="kpi-label">Despesas</span>
-            <TrendingDown size={16} style={{ color: '#E85238' }} className="opacity-60" />
+            <TrendingDown size={16} style={{ color: 'var(--status-danger)' }} className="opacity-60" />
           </div>
           <div>
-            <span className="kpi-value" style={{ color: '#E85238' }}>{formatarMoeda(totalDesp)}</span>
+            <span className="kpi-value" style={{ color: 'var(--status-danger)' }}>{formatarMoeda(totalDesp)}</span>
             {mesPrev && (
               <p className="caption mt-1 flex items-center gap-1">
                 vs {formatarMes(mesPrev, true)} <VarBadge pct={varDesp} inverso />
@@ -197,10 +197,10 @@ export function FinanceiroDRE() {
         <div className="kpi-card flex flex-col gap-3">
           <div className="flex items-start justify-between">
             <span className="kpi-label">Resultado</span>
-            <DollarSign size={16} style={{ color: resultado >= 0 ? '#C9A84C' : '#E85238' }} className="opacity-60" />
+            <DollarSign size={16} style={{ color: resultado >= 0 ? 'var(--status-ok)' : 'var(--status-danger)' }} className="opacity-60" />
           </div>
           <div>
-            <span className="kpi-value" style={{ color: resultado >= 0 ? '#C9A84C' : '#E85238' }}>
+            <span className="kpi-value" style={{ color: resultado >= 0 ? 'var(--status-ok)' : 'var(--status-danger)' }}>
               {resultado >= 0 ? '+' : ''}{formatarMoeda(resultado)}
             </span>
             <p className="caption mt-1">{resultado >= 0 ? 'Lucro' : 'Prejuízo'}</p>
@@ -209,10 +209,10 @@ export function FinanceiroDRE() {
         <div className="kpi-card flex flex-col gap-3">
           <div className="flex items-start justify-between">
             <span className="kpi-label">Margem</span>
-            <BarChart2 size={16} style={{ color: '#C9A84C' }} className="opacity-60" />
+            <BarChart2 size={16} style={{ color: 'var(--text-primary)' }} className="opacity-60" />
           </div>
           <div>
-            <span className="kpi-value" style={{ color: margem >= 50 ? '#4CAF7A' : margem >= 0 ? '#C9A84C' : '#E85238' }}>
+            <span className="kpi-value" style={{ color: margem >= 50 ? 'var(--status-ok)' : margem >= 0 ? 'var(--status-warning)' : 'var(--status-danger)' }}>
               {formatarPercentual(margem)}
             </span>
             <p className="caption mt-1">Meta: 65%</p>
@@ -226,7 +226,7 @@ export function FinanceiroDRE() {
         {/* RECEITAS */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-1 h-5 rounded-full bg-[#4CAF7A]" />
+            <div className="w-1 h-5 rounded-full bg-[var(--status-ok)]" />
             <h3 className="text-sm font-bold text-[var(--text-primary)]">Receitas</h3>
             <span className="caption ml-auto">{recMes.length} registros</span>
           </div>
@@ -248,11 +248,11 @@ export function FinanceiroDRE() {
                   return (
                     <tr key={cat}>
                       <td>{labelCatRec(cat)}</td>
-                      <td className="td-mono text-right" style={{ color: '#4CAF7A' }}>+{formatarMoeda(valor)}</td>
+                      <td className="td-mono text-right" style={{ color: 'var(--status-ok)' }}>+{formatarMoeda(valor)}</td>
                       <td className="text-right caption">
                         <div className="flex items-center justify-end gap-2">
                           <div className="w-16 h-1.5 bg-[var(--bg-surface-2)] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#4CAF7A] rounded-full" style={{ width: `${totalRec > 0 ? (valor / totalRec) * 100 : 0}%` }} />
+                            <div className="h-full bg-[var(--status-ok)] rounded-full" style={{ width: `${totalRec > 0 ? (valor / totalRec) * 100 : 0}%` }} />
                           </div>
                           {totalRec > 0 ? formatarPercentual((valor / totalRec) * 100) : '—'}
                         </div>
@@ -263,9 +263,9 @@ export function FinanceiroDRE() {
                 })}
               </tbody>
               <tfoot>
-                <tr style={{ background: 'rgba(76,175,122,0.05)', borderTop: '2px solid var(--border)' }}>
+                <tr style={{ background: 'rgba(143,209,79,0.05)', borderTop: '2px solid var(--border)' }}>
                   <td className="font-bold text-[var(--text-primary)]">Total Receitas</td>
-                  <td className="td-mono text-right font-black" style={{ color: '#4CAF7A' }}>+{formatarMoeda(totalRec)}</td>
+                  <td className="td-mono text-right font-black" style={{ color: 'var(--status-ok)' }}>+{formatarMoeda(totalRec)}</td>
                   <td className="text-right caption font-semibold">100%</td>
                   <td className="text-right caption">{recMes.length}</td>
                 </tr>
@@ -277,7 +277,7 @@ export function FinanceiroDRE() {
         {/* DESPESAS */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-1 h-5 rounded-full bg-[#E85238]" />
+            <div className="w-1 h-5 rounded-full bg-[var(--status-danger)]" />
             <h3 className="text-sm font-bold text-[var(--text-primary)]">Despesas</h3>
             <span className="caption ml-auto">{despMes.length} registros</span>
           </div>
@@ -300,11 +300,11 @@ export function FinanceiroDRE() {
                   return (
                     <tr key={cat}>
                       <td>{labelCatDesp(cat)}</td>
-                      <td className="td-mono text-right" style={{ color: '#E85238' }}>-{formatarMoeda(valor)}</td>
+                      <td className="td-mono text-right" style={{ color: 'var(--status-danger)' }}>-{formatarMoeda(valor)}</td>
                       <td className="text-right caption">
                         <div className="flex items-center justify-end gap-2">
                           <div className="w-16 h-1.5 bg-[var(--bg-surface-2)] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#E85238] rounded-full" style={{ width: `${Math.min(pctRec, 100)}%` }} />
+                            <div className="h-full bg-[var(--status-danger)] rounded-full" style={{ width: `${Math.min(pctRec, 100)}%` }} />
                           </div>
                           {totalRec > 0 ? formatarPercentual(pctRec) : '—'}
                         </div>
@@ -315,9 +315,9 @@ export function FinanceiroDRE() {
                 })}
               </tbody>
               <tfoot>
-                <tr style={{ background: 'rgba(232,82,56,0.05)', borderTop: '2px solid var(--border)' }}>
+                <tr style={{ background: 'rgba(229,84,75,0.05)', borderTop: '2px solid var(--border)' }}>
                   <td className="font-bold text-[var(--text-primary)]">Total Despesas</td>
-                  <td className="td-mono text-right font-black" style={{ color: '#E85238' }}>-{formatarMoeda(totalDesp)}</td>
+                  <td className="td-mono text-right font-black" style={{ color: 'var(--status-danger)' }}>-{formatarMoeda(totalDesp)}</td>
                   <td className="text-right caption font-semibold">
                     {totalRec > 0 ? formatarPercentual((totalDesp / totalRec) * 100) : '—'}
                   </td>
@@ -332,8 +332,8 @@ export function FinanceiroDRE() {
         <div
           className="rounded-xl p-5 border"
           style={{
-            background: resultado >= 0 ? 'rgba(201,168,76,0.06)' : 'rgba(232,82,56,0.06)',
-            borderColor: resultado >= 0 ? 'rgba(201,168,76,0.25)' : 'rgba(232,82,56,0.25)',
+            background: resultado >= 0 ? 'rgba(212,252,60,0.06)' : 'rgba(229,84,75,0.06)',
+            borderColor: resultado >= 0 ? 'rgba(212,252,60,0.25)' : 'rgba(229,84,75,0.25)',
           }}
         >
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -343,7 +343,7 @@ export function FinanceiroDRE() {
               </p>
               <p
                 className="text-2xl font-black"
-                style={{ fontFamily: 'Montserrat, sans-serif', color: resultado >= 0 ? '#C9A84C' : '#E85238' }}
+                style={{ fontFamily: 'var(--font-mono)', color: resultado >= 0 ? 'var(--status-ok)' : 'var(--status-danger)' }}
               >
                 {resultado >= 0 ? '+' : ''}{formatarMoeda(resultado)}
               </p>
@@ -353,14 +353,14 @@ export function FinanceiroDRE() {
                 <p className="text-xs text-[#B8B8B8] mb-1">Margem Líquida</p>
                 <p
                   className="text-xl font-black"
-                  style={{ fontFamily: 'Montserrat, sans-serif', color: margem >= 50 ? '#4CAF7A' : margem >= 0 ? '#C9A84C' : '#E85238' }}
+                  style={{ fontFamily: 'var(--font-mono)', color: margem >= 50 ? 'var(--status-ok)' : margem >= 0 ? 'var(--status-warning)' : 'var(--status-danger)' }}
                 >
                   {formatarPercentual(margem)}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-xs text-[#B8B8B8] mb-1">Cobertura</p>
-                <p className="text-xl font-black" style={{ fontFamily: 'Montserrat, sans-serif', color: '#B8B8B8' }}>
+                <p className="text-xl font-black" style={{ fontFamily: 'var(--font-mono)', color: '#B8B8B8' }}>
                   {totalRec > 0 ? formatarPercentual((totalDesp / totalRec) * 100) : '—'}
                 </p>
                 <p className="text-[10px] text-[#A0A0A0]">% desp/rec</p>
@@ -372,7 +372,7 @@ export function FinanceiroDRE() {
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] text-[#B8B8B8]">Margem vs meta 65%</span>
-              <span className="text-[10px]" style={{ color: margem >= 65 ? '#4CAF7A' : '#E8A838' }}>
+              <span className="text-[10px]" style={{ color: margem >= 65 ? 'var(--status-ok)' : 'var(--status-warning)' }}>
                 {margem >= 65 ? '✓ Acima da meta' : `${(65 - margem).toFixed(1)}pp abaixo`}
               </span>
             </div>
@@ -381,7 +381,7 @@ export function FinanceiroDRE() {
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${Math.min(Math.max(margem, 0), 100)}%`,
-                  background: margem >= 65 ? '#4CAF7A' : margem >= 30 ? '#C9A84C' : '#E85238',
+                  background: margem >= 65 ? 'var(--status-ok)' : margem >= 30 ? 'var(--status-warning)' : 'var(--status-danger)',
                 }}
               />
             </div>
@@ -396,9 +396,9 @@ export function FinanceiroDRE() {
             </p>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: 'Receitas', atual: totalRec, prev: totalRecPrev, inverso: false, cor: '#4CAF7A' },
-                { label: 'Despesas', atual: totalDesp, prev: totalDespPrev, inverso: true, cor: '#E85238' },
-                { label: 'Resultado', atual: resultado, prev: totalRecPrev - totalDespPrev, inverso: false, cor: resultado >= 0 ? '#C9A84C' : '#E85238' },
+                { label: 'Receitas', atual: totalRec, prev: totalRecPrev, inverso: false, cor: '#8FD14F' },
+                { label: 'Despesas', atual: totalDesp, prev: totalDespPrev, inverso: true, cor: '#E5544B' },
+                { label: 'Resultado', atual: resultado, prev: totalRecPrev - totalDespPrev, inverso: false, cor: resultado >= 0 ? '#8FD14F' : '#E5544B' },
               ].map(({ label, atual, prev, inverso, cor }) => {
                 const delta = variacaoPct(atual, prev)
                 return (

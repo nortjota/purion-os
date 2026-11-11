@@ -9,7 +9,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <button
       onClick={() => onChange(!checked)}
-      className={`relative w-10 h-5 rounded-full transition-colors ${checked ? 'bg-[#C9A84C]' : 'bg-[var(--border)]'}`}
+      className={`relative w-10 h-5 rounded-full transition-colors ${checked ? 'bg-[var(--brand-accent)]' : 'bg-[var(--border)]'}`}
     >
       <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
     </button>
@@ -143,7 +143,7 @@ export function AlertasSettings() {
               <p className="text-xs text-[var(--text-secondary)]">Notificações por e-mail</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs bg-[var(--bg-surface-2)] text-[#C9A84C] px-2 py-0.5 rounded-full border border-[#C9A84C]/30">Em breve</span>
+              <span className="text-xs bg-[var(--bg-surface-2)] text-[var(--text-primary)] px-2 py-0.5 rounded-full border border-[var(--border)]/30">Em breve</span>
               <Toggle checked={false} onChange={() => {}} />
             </div>
           </div>
@@ -153,7 +153,7 @@ export function AlertasSettings() {
               <p className="text-xs text-[var(--text-secondary)]">Notificações via WhatsApp</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs bg-[var(--bg-surface-2)] text-[#C9A84C] px-2 py-0.5 rounded-full border border-[#C9A84C]/30">Em breve</span>
+              <span className="text-xs bg-[var(--bg-surface-2)] text-[var(--text-primary)] px-2 py-0.5 rounded-full border border-[var(--border)]/30">Em breve</span>
               <Toggle checked={false} onChange={() => {}} />
             </div>
           </div>

@@ -80,7 +80,7 @@ export function SelectBuscavel({ opcoes, valor, onSelecionar, placeholder = 'Bus
               key={o.value}
               type="button"
               onClick={() => { onSelecionar(o.value); setBusca(''); setAberto(false) }}
-              className="w-full text-left px-3 py-2 hover:bg-[rgba(201,168,76,0.08)] transition-colors"
+              className="w-full text-left px-3 py-2 hover:bg-[rgba(212,252,60,0.08)] transition-colors"
             >
               <p style={{ fontSize: 13, color: 'var(--text-primary)' }}>{o.label}</p>
               {o.sublabel && <p className="caption">{o.sublabel}</p>}

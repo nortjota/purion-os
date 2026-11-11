@@ -143,7 +143,7 @@ export function ProducaoSettings() {
               onChange={e => setFormatoLote(e.target.value)} />
           </div>
           <div className="text-sm text-[var(--text-secondary)]">
-            Preview: <span className="font-mono text-[#C9A84C]">{previewLote}</span>
+            Preview: <span className="font-mono text-[var(--text-primary)]">{previewLote}</span>
           </div>
           <label className="flex items-center gap-2 cursor-pointer text-sm text-[var(--text-secondary)]">
             <input type="checkbox" checked={loteAutomatico} onChange={e => setLoteAutomatico(e.target.checked)} />
@@ -198,7 +198,7 @@ export function ProducaoSettings() {
                   <p className="text-xs text-[var(--text-secondary)]">{f.contato} · {f.produtos} · Prazo: {f.prazoMedio}d</p>
                   <div className="flex gap-0.5 mt-1">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} size={12} className={i < f.avaliacao ? 'text-[#C9A84C] fill-[#C9A84C]' : 'text-[var(--border)]'} />
+                      <Star key={i} size={12} className={i < f.avaliacao ? 'text-[var(--brand-accent)] fill-[var(--brand-accent)]' : 'text-[var(--border)]'} />
                     ))}
                   </div>
                 </div>

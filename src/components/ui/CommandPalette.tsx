@@ -149,7 +149,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
     >
       <Command
         style={{
-          width: 560, background: '#1A1A1A',
+          width: 560, background: '#1B1D1C',
           border: '1px solid var(--border)', borderRadius: 16,
           boxShadow: '0 25px 80px rgba(0,0,0,0.6)',
           overflow: 'hidden',
@@ -185,7 +185,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   fontSize: 14, color: 'var(--text-primary)',
                 }}
               >
-                <page.icon size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                <page.icon size={15} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
                 {page.label}
               </Command.Item>
             ))}
@@ -203,7 +203,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   fontSize: 14, color: 'var(--text-primary)',
                 }}
               >
-                <action.icon size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
+                <action.icon size={15} style={{ color: 'var(--status-info)', flexShrink: 0 }} />
                 {action.label}
               </Command.Item>
             ))}
@@ -222,7 +222,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                     fontSize: 14, color: 'var(--text-primary)',
                   }}
                 >
-                  <Users size={15} style={{ color: '#22C55E', flexShrink: 0 }} />
+                  <Users size={15} style={{ color: 'var(--status-ok)', flexShrink: 0 }} />
                   <span>{lead.nomeEmpresa}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Lead</span>
                 </Command.Item>
@@ -238,7 +238,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                     fontSize: 14, color: 'var(--text-primary)',
                   }}
                 >
-                  <CheckSquare size={15} style={{ color: '#E8A838', flexShrink: 0 }} />
+                  <CheckSquare size={15} style={{ color: 'var(--status-warning)', flexShrink: 0 }} />
                   <span>{tarefa.titulo}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Tarefa</span>
                 </Command.Item>
@@ -254,7 +254,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                     fontSize: 14, color: 'var(--text-primary)',
                   }}
                 >
-                  <Video size={15} style={{ color: '#A855F7', flexShrink: 0 }} />
+                  <Video size={15} style={{ color: 'var(--status-neutral)', flexShrink: 0 }} />
                   <span>{creator.nome}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Creator</span>
                 </Command.Item>
@@ -270,7 +270,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                     fontSize: 14, color: 'var(--text-primary)',
                   }}
                 >
-                  <FileText size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <FileText size={15} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
                   <span>{doc.emoji} {doc.titulo}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Documento</span>
                 </Command.Item>
@@ -286,7 +286,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                     fontSize: 14, color: 'var(--text-primary)',
                   }}
                 >
-                  <KeyRound size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
+                  <KeyRound size={15} style={{ color: 'var(--status-info)', flexShrink: 0 }} />
                   <span>{conta.plataforma}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Conta</span>
                 </Command.Item>
@@ -298,7 +298,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   onSelect={() => { router.push(`/quadros/${q.id}`); onClose() }}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                 >
-                  <Shapes size={15} style={{ color: '#8B5CF6', flexShrink: 0 }} />
+                  <Shapes size={15} style={{ color: 'var(--status-neutral)', flexShrink: 0 }} />
                   <span>{q.emoji} {q.nome}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Quadro</span>
                 </Command.Item>
@@ -314,7 +314,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                     fontSize: 14, color: 'var(--text-primary)',
                   }}
                 >
-                  <ShoppingBag size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <ShoppingBag size={15} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
                   <span>{venda.clienteNome}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Venda {venda.canal.toUpperCase()}</span>
                 </Command.Item>
@@ -328,7 +328,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                     onSelect={() => { router.push('/ugc'); onClose() }}
                     style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                   >
-                    <Package size={15} style={{ color: '#A855F7', flexShrink: 0 }} />
+                    <Package size={15} style={{ color: 'var(--status-neutral)', flexShrink: 0 }} />
                     <span>{c?.nome ?? 'Creator'}</span>
                     <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>UGC · {d.quantidade}x</span>
                   </Command.Item>
@@ -341,7 +341,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   onSelect={() => { router.push('/estrategias'); onClose() }}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                 >
-                  <Milestone size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <Milestone size={15} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
                   <span>{d.titulo}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Decisão</span>
                 </Command.Item>
@@ -353,7 +353,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   onSelect={() => { router.push('/estrategias'); onClose() }}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                 >
-                  <FlaskConical size={15} style={{ color: '#E8A838', flexShrink: 0 }} />
+                  <FlaskConical size={15} style={{ color: 'var(--status-warning)', flexShrink: 0 }} />
                   <span>{e.nome}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Experimento ICE</span>
                 </Command.Item>
@@ -365,7 +365,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   onSelect={() => { router.push('/estrategias'); onClose() }}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                 >
-                  <UserCircle size={15} style={{ color: '#5B8FE8', flexShrink: 0 }} />
+                  <UserCircle size={15} style={{ color: 'var(--status-info)', flexShrink: 0 }} />
                   <span>{p.emoji} {p.nome}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Persona</span>
                 </Command.Item>
@@ -377,7 +377,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   onSelect={() => { router.push('/calendario'); onClose() }}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                 >
-                  <CalendarDays size={15} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                  <CalendarDays size={15} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
                   <span>{e.titulo}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 'auto' }}>Evento</span>
                 </Command.Item>

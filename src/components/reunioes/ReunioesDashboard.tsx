@@ -50,7 +50,7 @@ const SOCIO_INICIAL: Record<PerfilUsuario, string> = {
 }
 
 const SOCIO_COLOR: Record<PerfilUsuario, string> = {
-  matheus: 'bg-[#C9A84C] text-[#0D0D0D]',
+  matheus: 'bg-[#F5F5F0] text-[#0B0B0B]',
   joao:    'bg-[#4A90D9] text-white',
   gabriel: 'bg-[#8A8A8A] text-white',
 }
@@ -72,7 +72,7 @@ const STATUS_REUNIAO_LABEL: Record<ReuniaoItem['status'], string> = {
 const STATUS_REUNIAO_COLOR: Record<ReuniaoItem['status'], string> = {
   agendada:  'text-blue-400 bg-blue-400/10',
   realizada: 'text-emerald-400 bg-emerald-400/10',
-  cancelada: 'text-[#B8B8B8] bg-[#2A2A2A]',
+  cancelada: 'text-[#B8B8B8] bg-[#2A2C2B]',
 }
 
 // ─────────────────────────────────────────────
@@ -223,8 +223,8 @@ function ModalReuniao({ onSalvar, onFechar }: {
                   onClick={() => toggleParticipante(s)}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     form.participantes.includes(s)
-                      ? 'bg-[rgba(201,168,76,0.15)] text-[#C9A84C] border border-[#C9A84C]/30'
-                      : 'bg-[#2A2A2A] text-[#B8B8B8] border border-transparent'
+                      ? 'bg-[rgba(212,252,60,0.15)] text-[var(--brand-accent)] border border-[var(--brand-accent)]/30'
+                      : 'bg-[#2A2C2B] text-[#B8B8B8] border border-transparent'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${SOCIO_COLOR[s]}`}>
@@ -393,8 +393,8 @@ function ModalEditarReuniao({ reuniao, onSalvar, onFechar }: {
                   onClick={() => toggleParticipante(s)}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     form.participantes.includes(s)
-                      ? 'bg-[rgba(201,168,76,0.15)] text-[#C9A84C] border border-[#C9A84C]/30'
-                      : 'bg-[#2A2A2A] text-[#B8B8B8] border border-transparent'
+                      ? 'bg-[rgba(212,252,60,0.15)] text-[var(--brand-accent)] border border-[var(--brand-accent)]/30'
+                      : 'bg-[#2A2C2B] text-[#B8B8B8] border border-transparent'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${SOCIO_COLOR[s]}`}>
@@ -622,7 +622,7 @@ function DailyCard({
             rows={2}
             value={form.ontemFiz}
             onChange={(e) => setForm({ ...form, ontemFiz: e.target.value })}
-            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--ring)] resize-none"
             placeholder="O que fiz ontem..."
           />
         </div>
@@ -632,7 +632,7 @@ function DailyCard({
             rows={2}
             value={form.hojeFarei}
             onChange={(e) => setForm({ ...form, hojeFarei: e.target.value })}
-            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[#C9A84C] resize-none"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--ring)] resize-none"
             placeholder="O que farei hoje..."
           />
         </div>
@@ -642,14 +642,14 @@ function DailyCard({
             rows={1}
             value={form.bloqueadoEm}
             onChange={(e) => setForm({ ...form, bloqueadoEm: e.target.value })}
-            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[rgba(232,168,56,0.4)] resize-none"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-md px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[rgba(230,195,116,0.4)] resize-none"
             placeholder="Algum impedimento? (opcional)"
           />
         </div>
         <button
           onClick={handleSalvar}
           disabled={salvando}
-          className="w-full py-1.5 text-xs font-bold text-[#0D0D0D] bg-[#C9A84C] rounded-md hover:bg-[#D4B568] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full py-1.5 text-xs font-bold text-[var(--primary-foreground)] bg-[var(--primary)] rounded-md hover:bg-[var(--brand-accent)]/85 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {salvando ? 'Salvando...' : 'Salvar update'}
         </button>
@@ -804,7 +804,7 @@ export function ReunioesDashboard() {
               onClick={() => setFiltroReuniao(f.id)}
               className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
               style={filtroReuniao === f.id
-                ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+                ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
                 : { color: 'var(--text-secondary)' }}
             >
               {f.label}
@@ -817,7 +817,7 @@ export function ReunioesDashboard() {
 
           <div className="flex flex-col gap-2">
             {diaSelecionado && (
-              <button onClick={() => setDiaSelecionado(null)} className="text-xs text-[#C9A84C] text-left">
+              <button onClick={() => setDiaSelecionado(null)} className="text-xs text-[var(--text-primary)] text-left">
                 ← Limpar filtro de dia ({fmtData(diaSelecionado)})
               </button>
             )}
@@ -839,7 +839,7 @@ export function ReunioesDashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{reuniao.titulo}</p>
-                          <span className="text-[10px] text-[#A0A0A0] bg-[#2A2A2A] px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] text-[#A0A0A0] bg-[#2A2C2B] px-2 py-0.5 rounded-full">
                             {TIPO_REUNIAO_LABEL[reuniao.tipo]}
                           </span>
                           {reuniao.googleEventId ? (
@@ -872,12 +872,12 @@ export function ReunioesDashboard() {
                     </select>
                     <span
                       onClick={() => setEditandoReuniao(reuniao)}
-                      className="p-1 rounded hover:bg-[rgba(201,168,76,0.1)] text-[#A0A0A0] hover:text-[#C9A84C] transition-colors cursor-pointer"
+                      className="p-1 rounded hover:bg-[rgba(212,252,60,0.1)] text-[#A0A0A0] hover:text-[var(--brand-accent)] transition-colors cursor-pointer"
                       title="Editar reunião"
                     ><Pencil size={12} /></span>
                     <span
                       onClick={() => setDeletandoReuniao(reuniao)}
-                      className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#A0A0A0] hover:text-[#E85238] transition-colors cursor-pointer"
+                      className="p-1 rounded hover:bg-[rgba(229,84,75,0.1)] text-[#A0A0A0] hover:text-[var(--status-danger)] transition-colors cursor-pointer"
                     ><Trash2 size={12} /></span>
                     <button onClick={() => setReuniaoExpandida((r) => r === reuniao.id ? null : reuniao.id)}>
                       {expandida ? <ChevronUp size={14} className="text-[#B8B8B8]" /> : <ChevronDown size={14} className="text-[#B8B8B8]" />}
@@ -993,7 +993,7 @@ export function ReunioesDashboard() {
                     ><X size={isMobile ? 16 : 11} /></button>
                     <button
                       onClick={() => handleVotar(decisao.id, 'abstencao')}
-                      className={`rounded hover:bg-[#3A3A3A] text-[#B8B8B8] ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-[var(--border)]' : 'p-0.5'}`}
+                      className={`rounded hover:bg-[#2E312F] text-[#B8B8B8] ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-[var(--border)]' : 'p-0.5'}`}
                     ><Minus size={isMobile ? 16 : 11} /></button>
                   </div>
                 )
@@ -1004,7 +1004,7 @@ export function ReunioesDashboard() {
                   ? <X size={11} className="text-red-400" />
                   : voto === 'abstencao'
                     ? <Minus size={11} className="text-[#B8B8B8]" />
-                    : <span className="w-2.5 h-2.5 rounded-full border border-[#3A3A3A] inline-block" />
+                    : <span className="w-2.5 h-2.5 rounded-full border border-[#2E312F] inline-block" />
               return (
                 <span key={socio} title={`${SOCIO_NOME[socio]}: ${voto}`} className="flex items-center">
                   {icon}
@@ -1032,7 +1032,7 @@ export function ReunioesDashboard() {
                       {statusBadge}
                       <span
                         onClick={() => setDeletandoDecisao(decisao)}
-                        className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#A0A0A0] hover:text-[#E85238] transition-colors cursor-pointer"
+                        className="p-1 rounded hover:bg-[rgba(229,84,75,0.1)] text-[#A0A0A0] hover:text-[var(--status-danger)] transition-colors cursor-pointer"
                       ><Trash2 size={11} /></span>
                     </div>
                   </div>
@@ -1089,7 +1089,7 @@ export function ReunioesDashboard() {
                 <div className="flex items-center justify-center opacity-0 group-hover/dec:opacity-100 transition-opacity">
                   <span
                     onClick={() => setDeletandoDecisao(decisao)}
-                    className="p-1 rounded hover:bg-[rgba(232,82,56,0.1)] text-[#A0A0A0] hover:text-[#E85238] transition-colors cursor-pointer"
+                    className="p-1 rounded hover:bg-[rgba(229,84,75,0.1)] text-[#A0A0A0] hover:text-[var(--status-danger)] transition-colors cursor-pointer"
                   ><Trash2 size={12} /></span>
                 </div>
               </div>

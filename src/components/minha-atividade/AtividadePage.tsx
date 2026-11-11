@@ -47,7 +47,7 @@ export function AtividadePage() {
       result.push({
         id: `t-${t.id}`,
         icon: CheckSquare,
-        iconColor: '#5B8FE8',
+        iconColor: '#9CC3DB',
         text: `Você criou tarefa: ${t.titulo}`,
         date: t.createdAt,
         modulo: 'tarefas',
@@ -56,7 +56,7 @@ export function AtividadePage() {
         result.push({
           id: `tc-${t.id}`,
           icon: CheckSquare,
-          iconColor: '#22C55E',
+          iconColor: '#8FD14F',
           text: `Você concluiu tarefa: ${t.titulo}`,
           date: t.completedAt,
           modulo: 'tarefas',
@@ -68,7 +68,7 @@ export function AtividadePage() {
       result.push({
         id: `l-${l.id}`,
         icon: Users,
-        iconColor: '#C9A84C',
+        iconColor: '#D4FC3C',
         text: `Lead adicionado: ${l.nomeEmpresa}`,
         date: l.createdAt,
         modulo: 'crm',
@@ -79,7 +79,7 @@ export function AtividadePage() {
       result.push({
         id: `r-${r.id}`,
         icon: DollarSign,
-        iconColor: '#22C55E',
+        iconColor: '#8FD14F',
         text: `Receita registrada: R$ ${r.valor.toLocaleString('pt-BR')}`,
         date: r.data,
         modulo: 'financeiro',
@@ -90,7 +90,7 @@ export function AtividadePage() {
       result.push({
         id: `d-${d.id}`,
         icon: TrendingDown,
-        iconColor: '#E85238',
+        iconColor: '#E5544B',
         text: `Despesa registrada: R$ ${d.valor.toLocaleString('pt-BR')}`,
         date: d.data,
         modulo: 'financeiro',
@@ -117,10 +117,10 @@ export function AtividadePage() {
       {/* KPI row */}
       <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
         {[
-          { label: 'Tarefas Concluídas',   valor: tarefasConcluidas, icon: CheckSquare,  cor: '#22C55E' },
-          { label: 'Leads Abordados',      valor: leadsAbordados,    icon: Users,         cor: '#C9A84C' },
-          { label: 'Receitas Registradas', valor: receitasCount,     icon: DollarSign,    cor: '#5B8FE8' },
-          { label: 'Despesas Registradas', valor: despesasCount,     icon: TrendingDown,  cor: '#E85238' },
+          { label: 'Tarefas Concluídas',   valor: tarefasConcluidas, icon: CheckSquare,  cor: '#8FD14F' },
+          { label: 'Leads Abordados',      valor: leadsAbordados,    icon: Users,         cor: '#D4FC3C' },
+          { label: 'Receitas Registradas', valor: receitasCount,     icon: DollarSign,    cor: '#9CC3DB' },
+          { label: 'Despesas Registradas', valor: despesasCount,     icon: TrendingDown,  cor: '#E5544B' },
         ].map((kpi) => (
           <div key={kpi.label} className="card-purion" style={{ padding: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -142,9 +142,9 @@ export function AtividadePage() {
             onClick={() => setFiltroModulo(m)}
             style={{
               padding: '6px 14px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
-              background: filtroModulo === m ? 'rgba(201,168,76,0.15)' : 'transparent',
-              border: `1px solid ${filtroModulo === m ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
-              color: filtroModulo === m ? '#C9A84C' : 'var(--text-secondary)',
+              background: filtroModulo === m ? 'rgba(212,252,60,0.15)' : 'transparent',
+              border: `1px solid ${filtroModulo === m ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
+              color: filtroModulo === m ? 'var(--brand-accent)' : 'var(--text-secondary)',
               textTransform: 'capitalize',
             }}
           >
@@ -158,9 +158,9 @@ export function AtividadePage() {
             onClick={() => setFiltroPeriodo(p)}
             style={{
               padding: '6px 14px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
-              background: filtroPeriodo === p ? 'rgba(91,143,232,0.12)' : 'transparent',
-              border: `1px solid ${filtroPeriodo === p ? 'rgba(91,143,232,0.4)' : 'var(--border)'}`,
-              color: filtroPeriodo === p ? '#5B8FE8' : 'var(--text-secondary)',
+              background: filtroPeriodo === p ? 'rgba(156,195,219,0.12)' : 'transparent',
+              border: `1px solid ${filtroPeriodo === p ? 'rgba(156,195,219,0.4)' : 'var(--border)'}`,
+              color: filtroPeriodo === p ? 'var(--status-info)' : 'var(--text-secondary)',
             }}
           >
             {p === 'todos' ? 'Tudo' : p === '7d' ? '7 dias' : '30 dias'}

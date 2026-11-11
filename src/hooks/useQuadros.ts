@@ -29,7 +29,7 @@ function toNo(r: Row): QuadroNo {
     posY: Number(r.pos_y) || 0,
     largura: Number(r.largura) || 200,
     altura: Number(r.altura) || 120,
-    cor: (r.cor as string) ?? '#C9A84C',
+    cor: (r.cor as string) ?? '#D4FC3C',
     autor: (r.autor as string | null) ?? null,
     createdAt: r.created_at as string,
   }

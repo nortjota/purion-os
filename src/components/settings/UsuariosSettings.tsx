@@ -169,7 +169,7 @@ export function UsuariosSettings() {
             {users.map(u => (
               <tr key={u.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[rgba(255,255,255,0.02)]">
                 <td className="px-4 py-3">
-                  <div className="w-8 h-8 rounded-full bg-[#C9A84C]/20 flex items-center justify-center text-[#C9A84C] font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-[var(--primary)]/20 flex items-center justify-center text-[var(--text-primary)] font-bold text-xs">
                     {u.nome.charAt(0)}
                   </div>
                 </td>
@@ -177,7 +177,7 @@ export function UsuariosSettings() {
                 <td className="px-4 py-3 text-[var(--text-secondary)]">{u.email}</td>
                 <td className="px-4 py-3 text-[var(--text-secondary)]">{u.cargo}</td>
                 <td className="px-4 py-3">
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-[#C9A84C]/10 text-[#C9A84C]' : u.role === 'logistica' ? 'bg-[#2E9E5B]/15 text-[#5FD08E]' : 'bg-[var(--bg-surface-2)] text-[var(--text-secondary)]'}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-[var(--brand-accent)]/10 text-[var(--brand-accent)]' : u.role === 'logistica' ? 'bg-[#2E9E5B]/15 text-[#5FD08E]' : 'bg-[var(--bg-surface-2)] text-[var(--text-secondary)]'}`}>
                     {u.role === 'logistica' ? 'logística (restrito)' : u.role}
                   </span>
                 </td>

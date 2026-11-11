@@ -107,7 +107,7 @@ export function KeyboardShortcuts() {
 
         {Object.entries(SHORTCUTS).map(([group, entries]) => (
           <div key={group} style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: '#C9A84C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
               {group}
             </p>
             <div style={{ display: 'grid', gap: 6 }}>

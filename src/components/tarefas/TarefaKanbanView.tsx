@@ -38,10 +38,10 @@ function TarefaCardKanban({ tarefa, isDragging, onDragStart, onDragEnd, onDragOv
       className={`
         rounded-xl border p-3 cursor-pointer
         bg-[var(--bg-surface)] border-[var(--border)]
-        hover:border-[rgba(201,168,76,0.25)]
+        hover:border-[rgba(212,252,60,0.25)]
         transition-all duration-150 select-none
         ${isDragging ? 'opacity-40 scale-95' : ''}
-        ${tarefa.status === 'bloqueada' ? 'border-[rgba(232,168,56,0.3)] bg-[rgba(232,168,56,0.04)]' : ''}
+        ${tarefa.status === 'bloqueada' ? 'border-[rgba(230,195,116,0.3)] bg-[rgba(230,195,116,0.04)]' : ''}
       `}
     >
       <div className="flex items-center justify-between mb-2">
@@ -150,7 +150,7 @@ function KanbanColuna({
       <div className="p-2 border-t border-[var(--border)] shrink-0">
         <button
           onClick={() => onNovaTarefa(coluna.id)}
-          className="w-full py-2 rounded-lg text-[10px] font-semibold text-[var(--text-secondary)] hover:text-[#C9A84C] border border-dashed border-[var(--border)] hover:border-[rgba(201,168,76,0.25)] hover:bg-[rgba(201,168,76,0.04)] transition-all flex items-center justify-center gap-1"
+          className="w-full py-2 rounded-lg text-[10px] font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-accent)] border border-dashed border-[var(--border)] hover:border-[rgba(212,252,60,0.25)] hover:bg-[rgba(212,252,60,0.04)] transition-all flex items-center justify-center gap-1"
         >
           <Plus size={10} /> Nova tarefa
         </button>

@@ -7,7 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { supabase } from '@/lib/supabase'
 import type { Ticket } from './SacDashboard'
 
-const COLORS = ['#3B82F6', '#C9A84C', '#10B981', '#EF4444', '#8B5CF6', '#F59E0B']
+const COLORS = ['#9CC3DB', '#D4FC3C', '#8FD14F', '#E5544B', '#A7A9A6', '#E6C374']
 
 const fmtV = (v: unknown) => String(v) as any
 
@@ -79,9 +79,9 @@ export function SacRelatorio() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 12, marginBottom: 24 }}>
         {[
           { label: 'Total de tickets', value: tickets.length, color: 'var(--text-primary)' },
-          { label: 'TMR médio (h)',    value: tmrMedio !== null ? `${tmrMedio}h` : '—', color: '#3B82F6' },
-          { label: 'CSAT médio',       value: csatMedio !== null ? `${csatMedio}⭐` : '—', color: '#F59E0B' },
-          { label: 'Taxa resolução',   value: tickets.length > 0 ? `${Math.round((tickets.filter(t => t.status === 'resolvido' || t.status === 'encerrado').length / tickets.length) * 100)}%` : '—', color: '#10B981' },
+          { label: 'TMR médio (h)',    value: tmrMedio !== null ? `${tmrMedio}h` : '—', color: '#9CC3DB' },
+          { label: 'CSAT médio',       value: csatMedio !== null ? `${csatMedio}⭐` : '—', color: '#E6C374' },
+          { label: 'Taxa resolução',   value: tickets.length > 0 ? `${Math.round((tickets.filter(t => t.status === 'resolvido' || t.status === 'encerrado').length / tickets.length) * 100)}%` : '—', color: '#8FD14F' },
         ].map(({ label, value, color }) => (
           <div key={label} style={kpiCard}>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 6px' }}>{label}</p>
@@ -100,7 +100,7 @@ export function SacRelatorio() {
               <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} allowDecimals={false} />
               <Tooltip formatter={fmtV} contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8 }} />
-              <Bar dataKey="value" fill="#C9A84C" radius={[4,4,0,0]} />
+              <Bar dataKey="value" fill="#D4FC3C" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -133,7 +133,7 @@ export function SacRelatorio() {
               <XAxis type="number" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} allowDecimals={false} />
               <YAxis dataKey="name" type="category" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} width={80} />
               <Tooltip formatter={fmtV} contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8 }} />
-              <Bar dataKey="value" fill="#3B82F6" radius={[0,4,4,0]} />
+              <Bar dataKey="value" fill="#9CC3DB" radius={[0,4,4,0]} />
             </BarChart>
           </ResponsiveContainer>
         ) : (

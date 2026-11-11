@@ -8,7 +8,7 @@ export function dbLog(op: string, table: string, error: unknown, data?: unknown)
       if (!existing) {
         const el = document.createElement('div')
         el.id = 'purion-db-error'
-        el.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;z-index:99999;background:#E85238;color:#fff;padding:12px 16px;border-radius:8px;font-size:12px;font-family:monospace;max-height:120px;overflow:auto'
+        el.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;z-index:99999;background:#E5544B;color:#fff;padding:12px 16px;border-radius:8px;font-size:12px;font-family:monospace;max-height:120px;overflow:auto'
         el.textContent = msg
         document.body.appendChild(el)
         setTimeout(() => el.remove(), 15000)

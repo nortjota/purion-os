@@ -129,7 +129,7 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
               Vendas aprovadas no período ({vendasPeriodo.length})
             </p>
             {vendasPeriodo.length > 0 && (
-              <button onClick={toggleTodas} style={{ fontSize: 11, color: '#C9A84C', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+              <button onClick={toggleTodas} style={{ fontSize: 11, color: 'var(--text-primary)', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                 {selecionadas.size === vendasPeriodo.length ? 'Desmarcar todas' : 'Selecionar todas'}
               </button>
             )}
@@ -148,17 +148,17 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
                     borderBottom: i < vendasPeriodo.length - 1 ? '1px solid var(--border)' : 'none',
-                    cursor: 'pointer', background: selecionadas.has(v.id) ? 'rgba(201,168,76,0.06)' : 'transparent',
+                    cursor: 'pointer', background: selecionadas.has(v.id) ? 'rgba(212,252,60,0.06)' : 'transparent',
                     transition: 'background 150ms',
                   }}
                 >
                   <div style={{
                     width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                    border: selecionadas.has(v.id) ? '2px solid #C9A84C' : '2px solid var(--border)',
-                    background: selecionadas.has(v.id) ? '#C9A84C' : 'transparent',
+                    border: selecionadas.has(v.id) ? '2px solid var(--brand-accent)' : '2px solid var(--border)',
+                    background: selecionadas.has(v.id) ? 'var(--brand-accent)' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {selecionadas.has(v.id) && <Check size={10} color="#0D0D0D" strokeWidth={3} />}
+                    {selecionadas.has(v.id) && <Check size={10} color="#0B0B0B" strokeWidth={3} />}
                   </div>
                   <div style={{ flex: 1 }}>
                     <p style={{ margin: 0, fontSize: 12, color: 'var(--text-primary)', fontWeight: 500 }}>
@@ -168,7 +168,7 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
                       {new Date(v.data_venda).toLocaleDateString('pt-BR')} · Valor: {fmt(v.valor_liquido)}
                     </p>
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#C9A84C' }}>{fmt(v.comissao_valor)}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{fmt(v.comissao_valor)}</span>
                 </div>
               ))}
             </div>
@@ -176,9 +176,9 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
 
           {/* Total */}
           {selecionadas.size > 0 && (
-            <div style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, padding: '10px 14px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: 'rgba(245,245,240,0.08)', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, padding: '10px 14px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{selecionadas.size} venda(s) selecionada(s)</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#C9A84C' }}>{fmt(totalSelecionado)}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>{fmt(totalSelecionado)}</span>
             </div>
           )}
 
@@ -192,9 +192,9 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
                   onClick={() => setMetodo(m)}
                   style={{
                     flex: 1, padding: '8px', borderRadius: 8, fontSize: 12, cursor: 'pointer',
-                    border: metodo === m ? '2px solid #C9A84C' : '1px solid var(--border)',
-                    background: metodo === m ? 'rgba(201,168,76,0.08)' : 'var(--bg-surface)',
-                    color: metodo === m ? '#C9A84C' : 'var(--text-secondary)',
+                    border: metodo === m ? '2px solid var(--brand-accent)' : '1px solid var(--border)',
+                    background: metodo === m ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)',
+                    color: metodo === m ? 'var(--brand-accent)' : 'var(--text-secondary)',
                     fontWeight: metodo === m ? 600 : 400,
                   }}
                 >
@@ -221,7 +221,7 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
           </div>
 
           {erro && (
-            <p style={{ fontSize: 12, color: '#EF4444', marginTop: 8, padding: '8px 12px', background: 'rgba(239,68,68,0.08)', borderRadius: 6 }}>
+            <p style={{ fontSize: 12, color: 'var(--status-danger)', marginTop: 8, padding: '8px 12px', background: 'rgba(229,84,75,0.08)', borderRadius: 6 }}>
               {erro}
             </p>
           )}
@@ -237,8 +237,8 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
             disabled={salvando || selecionadas.size === 0}
             style={{
               padding: '8px 20px', borderRadius: 8, border: 'none',
-              background: selecionadas.size === 0 ? 'var(--border)' : '#C9A84C',
-              color: selecionadas.size === 0 ? 'var(--text-secondary)' : '#0D0D0D',
+              background: selecionadas.size === 0 ? 'var(--border)' : 'var(--brand-accent)',
+              color: selecionadas.size === 0 ? 'var(--text-secondary)' : '#0B0B0B',
               fontWeight: 600, cursor: selecionadas.size === 0 ? 'not-allowed' : 'pointer',
               opacity: salvando ? 0.7 : 1, fontSize: 13,
             }}

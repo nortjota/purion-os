@@ -54,11 +54,11 @@ const COMISSAO_PADRAO_POR_VENDA = 25
 
 const PIPELINE_COLS: { status: StatusCreator[]; label: string; cor: string }[] = [
   { status: ['contatado'],           label: 'Identificado',      cor: '#B8B8B8' },
-  { status: ['negociando'],          label: 'Abordado',          cor: '#3B82F6' },
-  { status: ['kit_enviado'],         label: 'Kit Enviado',       cor: '#C9A84C' },
-  { status: ['postado', 'pago'],     label: 'Publicou',          cor: '#10B981' },
-  { status: ['parceiro_recorrente'], label: 'Parceiro',          cor: '#8B5CF6' },
-  { status: ['descartado', 'inativo'], label: 'Descartado',      cor: '#EF4444' },
+  { status: ['negociando'],          label: 'Abordado',          cor: '#9CC3DB' },
+  { status: ['kit_enviado'],         label: 'Kit Enviado',       cor: '#D4FC3C' },
+  { status: ['postado', 'pago'],     label: 'Publicou',          cor: '#8FD14F' },
+  { status: ['parceiro_recorrente'], label: 'Parceiro',          cor: '#A7A9A6' },
+  { status: ['descartado', 'inativo'], label: 'Descartado',      cor: '#E5544B' },
 ]
 
 const STATUS_OPTIONS: StatusCreator[] = [
@@ -76,7 +76,7 @@ const SCORE_COLOR: Record<string, string> = {
 const STATUS_BADGE: Record<StatusCreator, string> = {
   contatado:           'badge-neutral',
   negociando:          'badge-info',
-  kit_enviado:         'badge-gold',
+  kit_enviado:         'badge-accent',
   postado:             'badge-success',
   pago:                'badge-success',
   parceiro_recorrente: 'badge',
@@ -539,7 +539,7 @@ function ModalCampanha({ onSalvar, onFechar }: {
                     onClick={() => toggleCreator(c.id)}
                     className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
                       f.creatorsIds.includes(c.id)
-                        ? 'bg-[rgba(201,168,76,0.15)] border-[#C9A84C]/40 text-[#C9A84C]'
+                        ? 'bg-[rgba(212,252,60,0.15)] border-[var(--brand-accent)]/40 text-[var(--brand-accent)]'
                         : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]'
                     }`}
                   >
@@ -660,12 +660,12 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
           <div className="flex items-center gap-1 ml-3 shrink-0">
             <button
               onClick={() => setShowEditar(true)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(201,168,76,0.1)] text-[#B8B8B8] hover:text-[#C9A84C] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(212,252,60,0.1)] text-[#B8B8B8] hover:text-[var(--brand-accent)] transition-colors"
               title="Editar creator"
             ><Pencil size={13} /></button>
             <button
               onClick={() => onDeletar(creator)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#B8B8B8] hover:text-[#E85238] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(229,84,75,0.1)] text-[#B8B8B8] hover:text-[var(--status-danger)] transition-colors"
               title="Excluir creator"
             ><Trash2 size={13} /></button>
             <button onClick={onClose} className="icon-btn"><X size={14} /></button>
@@ -705,8 +705,8 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
               </div>
             </div>
             {creator.codigoDesconto && (
-              <div className="flex items-center gap-2 mt-3 p-3 bg-[rgba(201,168,76,0.08)] border border-[#C9A84C]/20 rounded-lg">
-                <span className="font-mono text-[13px] font-semibold text-[#C9A84C] flex-1">{creator.codigoDesconto}</span>
+              <div className="flex items-center gap-2 mt-3 p-3 bg-[rgba(245,245,240,0.08)] border border-[var(--border)]/20 rounded-lg">
+                <span className="font-mono text-[13px] font-semibold text-[var(--text-primary)] flex-1">{creator.codigoDesconto}</span>
                 <button onClick={copiarCodigo} className="icon-btn" title="Copiar código">
                   {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
                 </button>
@@ -732,7 +732,7 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
                           <p className="caption">{v.pedidoAppmax}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[12px] font-semibold" style={{ color: v.status === 'aprovado' ? '#4CAF7A' : 'var(--text-secondary)' }}>
+                          <p className="text-[12px] font-semibold" style={{ color: v.status === 'aprovado' ? 'var(--status-ok)' : 'var(--text-secondary)' }}>
                             {fmtR(v.valorLiquido)}
                           </p>
                           <p className="caption">{v.status}</p>
@@ -845,7 +845,7 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
                       <span><span className="text-emerald-400 font-medium">{fmtR(p.receitaGerada)}</span></span>
                     </div>
                     {p.url && (
-                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[11px] text-[#C9A84C] mt-1 hover:underline">
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[11px] text-[var(--text-primary)] mt-1 hover:underline">
                         <ExternalLink size={10} /> Ver post
                       </a>
                     )}
@@ -1214,7 +1214,7 @@ function AbaPipeline({ atualizarCreator }: { atualizarCreator: (id: string, dado
                   className="flex items-center justify-between px-3 py-2 rounded-lg border transition-colors"
                   style={{
                     background: 'var(--bg-surface)',
-                    borderColor: dragOverCol === col.label ? 'rgba(201,168,76,0.4)' : 'var(--border)',
+                    borderColor: dragOverCol === col.label ? 'rgba(212,252,60,0.4)' : 'var(--border)',
                   }}
                 >
                   <div className="flex items-center gap-2">
@@ -1229,14 +1229,14 @@ function AbaPipeline({ atualizarCreator }: { atualizarCreator: (id: string, dado
                   const temp = calcularTemperatura(c)
                   const dias = diasDesdeContato(c)
                   const score = calcularScore(c)
-                  const tempColor = temp === 'quente' ? '#10B981' : temp === 'morno' ? '#F59E0B' : '#EF4444'
+                  const tempColor = temp === 'quente' ? '#8FD14F' : temp === 'morno' ? '#E6C374' : '#E5544B'
                   return (
                     <div
                       key={c.id}
                       draggable
                       onDragStart={() => handleDragStart(c.id)}
                       onDragEnd={handleDragEnd}
-                      className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-3 flex flex-col gap-2 hover:border-[#C9A84C]/40 transition-all"
+                      className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-3 flex flex-col gap-2 hover:border-[var(--brand-accent)]/40 transition-all"
                       style={{ opacity: dragCreatorId === c.id ? 0.4 : 1, cursor: 'grab' }}
                     >
                       <div className="flex items-start justify-between gap-1.5">
@@ -1286,14 +1286,14 @@ function AbaPipeline({ atualizarCreator }: { atualizarCreator: (id: string, dado
                       <div className="flex gap-1.5">
                         <button
                           onClick={() => { setContatoCreatorId(c.id); setNotaContato('') }}
-                          className="flex-1 text-[10px] py-1 px-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:border-[#C9A84C]/40 hover:text-[#C9A84C] transition-colors"
+                          className="flex-1 text-[10px] py-1 px-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--brand-accent)]/40 hover:text-[var(--brand-accent)] transition-colors"
                         >
                           <MessageSquare size={10} className="inline mr-1" />
                           Contato
                         </button>
                         <button
                           onClick={() => setEditandoCreator(c)}
-                          className="text-[10px] py-1 px-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:border-[#C9A84C]/40 hover:text-[#C9A84C] transition-colors"
+                          className="text-[10px] py-1 px-2 rounded-md border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--brand-accent)]/40 hover:text-[var(--brand-accent)] transition-colors"
                           title="Editar creator"
                         >
                           <Pencil size={10} />
@@ -1306,7 +1306,7 @@ function AbaPipeline({ atualizarCreator }: { atualizarCreator: (id: string, dado
                 {cards.length === 0 && (
                   <div
                     className="rounded-xl border border-dashed p-4 text-center transition-colors"
-                    style={{ borderColor: dragOverCol === col.label ? 'rgba(201,168,76,0.4)' : 'var(--border)' }}
+                    style={{ borderColor: dragOverCol === col.label ? 'rgba(212,252,60,0.4)' : 'var(--border)' }}
                   >
                     <p className="caption text-[11px]">Vazio</p>
                   </div>
@@ -1393,13 +1393,13 @@ function AbaCampanhas() {
                   <div className="flex items-center gap-3 flex-wrap">
                     <p className="section-title">{camp.nome}</p>
                     <span className={`badge ${CAMP_STATUS_BADGE[camp.status]}`}>{camp.status}</span>
-                    <span className="badge badge-gold">{camp.produto.toUpperCase()}</span>
+                    <span className="badge badge-accent">{camp.produto.toUpperCase()}</span>
                   </div>
                   {/* Status change */}
                   <select
                     value={camp.status}
                     onChange={(e) => atualizarCampanhaCreators(camp.id, { status: e.target.value as CampanhaCreators['status'] })}
-                    className="text-xs bg-transparent border border-[var(--border)] rounded-lg px-2 py-1 outline-none text-[var(--text-secondary)] focus:border-[#C9A84C]"
+                    className="text-xs bg-transparent border border-[var(--border)] rounded-lg px-2 py-1 outline-none text-[var(--text-secondary)] focus:border-[var(--ring)]"
                   >
                     <option value="planejamento">Planejamento</option>
                     <option value="ativa">Ativa</option>
@@ -1418,7 +1418,7 @@ function AbaCampanhas() {
                   </div>
                   <div>
                     <p className="caption">Orçamento</p>
-                    <p className="text-[13px] font-medium text-[#C9A84C] mt-0.5">{fmtR(camp.orcamentoTotal)}</p>
+                    <p className="text-[13px] font-medium text-[var(--text-primary)] mt-0.5">{fmtR(camp.orcamentoTotal)}</p>
                   </div>
                   <div>
                     <p className="caption">Publicações</p>
@@ -1549,7 +1549,7 @@ function AbaAnalise() {
   return (
     <div className="flex flex-col gap-8">
       {/* Insight automático */}
-      <div className="card-purion px-5 py-4 border-l-2 border-[#C9A84C]">
+      <div className="card-purion px-5 py-4 border-l-2 border-[var(--border)]">
         <p className="kpi-label mb-1">Insight automático</p>
         <p className="text-sm text-[var(--text-primary)] leading-relaxed">{insight}</p>
       </div>
@@ -1591,7 +1591,7 @@ function AbaAnalise() {
               <div key={c.nome} className="flex items-center gap-3">
                 <span className="w-5 h-5 rounded-full bg-[var(--bg-surface-2)] flex items-center justify-center text-[10px] font-bold text-[var(--text-secondary)] shrink-0">{i + 1}</span>
                 <span className="flex-1 text-sm text-[var(--text-primary)]">{c.nome}</span>
-                <span className="text-sm font-semibold text-[#C9A84C]">{fmtSeg(c.seguidores)}</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">{fmtSeg(c.seguidores)}</span>
               </div>
             ))}
           </div>
@@ -1618,7 +1618,7 @@ function AbaAnalise() {
               {campanhasCreators.map((c) => (
                 <tr key={c.id}>
                   <td className="font-medium">{c.nome}</td>
-                  <td><span className="badge badge-gold">{c.produto.toUpperCase()}</span></td>
+                  <td><span className="badge badge-accent">{c.produto.toUpperCase()}</span></td>
                   <td className="td-mono">{fmtR(c.orcamentoTotal)}</td>
                   <td>{c.publicacoesRealizadas} / {c.metaPublicacoes}</td>
                   <td>{fmtSeg(c.alcanceReal)}</td>
@@ -1683,7 +1683,7 @@ function AbaVendasAfiliados() {
         </div>
         <div className="kpi-card">
           <p className="kpi-label mb-2">Comissão total devida</p>
-          <p className="kpi-value" style={{ color: '#C9A84C' }}>{fmtR(totais.comissao)}</p>
+          <p className="kpi-value" style={{ color: 'var(--text-primary)' }}>{fmtR(totais.comissao)}</p>
         </div>
         <div className="kpi-card">
           <p className="kpi-label mb-2">Comissão por venda (R$)</p>
@@ -1737,7 +1737,7 @@ function AbaVendasAfiliados() {
                   </td>
                   <td>{totalVendas}</td>
                   <td className="td-mono">{fmtR(valorTotal)}</td>
-                  <td className="td-mono" style={{ color: '#C9A84C' }}>{fmtR(comissao)}</td>
+                  <td className="td-mono" style={{ color: 'var(--text-primary)' }}>{fmtR(comissao)}</td>
                 </tr>
               ))}
             </tbody>

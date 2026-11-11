@@ -39,7 +39,7 @@ export function TrialBanner() {
   return (
     <div style={{
       position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 100, background: '#C9A84C', color: '#0D0D0D',
+      zIndex: 100, background: 'var(--primary)', color: 'var(--primary-foreground)',
       borderRadius: 12, padding: '12px 20px',
       display: 'flex', alignItems: 'center', gap: 12,
       boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
@@ -51,10 +51,10 @@ export function TrialBanner() {
       </p>
       <button
         onClick={() => { router.push('/planos'); dispensar() }}
-        style={{ padding: '5px 14px', borderRadius: 7, border: '2px solid #0D0D0D', background: '#0D0D0D', color: '#C9A84C', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+        style={{ padding: '5px 14px', borderRadius: 7, border: '2px solid #0B0B0B', background: '#0B0B0B', color: 'var(--text-primary)', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
         Ver planos
       </button>
-      <button onClick={dispensar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0D0D0D', padding: 2, flexShrink: 0 }}>
+      <button onClick={dispensar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0B0B0B', padding: 2, flexShrink: 0 }}>
         <X size={14} />
       </button>
     </div>

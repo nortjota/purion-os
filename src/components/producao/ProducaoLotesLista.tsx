@@ -32,7 +32,7 @@ export function ProducaoLotesLista({ lotes, onAbrirLote, onMudarEstagio }: Props
             <button key={lote.id} onClick={() => onAbrirLote(lote)} className="mobile-card-item text-left w-full">
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
                 <div>
-                  <p style={{ fontSize: 12, fontFamily: 'monospace', color: '#C9A84C' }}>{lote.codigo}</p>
+                  <p style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{lote.codigo}</p>
                   <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{lote.produto}</p>
                 </div>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: `${estagio.cor}20`, color: estagio.cor }}>
@@ -63,8 +63,8 @@ export function ProducaoLotesLista({ lotes, onAbrirLote, onMudarEstagio }: Props
             {lotes.map((lote) => {
               const info = socioInfo(lote.responsavel)
               return (
-                <tr key={lote.id} onClick={() => onAbrirLote(lote)} style={{ cursor: 'pointer' }} className="hover:bg-[rgba(201,168,76,0.03)]">
-                  <td className="td-mono" style={{ color: '#C9A84C' }}>{lote.codigo}</td>
+                <tr key={lote.id} onClick={() => onAbrirLote(lote)} style={{ cursor: 'pointer' }} className="hover:bg-[rgba(212,252,60,0.03)]">
+                  <td className="td-mono" style={{ color: 'var(--text-primary)' }}>{lote.codigo}</td>
                   <td>{lote.produto}</td>
                   <td className="caption">{formatarDataBR(lote.dataInicio)}</td>
                   <td className="caption">{lote.quantidadeProduzida}</td>

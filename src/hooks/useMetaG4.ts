@@ -73,10 +73,10 @@ export const MESES_LABEL = [
   'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
 ]
 
-export const COR_SEM_DADOS = '#3A3A3A'
-export const COR_VERDE     = '#22C55E'
-export const COR_AMARELO   = '#E8A838'
-export const COR_VERMELHO  = '#E85238'
+export const COR_SEM_DADOS = '#2E312F'
+export const COR_VERDE     = '#8FD14F'
+export const COR_AMARELO   = '#E6C374'
+export const COR_VERMELHO  = '#E5544B'
 
 export function percentualMedicao(m: Pick<MetaMedicaoMensal, 'valorMeta' | 'valorRealizado'> | null | undefined): number | null {
   if (!m || m.valorMeta == null || m.valorMeta <= 0 || m.valorRealizado == null) return null

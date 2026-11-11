@@ -20,7 +20,7 @@ import {
   type FollowUpTarefa,
 } from '@/lib/posVenda'
 
-const DOURADO = '#C9A84C'
+const ACENTO = '#D4FC3C'
 
 function fmtData(iso: string | null | undefined): string {
   if (!iso) return '—'
@@ -42,9 +42,9 @@ function BadgeMensagem({ codigo }: { codigo: string | null }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700,
       padding: '2px 8px', borderRadius: 6,
-      background: comercial ? 'rgba(232,168,56,0.15)' : 'rgba(201,168,76,0.12)',
-      color: comercial ? '#F5C26B' : DOURADO,
-      border: comercial ? '1px solid rgba(232,168,56,0.45)' : '1px solid transparent',
+      background: comercial ? 'rgba(230,195,116,0.15)' : 'rgba(212,252,60,0.12)',
+      color: comercial ? 'var(--status-warning)' : ACENTO,
+      border: comercial ? '1px solid rgba(230,195,116,0.45)' : '1px solid transparent',
     }} title={comercial ? 'Mensagem comercial: só envie com opt-in de marketing' : MENSAGENS[codigo]?.titulo}>
       {codigo}{MENSAGENS[codigo] ? ` · ${MENSAGENS[codigo].titulo}` : ''}
       {comercial && <><ShieldAlert size={11} /> exige opt-in</>}
@@ -64,7 +64,7 @@ function IconeCanal({ canal }: { canal: FollowUpTarefa['canal'] }) {
 function Toggle({ label, ativo, onChange, alerta }: { label: string; ativo: boolean; onChange: (v: boolean) => void; alerta?: boolean }) {
   return (
     <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#E0E0E0', cursor: 'pointer', minHeight: 32 }}>
-      <input type="checkbox" checked={ativo} onChange={(e) => onChange(e.target.checked)} style={{ width: 16, height: 16, accentColor: alerta ? '#EF4444' : DOURADO }} />
+      <input type="checkbox" checked={ativo} onChange={(e) => onChange(e.target.checked)} style={{ width: 16, height: 16, accentColor: alerta ? 'var(--status-danger)' : ACENTO }} />
       {label}
     </label>
   )
@@ -96,16 +96,16 @@ function PainelCliente({ venda, onSinais, onFeedback }: {
             <button key={n} onClick={() => onFeedback(venda, n)} title={`${n}/5`} style={{
               width: 32, height: 32, borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 700,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2,
-              border: `1px solid ${ativo ? DOURADO : 'var(--border)'}`,
-              background: ativo ? 'rgba(201,168,76,0.18)' : 'transparent',
-              color: ativo ? DOURADO : '#E0E0E0',
+              border: `1px solid ${ativo ? ACENTO : 'var(--border)'}`,
+              background: ativo ? 'rgba(212,252,60,0.18)' : 'transparent',
+              color: ativo ? ACENTO : '#E0E0E0',
             }}>
               {n}
             </button>
           )
         })}
         {venda.satisfacao != null && (
-          <span style={{ fontSize: 12, color: venda.satisfacao >= 4 ? '#86EFAC' : venda.satisfacao <= 2 ? '#FCA5A5' : '#B8B8B8' }}>
+          <span style={{ fontSize: 12, color: venda.satisfacao >= 4 ? 'var(--status-ok)' : venda.satisfacao <= 2 ? 'var(--status-danger)' : '#B8B8B8' }}>
             {venda.satisfacao >= 4 ? 'positivo → gera Avaliação/UGC' : venda.satisfacao <= 2 ? 'insatisfeito → suprime avaliação e oferta' : 'neutro'}
           </span>
         )}
@@ -132,7 +132,7 @@ function CardFollowUp({ t, venda, hoje, reclamacao, acoes }: {
   }
 }) {
   const [aberto, setAberto] = useState(false)
-  const info = TIPO_FOLLOWUP[t.tipo] ?? { label: t.tipo, cor: DOURADO }
+  const info = TIPO_FOLLOWUP[t.tipo] ?? { label: t.tipo, cor: ACENTO }
   const dias = diasAte(t.dataPrevista, hoje)
   const atrasado = t.status === 'pendente' && dias < 0
   const fimJanela = t.janelaFim && t.status === 'pendente' && diasAte(t.janelaFim, hoje) < 0
@@ -146,7 +146,7 @@ function CardFollowUp({ t, venda, hoje, reclamacao, acoes }: {
             <span style={{ fontSize: 15, fontWeight: 600, color: '#F5F5F5' }}>{t.clienteNome || 'Cliente'}</span>
             <span style={{ fontSize: 12, fontWeight: 600, color: info.cor }}>{info.label}</span>
             {t.lembretes > 0 && t.status === 'pendente' && (
-              <span style={{ fontSize: 11, color: '#F5C26B' }}>lembrete {t.lembretes}/{MAX_LEMBRETES}</span>
+              <span style={{ fontSize: 11, color: 'var(--status-warning)' }}>lembrete {t.lembretes}/{MAX_LEMBRETES}</span>
             )}
           </div>
           <p style={{ fontSize: 13, color: '#B8B8B8', marginTop: 3 }}>{t.gatilho}</p>
@@ -157,7 +157,7 @@ function CardFollowUp({ t, venda, hoje, reclamacao, acoes }: {
               {t.canal === 'whatsapp' && t.clienteTelefone ? ` · ${t.clienteTelefone}` : ''}
               {t.canal === 'email' && t.clienteEmail ? ` · ${t.clienteEmail}` : ''}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: atrasado ? '#FCA5A5' : '#B8B8B8' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: atrasado ? 'var(--status-danger)' : '#B8B8B8' }}>
               <Clock size={12} />
               {t.status === 'pendente'
                 ? (dias === 0 ? 'hoje' : dias > 0 ? `em ${dias}d (${fmtData(t.dataPrevista)})` : `atrasado ${-dias}d`)
@@ -166,12 +166,12 @@ function CardFollowUp({ t, venda, hoje, reclamacao, acoes }: {
             </span>
           </div>
           {t.status === 'suprimido' && t.motivoSupressao && (
-            <p style={{ fontSize: 12, color: '#FCA5A5', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <p style={{ fontSize: 12, color: 'var(--status-danger)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
               <BellOff size={12} /> {t.motivoSupressao}
             </p>
           )}
           {t.status === 'pendente' && reclamacao && (
-            <p style={{ fontSize: 12, color: '#FCA5A5', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <p style={{ fontSize: 12, color: 'var(--status-danger)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
               <AlertTriangle size={12} /> Cliente com reclamação/troca em aberto no SAC
             </p>
           )}
@@ -254,7 +254,7 @@ export function PosVendaPage() {
     if (itens.length === 0) {
       return (
         <div style={{ textAlign: 'center', padding: 32, color: '#B8B8B8', fontSize: 14, border: '1px dashed var(--border)', borderRadius: 12 }}>
-          <CheckCircle2 size={26} style={{ margin: '0 auto 8px', color: DOURADO, opacity: 0.7 }} />{vazio}
+          <CheckCircle2 size={26} style={{ margin: '0 auto 8px', color: ACENTO, opacity: 0.7 }} />{vazio}
         </div>
       )
     }
@@ -277,10 +277,10 @@ export function PosVendaPage() {
     <div className="page-content section-gap">
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <div style={{
-          width: 40, height: 40, borderRadius: 10, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.35)',
+          width: 40, height: 40, borderRadius: 10, background: 'rgba(245,245,240,0.12)', border: '1px solid rgba(245,245,240,0.35)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
-          <HeartHandshake size={20} style={{ color: DOURADO }} />
+          <HeartHandshake size={20} style={{ color: ACENTO }} />
         </div>
         <div style={{ flex: 1, minWidth: 220 }}>
           <h1 className="page-title" style={{ color: '#F5F5F5' }}>Pós-venda</h1>
@@ -299,17 +299,17 @@ export function PosVendaPage() {
       </div>
 
       {tabelaAusente && (
-        <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(232,168,56,0.1)', border: '1px solid rgba(232,168,56,0.4)', color: '#F5C26B', fontSize: 13 }}>
+        <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(230,195,116,0.1)', border: '1px solid rgba(230,195,116,0.4)', color: 'var(--status-warning)', fontSize: 13 }}>
           A tabela <strong>follow_up_tarefas</strong> ainda não existe. Rode <code>supabase/migration_pos_venda_followup.sql</code> no SQL Editor do Supabase.
         </div>
       )}
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Para contatar hoje', valor: filaHoje.length, cor: DOURADO, live: true },
-          { label: 'Atrasados', valor: atrasados.length, cor: atrasados.length ? '#EF4444' : '#E0E0E0', live: false },
+          { label: 'Para contatar hoje', valor: filaHoje.length, cor: ACENTO, live: true },
+          { label: 'Atrasados', valor: atrasados.length, cor: atrasados.length ? '#E5544B' : '#E0E0E0', live: false },
           { label: 'Próximos', valor: proximos.length, cor: '#E0E0E0', live: false },
-          { label: 'Feitos hoje', valor: feitosHoje, cor: '#4CAF7A', live: false },
+          { label: 'Feitos hoje', valor: feitosHoje, cor: '#8FD14F', live: false },
         ].map((k) => (
           <div key={k.label} className="kpi-card" style={{ flex: '1 1 140px', minWidth: 0 }}>
             <span style={{ fontSize: 12, color: '#B8B8B8', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -323,7 +323,7 @@ export function PosVendaPage() {
       <div style={{ padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', fontSize: 12, color: '#B8B8B8', lineHeight: 1.6 }}>
         <strong style={{ color: '#E0E0E0' }}>Supressão sempre ativa:</strong> reclamação/troca/atraso em aberto suprime avaliação, oferta e pesquisa ·
         opt-out de WhatsApp bloqueia mensagem comercial nesse canal · presente pesquisa a experiência de compra, não o consumo ·
-        sem resposta: no máximo 1 lembrete, depois encerra. <span style={{ color: '#F5C26B' }}>M08 e M10 são comerciais e exigem opt-in.</span>
+        sem resposta: no máximo 1 lembrete, depois encerra. <span style={{ color: 'var(--status-warning)' }}>M08 e M10 são comerciais e exigem opt-in.</span>
       </div>
 
       <InnerTabs
@@ -356,12 +356,12 @@ export function PosVendaPage() {
                 <span style={{ fontSize: 15, fontWeight: 600, color: '#F5F5F5' }}>{v.clienteNome || 'Cliente'}</span>
                 <span style={{ fontSize: 12, color: '#B8B8B8' }}>entregue {fmtData(v.dataEntregaRealizada)} · {v.quantidade}x {v.produto || 'PURION GT'}</span>
                 {v.satisfacao != null && (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, color: DOURADO }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, color: ACENTO }}>
                     <Star size={12} /> {v.satisfacao}/5
                   </span>
                 )}
                 {temReclamacaoAberta(v, tickets) && (
-                  <span style={{ fontSize: 12, color: '#FCA5A5', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 12, color: 'var(--status-danger)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                     <AlertTriangle size={12} /> reclamação aberta
                   </span>
                 )}

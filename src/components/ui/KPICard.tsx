@@ -38,7 +38,7 @@ export function KPICard({
 
   const changeColor = !change || change === 0
     ? 'var(--text-secondary)'
-    : change > 0 ? '#22C55E' : '#EF4444'
+    : change > 0 ? '#8FD14F' : '#E5544B'
   const changeArrow = !change || change === 0 ? '' : change > 0 ? '▲ ' : '▼ '
 
   return (
@@ -54,7 +54,7 @@ export function KPICard({
         className="kpi-accent-bar"
         style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-          background: 'var(--gold)', opacity: 0,
+          background: 'var(--brand-accent)', opacity: 0,
           transition: 'opacity var(--transition-base)',
           borderRadius: '12px 12px 0 0',
         }}
@@ -63,7 +63,7 @@ export function KPICard({
       {/* Icon */}
       {Icon && (
         <div style={{ position: 'absolute', top: 20, right: 20 }}>
-          <Icon size={20} style={{ color: 'var(--gold)', opacity: 0.3 }} />
+          <Icon size={20} style={{ color: 'var(--text-secondary)', opacity: 0.5 }} />
         </div>
       )}
 
@@ -71,7 +71,7 @@ export function KPICard({
       <p className="kpi-label">{label}</p>
 
       {/* Value */}
-      <p style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--gold)', marginTop: 6, lineHeight: 1 }}>
+      <p style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums', marginTop: 6, lineHeight: 1 }}>
         {prefix && <span style={{ fontSize: 16, fontWeight: 500, marginRight: 2 }}>{prefix}</span>}
         {value ?? '—'}
         {suffix && <span style={{ fontSize: 16, fontWeight: 500, marginLeft: 2 }}>{suffix}</span>}

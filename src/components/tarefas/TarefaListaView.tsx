@@ -149,7 +149,7 @@ function TarefaLinha({ t, onAbrirTarefa, onConcluirRapido }: {
     <tr
       onClick={() => onAbrirTarefa(t)}
       style={{ cursor: 'pointer' }}
-      className="hover:bg-[rgba(201,168,76,0.03)] purion-row"
+      className="hover:bg-[rgba(212,252,60,0.03)] purion-row"
     >
       <td onClick={(e) => e.stopPropagation()} style={{ width: 36 }}>
         <label className="check-draw-label">
@@ -169,7 +169,7 @@ function TarefaLinha({ t, onAbrirTarefa, onConcluirRapido }: {
           display: 'flex', alignItems: 'center', gap: 6,
         }}>
           {t.titulo}
-          {t.status === 'bloqueada' && <AlertTriangle size={11} style={{ color: '#E8A838', flexShrink: 0 }} />}
+          {t.status === 'bloqueada' && <AlertTriangle size={11} style={{ color: 'var(--status-warning)', flexShrink: 0 }} />}
         </span>
       </td>
       <td>
@@ -378,7 +378,7 @@ export function TarefaListaView({ tarefas, groupBy, onAbrirTarefa, onConcluirRap
                           color: 'var(--text-secondary)', fontSize: 12,
                           borderBottom: '1px solid var(--border)',
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.color = '#C9A84C' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--brand-accent)' }}
                         onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-secondary)' }}
                       >
                         <Plus size={12} /> Adicionar tarefa

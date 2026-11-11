@@ -133,7 +133,7 @@ export function AfiliadoRelatorio() {
     const doc  = new jsPDF()
     let y = 20
 
-    doc.setFontSize(18); doc.setTextColor(201, 168, 76)
+    doc.setFontSize(18); doc.setTextColor(11, 11, 11)
     doc.text('PURION OS — Relatório de Afiliados', 14, y); y += 10
 
     doc.setFontSize(10); doc.setTextColor(120, 120, 120)
@@ -264,7 +264,7 @@ export function AfiliadoRelatorio() {
                     <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>{a.cliques.toLocaleString('pt-BR')}</td>
                     <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>{a.receita > 0 ? vendasFiltradas.filter(v => v.afiliado_id === a.id).length : 0}</td>
                     <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text-primary)' }}>{fmt(a.receita)}</td>
-                    <td style={{ padding: '10px 12px', color: '#C9A84C', fontWeight: 600 }}>{fmt(a.comissao)}</td>
+                    <td style={{ padding: '10px 12px', color: 'var(--text-primary)', fontWeight: 600 }}>{fmt(a.comissao)}</td>
                     <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>{a.conversao.toFixed(1)}%</td>
                   </tr>
                 ))}
@@ -300,7 +300,7 @@ export function AfiliadoRelatorio() {
                     <tr key={p.sku} style={{ borderBottom: '1px solid var(--border)' }}>
                       <td style={{ padding: '8px', color: 'var(--text-primary)', fontWeight: 500 }}>{p.sku}</td>
                       <td style={{ padding: '8px', color: 'var(--text-secondary)' }}>{p.qtd}</td>
-                      <td style={{ padding: '8px', color: '#C9A84C', fontWeight: 600 }}>{fmt(p.receita)}</td>
+                      <td style={{ padding: '8px', color: 'var(--text-primary)', fontWeight: 600 }}>{fmt(p.receita)}</td>
                     </tr>
                   ))}
                 </tbody>

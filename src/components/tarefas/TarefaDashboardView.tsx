@@ -15,8 +15,8 @@ interface Props {
 }
 
 const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A',
-  border: '1px solid rgba(201,168,76,0.2)',
+  background: '#1B1D1C',
+  border: '1px solid rgba(245,245,240,0.2)',
   borderRadius: 8,
   fontSize: 12,
   color: '#F5F5F5',
@@ -87,21 +87,21 @@ export function TarefaDashboardView({ tarefas }: Props) {
       {/* ── KPIs ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12 }}>
         <KpiCard label="Total de Tarefas"  value={metricas.total}       icon={ListTodo}     />
-        <KpiCard label="Concluídas"        value={metricas.concluidas}  icon={CheckSquare}  cor="#4CAF7A" />
-        <KpiCard label="Em Andamento"      value={metricas.emAndamento} icon={Clock}        cor="#5B8FE8" />
-        <KpiCard label="Atrasadas"         value={metricas.atrasadas}   icon={AlertTriangle} cor={metricas.atrasadas > 0 ? '#E85238' : undefined} />
+        <KpiCard label="Concluídas"        value={metricas.concluidas}  icon={CheckSquare}  cor="#8FD14F" />
+        <KpiCard label="Em Andamento"      value={metricas.emAndamento} icon={Clock}        cor="#9CC3DB" />
+        <KpiCard label="Atrasadas"         value={metricas.atrasadas}   icon={AlertTriangle} cor={metricas.atrasadas > 0 ? '#E5544B' : undefined} />
       </div>
 
       {/* ── Taxa de conclusão ── */}
       <div className="card-purion" style={{ padding: '16px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Taxa de Conclusão</span>
-          <span style={{ fontSize: 20, fontWeight: 700, color: '#4CAF7A' }}>{taxaConclusao}%</span>
+          <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--status-ok)' }}>{taxaConclusao}%</span>
         </div>
         <div style={{ height: 6, borderRadius: 3, background: 'var(--bg-surface-2)', overflow: 'hidden' }}>
           <div style={{
             width: `${taxaConclusao}%`, height: '100%',
-            background: 'linear-gradient(90deg, #4CAF7A, #6DD4A0)',
+            background: 'linear-gradient(90deg, #8FD14F, #6DD4A0)',
             borderRadius: 3, transition: 'width 600ms ease',
           }} />
         </div>
@@ -126,10 +126,10 @@ export function TarefaDashboardView({ tarefas }: Props) {
                 <YAxis tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip
                   contentStyle={TOOLTIP_STYLE}
-                  cursor={{ fill: 'rgba(201,168,76,0.05)' }}
+                  cursor={{ fill: 'rgba(245,245,240,0.05)' }}
                 />
-                <Bar dataKey="total" name="Total" fill="rgba(91,143,232,0.7)" radius={[3,3,0,0]} />
-                <Bar dataKey="concluidas" name="Concluídas" fill="rgba(76,175,122,0.8)" radius={[3,3,0,0]} />
+                <Bar dataKey="total" name="Total" fill="rgba(156,195,219,0.7)" radius={[3,3,0,0]} />
+                <Bar dataKey="concluidas" name="Concluídas" fill="rgba(143,209,79,0.8)" radius={[3,3,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -195,7 +195,7 @@ export function TarefaDashboardView({ tarefas }: Props) {
                     <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{r.concluidas}/{r.total}</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: r.cor }}>{pct}%</span>
                     {r.atrasadas > 0 && (
-                      <span style={{ fontSize: 10, color: '#E85238', fontWeight: 600 }}>
+                      <span style={{ fontSize: 10, color: 'var(--status-danger)', fontWeight: 600 }}>
                         {r.atrasadas} atrasada{r.atrasadas > 1 ? 's' : ''}
                       </span>
                     )}

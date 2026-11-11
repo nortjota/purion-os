@@ -46,8 +46,8 @@ interface Props {
 // CORES E HELPERS
 // ─────────────────────────────────────────────
 
-const CANAL_CORES = ['#C9A84C', '#8B5CF6', '#3B82F6', '#6B7280']
-const PRODUTO_CORES = ['#C9A84C', '#A07A2E', '#7A5E22']
+const CANAL_CORES = ['#D4FC3C', '#A7A9A6', '#9CC3DB', '#6B7280']
+const PRODUTO_CORES = ['#D4FC3C', '#A9CA30', '#7F9724']
 
 const fmtR = (v: number) =>
   v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
@@ -59,7 +59,7 @@ function TooltipProduto({ active, payload, label }: {
   const d = payload[0]
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
-      <p className="font-bold text-[#C9A84C] mb-2 tracking-widest">{label}</p>
+      <p className="font-bold text-[var(--text-primary)] mb-2 tracking-widest">{label}</p>
       <p className="text-[var(--text-secondary)]">Receita: <span className="text-[var(--text-primary)] font-semibold">{fmtR(d.value)}</span></p>
     </div>
   )
@@ -73,7 +73,7 @@ function TooltipCanal({ active, payload }: {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="font-bold text-[var(--text-primary)] mb-1">{item.name}</p>
-      <p className="text-[var(--text-secondary)]">Receita: <span className="text-[#C9A84C] font-bold">{fmtR(item.value)}</span></p>
+      <p className="text-[var(--text-secondary)]">Receita: <span className="text-[var(--text-primary)] font-bold">{fmtR(item.value)}</span></p>
       <p className="text-[var(--text-secondary)]">Participação: <span className="text-[var(--text-primary)] font-semibold">{item.payload.percentual}%</span></p>
     </div>
   )
@@ -86,7 +86,7 @@ function TooltipSemanal({ active, payload, label }: {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-3 text-xs shadow-xl">
       <p className="text-[#B8B8B8] mb-1">Semana de {label}</p>
-      <p className="font-bold text-[#C9A84C]">{fmtR(payload[0].value)}</p>
+      <p className="font-bold text-[var(--text-primary)]">{fmtR(payload[0].value)}</p>
     </div>
   )
 }
@@ -99,7 +99,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const gridStroke = isDark ? '#2A2A2A' : '#E0DFDB'
+  const gridStroke = isDark ? '#2A2C2B' : '#E0DFDB'
   const tickFill   = isDark ? '#A0A0A0' : '#6B6B66'
 
   return (
@@ -126,10 +126,10 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
                 tick={{ fill: tickFill, fontSize: 10 }}
                 axisLine={false} tickLine={false} width={44}
               />
-              <Tooltip content={<TooltipProduto />} cursor={{ fill: 'rgba(201,168,76,0.05)' }} />
+              <Tooltip content={<TooltipProduto />} cursor={{ fill: 'rgba(245,245,240,0.05)' }} />
               <Bar dataKey="receita" name="receita" radius={[4, 4, 0, 0]}>
                 {produtosData.map((entry, index) => (
-                  <Cell key={entry.nome} fill={PRODUTO_CORES[index] ?? '#3A3A3A'} />
+                  <Cell key={entry.nome} fill={PRODUTO_CORES[index] ?? '#2E312F'} />
                 ))}
               </Bar>
             </BarChart>
@@ -164,7 +164,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
                 paddingAngle={3}
               >
                 {canaisData.map((entry, index) => (
-                  <Cell key={entry.nome} fill={CANAL_CORES[index] ?? '#3A3A3A'} />
+                  <Cell key={entry.nome} fill={CANAL_CORES[index] ?? '#2E312F'} />
                 ))}
               </Pie>
               <Tooltip content={<TooltipCanal />} />
@@ -179,7 +179,7 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
           <div className="flex flex-col gap-1.5 mt-1">
             {canaisData.map((c, i) => (
               <div key={c.nome} className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CANAL_CORES[i] ?? '#3A3A3A' }} />
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CANAL_CORES[i] ?? '#2E312F' }} />
                 <span className="text-[10px] text-[var(--text-secondary)] flex-1">{c.nome}</span>
                 <span className="text-[10px] font-bold text-[var(--text-primary)]">{c.percentual}%</span>
               </div>
@@ -209,9 +209,9 @@ export default function GraficosInteligencia({ produtosData, canaisData, semanal
             <Tooltip content={<TooltipSemanal />} />
             <Line
               type="monotone" dataKey="valor"
-              stroke="#C9A84C" strokeWidth={2}
-              dot={{ fill: '#C9A84C', r: 3 }}
-              activeDot={{ r: 5, fill: '#D4B568' }}
+              stroke="#D4FC3C" strokeWidth={2}
+              dot={{ fill: '#D4FC3C', r: 3 }}
+              activeDot={{ r: 5, fill: '#D4FC3C' }}
             />
           </LineChart>
         </ResponsiveContainer>

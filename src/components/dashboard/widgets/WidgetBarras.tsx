@@ -51,7 +51,7 @@ export function WidgetBarras({ title, icon, data, series, height = 200, isLoadin
           )}
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
-            cursor={{ fill: 'rgba(201,168,76,0.05)' }}
+            cursor={{ fill: 'rgba(245,245,240,0.05)' }}
             formatter={(value) => formatarValor ? formatarValor(Number(value)) : value}
           />
           {series ? (

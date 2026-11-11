@@ -5,8 +5,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, Legend,
 } from 'recharts'
 
-const GOLD = '#C9A84C'
-const BLUE = '#3B82F6'
+const ACENTO = '#D4FC3C'
+const BLUE = '#9CC3DB'
 const TOOLTIP_STYLE = {
   contentStyle: { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 },
   labelStyle: { color: 'var(--text-secondary)' },
@@ -29,7 +29,7 @@ export function GraficoVendasDiarias({ dados }: { dados: DiaVenda[] }) {
         <XAxis dataKey="data" tick={TICK} {...AXIS} />
         <YAxis tick={TICK} {...AXIS} tickFormatter={KILO} width={56} />
         <Tooltip {...TOOLTIP_STYLE} formatter={fmtV(MONEY, 'Vendas')} />
-        <Line type="monotone" dataKey="valor" stroke={GOLD} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: GOLD }} />
+        <Line type="monotone" dataKey="valor" stroke={ACENTO} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: ACENTO }} />
       </LineChart>
     </ResponsiveContainer>
   )
@@ -53,7 +53,7 @@ export function GraficoTopAfiliados({
         <YAxis type="category" dataKey="nome" tick={TICK} {...AXIS} width={90} />
         <Tooltip {...TOOLTIP_STYLE} formatter={fmtV(MONEY, 'Receita')} />
         <Bar
-          dataKey="receita" fill={GOLD} radius={[0, 4, 4, 0]}
+          dataKey="receita" fill={ACENTO} radius={[0, 4, 4, 0]}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onClick={(entry: any) => onClickAfiliado?.((entry as TopAfiliadoItem).id)}
           cursor={onClickAfiliado ? 'pointer' : 'default'}
@@ -76,7 +76,7 @@ export function GraficoClicksVsVendas({ dados }: { dados: SemanaData[] }) {
         <Tooltip {...TOOLTIP_STYLE} />
         <Legend wrapperStyle={{ fontSize: 11 }} />
         <Line type="monotone" dataKey="cliques" stroke={BLUE} strokeWidth={2} dot={false} name="Cliques" />
-        <Line type="monotone" dataKey="vendas"  stroke={GOLD} strokeWidth={2} dot={false} name="Vendas" />
+        <Line type="monotone" dataKey="vendas"  stroke={ACENTO} strokeWidth={2} dot={false} name="Vendas" />
       </LineChart>
     </ResponsiveContainer>
   )
@@ -93,15 +93,15 @@ export function GraficoClicksPorDia({ dados }: { dados: DiaClique[] }) {
         <XAxis dataKey="data" tick={TICK} {...AXIS} />
         <YAxis tick={TICK} {...AXIS} width={32} />
         <Tooltip {...TOOLTIP_STYLE} />
-        <Bar dataKey="cliques"    fill="rgba(59,130,246,0.4)" radius={[3, 3, 0, 0]} name="Cliques" />
-        <Bar dataKey="convertidos" fill={GOLD}                radius={[3, 3, 0, 0]} name="Convertidos" />
+        <Bar dataKey="cliques"    fill="rgba(156,195,219,0.4)" radius={[3, 3, 0, 0]} name="Cliques" />
+        <Bar dataKey="convertidos" fill={ACENTO}                radius={[3, 3, 0, 0]} name="Convertidos" />
       </BarChart>
     </ResponsiveContainer>
   )
 }
 
 // ── Plataformas — pizza (relatório) ──────────────────────────────────────────
-const PLAT_COLORS = [GOLD, BLUE, '#EC4899', '#10B981', '#8B5CF6', '#F59E0B']
+const PLAT_COLORS = [ACENTO, BLUE, '#EC4899', '#8FD14F', '#A7A9A6', '#E6C374']
 export type PlataformaItem = { nome: string; valor: number }
 
 export function GraficoPorPlataforma({ dados }: { dados: PlataformaItem[] }) {
@@ -134,7 +134,7 @@ export function GraficoEvolucaoMensal({ dados }: { dados: MesData[] }) {
         <XAxis dataKey="mes" tick={TICK} {...AXIS} />
         <YAxis tick={TICK} {...AXIS} tickFormatter={KILO} width={56} />
         <Tooltip {...TOOLTIP_STYLE} formatter={fmtV(MONEY, 'Receita')} />
-        <Line type="monotone" dataKey="receita" stroke={GOLD} strokeWidth={2} dot={{ fill: GOLD, r: 3 }} />
+        <Line type="monotone" dataKey="receita" stroke={ACENTO} strokeWidth={2} dot={{ fill: ACENTO, r: 3 }} />
       </LineChart>
     </ResponsiveContainer>
   )

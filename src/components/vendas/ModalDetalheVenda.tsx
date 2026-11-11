@@ -24,11 +24,11 @@ function Timeline({ etapas }: { etapas: EtapaTimeline[] }) {
               className="flex items-center justify-center"
               style={{
                 width: 20, height: 20, borderRadius: '50%',
-                background: e.feita ? '#4CAF7A' : 'var(--bg-surface-2)',
-                border: `1px solid ${e.feita ? '#4CAF7A' : 'var(--border)'}`,
+                background: e.feita ? 'var(--status-ok)' : 'var(--bg-surface-2)',
+                border: `1px solid ${e.feita ? '#8FD14F' : 'var(--border)'}`,
               }}
             >
-              {e.feita && <Check size={11} color="#0D0D0D" />}
+              {e.feita && <Check size={11} color="#0B0B0B" />}
             </div>
             <span className="text-[10px] mt-1 text-center" style={{ color: e.feita ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: e.feita ? 600 : 400 }}>
               {e.label}
@@ -36,7 +36,7 @@ function Timeline({ etapas }: { etapas: EtapaTimeline[] }) {
             <span className="text-[9px] text-[#8A8A8A]">{e.data ? formatarDataBR(e.data.slice(0, 10)) : '—'}</span>
           </div>
           {i < etapas.length - 1 && (
-            <div style={{ flex: 1, height: 1, background: e.feita ? '#4CAF7A' : 'var(--border)', marginBottom: 16 }} />
+            <div style={{ flex: 1, height: 1, background: e.feita ? 'var(--status-ok)' : 'var(--border)', marginBottom: 16 }} />
           )}
         </div>
       ))}
@@ -48,7 +48,7 @@ function Secao({ icon: Icon, titulo, children }: { icon: React.ElementType; titu
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <Icon size={13} className="text-[var(--gold)] opacity-70" />
+        <Icon size={13} className="text-[var(--brand-accent)] opacity-70" />
         <h4 className="text-[11px] font-bold text-[#B8B8B8] uppercase tracking-wider">{titulo}</h4>
       </div>
       <div className="space-y-2">{children}</div>
@@ -64,7 +64,7 @@ function Campo({ label, valor, destaque }: { label: string; valor: React.ReactNo
       <span
         className="text-[12px] text-right break-all"
         style={{
-          color: destaque ? '#C9A84C' : 'var(--text-primary)',
+          color: destaque ? 'var(--brand-accent)' : 'var(--text-primary)',
           fontWeight: destaque ? 700 : 500,
         }}
       >
@@ -108,19 +108,19 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
           <div>
             <h3
               className="font-black text-[var(--text-primary)] text-base"
-              style={{ fontFamily: 'Montserrat, sans-serif' }}
+              style={{ fontFamily: 'var(--font-mono)' }}
             >
               {v.clienteNome || 'Detalhe da Venda'}
             </h3>
             <p className="text-xs text-[#B8B8B8] mt-0.5">
-              <span className="text-[#C9A84C] font-semibold">{v.canal.toUpperCase()}</span>
+              <span className="text-[var(--text-primary)] font-semibold">{v.canal.toUpperCase()}</span>
               {v.pedidoAppmax && ` · Appmax #${v.pedidoAppmax}`}
               {' '}· {formatarDataBR(v.dataVenda.slice(0, 10))}
             </p>
           </div>
           <button
             onClick={onFechar}
-            className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"
           >
             <X size={16} />
           </button>
@@ -174,7 +174,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
                 </p>
               </>
             ) : (
-              <p className="text-[12px] text-[#F5C26B]">Custo do SKU a validar (Discovery) — contribuição indisponível.</p>
+              <p className="text-[12px] text-[var(--status-warning)]">Custo do SKU a validar (Discovery) — contribuição indisponível.</p>
             )}
           </Secao>
 

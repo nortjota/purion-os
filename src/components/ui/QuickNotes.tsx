@@ -15,10 +15,10 @@ export interface QuickNote {
 }
 
 const COLORS = [
-  { value: '#C9A84C', label: 'Dourado' },
-  { value: '#22C55E', label: 'Verde'   },
-  { value: '#E85238', label: 'Vermelho'},
-  { value: '#5B8FE8', label: 'Azul'    },
+  { value: '#D4FC3C', label: 'Verde-limão' },
+  { value: '#8FD14F', label: 'Verde'   },
+  { value: '#E5544B', label: 'Vermelho'},
+  { value: '#9CC3DB', label: 'Azul'    },
   { value: '#A0A0A0', label: 'Cinza'   },
 ]
 
@@ -53,7 +53,7 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
   const [showForm, setShowForm] = useState(false)
   const [titulo, setTitulo] = useState('')
   const [conteudo, setConteudo] = useState('')
-  const [cor, setCor] = useState('#C9A84C')
+  const [cor, setCor] = useState('#D4FC3C')
   const [modulo, setModulo] = useState<QuickNote['modulo']>('nenhum')
   const [fixada, setFixada] = useState(false)
 
@@ -96,7 +96,7 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
 
     setTitulo('')
     setConteudo('')
-    setCor('#C9A84C')
+    setCor('#D4FC3C')
     setModulo('nenhum')
     setFixada(false)
     setShowForm(false)
@@ -123,14 +123,14 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
           width: 48,
           height: 48,
           borderRadius: '50%',
-          background: '#C9A84C',
-          color: '#0D0D0D',
+          background: 'var(--primary)',
+          color: '#0B0B0B',
           border: 'none',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(201,168,76,0.4)',
+          boxShadow: '0 4px 20px rgba(245,245,240,0.4)',
           fontSize: 22,
           fontWeight: 700,
         }}
@@ -166,7 +166,7 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
                 onClick={() => setShowForm(!showForm)}
                 style={{
                   width: 28, height: 28, borderRadius: 8,
-                  background: '#C9A84C', color: '#0D0D0D',
+                  background: 'var(--primary)', color: 'var(--primary-foreground)',
                   border: 'none', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}

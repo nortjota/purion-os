@@ -37,10 +37,10 @@ function LeadCard({ lead, isDragging, selecionado, onDragStart, onDragEnd, onAbr
       className={`
         rounded-xl border p-3 cursor-pointer select-none
         bg-[var(--bg-surface)] border-[var(--border)]
-        hover:border-[rgba(201,168,76,0.25)]
+        hover:border-[rgba(212,252,60,0.25)]
         transition-all duration-150
         ${isDragging ? 'opacity-40 scale-95' : ''}
-        ${selecionado ? 'border-[#C9A84C]' : ''}
+        ${selecionado ? 'border-[var(--brand-accent)]' : ''}
       `}
     >
       <div className="flex items-start gap-2 mb-2">
@@ -73,7 +73,7 @@ function LeadCard({ lead, isDragging, selecionado, onDragStart, onDragEnd, onAbr
           <MapPin size={9} className="shrink-0" />
           <span className="truncate">{lead.cidade} · {lead.regiao}</span>
         </span>
-        <span className="font-semibold text-[#C9A84C] shrink-0 ml-1">
+        <span className="font-semibold text-[var(--text-primary)] shrink-0 ml-1">
           {formatarMoeda(lead.valorMedioMensal)}/mês
         </span>
       </div>
@@ -164,8 +164,8 @@ function Coluna({
           </motion.div>
         ))}
         {leads.length === 0 && isDragOver && (
-          <div className="flex-1 rounded-lg border border-dashed border-[rgba(201,168,76,0.3)] flex items-center justify-center min-h-[80px]">
-            <span className="text-[10px] text-[#C9A84C]">Soltar aqui</span>
+          <div className="flex-1 rounded-lg border border-dashed border-[rgba(245,245,240,0.3)] flex items-center justify-center min-h-[80px]">
+            <span className="text-[10px] text-[var(--text-primary)]">Soltar aqui</span>
           </div>
         )}
       </div>

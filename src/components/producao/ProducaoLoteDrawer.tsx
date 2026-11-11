@@ -47,14 +47,14 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
       <div className="px-5 py-4 border-b border-[var(--border)] flex items-start gap-3 shrink-0">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h2 className="text-sm font-black text-[var(--text-primary)]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{lote.codigo}</h2>
+            <h2 className="text-sm font-black text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-title)' }}>{lote.codigo}</h2>
             <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold" style={{ backgroundColor: `${estagio.cor}20`, color: estagio.cor }}>{estagio.label}</span>
           </div>
           <p className="text-[11px] text-[#B8B8B8]">{lote.produto}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <button onClick={() => onDeletar(lote)} className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#B8B8B8] hover:text-[#E85238] transition-colors"><Trash2 size={14} /></button>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"><X size={16} /></button>
+          <button onClick={() => onDeletar(lote)} className="p-1.5 rounded-lg hover:bg-[rgba(229,84,75,0.1)] text-[#B8B8B8] hover:text-[var(--status-danger)] transition-colors"><Trash2 size={14} /></button>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"><X size={16} /></button>
         </div>
       </div>
 
@@ -67,7 +67,7 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
           </div>
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-2.5">
             <p className="text-[9px] text-[#A0A0A0] uppercase tracking-wider mb-1">Custo do lote</p>
-            <p className="text-xs font-semibold text-[#C9A84C]">{formatarMoeda(calcularCustoLote(lote.quantidadeProduzida))}</p>
+            <p className="text-xs font-semibold text-[var(--text-primary)]">{formatarMoeda(calcularCustoLote(lote.quantidadeProduzida))}</p>
           </div>
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-2.5">
             <p className="text-[9px] text-[#A0A0A0] uppercase tracking-wider mb-1">Data início</p>
@@ -90,7 +90,7 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
             />
             <button
               onClick={() => onSalvar({ quantidadeAprovada: parseInt(quantidadeEnvasada, 10) || 0 })}
-              className="px-3 py-2 rounded-lg bg-[#C9A84C] text-[#0D0D0D] text-xs font-bold"
+              className="px-3 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold"
             >
               Salvar
             </button>
@@ -119,9 +119,9 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
               return (
                 <div key={req.tipo} className="flex items-start gap-2.5 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-2.5">
                   {resultado === 'aprovado' ? (
-                    <CheckCircle2 size={14} className="text-[#4CAF7A] shrink-0 mt-0.5" />
+                    <CheckCircle2 size={14} className="text-[var(--status-ok)] shrink-0 mt-0.5" />
                   ) : resultado === 'reprovado' ? (
-                    <XCircle size={14} className="text-[#E85238] shrink-0 mt-0.5" />
+                    <XCircle size={14} className="text-[var(--status-danger)] shrink-0 mt-0.5" />
                   ) : (
                     <div className="w-3.5 h-3.5 rounded-full border border-[var(--border)] shrink-0 mt-0.5" />
                   )}
@@ -131,8 +131,8 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
                   </div>
                   {resultado === 'pendente' && (
                     <div className="flex gap-1 shrink-0">
-                      <button onClick={() => marcarTeste(req.tipo, 'aprovado')} className="px-2 py-0.5 text-[10px] font-bold text-[#4CAF7A] border border-[rgba(76,175,122,0.3)] rounded hover:bg-[rgba(76,175,122,0.1)]">Aprovar</button>
-                      <button onClick={() => marcarTeste(req.tipo, 'reprovado')} className="px-2 py-0.5 text-[10px] font-bold text-[#E85238] border border-[rgba(232,82,56,0.3)] rounded hover:bg-[rgba(232,82,56,0.1)]">Reprovar</button>
+                      <button onClick={() => marcarTeste(req.tipo, 'aprovado')} className="px-2 py-0.5 text-[10px] font-bold text-[var(--status-ok)] border border-[rgba(143,209,79,0.3)] rounded hover:bg-[rgba(143,209,79,0.1)]">Aprovar</button>
+                      <button onClick={() => marcarTeste(req.tipo, 'reprovado')} className="px-2 py-0.5 text-[10px] font-bold text-[var(--status-danger)] border border-[rgba(229,84,75,0.3)] rounded hover:bg-[rgba(229,84,75,0.1)]">Reprovar</button>
                     </div>
                   )}
                 </div>
@@ -145,7 +145,7 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-medium">Notas</p>
-            <button onClick={() => onSalvar({ notas })} className="text-[10px] text-[#C9A84C] hover:underline">Salvar</button>
+            <button onClick={() => onSalvar({ notas })} className="text-[10px] text-[var(--text-primary)] hover:underline">Salvar</button>
           </div>
           <textarea
             value={notas} onChange={(e) => setNotas(e.target.value)} rows={3}
@@ -166,7 +166,7 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
           {normalizarStatusLote(lote.status) !== 'concluido' && (
             <button
               onClick={() => onSalvar({ status: 'concluido', dataConclusao: new Date().toISOString().slice(0, 10) })}
-              className="mt-2 w-full py-1.5 rounded-lg bg-[#4CAF7A] text-[#0D0D0D] text-xs font-bold"
+              className="mt-2 w-full py-1.5 rounded-lg bg-[var(--status-ok)] text-[#0B0B0B] text-xs font-bold"
             >
               Concluir lote e enviar ao estoque
             </button>

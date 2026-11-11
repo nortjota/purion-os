@@ -35,12 +35,12 @@ export interface FollowUpTarefa {
 }
 
 export const TIPO_FOLLOWUP: Record<TipoFollowUp, { label: string; cor: string }> = {
-  boas_vindas:         { label: 'Boas-vindas / 1ª impressão', cor: '#C9A84C' },
+  boas_vindas:         { label: 'Boas-vindas / 1ª impressão', cor: '#D4FC3C' },
   pesquisa_satisfacao: { label: 'Pesquisa de satisfação',     cor: '#4A90D9' },
-  estudo_consumo_d30:  { label: 'Estudo de consumo · D+30',   cor: '#A855F7' },
-  estudo_consumo_d45:  { label: 'Estudo de consumo · D+45',   cor: '#A855F7' },
+  estudo_consumo_d30:  { label: 'Estudo de consumo · D+30',   cor: '#A7A9A6' },
+  estudo_consumo_d45:  { label: 'Estudo de consumo · D+45',   cor: '#A7A9A6' },
   avaliacao_ugc:       { label: 'Avaliação / UGC',            cor: '#4CC3A4' },
-  reposicao:           { label: 'Reposição',                  cor: '#E8A838' },
+  reposicao:           { label: 'Reposição',                  cor: '#E6C374' },
 }
 
 /** Biblioteca de Mensagens (conteúdo completo na Central de Conhecimento). */

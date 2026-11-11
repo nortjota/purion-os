@@ -9,15 +9,15 @@ import {
 export interface FluxoSemanaData { semana: string; entradas: number; saidas: number; saldo: number }
 export interface CentroCustoData { nome: string; total: number }
 
-const PIE_COLORS = ['#C9A84C', '#8B5CF6', '#10B981', '#3B82F6', '#EF4444']
+const PIE_COLORS = ['#D4FC3C', '#A7A9A6', '#8FD14F', '#9CC3DB', '#E5544B']
 
 function useChartColors() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
   return {
-    grid:    dark ? '#252525' : '#E5E7EB',
+    grid:    dark ? '#2A2C2B' : '#E5E7EB',
     tick:    dark ? '#B8B8B8' : '#6B7280',
-    surface: dark ? '#161616' : '#FFFFFF',
+    surface: dark ? '#1B1D1C' : '#FFFFFF',
   }
 }
 
@@ -37,8 +37,8 @@ export function GraficoFluxoCaixa({ data }: { data: FluxoSemanaData[] }) {
             name === 'entradas' ? 'Entradas' : name === 'saidas' ? 'Saídas' : 'Saldo',
           ]}
         />
-        <Bar dataKey="entradas" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={32} />
-        <Bar dataKey="saidas"   fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={32} />
+        <Bar dataKey="entradas" fill="#8FD14F" radius={[4, 4, 0, 0]} maxBarSize={32} />
+        <Bar dataKey="saidas"   fill="#E5544B" radius={[4, 4, 0, 0]} maxBarSize={32} />
       </BarChart>
     </ResponsiveContainer>
   )

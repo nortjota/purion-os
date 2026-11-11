@@ -133,7 +133,7 @@ export function AuditoriaSettings() {
       <div className="p-6">
         <h1 className="text-xl font-bold text-[var(--text-primary)] mb-4">Auditoria</h1>
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-12 text-center">
-          <p className="text-[var(--text-secondary)]">Conecte o Supabase e crie a tabela <code className="text-[#C9A84C]">audit_log</code> para ver o histórico de ações.</p>
+          <p className="text-[var(--text-secondary)]">Conecte o Supabase e crie a tabela <code className="text-[var(--text-primary)]">audit_log</code> para ver o histórico de ações.</p>
         </div>
       </div>
     )
@@ -155,7 +155,7 @@ export function AuditoriaSettings() {
       <div className="grid grid-cols-3 gap-4">
         {[['Hoje', counts.hoje], ['Esta semana', counts.semana], ['Total', counts.total]].map(([label, val]) => (
           <div key={label as string} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-[#C9A84C]">{val}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{val}</p>
             <p className="text-xs text-[var(--text-secondary)] mt-1">{label}</p>
           </div>
         ))}
@@ -171,7 +171,7 @@ export function AuditoriaSettings() {
                 <span className="text-xs text-[var(--text-secondary)] w-24 truncate">{b.usuario}</span>
                 <div className="flex-1 h-5 bg-[var(--bg-surface-2)] rounded overflow-hidden">
                   <div
-                    className="h-full rounded bg-[#C9A84C] transition-all"
+                    className="h-full rounded bg-[var(--primary)] transition-all"
                     style={{ width: `${(b.count / maxBar) * 100}%` }}
                   />
                 </div>

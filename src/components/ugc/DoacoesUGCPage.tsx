@@ -14,9 +14,9 @@ const STATUS_LABELS: Record<StatusEnvioUGC, string> = {
 }
 
 const STATUS_COLORS: Record<StatusEnvioUGC, string> = {
-  aguardando: '#C9A84C',
-  postado: '#5B8FE8',
-  entregue: '#22C55E',
+  aguardando: '#E6C374',
+  postado: '#9CC3DB',
+  entregue: '#8FD14F',
 }
 
 const STATUS_ICONS: Record<StatusEnvioUGC, React.ReactNode> = {
@@ -125,12 +125,12 @@ export function DoacoesUGCPage() {
         </div>
         <div className="kpi-card" style={{ minWidth: 140 }}>
           <span className="caption">Aguardando</span>
-          <span style={{ fontSize: 28, fontWeight: 700, color: '#C9A84C' }}>{totalAguardando}</span>
+          <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--status-warning)' }}>{totalAguardando}</span>
           <span className="caption">doações</span>
         </div>
         <div className="kpi-card" style={{ minWidth: 140 }}>
           <span className="caption">Conteúdos entregues</span>
-          <span style={{ fontSize: 28, fontWeight: 700, color: '#22C55E' }}>{totalConteudos}</span>
+          <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--status-ok)' }}>{totalConteudos}</span>
           <span className="caption">de {doacoesUGC.length}</span>
         </div>
         <div className="kpi-card" style={{ minWidth: 140 }}>
@@ -147,7 +147,7 @@ export function DoacoesUGCPage() {
             onClick={() => setFiltro(f.id)}
             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap"
             style={filtro === f.id
-              ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+              ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
               : { color: 'var(--text-secondary)' }}
           >
             {f.label}
@@ -197,8 +197,8 @@ export function DoacoesUGCPage() {
                         display: 'flex', alignItems: 'center', gap: 5,
                         padding: '5px 10px', borderRadius: 6, fontSize: 12,
                         border: '1px solid var(--border)', cursor: 'pointer',
-                        background: d.entregueConteudo ? 'rgba(34,197,94,0.1)' : 'transparent',
-                        color: d.entregueConteudo ? '#22C55E' : 'var(--text-secondary)',
+                        background: d.entregueConteudo ? 'rgba(143,209,79,0.1)' : 'transparent',
+                        color: d.entregueConteudo ? 'var(--status-ok)' : 'var(--text-secondary)',
                       }}
                     >
                       {d.entregueConteudo ? <CheckSquare size={13} /> : <Square size={13} />}

@@ -10,7 +10,7 @@ import {
   calcMarkupPct, calcMargemPct, calcContribuicaoOrganica, CUSTOS_VARIAVEIS_DETALHE,
 } from '@/lib/precificacao'
 
-const SPLIT_COLORS = ['#C9A84C', '#3B82F6', '#22C55E', '#A855F7', '#EF4444']
+const SPLIT_COLORS = ['#D4FC3C', '#9CC3DB', '#8FD14F', '#A7A9A6', '#E5544B']
 const SPLIT_LABELS = ['Estoque', 'Marketing', 'Caixa', 'Desenvolvimento', 'Societário']
 
 function formatarMoedaBR(v: number): string {
@@ -151,7 +151,7 @@ function FinanceiroSettingsForm() {
           </div>
           <div>
             <p className="text-xs text-[var(--text-secondary)] mb-1">Contribuição orgânica por frasco</p>
-            <p className={`text-lg font-bold ${precificacaoB2C.contribuicaoOrganica >= 0 ? 'text-[#22C55E]' : 'text-red-400'}`}>
+            <p className={`text-lg font-bold ${precificacaoB2C.contribuicaoOrganica >= 0 ? 'text-[var(--status-ok)]' : 'text-red-400'}`}>
               {formatarMoedaBR(precificacaoB2C.contribuicaoOrganica)}
             </p>
             <p className="text-[11px] text-[var(--text-secondary)] mt-1">preço − custo − custos variáveis</p>
@@ -162,12 +162,12 @@ function FinanceiroSettingsForm() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <div className="bg-[var(--bg-surface-2)] rounded-lg p-3">
             <p className="text-xs text-[var(--text-secondary)] mb-1">Markup</p>
-            <p className="text-lg font-bold text-[#C9A84C]">{precificacaoB2C.markup.toFixed(0)}%</p>
+            <p className="text-lg font-bold text-[var(--text-primary)]">{precificacaoB2C.markup.toFixed(0)}%</p>
             <p className="text-[10px] text-[var(--text-secondary)]">(preço − custo) ÷ custo</p>
           </div>
           <div className="bg-[var(--bg-surface-2)] rounded-lg p-3">
             <p className="text-xs text-[var(--text-secondary)] mb-1">Margem real</p>
-            <p className={`text-lg font-bold ${precificacaoB2C.abaixoDoAlerta ? 'text-red-400' : 'text-[#22C55E]'}`}>
+            <p className={`text-lg font-bold ${precificacaoB2C.abaixoDoAlerta ? 'text-red-400' : 'text-[var(--status-ok)]'}`}>
               {precificacaoB2C.margemReal.toFixed(0)}%
             </p>
             <p className="text-[10px] text-[var(--text-secondary)]">(preço − custo) ÷ preço</p>
@@ -239,7 +239,7 @@ function FinanceiroSettingsForm() {
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <BarChart2 size={16} className="text-[#C9A84C]" />
+            <BarChart2 size={16} className="text-[var(--text-primary)]" />
             <h2 className="text-sm font-bold text-[var(--text-primary)]">Split de Reinvestimento</h2>
           </div>
           <button

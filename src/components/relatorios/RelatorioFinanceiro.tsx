@@ -84,7 +84,7 @@ export function RelatorioFinanceiro({ periodo }: Props) {
         <div style={{ gridColumn: 'span 2' }}>
           <WidgetBarras
             title="Receita vs. Despesa por mês" icon={BarChart3} data={porMes}
-            series={[{ key: 'Receita', label: 'Receita', cor: '#4CAF7A' }, { key: 'Despesa', label: 'Despesa', cor: '#E85238' }]}
+            series={[{ key: 'Receita', label: 'Receita', cor: '#8FD14F' }, { key: 'Despesa', label: 'Despesa', cor: '#E5544B' }]}
             formatarValor={(v) => formatarMoeda(v)}
           />
         </div>
@@ -92,9 +92,9 @@ export function RelatorioFinanceiro({ periodo }: Props) {
           <span className="kpi-label">DRE resumido</span>
           <div className="flex flex-col gap-2 mt-3">
             {[
-              { label: 'Receita bruta', valor: totalReceita, cor: '#4CAF7A' },
-              { label: '(–) Despesas', valor: -totalDespesa, cor: '#E85238' },
-              { label: '(=) Resultado', valor: resultado, cor: resultado >= 0 ? '#C9A84C' : '#E85238' },
+              { label: 'Receita bruta', valor: totalReceita, cor: '#8FD14F' },
+              { label: '(–) Despesas', valor: -totalDespesa, cor: '#E5544B' },
+              { label: '(=) Resultado', valor: resultado, cor: resultado >= 0 ? '#8FD14F' : '#E5544B' },
             ].map((linha) => (
               <div key={linha.label} style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid var(--border)' }}>
                 <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{linha.label}</span>
@@ -103,7 +103,7 @@ export function RelatorioFinanceiro({ periodo }: Props) {
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid var(--border)' }}>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Margem de contribuição</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C' }}>{margem.toFixed(1)}%</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{margem.toFixed(1)}%</span>
             </div>
           </div>
         </div>

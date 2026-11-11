@@ -84,7 +84,7 @@ interface KPIFinProps {
   sub?: string
 }
 
-function KPIFin({ label, valor, icon: Icon, cor = '#C9A84C', sub }: KPIFinProps) {
+function KPIFin({ label, valor, icon: Icon, cor = '#D4FC3C', sub }: KPIFinProps) {
   return (
     <div className="kpi-card flex flex-col gap-4">
       <div className="flex items-start justify-between">
@@ -117,14 +117,14 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'var(--font-title)' }}>
               Distribuição Recomendada
             </h3>
             <p className="text-xs text-[#B8B8B8] mt-0.5">
-              Receita registrada: <span className="text-[#C9A84C] font-semibold">{formatarMoeda(valor)}</span>
+              Receita registrada: <span className="text-[var(--text-primary)] font-semibold">{formatarMoeda(valor)}</span>
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -135,11 +135,11 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-medium text-[var(--text-primary)]">{item.categoria}</span>
-                  <span className="text-xs font-black" style={{ color: item.cor, fontFamily: 'Montserrat, sans-serif' }}>
+                  <span className="text-xs font-black" style={{ color: item.cor, fontFamily: 'var(--font-mono)' }}>
                     {formatarMoeda(item.valor)}
                   </span>
                 </div>
-                <div className="w-full h-1 bg-[#2A2A2A] rounded-full overflow-hidden">
+                <div className="w-full h-1 bg-[#2A2C2B] rounded-full overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${item.percentual}%`, backgroundColor: item.cor }} />
                 </div>
               </div>
@@ -148,7 +148,7 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
           ))}
         </div>
         <div className="mt-5 pt-4 border-t border-[var(--border)] flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-[#C9A84C] text-[#0D0D0D] text-sm font-bold hover:bg-[#D4B55E] transition-colors">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] text-sm font-bold hover:bg-[var(--brand-accent)]/85 transition-colors">
             Entendido
           </button>
         </div>
@@ -208,17 +208,17 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h3 className="font-black text-[var(--text-primary)] text-base" style={{ fontFamily: 'var(--font-title)' }}>
               Editar Movimentação
             </h3>
             <p className="text-xs text-[#B8B8B8] mt-0.5">
-              <span style={{ color: linha.tipo === 'receita' ? '#4CAF7A' : '#E85238' }}>
+              <span style={{ color: linha.tipo === 'receita' ? 'var(--status-ok)' : 'var(--status-danger)' }}>
                 {linha.tipo === 'receita' ? '↑ Receita' : '↓ Despesa'}
               </span>
               {' '}· ID {linha.id.slice(0, 8)}
             </p>
           </div>
-          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -321,7 +321,7 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
             </div>
           )}
 
-          {erro && <p className="text-xs text-[#E85238] px-1">{erro}</p>}
+          {erro && <p className="text-xs text-[var(--status-danger)] px-1">{erro}</p>}
 
           <div className="flex gap-2 pt-1">
             <button type="button" onClick={onFechar} className="btn btn-secondary flex-1 justify-center">Cancelar</button>
@@ -409,8 +409,8 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
             className={`flex-1 py-2 text-xs font-semibold rounded-md transition-all ${
               tipo === t
                 ? t === 'receita'
-                  ? 'bg-[rgba(76,175,122,0.15)] text-[#4CAF7A] border border-[rgba(76,175,122,0.3)]'
-                  : 'bg-[rgba(232,82,56,0.15)] text-[#E85238] border border-[rgba(232,82,56,0.3)]'
+                  ? 'bg-[rgba(143,209,79,0.15)] text-[var(--status-ok)] border border-[rgba(143,209,79,0.3)]'
+                  : 'bg-[rgba(229,84,75,0.15)] text-[var(--status-danger)] border border-[rgba(229,84,75,0.3)]'
                 : 'text-[#B8B8B8] hover:text-[var(--text-primary)]'
             }`}
           >
@@ -467,11 +467,11 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
         </div>
       )}
 
-      {erro && <p className="text-xs text-[#E85238] px-1">{erro}</p>}
+      {erro && <p className="text-xs text-[var(--status-danger)] px-1">{erro}</p>}
 
       {salvo && (
         <div className="flex items-center gap-1.5 text-xs text-emerald-400">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="6" fill="#10B981"/><path d="M3.5 6l1.8 1.8 3-3.6" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="6" fill="#8FD14F"/><path d="M3.5 6l1.8 1.8 3-3.6" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           {tipo === 'receita' ? 'Receita registrada!' : 'Despesa registrada!'}
         </div>
       )}
@@ -503,20 +503,20 @@ function CalculadoraPrecificacao() {
           type="number" min="0" step="0.01" value={custo}
           onChange={(e) => setCusto(e.target.value)}
           placeholder="Custo do produto"
-          className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2.5 pl-8 text-sm text-[var(--text-primary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(201,168,76,0.5)] transition-colors"
+          className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2.5 pl-8 text-sm text-[var(--text-primary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(156,195,219,0.5)] transition-colors"
         />
       </div>
       {resultado ? (
         <div className="space-y-2">
           {[
-            { label: 'Preço de Venda', valor: formatarMoeda(resultado.precoVenda),       cor: '#C9A84C', destaque: true  },
-            { label: 'Margem Bruta',   valor: formatarPercentual(resultado.margemBruta), cor: '#4CAF7A', destaque: false },
-            { label: 'Lucro Líquido',  valor: formatarMoeda(resultado.lucroLiquido),      cor: '#5B8FE8', destaque: false },
-            { label: 'Markup',         valor: `${resultado.markup.toFixed(2)}×`,          cor: '#8B5CF6', destaque: false },
+            { label: 'Preço de Venda', valor: formatarMoeda(resultado.precoVenda),       cor: '#D4FC3C', destaque: true  },
+            { label: 'Margem Bruta',   valor: formatarPercentual(resultado.margemBruta), cor: '#8FD14F', destaque: false },
+            { label: 'Lucro Líquido',  valor: formatarMoeda(resultado.lucroLiquido),      cor: '#9CC3DB', destaque: false },
+            { label: 'Markup',         valor: `${resultado.markup.toFixed(2)}×`,          cor: '#A7A9A6', destaque: false },
           ].map(({ label, valor, cor, destaque }) => (
-            <div key={label} className={`flex items-center justify-between p-3 rounded-lg border ${destaque ? 'bg-[rgba(201,168,76,0.06)] border-[rgba(201,168,76,0.2)]' : 'bg-[var(--bg-surface-2)] border-[var(--border)]'}`}>
+            <div key={label} className={`flex items-center justify-between p-3 rounded-lg border ${destaque ? 'bg-[rgba(212,252,60,0.06)] border-[rgba(212,252,60,0.2)]' : 'bg-[var(--bg-surface-2)] border-[var(--border)]'}`}>
               <span className="text-xs text-[#B8B8B8]">{label}</span>
-              <span className="text-sm font-black" style={{ color: cor, fontFamily: 'Montserrat, sans-serif' }}>{valor}</span>
+              <span className="text-sm font-black" style={{ color: cor, fontFamily: 'var(--font-mono)' }}>{valor}</span>
             </div>
           ))}
           <p className="text-[10px] text-[var(--text-secondary)] text-center pt-1">
@@ -564,7 +564,7 @@ function exportarCSV(linhas: LinhaHistorico[]) {
 // TABELA DE HISTÓRICO
 // ─────────────────────────────────────────────
 
-const COR_TIPO = { receita: '#4CAF7A', despesa: '#E85238' }
+const COR_TIPO = { receita: '#8FD14F', despesa: '#E5544B' }
 
 interface TabelaHistoricoProps {
   linhas: LinhaHistorico[]
@@ -618,7 +618,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
     setFiltroResponsavel(''); setBusca('')
   }
 
-  const selectCls = 'bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-secondary)] focus:outline-none focus:border-[rgba(201,168,76,0.4)] cursor-pointer transition-colors'
+  const selectCls = 'bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-secondary)] focus:outline-none focus:border-[rgba(156,195,219,0.4)] cursor-pointer transition-colors'
 
   const labelCat = (cat: string) =>
     LABEL_CATEGORIA_RECEITA[cat as CategoriaReceita] ?? LABEL_CATEGORIA_DESPESA[cat as CategoriaDespesa] ?? cat
@@ -632,7 +632,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
           <input
             type="text" value={busca} onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar descrição, fornecedor…"
-            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-xs text-[var(--text-secondary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-xs text-[var(--text-secondary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(156,195,219,0.4)] transition-colors"
           />
           {busca && (
             <button onClick={() => setBusca('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#A0A0A0] hover:text-[var(--text-primary)]">
@@ -643,7 +643,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
         <button
           onClick={() => exportarCSV(linhasFiltradas)}
           title={`Exportar ${linhasFiltradas.length} registros como CSV`}
-          className="p-1.5 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] text-[#B8B8B8] hover:text-[#C9A84C] hover:border-[rgba(201,168,76,0.4)] transition-colors"
+          className="p-1.5 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] text-[#B8B8B8] hover:text-[var(--brand-accent)] hover:border-[rgba(212,252,60,0.4)] transition-colors"
         >
           <Download size={13} />
         </button>
@@ -671,7 +671,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
           <option value="joao">João</option>
         </select>
         {temFiltro && (
-          <button onClick={limparFiltros} className="text-[10px] text-[#C9A84C] hover:underline flex items-center gap-1">
+          <button onClick={limparFiltros} className="text-[10px] text-[var(--text-primary)] hover:underline flex items-center gap-1">
             <X size={10} /> Limpar
           </button>
         )}
@@ -681,10 +681,10 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
       {/* Subtotais */}
       {(totalFiltrado.receita || totalFiltrado.despesa) && (
         <div className="flex gap-3 mb-3">
-          {totalFiltrado.receita  && <span className="text-xs text-[#4CAF7A]">+ {formatarMoeda(totalFiltrado.receita)}</span>}
-          {totalFiltrado.despesa  && <span className="text-xs text-[#E85238]">- {formatarMoeda(totalFiltrado.despesa)}</span>}
+          {totalFiltrado.receita  && <span className="text-xs text-[var(--status-ok)]">+ {formatarMoeda(totalFiltrado.receita)}</span>}
+          {totalFiltrado.despesa  && <span className="text-xs text-[var(--status-danger)]">- {formatarMoeda(totalFiltrado.despesa)}</span>}
           {totalFiltrado.receita && totalFiltrado.despesa && (
-            <span className={`text-xs font-semibold ${(totalFiltrado.receita - totalFiltrado.despesa) >= 0 ? 'text-[#4CAF7A]' : 'text-[#E85238]'}`}>
+            <span className={`text-xs font-semibold ${(totalFiltrado.receita - totalFiltrado.despesa) >= 0 ? 'text-[var(--status-ok)]' : 'text-[var(--status-danger)]'}`}>
               = {formatarMoeda(totalFiltrado.receita - totalFiltrado.despesa)}
             </span>
           )}
@@ -759,7 +759,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                         ) : linha.notaFiscal ? (
                           <span>NF {linha.notaFiscal}</span>
                         ) : (
-                          <span className="text-[#2A2A2A]">—</span>
+                          <span className="text-[#2A2C2B]">—</span>
                         )}
                       </td>
                     )}
@@ -772,13 +772,13 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                           {onEditar && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onEditar(linha) }}
-                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[#5B8FE8]"
+                              className="p-1 rounded hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--status-info)]"
                             ><Pencil size={11} /></button>
                           )}
                           {onDeletar && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onDeletar(linha.id, linha.tipo) }}
-                              className="p-1 rounded hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[#E85238]"
+                              className="p-1 rounded hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--status-danger)]"
                             ><Trash2 size={11} /></button>
                           )}
                         </div>
@@ -807,7 +807,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                               {onDeletar && (
                                 <button
                                   onClick={() => onDeletar(linha.id, linha.tipo)}
-                                  className="btn btn-sm flex-1 justify-center text-[#E85238] border border-[rgba(232,82,56,0.3)] hover:bg-[rgba(232,82,56,0.1)]"
+                                  className="btn btn-sm flex-1 justify-center text-[var(--status-danger)] border border-[rgba(229,84,75,0.3)] hover:bg-[rgba(229,84,75,0.1)]"
                                 >
                                   <Trash2 size={10} /> Excluir
                                 </button>
@@ -874,10 +874,10 @@ export function FinanceiroDashboard() {
   }
 
   const kpiCards = [
-    { label: 'Receita Total', valor: formatarMoeda(kpisGlobais.receitaTotal), icon: TrendingUp,  cor: '#4CAF7A', sub: `Mês atual: ${mesAtual}` },
-    { label: 'Despesa Total', valor: formatarMoeda(kpisGlobais.despesaTotal), icon: TrendingDown, cor: '#E85238', sub: `${formatarPercentual((kpisGlobais.despesaTotal / kpisGlobais.receitaTotal) * 100)} da receita` },
-    { label: 'Margem Bruta',  valor: formatarPercentual(kpisGlobais.margemMedia), icon: BarChart2, cor: '#C9A84C', sub: 'Meta: 65%' },
-    { label: 'Saldo Atual',   valor: formatarMoeda(kpisGlobais.saldoTotal), icon: DollarSign, cor: kpisGlobais.saldoTotal >= 0 ? '#4CAF7A' : '#E85238', sub: 'Receita − Despesa' },
+    { label: 'Receita Total', valor: formatarMoeda(kpisGlobais.receitaTotal), icon: TrendingUp,  cor: '#8FD14F', sub: `Mês atual: ${mesAtual}` },
+    { label: 'Despesa Total', valor: formatarMoeda(kpisGlobais.despesaTotal), icon: TrendingDown, cor: '#E5544B', sub: `${formatarPercentual((kpisGlobais.despesaTotal / kpisGlobais.receitaTotal) * 100)} da receita` },
+    { label: 'Margem Bruta',  valor: formatarPercentual(kpisGlobais.margemMedia), icon: BarChart2, cor: '#D4FC3C', sub: 'Meta: 65%' },
+    { label: 'Saldo Atual',   valor: formatarMoeda(kpisGlobais.saldoTotal), icon: DollarSign, cor: kpisGlobais.saldoTotal >= 0 ? '#8FD14F' : '#E5544B', sub: 'Receita − Despesa' },
   ]
 
   return (
@@ -898,14 +898,14 @@ export function FinanceiroDashboard() {
       <div className="grid grid-cols-2 gap-4 grid-mobile-1">
         <div className="card-purion card-section">
           <div className="flex items-center gap-2 mb-5">
-            <Plus size={15} className="text-[#C9A84C]" />
+            <Plus size={15} className="text-[var(--text-primary)]" />
             <h2 className="section-title text-[15px]">Registrar Movimentação</h2>
           </div>
           <FormMovimentacao onRegistrado={handleRegistrado} />
         </div>
         <div className="card-purion card-section">
           <div className="flex items-center gap-2 mb-5">
-            <Calculator size={15} className="text-[#C9A84C]" />
+            <Calculator size={15} className="text-[var(--text-primary)]" />
             <h2 className="section-title text-[15px]">Calculadora de Precificação</h2>
           </div>
           <CalculadoraPrecificacao />
@@ -915,7 +915,7 @@ export function FinanceiroDashboard() {
       {/* Gráfico */}
       <div className="card-purion card-section">
         <div className="flex items-center gap-2 mb-5">
-          <BarChart2 size={15} className="text-[#C9A84C]" />
+          <BarChart2 size={15} className="text-[var(--text-primary)]" />
           <h2 className="section-title text-[15px]">Evolução Financeira — 6 Meses</h2>
         </div>
         <GraficoEvolucao dados={dadosGrafico} height={isMobile ? 200 : 280} />
@@ -928,22 +928,22 @@ export function FinanceiroDashboard() {
         </p>
         <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
           {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
-            <div key={dias} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 hover:border-[rgba(201,168,76,0.2)] transition-colors">
+            <div key={dias} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 hover:border-[rgba(212,252,60,0.2)] transition-colors">
               <div className="mb-3">
                 <span className="text-[10px] text-[#B8B8B8] uppercase tracking-wider font-medium">{dias} dias</span>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-[#B8B8B8]">Receita proj.</span>
-                  <span className="text-sm font-black text-[#4CAF7A]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{formatarMoeda(receitaProjetada)}</span>
+                  <span className="text-sm font-black text-[var(--status-ok)]" style={{ fontFamily: 'var(--font-mono)' }}>{formatarMoeda(receitaProjetada)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-[#B8B8B8]">Despesa proj.</span>
-                  <span className="text-sm font-semibold text-[#E85238]">{formatarMoeda(despesaProjetada)}</span>
+                  <span className="text-sm font-semibold text-[var(--status-danger)]">{formatarMoeda(despesaProjetada)}</span>
                 </div>
                 <div className="pt-1 border-t border-[var(--border)] flex justify-between items-center">
                   <span className="text-xs text-[#B8B8B8]">Margem proj.</span>
-                  <span className="text-sm font-black text-[#C9A84C]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{margemProjetada}%</span>
+                  <span className="text-sm font-black text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-mono)' }}>{margemProjetada}%</span>
                 </div>
               </div>
             </div>
@@ -954,7 +954,7 @@ export function FinanceiroDashboard() {
       {/* Histórico */}
       <div className="card-purion card-section">
         <div className="flex items-center gap-2 mb-5">
-          <BarChart2 size={15} className="text-[#C9A84C]" />
+          <BarChart2 size={15} className="text-[var(--text-primary)]" />
           <h2 className="section-title text-[15px]">Histórico de Movimentações</h2>
           <span className="caption ml-auto">{historico.length} registros</span>
         </div>

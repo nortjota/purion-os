@@ -21,7 +21,7 @@ function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (
       disabled={disabled}
       className="relative w-10 h-5 rounded-full transition-colors"
       style={{
-        background: checked ? '#C9A84C' : 'var(--border)',
+        background: checked ? 'var(--brand-accent)' : 'var(--border)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.5 : 1,
         border: 'none',
@@ -67,7 +67,7 @@ export function PersonalizarMenuModal({ onFechar }: Props) {
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <div>
             <span className="flex items-center gap-2" style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-              <LayoutGrid size={16} style={{ color: '#C9A84C' }} /> Personalizar menu
+              <LayoutGrid size={16} style={{ color: 'var(--text-primary)' }} /> Personalizar menu
             </span>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
               Só afeta o seu menu — os outros sócios continuam vendo tudo.
@@ -78,23 +78,23 @@ export function PersonalizarMenuModal({ onFechar }: Props) {
 
         <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}>
           <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-            <strong style={{ color: '#22C55E' }}>{totalVisiveis}</strong> visíveis · <strong style={{ color: '#E8A838' }}>{totalOcultas}</strong> ocultas
+            <strong style={{ color: 'var(--status-ok)' }}>{totalVisiveis}</strong> visíveis · <strong style={{ color: 'var(--status-warning)' }}>{totalOcultas}</strong> ocultas
           </span>
           <button
             onClick={restaurarPadrao}
             className="flex items-center gap-1.5"
-            style={{ fontSize: 11, color: '#C9A84C', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ fontSize: 11, color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
           >
             <RotateCcw size={11} /> Restaurar padrão
           </button>
         </div>
 
         {mostrarAviso && (
-          <div className="flex items-start gap-2 px-5 py-3" style={{ background: 'rgba(232,168,56,0.08)', borderBottom: '1px solid var(--border)' }}>
-            <AlertTriangle size={14} style={{ color: '#E8A838', flexShrink: 0, marginTop: 1 }} />
+          <div className="flex items-start gap-2 px-5 py-3" style={{ background: 'rgba(230,195,116,0.08)', borderBottom: '1px solid var(--border)' }}>
+            <AlertTriangle size={14} style={{ color: 'var(--status-warning)', flexShrink: 0, marginTop: 1 }} />
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', flex: 1 }}>
               {totalOcultas} abas ocultas — muita coisa escondida.{' '}
-              <button onClick={restaurarPadrao} style={{ color: '#E8A838', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}>
+              <button onClick={restaurarPadrao} style={{ color: 'var(--status-warning)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}>
                 Restaurar padrão?
               </button>
             </p>

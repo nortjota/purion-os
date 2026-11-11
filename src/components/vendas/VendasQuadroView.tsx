@@ -8,11 +8,11 @@ import { STATUS_ENTREGA_LABEL, CANAL_LABEL, CANAL_BADGE, fmtR } from '@/lib/vend
 
 const COLUNAS: Array<{ id: StatusEntregaVenda; cor: string }> = [
   { id: 'aguardando',  cor: '#B8B8B8' },
-  { id: 'separando',   cor: '#E8A838' },
-  { id: 'postado',     cor: '#5B8FE8' },
-  { id: 'em_transito', cor: '#5B8FE8' },
-  { id: 'entregue',    cor: '#4CAF7A' },
-  { id: 'devolvido',   cor: '#E85238' },
+  { id: 'separando',   cor: '#E6C374' },
+  { id: 'postado',     cor: '#9CC3DB' },
+  { id: 'em_transito', cor: '#9CC3DB' },
+  { id: 'entregue',    cor: '#8FD14F' },
+  { id: 'devolvido',   cor: '#E5544B' },
 ]
 
 interface CardProps {
@@ -33,7 +33,7 @@ function VendaCard({ venda, isDragging, onDragStart, onDragEnd, onAbrir }: CardP
       className={`
         rounded-xl border p-3 cursor-pointer select-none
         bg-[var(--bg-surface)] border-[var(--border)]
-        hover:border-[rgba(201,168,76,0.25)]
+        hover:border-[rgba(212,252,60,0.25)]
         transition-all duration-150
         ${isDragging ? 'opacity-40 scale-95' : ''}
       `}
@@ -47,7 +47,7 @@ function VendaCard({ venda, isDragging, onDragStart, onDragEnd, onAbrir }: CardP
 
       <div className="flex items-center justify-between mb-2 text-[10px]">
         <span className="text-[#B8B8B8]">{venda.quantidade} frasco{venda.quantidade !== 1 ? 's' : ''}</span>
-        <span className="font-semibold text-[#C9A84C]">{fmtR(venda.valorTotal ?? venda.valorLiquido)}</span>
+        <span className="font-semibold text-[var(--text-primary)]">{fmtR(venda.valorTotal ?? venda.valorLiquido)}</span>
       </div>
 
       {venda.cidade && (
@@ -81,7 +81,7 @@ function Coluna({ coluna, vendas, isDragOver, dragId, onDragStart, onDragEnd, on
       className={`
         flex flex-col min-w-[230px] max-w-[240px] rounded-xl border
         transition-all duration-150
-        ${isDragOver ? 'border-[rgba(201,168,76,0.4)] bg-[rgba(201,168,76,0.04)]' : 'border-[var(--border)] bg-[var(--bg-surface-2)]'}
+        ${isDragOver ? 'border-[rgba(212,252,60,0.4)] bg-[rgba(212,252,60,0.04)]' : 'border-[var(--border)] bg-[var(--bg-surface-2)]'}
       `}
       onDragOver={(e) => onDragOver(e, coluna.id)}
       onDragLeave={onDragLeave}
@@ -105,8 +105,8 @@ function Coluna({ coluna, vendas, isDragOver, dragId, onDragStart, onDragEnd, on
           <VendaCard key={v.id} venda={v} isDragging={dragId === v.id} onDragStart={onDragStart} onDragEnd={onDragEnd} onAbrir={onAbrir} />
         ))}
         {vendas.length === 0 && isDragOver && (
-          <div className="flex-1 rounded-lg border border-dashed border-[rgba(201,168,76,0.3)] flex items-center justify-center min-h-[80px]">
-            <span className="text-[10px] text-[#C9A84C]">Soltar aqui</span>
+          <div className="flex-1 rounded-lg border border-dashed border-[rgba(245,245,240,0.3)] flex items-center justify-center min-h-[80px]">
+            <span className="text-[10px] text-[var(--text-primary)]">Soltar aqui</span>
           </div>
         )}
       </div>

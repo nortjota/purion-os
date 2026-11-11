@@ -109,7 +109,7 @@ export function DadosSettings() {
       {/* Exportar */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Download size={16} className="text-[#C9A84C]" />
+          <Download size={16} className="text-[var(--text-primary)]" />
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Exportar</h2>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -131,7 +131,7 @@ export function DadosSettings() {
       {/* Importar */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Upload size={16} className="text-[#C9A84C]" />
+          <Upload size={16} className="text-[var(--text-primary)]" />
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Importar</h2>
         </div>
         <div className="space-y-4">
@@ -177,7 +177,7 @@ export function DadosSettings() {
       {/* Seed */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Database size={16} className="text-[#C9A84C]" />
+          <Database size={16} className="text-[var(--text-primary)]" />
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Dados de Exemplo</h2>
         </div>
         <div className="flex gap-2">
@@ -193,7 +193,7 @@ export function DadosSettings() {
       {/* Backup */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <RefreshCw size={16} className="text-[#C9A84C]" />
+          <RefreshCw size={16} className="text-[var(--text-primary)]" />
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Backup</h2>
         </div>
         <p className="text-sm text-[var(--text-secondary)] mb-4">Último backup automático: —</p>

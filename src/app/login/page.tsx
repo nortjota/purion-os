@@ -43,10 +43,10 @@ function LoginForm() {
 
   const inputBase: React.CSSProperties = {
     width: '100%', height: 42,
-    backgroundColor: '#0A0A0A',
-    border: '1px solid #252525',
+    backgroundColor: '#0B0B0B',
+    border: '1px solid #2A2C2B',
     borderRadius: 8, padding: '0 12px',
-    fontSize: 14, color: '#FAFAF8',
+    fontSize: 14, color: '#F5F5F0',
     outline: 'none', boxSizing: 'border-box',
     transition: 'border-color 150ms, box-shadow 150ms',
     fontFamily: 'inherit',
@@ -61,8 +61,8 @@ function LoginForm() {
         <input
           type="email" value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="seu@email.com" required style={inputBase}
-          onFocus={(e) => { e.currentTarget.style.borderColor = '#C9A84C'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,168,76,0.15)' }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = '#252525'; e.currentTarget.style.boxShadow = 'none' }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--brand-accent)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(212,252,60,0.15)' }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = '#2A2C2B'; e.currentTarget.style.boxShadow = 'none' }}
         />
       </div>
 
@@ -73,7 +73,7 @@ function LoginForm() {
           </label>
           <a
             href="/reset-password"
-            style={{ fontSize: 11, color: '#C9A84C', textDecoration: 'none', opacity: 0.75, transition: 'opacity 150ms' }}
+            style={{ fontSize: 11, color: 'var(--text-primary)', textDecoration: 'none', opacity: 0.75, transition: 'opacity 150ms' }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.75')}
           >
@@ -83,13 +83,13 @@ function LoginForm() {
         <input
           type="password" value={password} onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••" required style={inputBase}
-          onFocus={(e) => { e.currentTarget.style.borderColor = '#C9A84C'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,168,76,0.15)' }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = '#252525'; e.currentTarget.style.boxShadow = 'none' }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--brand-accent)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(212,252,60,0.15)' }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = '#2A2C2B'; e.currentTarget.style.boxShadow = 'none' }}
         />
       </div>
 
       {error && (
-        <p style={{ fontSize: 12, color: '#EF4444', textAlign: 'center', margin: 0, padding: '8px 12px', background: 'rgba(239,68,68,0.06)', borderRadius: 6, border: '1px solid rgba(239,68,68,0.15)' }}>
+        <p style={{ fontSize: 12, color: 'var(--status-danger)', textAlign: 'center', margin: 0, padding: '8px 12px', background: 'rgba(229,84,75,0.06)', borderRadius: 6, border: '1px solid rgba(229,84,75,0.15)' }}>
           {error}
         </p>
       )}
@@ -99,8 +99,8 @@ function LoginForm() {
         disabled={loading}
         style={{
           width: '100%', height: 44,
-          backgroundColor: loading ? '#8B7435' : '#C9A84C',
-          color: '#0D0D0D', border: 'none', borderRadius: 10,
+          backgroundColor: loading ? '#A9CA30' : 'var(--brand-accent)',
+          color: '#0B0B0B', border: 'none', borderRadius: 999,
           fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           transition: 'background-color 150ms',
@@ -110,7 +110,7 @@ function LoginForm() {
         {loading ? (
           <>
             <svg width="15" height="15" viewBox="0 0 24 24" style={{ animation: 'spin 1s linear infinite' }}>
-              <circle cx="12" cy="12" r="10" stroke="#0D0D0D" strokeWidth="3" fill="none" strokeDasharray="60" strokeDashoffset="20" />
+              <circle cx="12" cy="12" r="10" stroke="#0B0B0B" strokeWidth="3" fill="none" strokeDasharray="60" strokeDashoffset="20" />
             </svg>
             Aguarde...
           </>
@@ -124,10 +124,10 @@ export default function LoginPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#0D0D0D',
+      backgroundColor: '#0B0B0B',
       backgroundImage: [
-        'radial-gradient(circle at 20% 50%, rgba(201,168,76,0.03) 0%, transparent 50%)',
-        'radial-gradient(circle at 80% 20%, rgba(201,168,76,0.03) 0%, transparent 50%)',
+        'radial-gradient(circle at 20% 50%, rgba(245,245,240,0.03) 0%, transparent 50%)',
+        'radial-gradient(circle at 80% 20%, rgba(245,245,240,0.03) 0%, transparent 50%)',
       ].join(', '),
       display: 'flex',
       flexDirection: 'column',
@@ -141,21 +141,21 @@ export default function LoginPage() {
         transition={{ duration: 0.25, ease: 'easeOut' }}
         style={{
           width: '100%', maxWidth: 420,
-          backgroundColor: '#111111',
-          border: '1px solid #1E1E1E',
+          backgroundColor: '#0B0B0B',
+          border: '1px solid #242726',
           borderRadius: 20,
           padding: 40,
         }}
       >
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ fontSize: 22, fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em', lineHeight: 1, display: 'inline' }}>
+          <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.15em', lineHeight: 1, display: 'inline' }}>
             PURION
           </div>
           <span style={{ fontSize: 12, fontWeight: 400, color: '#B8B8B8', letterSpacing: '0.2em', marginLeft: 6 }}>
             OS
           </span>
-          <div style={{ width: 32, height: 1, background: '#C9A84C', margin: '16px auto 0', opacity: 0.7 }} />
+          <div style={{ width: 32, height: 1, background: 'var(--primary)', margin: '16px auto 0', opacity: 0.7 }} />
         </div>
 
         <p style={{ fontSize: 14, color: '#B8B8B8', textAlign: 'center', marginBottom: 24, marginTop: 0 }}>

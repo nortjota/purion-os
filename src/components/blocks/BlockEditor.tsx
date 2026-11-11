@@ -46,7 +46,7 @@ export function BlockEditor<T extends BlocoBase & { ordem: number }>({
       {blocosOrdenados.length === 0 && (
         <button
           onClick={() => onCriarBloco('paragrafo', conteudoPadrao('paragrafo'), 0)}
-          className="text-[14px] text-[var(--text-secondary)] hover:text-[#C9A84C] py-2 text-left"
+          className="text-[14px] text-[var(--text-secondary)] hover:text-[var(--brand-accent)] py-2 text-left"
         >
           {placeholderVazio}
         </button>

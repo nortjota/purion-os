@@ -159,16 +159,16 @@ export function CRMDashboard() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 height: isMobile ? 34 : 32, padding: '0 12px', borderRadius: 6, fontSize: 12,
-                border: `1px solid ${filtrosAtivosCount > 0 ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
-                background: filtrosAtivosCount > 0 ? 'rgba(201,168,76,0.08)' : 'transparent',
-                color: filtrosAtivosCount > 0 ? '#C9A84C' : 'var(--text-secondary)',
+                border: `1px solid ${filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
+                background: filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.08)' : 'transparent',
+                color: filtrosAtivosCount > 0 ? 'var(--brand-accent)' : 'var(--text-secondary)',
                 cursor: 'pointer',
               }}
             >
               <SlidersHorizontal size={13} />
               {!isMobile && 'Filtrar'}
               {filtrosAtivosCount > 0 && (
-                <span style={{ background: '#C9A84C', color: '#0D0D0D', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700 }}>
+                <span style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700 }}>
                   {filtrosAtivosCount}
                 </span>
               )}
@@ -192,7 +192,7 @@ export function CRMDashboard() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 height: isMobile ? 34 : 32, padding: '0 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-                background: '#C9A84C', color: '#0D0D0D', border: 'none', cursor: 'pointer',
+                background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer',
               }}
             >
               <Plus size={14} />

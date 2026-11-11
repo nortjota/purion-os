@@ -80,18 +80,18 @@ function PlanosContent() {
   return (
     <div className="page-content">
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
-        <p style={{ fontSize: 11, fontWeight: 600, color: '#C9A84C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 8px' }}>PURION OS</p>
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 8px' }}>PURION OS</p>
         <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 12px' }}>Escolha seu plano</h1>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0 }}>14 dias grátis · Cancele quando quiser · Preços em BRL/mês</p>
       </div>
 
       {sucesso && (
-        <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid #10B981', borderRadius: 10, padding: '14px 20px', marginBottom: 24, color: '#10B981', fontSize: 14, fontWeight: 600, textAlign: 'center' }}>
+        <div style={{ background: 'rgba(143,209,79,0.1)', border: '1px solid var(--status-ok)', borderRadius: 10, padding: '14px 20px', marginBottom: 24, color: 'var(--status-ok)', fontSize: 14, fontWeight: 600, textAlign: 'center' }}>
           ✅ Assinatura ativada com sucesso! Bem-vindo ao PURION OS.
         </div>
       )}
       {cancelado && (
-        <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid #EF4444', borderRadius: 10, padding: '14px 20px', marginBottom: 24, color: '#EF4444', fontSize: 14, textAlign: 'center' }}>
+        <div style={{ background: 'rgba(229,84,75,0.1)', border: '1px solid var(--status-danger)', borderRadius: 10, padding: '14px 20px', marginBottom: 24, color: 'var(--status-danger)', fontSize: 14, textAlign: 'center' }}>
           Pagamento cancelado. Você pode tentar novamente quando quiser.
         </div>
       )}
@@ -100,11 +100,11 @@ function PlanosContent() {
         {PLANOS.map(p => (
           <div key={p.id} style={{
             ...cardBase,
-            border: p.destaque ? '2px solid #C9A84C' : '1px solid var(--border)',
+            border: p.destaque ? '2px solid var(--brand-accent)' : '1px solid var(--border)',
             position: 'relative',
           }}>
             {p.destaque && (
-              <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#C9A84C', color: '#0D0D0D', fontSize: 11, fontWeight: 700, padding: '3px 14px', borderRadius: 20, whiteSpace: 'nowrap' }}>
+              <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: 11, fontWeight: 700, padding: '3px 14px', borderRadius: 20, whiteSpace: 'nowrap' }}>
                 <Zap size={10} style={{ marginRight: 4 }} />
                 Mais popular
               </div>
@@ -120,7 +120,7 @@ function PlanosContent() {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
               {p.features.map(f => (
                 <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-primary)' }}>
-                  <Check size={14} style={{ color: '#10B981', flexShrink: 0 }} />
+                  <Check size={14} style={{ color: 'var(--status-ok)', flexShrink: 0 }} />
                   {f}
                 </li>
               ))}
@@ -130,8 +130,8 @@ function PlanosContent() {
               disabled={!!loading}
               style={{
                 width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
-                background: p.destaque ? '#C9A84C' : 'var(--bg-surface-2)',
-                color: p.destaque ? '#0D0D0D' : 'var(--text-primary)',
+                background: p.destaque ? 'var(--brand-accent)' : 'var(--bg-surface-2)',
+                color: p.destaque ? '#0B0B0B' : 'var(--text-primary)',
                 fontSize: 14, fontWeight: 700, cursor: loading ? 'wait' : 'pointer',
                 opacity: loading && loading !== p.id ? 0.6 : 1,
               }}>

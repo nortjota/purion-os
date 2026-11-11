@@ -74,7 +74,7 @@ export function CRMLeadDrawer({
       <div className="px-5 py-4 border-b border-[var(--border)] flex items-start gap-3 shrink-0">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h2 className="text-sm font-black text-[var(--text-primary)]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h2 className="text-sm font-black text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-title)' }}>
               {lead.nomeEmpresa}
             </h2>
             <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase" style={{ backgroundColor: tier.bg, color: tier.cor }}>
@@ -87,10 +87,10 @@ export function CRMLeadDrawer({
           <p className="text-[11px] text-[#B8B8B8]">{lead.nomeContato}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <button onClick={() => onDeletar(lead)} className="p-1.5 rounded-lg hover:bg-[rgba(232,82,56,0.1)] text-[#B8B8B8] hover:text-[#E85238] transition-colors" title="Excluir lead">
+          <button onClick={() => onDeletar(lead)} className="p-1.5 rounded-lg hover:bg-[rgba(229,84,75,0.1)] text-[#B8B8B8] hover:text-[var(--status-danger)] transition-colors" title="Excluir lead">
             <Trash2 size={14} />
           </button>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2A2A] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -102,7 +102,7 @@ export function CRMLeadDrawer({
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setVendaAberta((o) => !o)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-[rgba(76,175,122,0.3)] text-[#4CAF7A] hover:bg-[rgba(76,175,122,0.08)] transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-[rgba(143,209,79,0.3)] text-[var(--status-ok)] hover:bg-[rgba(143,209,79,0.08)] transition-colors"
           >
             <ShoppingBag size={11} /> Registrar venda B2B
           </button>
@@ -126,7 +126,7 @@ export function CRMLeadDrawer({
             <button
               onClick={handleRegistrarVenda}
               disabled={salvandoVenda}
-              className="w-full py-1.5 rounded-lg bg-[#4CAF7A] text-[#0D0D0D] text-xs font-bold disabled:opacity-50"
+              className="w-full py-1.5 rounded-lg bg-[var(--status-ok)] text-[#0B0B0B] text-xs font-bold disabled:opacity-50"
             >
               {salvandoVenda ? 'Salvando…' : 'Confirmar venda'}
             </button>
@@ -194,7 +194,7 @@ export function CRMLeadDrawer({
         {lead.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {lead.tags.map((tag) => (
-              <span key={tag} className="px-2 py-0.5 rounded bg-[#2A2A2A] text-[#B8B8B8] text-[9px] font-medium">#{tag}</span>
+              <span key={tag} className="px-2 py-0.5 rounded bg-[#2A2C2B] text-[#B8B8B8] text-[9px] font-medium">#{tag}</span>
             ))}
           </div>
         )}
@@ -211,14 +211,14 @@ export function CRMLeadDrawer({
           )}
           <div className="flex gap-2">
             <input type="date" value={passoData} onChange={(e) => setPassoData(e.target.value)}
-              className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-2 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[rgba(201,168,76,0.4)]" />
+              className="bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-2 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[rgba(156,195,219,0.4)]" />
             <input type="text" value={passoAcao} onChange={(e) => setPassoAcao(e.target.value)} placeholder="Ação (ex: ligar para fechar)"
-              className="flex-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(201,168,76,0.4)]" />
+              className="flex-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(156,195,219,0.4)]" />
           </div>
           <button
             onClick={() => passoData && onAgendarPasso(passoData, passoAcao)}
             disabled={!passoData}
-            className="mt-2 w-full py-1.5 rounded-lg bg-[#C9A84C] text-[#0D0D0D] text-xs font-bold disabled:opacity-40"
+            className="mt-2 w-full py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-40"
           >
             Agendar follow-up
           </button>
@@ -228,13 +228,13 @@ export function CRMLeadDrawer({
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-medium">Notas</p>
-            <button onClick={() => onSalvarNotas(notasEdit)} className="text-[10px] text-[#C9A84C] hover:underline">Salvar</button>
+            <button onClick={() => onSalvarNotas(notasEdit)} className="text-[10px] text-[var(--text-primary)] hover:underline">Salvar</button>
           </div>
           <textarea
             value={notasEdit}
             onChange={(e) => setNotasEdit(e.target.value)}
             rows={4}
-            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-3 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] resize-none focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors"
+            className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg p-3 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] resize-none focus:outline-none focus:border-[rgba(156,195,219,0.4)] transition-colors"
             placeholder="Observações sobre este lead..."
           />
         </div>
@@ -248,14 +248,14 @@ export function CRMLeadDrawer({
             <input
               type="text" value={textoContato} onChange={(e) => setTextoContato(e.target.value)}
               placeholder="Descrição do contato..."
-              className="flex-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors"
+              className="flex-1 bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(156,195,219,0.4)] transition-colors"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && textoContato.trim()) { onRegistrarContato(textoContato.trim()); setTextoContato('') }
               }}
             />
             <button
               onClick={() => { if (textoContato.trim()) { onRegistrarContato(textoContato.trim()); setTextoContato('') } }}
-              className="px-3 py-2 rounded-lg bg-[#C9A84C] text-[#0D0D0D] text-xs font-bold hover:bg-[#D4B55E] transition-colors"
+              className="px-3 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold hover:bg-[var(--brand-accent)]/85 transition-colors"
             >
               <Plus size={13} />
             </button>
@@ -306,7 +306,7 @@ export function CRMLeadDrawer({
             <select
               value={lead.status}
               onChange={(e) => onMudarEstagio(e.target.value as StatusLead)}
-              className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] cursor-pointer appearance-none focus:outline-none focus:border-[rgba(201,168,76,0.4)] transition-colors"
+              className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] cursor-pointer appearance-none focus:outline-none focus:border-[rgba(156,195,219,0.4)] transition-colors"
             >
               {ESTAGIOS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
             </select>
@@ -315,13 +315,13 @@ export function CRMLeadDrawer({
           <div className="flex gap-2 mt-2">
             <button
               onClick={() => onMudarEstagio('cliente')}
-              className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold border border-[rgba(76,175,122,0.3)] text-[#4CAF7A] hover:bg-[rgba(76,175,122,0.08)]"
+              className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold border border-[rgba(143,209,79,0.3)] text-[var(--status-ok)] hover:bg-[rgba(143,209,79,0.08)]"
             >
               Marcar ganho
             </button>
             <button
               onClick={() => onMudarEstagio('perdido')}
-              className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold border border-[rgba(232,82,56,0.3)] text-[#E85238] hover:bg-[rgba(232,82,56,0.08)]"
+              className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold border border-[rgba(229,84,75,0.3)] text-[var(--status-danger)] hover:bg-[rgba(229,84,75,0.08)]"
             >
               Marcar perda
             </button>

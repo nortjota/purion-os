@@ -15,8 +15,8 @@ interface Props {
 }
 
 const TENDENCIA_CFG = {
-  melhorando: { cor: '#22C55E', Icon: TrendingUp,  label: 'Melhorando' },
-  piorando:   { cor: '#E85238', Icon: TrendingDown, label: 'Piorando' },
+  melhorando: { cor: '#8FD14F', Icon: TrendingUp,  label: 'Melhorando' },
+  piorando:   { cor: '#E5544B', Icon: TrendingDown, label: 'Piorando' },
   estavel:    { cor: '#B8B8B8', Icon: Minus,        label: 'Estável' },
 }
 
@@ -75,7 +75,7 @@ export function ReguaMensal({ objetivo, todosResultados }: Props) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 minWidth: 18,
               }}>
-                {pct != null && <span style={{ fontSize: 8, fontWeight: 800, color: pct >= 60 ? '#0D0D0D' : '#F5F5F5' }}>{pct}</span>}
+                {pct != null && <span style={{ fontSize: 8, fontWeight: 800, color: pct >= 60 ? '#0B0B0B' : '#F5F5F5' }}>{pct}</span>}
               </div>
               <span style={{ fontSize: 8, color: 'var(--text-secondary)' }}>{label}</span>
             </button>
@@ -84,11 +84,11 @@ export function ReguaMensal({ objetivo, todosResultados }: Props) {
       </div>
 
       <div className="flex items-center gap-3 mt-3" style={{ flexWrap: 'wrap' }}>
-        <Legenda cor="#22C55E" label=">=90%" />
-        <Legenda cor="#E8A838" label="60-89%" />
-        <Legenda cor="#E85238" label="<60%" />
-        <Legenda cor="#3A3A3A" label="Sem dados" />
-        {fonteAuto && <span style={{ fontSize: 10, color: '#5B8FE8', fontWeight: 600 }}>⚡ tem sugestão automática do CRM</span>}
+        <Legenda cor="#8FD14F" label=">=90%" />
+        <Legenda cor="#E6C374" label="60-89%" />
+        <Legenda cor="#E5544B" label="<60%" />
+        <Legenda cor="#2E312F" label="Sem dados" />
+        {fonteAuto && <span style={{ fontSize: 10, color: 'var(--status-info)', fontWeight: 600 }}>⚡ tem sugestão automática do CRM</span>}
       </div>
 
       {mesEditando != null && (

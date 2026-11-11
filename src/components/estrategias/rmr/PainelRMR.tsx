@@ -163,7 +163,7 @@ export function PainelRMR() {
                     {r.percentualGeral != null && (
                       <span style={{ fontSize: 11, fontWeight: 700, color: corPercentual(r.percentualGeral) }}>{r.percentualGeral}%</span>
                     )}
-                    {r.concluida ? <CheckCircle2 size={12} style={{ color: '#22C55E' }} /> : <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>rascunho</span>}
+                    {r.concluida ? <CheckCircle2 size={12} style={{ color: 'var(--status-ok)' }} /> : <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>rascunho</span>}
                   </span>
                 </button>
               ))}
@@ -180,7 +180,7 @@ export function PainelRMR() {
             onClick={() => setFiltro(f.id)}
             className="btn btn-sm"
             style={filtro === f.id
-              ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+              ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
               : { background: 'var(--bg-surface-2)', color: 'var(--text-secondary)' }}
           >
             {f.label}
@@ -244,7 +244,7 @@ export function PainelRMR() {
           </div>
           <div>
             <label className="kpi-label mb-1 block flex items-center gap-1.5">
-              <AlertTriangle size={11} style={{ color: '#E85238' }} /> Gargalo principal do ciclo
+              <AlertTriangle size={11} style={{ color: 'var(--status-danger)' }} /> Gargalo principal do ciclo
             </label>
             <input
               className="input-purion w-full"

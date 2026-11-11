@@ -76,8 +76,8 @@ export function ContaModal({ conta, onSalvar, onFechar }: ContaModalProps) {
           <input value={form.url} onChange={(e) => set('url', e.target.value)} placeholder="URL" className={inputCls} />
           <input value={form.responsavel} onChange={(e) => set('responsavel', e.target.value)} placeholder="Responsável" className={inputCls} />
 
-          <div className="bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.2)] rounded-xl p-4 space-y-2">
-            <p className="text-[11px] text-[#C9A84C] font-semibold">Senhas não ficam aqui — só a referência do cofre</p>
+          <div className="bg-[rgba(245,245,240,0.06)] border border-[rgba(245,245,240,0.2)] rounded-xl p-4 space-y-2">
+            <p className="text-[11px] text-[var(--text-primary)] font-semibold">Senhas não ficam aqui — só a referência do cofre</p>
             <input
               value={form.vaultRef}
               onChange={(e) => set('vaultRef', e.target.value)}
@@ -88,7 +88,7 @@ export function ContaModal({ conta, onSalvar, onFechar }: ContaModalProps) {
 
           <textarea value={form.observacoes} onChange={(e) => set('observacoes', e.target.value)} placeholder="Observações" rows={2} className={`${inputCls} resize-none`} />
 
-          {erro && <p className="text-xs text-[#E85238]">{erro}</p>}
+          {erro && <p className="text-xs text-[var(--status-danger)]">{erro}</p>}
 
           <div className="modal-footer">
             <button type="button" onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>

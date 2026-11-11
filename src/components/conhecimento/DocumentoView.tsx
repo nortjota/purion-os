@@ -46,11 +46,11 @@ export function DocumentoView({
                 className="icon-btn border-0"
                 title={documento.favorito ? 'Remover dos favoritos' : 'Favoritar'}
               >
-                <Star size={16} fill={documento.favorito ? '#C9A84C' : 'none'} className={documento.favorito ? 'text-[#C9A84C]' : 'text-[var(--text-secondary)]'} />
+                <Star size={16} fill={documento.favorito ? '#D4FC3C' : 'none'} className={documento.favorito ? 'text-[var(--brand-accent)]' : 'text-[var(--text-secondary)]'} />
               </button>
               {podeExcluir && (
                 <button onClick={() => onDeletarDocumento(documento.id)} className="icon-btn border-0" title="Excluir documento">
-                  <Trash2 size={15} className="text-[#E85238]" />
+                  <Trash2 size={15} className="text-[var(--status-danger)]" />
                 </button>
               )}
             </div>

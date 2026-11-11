@@ -10,11 +10,11 @@ import { useToast } from '@/components/ui/Toast'
 type Row = Record<string, unknown>
 
 export const COR_TIPO_EVENTO: Record<TipoEvento, string> = {
-  reuniao:          '#C9A84C',
-  tarefa:           '#5B8FE8',
-  followup:         '#4CAF7A',
-  data_importante:  '#E85238',
-  post:             '#A855F7',
+  reuniao:          '#D4FC3C',
+  tarefa:           '#9CC3DB',
+  followup:         '#8FD14F',
+  data_importante:  '#E5544B',
+  post:             '#A7A9A6',
   outro:            '#B8B8B8',
 }
 

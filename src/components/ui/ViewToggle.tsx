@@ -54,8 +54,8 @@ export function ViewToggle({
               width: 32, height: 28, borderRadius: 7,
               border: 'none', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: isActive ? '#C9A84C' : 'transparent',
-              color: isActive ? '#0D0D0D' : 'var(--text-secondary)',
+              background: isActive ? 'var(--brand-accent)' : 'transparent',
+              color: isActive ? '#0B0B0B' : 'var(--text-secondary)',
               transition: 'all 0.15s',
             }}
           >

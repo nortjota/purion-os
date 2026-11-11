@@ -15,26 +15,26 @@ import type { GrowthExperimento, EtapaAARRR, StatusExperimento, NovoExperimento 
 // ─── Constantes ────────────────────────────────────────────────────
 
 const ETAPA_AARRR: Record<EtapaAARRR, { label: string; cor: string; icon: React.ComponentType<{size?: number}> }> = {
-  aquisicao:     { label: 'Aquisição',     cor: '#5B8FE8', icon: Users      },
-  ativacao:      { label: 'Ativação',      cor: '#C9A84C', icon: Lightbulb  },
-  retencao:      { label: 'Retenção',      cor: '#4CAF7A', icon: RefreshCw  },
-  receita:       { label: 'Receita',       cor: '#E8A838', icon: DollarSign },
-  recomendacao:  { label: 'Recomendação',  cor: '#A855F7', icon: Star       },
+  aquisicao:     { label: 'Aquisição',     cor: '#9CC3DB', icon: Users      },
+  ativacao:      { label: 'Ativação',      cor: '#D4FC3C', icon: Lightbulb  },
+  retencao:      { label: 'Retenção',      cor: '#8FD14F', icon: RefreshCw  },
+  receita:       { label: 'Receita',       cor: '#E6C374', icon: DollarSign },
+  recomendacao:  { label: 'Recomendação',  cor: '#A7A9A6', icon: Star       },
 }
 
 const STATUS_CONFIG: Record<StatusExperimento, { label: string; cor: string; ordem: number }> = {
   backlog:  { label: 'Backlog',   cor: '#B8B8B8', ordem: 0 },
-  rodando:  { label: 'Rodando',   cor: '#5B8FE8', ordem: 1 },
-  escalar:  { label: 'Escalar',   cor: '#4CAF7A', ordem: 2 },
-  iterar:   { label: 'Iterar',    cor: '#E8A838', ordem: 3 },
-  matar:    { label: 'Matar',     cor: '#E85238', ordem: 4 },
+  rodando:  { label: 'Rodando',   cor: '#9CC3DB', ordem: 1 },
+  escalar:  { label: 'Escalar',   cor: '#8FD14F', ordem: 2 },
+  iterar:   { label: 'Iterar',    cor: '#E6C374', ordem: 3 },
+  matar:    { label: 'Matar',     cor: '#E5544B', ordem: 4 },
 }
 
 const ETAPAS_AARRR_ORDEM: EtapaAARRR[] = ['aquisicao', 'ativacao', 'retencao', 'receita', 'recomendacao']
 
 const COLUNAS_KANBAN: StatusExperimento[] = ['backlog', 'rodando', 'escalar', 'iterar', 'matar']
 
-const SCORE_COR = (s: number) => s >= 7 ? '#4CAF7A' : s >= 5 ? '#E8A838' : '#E85238'
+const SCORE_COR = (s: number) => s >= 7 ? '#8FD14F' : s >= 5 ? '#E6C374' : '#E5544B'
 
 function ScoreBadge({ score }: { score: number }) {
   return (
@@ -202,8 +202,8 @@ function ModalExperimento({
               onChange={(e) => set('responsavel', e.target.value)} placeholder="Matheus, João…" />
           </div>
           {precisaAprendizado && (
-            <div style={{ padding: '12px', background: 'rgba(201,168,76,0.08)', borderRadius: 8, border: '1px solid rgba(201,168,76,0.3)' }}>
-              <label className="kpi-label mb-1 block" style={{ color: '#C9A84C' }}>
+            <div style={{ padding: '12px', background: 'rgba(245,245,240,0.08)', borderRadius: 8, border: '1px solid rgba(245,245,240,0.3)' }}>
+              <label className="kpi-label mb-1 block" style={{ color: 'var(--text-primary)' }}>
                 Aprendizado (obrigatório para concluir) *
               </label>
               <textarea className="input-purion w-full" rows={3} value={form.aprendizado}
@@ -259,8 +259,8 @@ function CardExp({
         </p>
       )}
       {exp.aprendizado && (
-        <div style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(201,168,76,0.08)', borderRadius: 6, marginBottom: 8 }}>
-          <span style={{ fontWeight: 600, color: '#C9A84C' }}>💡 </span>
+        <div style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(245,245,240,0.08)', borderRadius: 6, marginBottom: 8 }}>
+          <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>💡 </span>
           {exp.aprendizado.slice(0, 80)}{exp.aprendizado.length > 80 ? '…' : ''}
         </div>
       )}
@@ -426,8 +426,8 @@ function TabFunilAARRR({ experimentos }: { experimentos: GrowthExperimento[] }) 
 
   return (
     <div className="flex flex-col gap-4">
-      <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)' }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: '#C9A84C', marginBottom: 4 }}>
+      <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(245,245,240,0.06)', border: '1px solid rgba(245,245,240,0.2)' }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
           ⭐ North Star: clientes/parceiros ativos que recompram
         </p>
         <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
@@ -444,8 +444,8 @@ function TabFunilAARRR({ experimentos }: { experimentos: GrowthExperimento[] }) 
           return (
             <div key={etapa.id} style={{ position: 'relative' }}>
               <div style={{
-                borderRadius: 10, overflow: 'hidden', border: `1px solid ${etapa.northStar ? '#C9A84C' : 'var(--border)'}`,
-                background: etapa.northStar ? 'rgba(201,168,76,0.05)' : 'var(--bg-surface-2)',
+                borderRadius: 10, overflow: 'hidden', border: `1px solid ${etapa.northStar ? '#D4FC3C' : 'var(--border)'}`,
+                background: etapa.northStar ? 'rgba(212,252,60,0.05)' : 'var(--bg-surface-2)',
                 marginLeft: `${i * 12}px`, marginRight: `${i * 12}px`,
                 padding: '14px 16px',
               }}>
@@ -461,12 +461,12 @@ function TabFunilAARRR({ experimentos }: { experimentos: GrowthExperimento[] }) 
                       <div className="flex items-center gap-2">
                         <span style={{ fontSize: 13, fontWeight: 700, color: cfg.cor }}>{cfg.label}</span>
                         {etapa.northStar && (
-                          <span style={{ fontSize: 10, fontWeight: 700, background: '#C9A84C', color: '#000', borderRadius: 999, padding: '1px 6px' }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--primary)', color: '#000', borderRadius: 999, padding: '1px 6px' }}>
                             NORTH STAR
                           </span>
                         )}
                         {etapa.expAtivos > 0 && (
-                          <span style={{ fontSize: 10, color: '#5B8FE8' }}>
+                          <span style={{ fontSize: 10, color: 'var(--status-info)' }}>
                             {etapa.expAtivos} exp. rodando
                           </span>
                         )}
@@ -494,7 +494,7 @@ function TabFunilAARRR({ experimentos }: { experimentos: GrowthExperimento[] }) 
         <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>⚠️ Métricas de Vaidade vs. Métricas Reais</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 12 }}>
           <div>
-            <p style={{ fontWeight: 600, color: '#E85238', marginBottom: 4 }}>❌ Vaidade (enganam)</p>
+            <p style={{ fontWeight: 600, color: 'var(--status-danger)', marginBottom: 4 }}>❌ Vaidade (enganam)</p>
             <ul style={{ color: 'var(--text-secondary)', paddingLeft: 16, lineHeight: 1.8 }}>
               <li>Seguidores no Instagram</li>
               <li>Pico de vendas isolado</li>
@@ -503,7 +503,7 @@ function TabFunilAARRR({ experimentos }: { experimentos: GrowthExperimento[] }) 
             </ul>
           </div>
           <div>
-            <p style={{ fontWeight: 600, color: '#4CAF7A', marginBottom: 4 }}>✅ Reais (movem o negócio)</p>
+            <p style={{ fontWeight: 600, color: 'var(--status-ok)', marginBottom: 4 }}>✅ Reais (movem o negócio)</p>
             <ul style={{ color: 'var(--text-secondary)', paddingLeft: 16, lineHeight: 1.8 }}>
               <li>Taxa de recompra (%)</li>
               <li>LTV / ticket médio crescente</li>
@@ -560,8 +560,8 @@ function TabAprendizados({ experimentos }: { experimentos: GrowthExperimento[] }
               </div>
               <ScoreBadge score={exp.score} />
             </div>
-            <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)' }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#C9A84C', marginBottom: 4 }}>💡 Aprendizado</p>
+            <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(245,245,240,0.08)', border: '1px solid rgba(245,245,240,0.2)' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>💡 Aprendizado</p>
               <p style={{ fontSize: 12, lineHeight: 1.5 }}>{exp.aprendizado}</p>
             </div>
           </div>
@@ -628,24 +628,24 @@ export function GrowthPage({ embutido = false }: { embutido?: boolean } = {}) {
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2">
             <span className="kpi-label">Rodando agora</span>
-            <TrendingUp size={14} style={{ color: '#5B8FE8', opacity: 0.7 }} />
+            <TrendingUp size={14} style={{ color: 'var(--status-info)', opacity: 0.7 }} />
           </div>
-          <span className="kpi-value" style={{ color: '#5B8FE8' }}>{kpis.rodando}</span>
+          <span className="kpi-value" style={{ color: 'var(--status-info)' }}>{kpis.rodando}</span>
           <span className="caption">em execução</span>
         </div>
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2">
             <span className="kpi-label">Para escalar</span>
-            <Award size={14} style={{ color: '#4CAF7A', opacity: 0.7 }} />
+            <Award size={14} style={{ color: 'var(--status-ok)', opacity: 0.7 }} />
           </div>
-          <span className="kpi-value" style={{ color: '#4CAF7A' }}>{kpis.escalando}</span>
+          <span className="kpi-value" style={{ color: 'var(--status-ok)' }}>{kpis.escalando}</span>
           <span className="caption">validados</span>
         </div>
         {kpis.scoreTop && (
           <div className="kpi-card">
             <div className="flex items-center justify-between mb-2">
               <span className="kpi-label">Próximo da fila</span>
-              <Target size={14} style={{ color: '#C9A84C', opacity: 0.7 }} />
+              <Target size={14} style={{ color: 'var(--text-primary)', opacity: 0.7 }} />
             </div>
             <p style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.3 }}>{kpis.scoreTop.nome}</p>
             <div className="flex items-center gap-1 mt-1">
@@ -664,7 +664,7 @@ export function GrowthPage({ embutido = false }: { embutido?: boolean } = {}) {
             onClick={() => setAba(t.id)}
             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
             style={aba === t.id
-              ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+              ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
               : { color: 'var(--text-secondary)' }}
           >
             {t.label}

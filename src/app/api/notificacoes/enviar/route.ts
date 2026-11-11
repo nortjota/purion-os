@@ -79,23 +79,23 @@ function buildEmailHtml({ titulo, mensagem, link }: { titulo: string; mensagem: 
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><title>${titulo}</title></head>
-<body style="margin:0;padding:0;background:#0D0D0D;font-family:Inter,sans-serif;">
+<body style="margin:0;padding:0;background:#0B0B0B;font-family:Inter,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;">
     <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="background:#161616;border:1px solid #2A2A2A;border-radius:12px;overflow:hidden;">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#1B1D1C;border:1px solid #2A2C2B;border-radius:12px;overflow:hidden;">
         <!-- Header -->
-        <tr><td style="padding:24px 32px;border-bottom:1px solid #2A2A2A;">
-          <span style="font-size:18px;font-weight:700;color:#C9A84C;letter-spacing:0.12em;">PURION</span>
+        <tr><td style="padding:24px 32px;border-bottom:1px solid #2A2C2B;">
+          <span style="font-size:18px;font-weight:700;color:#F5F5F0;letter-spacing:0.12em;">PURION</span>
           <span style="font-size:11px;color:#555;margin-left:6px;">OS</span>
         </td></tr>
         <!-- Body -->
         <tr><td style="padding:32px;">
           <h2 style="font-size:18px;font-weight:700;color:#E5E5E5;margin:0 0 16px;">${titulo}</h2>
           <p style="font-size:14px;color:#999;line-height:1.7;margin:0 0 24px;">${mensagem}</p>
-          ${link ? `<a href="${link}" style="display:inline-block;padding:12px 24px;background:#C9A84C;color:#0D0D0D;font-weight:700;font-size:13px;border-radius:8px;text-decoration:none;">Ver detalhes →</a>` : ''}
+          ${link ? `<a href="${link}" style="display:inline-block;padding:12px 24px;background:#D4FC3C;color:#0B0B0B;font-weight:700;font-size:13px;border-radius:8px;text-decoration:none;">Ver detalhes →</a>` : ''}
         </td></tr>
         <!-- Footer -->
-        <tr><td style="padding:20px 32px;border-top:1px solid #2A2A2A;text-align:center;">
+        <tr><td style="padding:20px 32px;border-top:1px solid #2A2C2B;text-align:center;">
           <p style="font-size:11px;color:#444;margin:0;">PURION OS · Sistema Operacional para Marcas DTC</p>
         </td></tr>
       </table>

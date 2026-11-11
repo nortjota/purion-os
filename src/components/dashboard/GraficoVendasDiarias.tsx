@@ -19,7 +19,7 @@ function TooltipVendas({ active, payload, label }: {
   return (
     <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
       <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 2 }}>{label}</p>
-      <p style={{ fontSize: 13, fontWeight: 700, color: '#C9A84C' }}>{fmtR(payload[0].value)}</p>
+      <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{fmtR(payload[0].value)}</p>
     </div>
   )
 }
@@ -33,7 +33,7 @@ export default function GraficoVendasDiarias({ data }: Props) {
         <XAxis dataKey="data" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} axisLine={false} tickLine={false} width={36} />
         <Tooltip content={<TooltipVendas />} />
-        <Bar dataKey="valor" fill="#C9A84C" radius={[4, 4, 0, 0]} {...anim} />
+        <Bar dataKey="valor" fill="#D4FC3C" radius={[4, 4, 0, 0]} {...anim} />
       </BarChart>
     </ResponsiveContainer>
   )

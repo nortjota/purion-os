@@ -26,14 +26,14 @@ export function VisaoSemana({ dataReferencia, eventos, onClickDia, onClickEvento
             key={i}
             style={{
               minHeight: 220, borderRadius: 10, padding: 8,
-              background: hoje ? 'rgba(201,168,76,0.06)' : 'var(--bg-surface)',
-              border: `1px solid ${hoje ? 'rgba(201,168,76,0.4)' : 'var(--border)'}`,
+              background: hoje ? 'rgba(212,252,60,0.06)' : 'var(--bg-surface)',
+              border: `1px solid ${hoje ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
               display: 'flex', flexDirection: 'column', gap: 6,
             }}
           >
             <button onClick={() => onClickDia(dia)} style={{ textAlign: 'left', cursor: 'pointer' }}>
               <span style={{ fontSize: 10, color: 'var(--text-secondary)', display: 'block' }}>{formatarDiaSemanaLabel(dia)}</span>
-              <span style={{ fontSize: 16, fontWeight: 800, color: hoje ? '#C9A84C' : 'var(--text-primary)' }}>
+              <span style={{ fontSize: 16, fontWeight: 800, color: hoje ? 'var(--brand-accent)' : 'var(--text-primary)' }}>
                 {formatarDiaCurto(dia)}
               </span>
             </button>

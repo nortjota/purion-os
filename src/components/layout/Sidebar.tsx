@@ -160,10 +160,10 @@ export function Sidebar() {
             justifyContent: recolhida ? 'center' : 'space-between',
           }}>
             {recolhida ? (
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#C9A84C', userSelect: 'none' }}>P</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', userSelect: 'none' }}>P</span>
             ) : (
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, userSelect: 'none' }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#C9A84C', letterSpacing: '0.12em' }}>PURION</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.12em' }}>PURION</span>
                 <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>OS</span>
               </div>
             )}
@@ -186,7 +186,7 @@ export function Sidebar() {
           ) : (
             <div style={{
               height: 1, margin: '12px 0 16px',
-              background: 'linear-gradient(90deg, transparent, var(--gold-border, rgba(201,168,76,0.25)), transparent)',
+              background: 'linear-gradient(90deg, transparent, var(--border), transparent)',
             }} />
           )}
         </div>
@@ -228,8 +228,8 @@ export function Sidebar() {
                           padding: recolhida ? '0' : '0 10px',
                           fontSize: 13,
                           fontWeight: ativo ? 500 : 400,
-                          color: ativo ? '#C9A84C' : '#B8B8B8',
-                          background: ativo ? 'rgba(201,168,76,0.08)' : 'transparent',
+                          color: ativo ? 'var(--brand-accent)' : '#B8B8B8',
+                          background: ativo ? 'rgba(212,252,60,0.08)' : 'transparent',
                           textDecoration: 'none',
                           transition: 'background var(--dur-base) var(--ease-soft), color var(--dur-base) var(--ease-soft)',
                           position: 'relative',
@@ -277,7 +277,7 @@ export function Sidebar() {
                           <span style={{
                             position: 'absolute', top: 5, right: 5,
                             width: 6, height: 6, borderRadius: '50%',
-                            background: badge.cls === 'badge-danger' ? '#EF4444' : '#F59E0B',
+                            background: badge.cls === 'badge-danger' ? 'var(--status-danger)' : 'var(--status-warning)',
                           }} />
                         )}
                       </Link>
@@ -337,7 +337,7 @@ export function Sidebar() {
                     color: 'var(--text-secondary)',
                     transition: 'color 120ms, background 120ms',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = '#EF4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.08)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--status-danger)'; e.currentTarget.style.background = 'rgba(229,84,75,0.08)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'transparent' }}
                 >
                   <LogOut size={14} />
@@ -379,8 +379,8 @@ export function Sidebar() {
               marginBottom: isMobile ? 0 : 6,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(201,168,76,0.08)'
-              e.currentTarget.style.color = '#C9A84C'
+              e.currentTarget.style.background = 'rgba(245,245,240,0.08)'
+              e.currentTarget.style.color = 'var(--text-primary)'
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'transparent'
@@ -405,8 +405,8 @@ export function Sidebar() {
                 transition: 'background 120ms, color 120ms',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(201,168,76,0.08)'
-                e.currentTarget.style.color = '#C9A84C'
+                e.currentTarget.style.background = 'rgba(245,245,240,0.08)'
+                e.currentTarget.style.color = 'var(--text-primary)'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent'

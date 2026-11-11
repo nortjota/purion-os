@@ -11,8 +11,8 @@ export const PRIORIDADE_LABEL_CURTO: Record<PrioridadeObjetivo, string> = {
 }
 
 export const PRIORIDADE_COR: Record<PrioridadeObjetivo, string> = {
-  P1: '#C9A84C', // dourado
-  P2: '#5B8FE8', // azul
+  P1: '#D4FC3C', // acento
+  P2: '#9CC3DB', // azul
   P3: '#8A8A8A', // cinza
 }
 
@@ -45,10 +45,10 @@ export const STATUS_OBJETIVO_LABEL: Record<StatusObjetivo, string> = {
 }
 
 export const STATUS_OBJETIVO_COR: Record<StatusObjetivo, string> = {
-  em_dia:    '#4CAF7A', // verde
-  em_risco:  '#E8A838', // amarelo
-  em_atraso: '#E85238', // vermelho
-  concluido: '#5B8FE8', // azul
+  em_dia:    '#8FD14F', // verde
+  em_risco:  '#E6C374', // amarelo
+  em_atraso: '#E5544B', // vermelho
+  concluido: '#9CC3DB', // azul
   pausado:   '#B8B8B8', // cinza
 }
 

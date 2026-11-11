@@ -26,7 +26,7 @@ export function ThemeToggle() {
         border transition-all duration-200
         bg-[var(--bg-surface)] border-[var(--border)]
         text-[var(--text-primary)]
-        hover:border-[#C9A84C] hover:text-[#C9A84C]
+        hover:border-[var(--brand-accent)] hover:text-[var(--brand-accent)]
         shadow-sm
       "
     >

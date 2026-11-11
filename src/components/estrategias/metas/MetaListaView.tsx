@@ -111,7 +111,7 @@ function LinhaResultado({ resultado, metricas, nivel, onSelecionar }: {
           {resultado.descricao}
         </span>
         {resultado.fonteAuto && (
-          <span style={{ fontSize: 9, fontWeight: 700, color: '#5B8FE8', background: 'rgba(91,143,232,0.12)', padding: '1px 6px', borderRadius: 999, flexShrink: 0 }}>
+          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--status-info)', background: 'rgba(156,195,219,0.12)', padding: '1px 6px', borderRadius: 999, flexShrink: 0 }}>
             AUTO
           </span>
         )}
@@ -119,7 +119,7 @@ function LinhaResultado({ resultado, metricas, nivel, onSelecionar }: {
       <span style={{ fontSize: 11, color: 'var(--text-secondary)', textAlign: 'right' }}>
         {formatNumber(atual)} / {formatNumber(resultado.meta)} {resultado.unidade ?? ''}
       </span>
-      <BarraProgresso progresso={pct} cor="#C9A84C" />
+      <BarraProgresso progresso={pct} cor="#D4FC3C" />
       <span />
     </div>
   )
@@ -174,7 +174,7 @@ function LinhaObjetivo({
           >
             {aberto ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
           </button>
-          <Target size={13} style={{ color: '#C9A84C', flexShrink: 0 }} />
+          <Target size={13} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
           {nivel === 0 && (
             <PrioridadeBadge
               prioridade={objetivo.prioridade}
@@ -308,7 +308,7 @@ export function MetaListaView({
             <button
               onClick={() => onNovaMeta(null)}
               className="flex items-center gap-1"
-              style={{ fontSize: 11, color: '#C9A84C', background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 11, color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
             >
               <Plus size={12} /> Nova meta
             </button>
@@ -350,7 +350,7 @@ export function MetaListaView({
       ))}
 
       <style>{`
-        .meta-row:hover { background: rgba(201,168,76,0.04); }
+        .meta-row:hover { background: rgba(245,245,240,0.04); }
       `}</style>
     </div>
   )

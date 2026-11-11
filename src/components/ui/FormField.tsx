@@ -14,11 +14,11 @@ export function FormField({ label, helper, error, children, required }: FormFiel
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       <label className="label-purion" style={{ marginBottom: 6 }}>
         {label}
-        {required && <span style={{ color: '#EF4444', marginLeft: 3 }}>*</span>}
+        {required && <span style={{ color: 'var(--status-danger)', marginLeft: 3 }}>*</span>}
       </label>
       {children}
       {error ? (
-        <p style={{ fontSize: 11, color: '#EF4444', marginTop: 4 }}>{error}</p>
+        <p style={{ fontSize: 11, color: 'var(--status-danger)', marginTop: 4 }}>{error}</p>
       ) : helper ? (
         <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 4 }}>{helper}</p>
       ) : null}
@@ -36,7 +36,7 @@ export const PurionInput = forwardRef<HTMLInputElement, InputProps>(
       ref={ref}
       className={cn('input-purion', className)}
       style={{
-        ...(error ? { borderColor: '#EF4444' } : {}),
+        ...(error ? { borderColor: 'var(--status-danger)' } : {}),
         ...style,
       }}
       {...props}
@@ -55,7 +55,7 @@ export const PurionSelect = forwardRef<HTMLSelectElement, SelectProps>(
       ref={ref}
       className={cn('select-purion', className)}
       style={{
-        ...(error ? { borderColor: '#EF4444' } : {}),
+        ...(error ? { borderColor: 'var(--status-danger)' } : {}),
         ...style,
       }}
       {...props}
@@ -77,7 +77,7 @@ export const PurionTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       className={cn('textarea-purion', className)}
       style={{
         minHeight: 80,
-        ...(error ? { borderColor: '#EF4444' } : {}),
+        ...(error ? { borderColor: 'var(--status-danger)' } : {}),
         ...style,
       }}
       {...props}

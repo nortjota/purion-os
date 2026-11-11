@@ -10,19 +10,19 @@ export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inici
 
 export const CATEGORIAS: Array<{ id: CategoriaMeta; label: string; cor: string }> = [
   // Matheus — comercial / caixa / pós-venda
-  { id: 'b2b',        label: 'B2B',          cor: '#E8A838' },
-  { id: 'vendas',     label: 'Vendas',       cor: '#C9A84C' },
+  { id: 'b2b',        label: 'B2B',          cor: '#E6C374' },
+  { id: 'vendas',     label: 'Vendas',       cor: '#D4FC3C' },
   { id: 'posvenda',   label: 'Pós-venda',    cor: '#E07A9B' },
   { id: 'financeiro', label: 'Financeiro',   cor: '#4CC3A4' },
   { id: 'logistica',  label: 'Logística',    cor: '#2E9E5B' },
   // João — aquisição
   { id: 'conteudo',   label: 'Conteúdo',     cor: '#F08A4B' },
-  { id: 'creators',   label: 'Creators',     cor: '#A855F7' },
-  { id: 'ads',        label: 'Ads',          cor: '#5B8FE8' },
+  { id: 'creators',   label: 'Creators',     cor: '#A7A9A6' },
+  { id: 'ads',        label: 'Ads',          cor: '#9CC3DB' },
   { id: 'growth',     label: 'Site & Growth', cor: '#38BDF8' },
   // Time / legado
   { id: 'gestao',     label: 'Gestão',       cor: '#D4D4D4' },
-  { id: 'producao',   label: 'Produção',     cor: '#22C55E' },
+  { id: 'producao',   label: 'Produção',     cor: '#8FD14F' },
   { id: 'geral',      label: 'Geral',        cor: '#B8B8B8' },
 ]
 
@@ -31,7 +31,7 @@ export function corCategoria(cat: CategoriaMeta): string {
 }
 
 export function corSocio(socio: PerfilUsuario | null): string {
-  return socio ? corPerfil(socio) : '#C9A84C'
+  return socio ? corPerfil(socio) : '#D4FC3C'
 }
 
 export function hojeISO(): string {
@@ -139,10 +139,10 @@ export function gerarHeatmap(metasEscopo: MetaDiaria[], dias: number): DiaHeatma
 
 export function corHeatmap(pct: number): string {
   if (pct < 0) return 'rgba(255,255,255,0.04)'
-  if (pct === 0) return 'rgba(239,68,68,0.25)'
-  if (pct < 50) return 'rgba(34,197,94,0.25)'
-  if (pct < 100) return 'rgba(34,197,94,0.55)'
-  return '#22C55E'
+  if (pct === 0) return 'rgba(229,84,75,0.25)'
+  if (pct < 50) return 'rgba(143,209,79,0.25)'
+  if (pct < 100) return 'rgba(143,209,79,0.55)'
+  return '#8FD14F'
 }
 
 // ─────────────────────────────────────────────

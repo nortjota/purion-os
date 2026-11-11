@@ -225,7 +225,7 @@ export function ContentHeader() {
                       textAlign: 'left',
                     }}
                   >
-                    <result.icon size={14} style={{ color: '#C9A84C', flexShrink: 0 }} />
+                    <result.icon size={14} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontSize: 13, color: 'var(--text-primary)', marginBottom: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {result.label}
@@ -258,7 +258,7 @@ export function ContentHeader() {
               title={displayName}
               style={{
                 width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-                background: '#C9A84C', color: '#0D0D0D',
+                background: 'var(--primary)', color: 'var(--primary-foreground)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 12, fontWeight: 600, userSelect: 'none', cursor: 'pointer',
                 border: 'none',
@@ -321,7 +321,7 @@ export function ContentHeader() {
       }}>
         {/* Left: Module name (replaces hamburger — nav is via bottom MobileNav) */}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, userSelect: 'none' }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#C9A84C', letterSpacing: '0.12em' }}>PURION</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.12em' }}>PURION</span>
           <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>OS</span>
         </div>
 

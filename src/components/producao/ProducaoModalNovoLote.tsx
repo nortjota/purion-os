@@ -71,7 +71,7 @@ export function ProducaoModalNovoLote({ onConfirmar, onFechar }: Props) {
       <div className="modal-backdrop" onClick={onFechar}>
         <div className="modal-container max-w-sm" onClick={(e) => e.stopPropagation()}>
           <div className="px-6 py-8 flex flex-col items-center text-center gap-3">
-            <CheckCircle2 size={36} style={{ color: '#22C55E' }} />
+            <CheckCircle2 size={36} style={{ color: 'var(--status-ok)' }} />
             <p style={{ fontSize: 15, fontWeight: 700 }}>{resultado.quantidade} frascos produzidos</p>
             <p className="caption">Insumos baixados pela receita e estoque de prontos atualizado automaticamente.</p>
             <button onClick={onFechar} className="btn btn-primary btn-sm mt-2">Fechar</button>
@@ -116,8 +116,8 @@ export function ProducaoModalNovoLote({ onConfirmar, onFechar }: Props) {
               <div className="flex flex-col gap-1.5">
                 {consumo.map((c) => (
                   <div key={c.insumoId} className="flex items-center justify-between" style={{ fontSize: 12 }}>
-                    <span style={{ color: c.suficiente ? 'var(--text-secondary)' : '#E85238' }}>{c.nome}</span>
-                    <span style={{ fontWeight: 700, color: c.suficiente ? 'var(--text-primary)' : '#E85238' }}>
+                    <span style={{ color: c.suficiente ? 'var(--text-secondary)' : 'var(--status-danger)' }}>{c.nome}</span>
+                    <span style={{ fontWeight: 700, color: c.suficiente ? 'var(--text-primary)' : 'var(--status-danger)' }}>
                       {c.quantidadeNecessaria.toLocaleString('pt-BR')} {c.unidade}
                       {!c.suficiente && ` (tem ${c.quantidadeAtual.toLocaleString('pt-BR')})`}
                     </span>
@@ -126,7 +126,7 @@ export function ProducaoModalNovoLote({ onConfirmar, onFechar }: Props) {
               </div>
               <div className="flex items-center justify-between mt-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
                 <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Custo estimado</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: '#C9A84C' }}>{formatarMoedaBR(custoTotal)}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)' }}>{formatarMoedaBR(custoTotal)}</span>
               </div>
             </div>
           )}
@@ -134,10 +134,10 @@ export function ProducaoModalNovoLote({ onConfirmar, onFechar }: Props) {
           {insuficientes.length > 0 && (
             <div style={{
               display: 'flex', flexDirection: 'column', gap: 6,
-              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+              background: 'rgba(229,84,75,0.1)', border: '1px solid rgba(229,84,75,0.3)',
               borderRadius: 8, padding: '10px 12px',
             }}>
-              <span className="flex items-center gap-2" style={{ fontSize: 12, color: '#EF4444', fontWeight: 600 }}>
+              <span className="flex items-center gap-2" style={{ fontSize: 12, color: 'var(--status-danger)', fontWeight: 600 }}>
                 <AlertTriangle size={13} /> Insumo insuficiente para {qtd} frascos
               </span>
               <label className="flex items-center gap-2" style={{ fontSize: 11, color: 'var(--text-secondary)', cursor: 'pointer' }}>
@@ -147,7 +147,7 @@ export function ProducaoModalNovoLote({ onConfirmar, onFechar }: Props) {
             </div>
           )}
 
-          {erro && <p style={{ fontSize: 12, color: '#E85238' }}>{erro}</p>}
+          {erro && <p style={{ fontSize: 12, color: 'var(--status-danger)' }}>{erro}</p>}
 
           <div className="modal-footer" style={{ paddingLeft: 0, paddingRight: 0 }}>
             <button type="button" onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>

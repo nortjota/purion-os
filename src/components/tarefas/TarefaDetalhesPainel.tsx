@@ -150,15 +150,15 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
 
       {/* Motivo de bloqueio */}
       {tarefa.status === 'bloqueada' && (
-        <div className="bg-[rgba(232,168,56,0.06)] border border-[rgba(232,168,56,0.2)] rounded-xl p-4 space-y-2">
-          <div className="flex items-center gap-1.5 text-[11px] text-[#E8A838] font-semibold">
+        <div className="bg-[rgba(230,195,116,0.06)] border border-[rgba(230,195,116,0.2)] rounded-xl p-4 space-y-2">
+          <div className="flex items-center gap-1.5 text-[11px] text-[var(--status-warning)] font-semibold">
             <AlertTriangle size={12} /> Motivo do bloqueio
           </div>
           <textarea
             defaultValue={tarefa.motivoBloqueio ?? ''}
             onBlur={(e) => onSalvar(tarefa.id, { motivoBloqueio: e.target.value })}
             placeholder="Descreva o bloqueio…" rows={2}
-            className="w-full bg-[var(--bg-primary)] border border-[rgba(232,168,56,0.2)] rounded-lg px-3 py-2.5 text-xs text-[var(--text-primary)] resize-none focus:outline-none focus:border-[rgba(232,168,56,0.5)]"
+            className="w-full bg-[var(--bg-primary)] border border-[rgba(230,195,116,0.2)] rounded-lg px-3 py-2.5 text-xs text-[var(--text-primary)] resize-none focus:outline-none focus:border-[rgba(230,195,116,0.5)]"
           />
         </div>
       )}
@@ -248,7 +248,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
                 {s.titulo}
               </span>
               <button onClick={() => props.onDeletarSubtarefa(s.id)} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <Trash2 size={12} className="text-[#E85238]" />
+                <Trash2 size={12} className="text-[var(--status-danger)]" />
               </button>
             </div>
           ))}
@@ -283,7 +283,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
                 <p className="caption">{formatarKb(a.tamanhoKb)}</p>
               </a>
               <button onClick={() => props.onDeletarAnexo(a.id, a.url)} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <Trash2 size={12} className="text-[#E85238]" />
+                <Trash2 size={12} className="text-[var(--status-danger)]" />
               </button>
             </div>
           ))}
@@ -307,7 +307,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
                 <div className="flex items-center gap-2">
                   <span className="caption">{formatarDataRelativa(c.createdAt.slice(0, 10))}</span>
                   <button onClick={() => props.onDeletarComentario(c.id)} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Trash2 size={11} className="text-[#E85238]" />
+                    <Trash2 size={11} className="text-[var(--status-danger)]" />
                   </button>
                 </div>
               </div>

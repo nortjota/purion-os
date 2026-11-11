@@ -61,8 +61,8 @@ export function InlineEdit({ value, onSave, type = 'text', className = '', place
         placeholder={placeholder}
         className={className}
         style={{
-          background: 'rgba(201,168,76,0.08)',
-          borderBottom: '1px solid #C9A84C',
+          background: 'rgba(245,245,240,0.08)',
+          borderBottom: '1px solid var(--border)',
           outline: 'none',
           padding: '0 2px',
         }}

@@ -50,32 +50,32 @@ export default function LandingPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', height: '42px', backgroundColor: '#0D0D0D',
-    border: '1px solid #252525', borderRadius: '8px', padding: '0 12px',
-    fontSize: '14px', color: '#FAFAF8', outline: 'none', boxSizing: 'border-box',
+    width: '100%', height: '42px', backgroundColor: '#0B0B0B',
+    border: '1px solid #2A2C2B', borderRadius: '8px', padding: '0 12px',
+    fontSize: '14px', color: '#F5F5F0', outline: 'none', boxSizing: 'border-box',
     transition: 'border-color 150ms, box-shadow 150ms',
   }
 
   function focusStyle(e: React.FocusEvent<HTMLInputElement>) {
-    e.currentTarget.style.border = '1px solid #C9A84C'
-    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,168,76,0.12)'
+    e.currentTarget.style.border = '1px solid var(--border)'
+    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(245,245,240,0.12)'
   }
   function blurStyle(e: React.FocusEvent<HTMLInputElement>) {
-    e.currentTarget.style.border = '1px solid #252525'
+    e.currentTarget.style.border = '1px solid #2A2C2B'
     e.currentTarget.style.boxShadow = 'none'
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0D0D0D', color: '#FAFAF8', fontFamily: 'var(--font-sans, sans-serif)' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#0B0B0B', color: '#F5F5F0', fontFamily: 'var(--font-body, sans-serif)' }}>
       {/* Nav */}
-      <nav style={{ padding: '20px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #141414' }}>
+      <nav style={{ padding: '20px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1B1D1C' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-          <span style={{ fontSize: '18px', fontWeight: 600, color: '#C9A84C', letterSpacing: '0.15em' }}>PURION</span>
+          <span style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.15em' }}>PURION</span>
           <span style={{ fontSize: '10px', color: '#B8B8B8', letterSpacing: '0.1em' }}>OS</span>
         </div>
         <a
           href="/login"
-          style={{ fontSize: '13px', color: '#C9A84C', textDecoration: 'none', padding: '8px 20px', border: '1px solid rgba(201,168,76,0.3)', borderRadius: '8px' }}
+          style={{ fontSize: '13px', color: 'var(--text-primary)', textDecoration: 'none', padding: '8px 20px', border: '1px solid rgba(245,245,240,0.3)', borderRadius: '8px' }}
         >
           Entrar
         </a>
@@ -83,12 +83,12 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section style={{ textAlign: 'center', padding: '96px 24px 64px' }}>
-        <div style={{ display: 'inline-block', fontSize: '11px', color: '#C9A84C', letterSpacing: '0.15em', textTransform: 'uppercase', border: '1px solid rgba(201,168,76,0.2)', borderRadius: '100px', padding: '4px 14px', marginBottom: '24px' }}>
+        <div style={{ display: 'inline-block', fontSize: '11px', color: 'var(--text-primary)', letterSpacing: '0.15em', textTransform: 'uppercase', border: '1px solid rgba(245,245,240,0.2)', borderRadius: '100px', padding: '4px 14px', marginBottom: '24px' }}>
           SaaS para marcas DTC
         </div>
         <h1 style={{ fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 700, lineHeight: 1.1, marginBottom: '20px', maxWidth: '700px', margin: '0 auto 20px' }}>
           O sistema operacional<br />
-          <span style={{ color: '#C9A84C' }}>para marcas DTC</span>
+          <span style={{ color: 'var(--text-primary)' }}>para marcas DTC</span>
         </h1>
         <p style={{ fontSize: '18px', color: '#8B8B8B', maxWidth: '520px', margin: '0 auto 40px', lineHeight: 1.6 }}>
           Gerencie CRM, financeiro, produção, creators e tráfego pago num único painel. Feito para quem escala.
@@ -96,13 +96,13 @@ export default function LandingPage() {
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <a
             href="/signup"
-            style={{ display: 'inline-block', backgroundColor: '#C9A84C', color: '#0D0D0D', padding: '14px 32px', borderRadius: '10px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', letterSpacing: '0.02em' }}
+            style={{ display: 'inline-block', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', padding: '14px 32px', borderRadius: '10px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', letterSpacing: '0.02em' }}
           >
             Começar agora — grátis
           </a>
           <a
             href="#demo"
-            style={{ display: 'inline-block', backgroundColor: 'transparent', color: '#C9A84C', padding: '14px 32px', borderRadius: '10px', fontSize: '14px', fontWeight: 500, textDecoration: 'none', border: '1px solid rgba(201,168,76,0.3)' }}
+            style={{ display: 'inline-block', backgroundColor: 'transparent', color: 'var(--text-primary)', padding: '14px 32px', borderRadius: '10px', fontSize: '14px', fontWeight: 500, textDecoration: 'none', border: '1px solid rgba(245,245,240,0.3)' }}
           >
             Solicitar demonstração
           </a>
@@ -112,9 +112,9 @@ export default function LandingPage() {
       {/* Benefits */}
       <section style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 24px 80px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
         {BENEFITS.map((b) => (
-          <div key={b.title} style={{ backgroundColor: '#111111', border: '1px solid #1E1E1E', borderRadius: '12px', padding: '28px 24px' }}>
+          <div key={b.title} style={{ backgroundColor: '#0B0B0B', border: '1px solid #242726', borderRadius: '12px', padding: '28px 24px' }}>
             <div style={{ fontSize: '28px', marginBottom: '14px' }}>{b.icon}</div>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px', color: '#FAFAF8' }}>{b.title}</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px', color: '#F5F5F0' }}>{b.title}</h3>
             <p style={{ fontSize: '13px', color: '#B8B8B8', lineHeight: 1.6, margin: 0 }}>{b.desc}</p>
           </div>
         ))}
@@ -122,7 +122,7 @@ export default function LandingPage() {
 
       {/* Form */}
       <section id="demo" style={{ maxWidth: '480px', margin: '0 auto', padding: '0 24px 96px' }}>
-        <div style={{ backgroundColor: '#111111', border: '1px solid #1E1E1E', borderRadius: '16px', padding: '40px' }}>
+        <div style={{ backgroundColor: '#0B0B0B', border: '1px solid #242726', borderRadius: '16px', padding: '40px' }}>
           {sent ? (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
               <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎯</div>
@@ -156,10 +156,10 @@ export default function LandingPage() {
                     />
                   </div>
                 ))}
-                {error && <p style={{ fontSize: '12px', color: '#EF4444', margin: 0 }}>{error}</p>}
+                {error && <p style={{ fontSize: '12px', color: 'var(--status-danger)', margin: 0 }}>{error}</p>}
                 <button
                   type="submit" disabled={loading}
-                  style={{ width: '100%', height: '44px', backgroundColor: loading ? '#8B7435' : '#C9A84C', color: '#0D0D0D', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', marginTop: '8px' }}
+                  style={{ width: '100%', height: '44px', backgroundColor: loading ? '#A9CA30' : 'var(--brand-accent)', color: '#0B0B0B', border: 'none', borderRadius: '999px', fontSize: '14px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', marginTop: '8px' }}
                 >
                   {loading ? 'Enviando…' : 'Solicitar demonstração'}
                 </button>
@@ -169,7 +169,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer style={{ textAlign: 'center', padding: '24px', borderTop: '1px solid #141414', fontSize: '12px', color: '#8A8A8A' }}>
+      <footer style={{ textAlign: 'center', padding: '24px', borderTop: '1px solid #1B1D1C', fontSize: '12px', color: '#8A8A8A' }}>
         © 2025 PURION OS · Todos os direitos reservados
       </footer>
     </div>

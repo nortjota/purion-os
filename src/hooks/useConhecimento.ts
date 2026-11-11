@@ -21,7 +21,7 @@ function toCategoria(r: Row): KbCategoria {
     id:    String(r.id),
     nome:  String(r.nome ?? ''),
     icone: String(r.icone ?? 'BookOpen'),
-    cor:   String(r.cor ?? '#C9A84C'),
+    cor:   String(r.cor ?? '#D4FC3C'),
     ordem: Number(r.ordem ?? 0),
   }
 }

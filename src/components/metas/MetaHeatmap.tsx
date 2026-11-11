@@ -31,7 +31,7 @@ export function MetaHeatmap({ metasEscopo }: { metasEscopo: MetaDiaria[] }) {
               onClick={() => setPeriodo(p as 30 | 90)}
               className="px-2 py-0.5 rounded text-[10px] font-medium"
               style={periodo === p
-                ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' }
+                ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
                 : { color: 'var(--text-secondary)' }}
             >
               {p}d

@@ -17,8 +17,8 @@ import {
 } from '@/hooks/useDespacho'
 
 const VERDE = PERFIS_INFO.logistica.cor
-const DOURADO = '#C9A84C'
-const VERMELHO = '#EF4444'
+const ACENTO = '#D4FC3C'
+const VERMELHO = '#E5544B'
 
 function fmtDataHora(iso: string | null | undefined): string {
   if (!iso) return '—'
@@ -103,8 +103,8 @@ function CardFila({ venda, onDespachar }: {
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600,
               padding: '2px 8px', borderRadius: 99,
-              background: atrasado ? 'rgba(239,68,68,0.14)' : 'rgba(255,255,255,0.06)',
-              color: atrasado ? '#FCA5A5' : '#B8B8B8',
+              background: atrasado ? 'rgba(229,84,75,0.14)' : 'rgba(255,255,255,0.06)',
+              color: atrasado ? 'var(--status-danger)' : '#B8B8B8',
             }}>
               <Clock size={11} /> {atrasado ? `Atrasado · ${fmtIdade(horas)}` : `Pago ${fmtIdade(horas)}`}
             </span>
@@ -117,7 +117,7 @@ function CardFila({ venda, onDespachar }: {
             <span style={{ fontSize: 12, color: '#B8B8B8' }}>· {venda.canal.toUpperCase()}</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 6, fontSize: 13, color: endereco ? '#E0E0E0' : '#FCA5A5' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 6, fontSize: 13, color: endereco ? '#E0E0E0' : 'var(--status-danger)' }}>
             <MapPin size={14} style={{ color: VERDE, flexShrink: 0, marginTop: 2 }} />
             <span style={{ flex: 1 }}>{endereco || 'Endereço não informado — confirmar com o Matheus'}</span>
             {endereco && (
@@ -199,7 +199,7 @@ function CardDespachado({ venda, mostrarM02, onMarcarM02 }: {
         {mostrarM02 && (
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
             {venda.m02EnviadaEm ? (
-              <span style={{ fontSize: 12, color: '#86EFAC', fontWeight: 600 }}>M02 enviada {fmtDataHora(venda.m02EnviadaEm)}</span>
+              <span style={{ fontSize: 12, color: 'var(--status-ok)', fontWeight: 600 }}>M02 enviada {fmtDataHora(venda.m02EnviadaEm)}</span>
             ) : (
               <>
                 {wa && (
@@ -297,7 +297,7 @@ export function DespachoPage() {
       {atrasados.length > 0 && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 10,
-          background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.35)', color: '#FCA5A5',
+          background: 'rgba(229,84,75,0.10)', border: '1px solid rgba(229,84,75,0.35)', color: 'var(--status-danger)',
         }}>
           <AlertTriangle size={18} style={{ flexShrink: 0 }} />
           <span style={{ fontSize: 14, fontWeight: 500 }}>
@@ -308,10 +308,10 @@ export function DespachoPage() {
 
       {/* KPIs */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <Kpi label="A despachar" valor={fila.length} cor={DOURADO} sub="pagos, aguardando envio" live />
+        <Kpi label="A despachar" valor={fila.length} cor={ACENTO} sub="pagos, aguardando envio" live />
         <Kpi label="Atrasados" valor={atrasados.length} cor={atrasados.length > 0 ? VERMELHO : '#E0E0E0'} sub={`pagos há +${HORAS_ALERTA_DESPACHO}h`} />
         <Kpi label="Despachados hoje" valor={hoje.length} cor={VERDE} live sub={hoje.reduce((s, v) => s + frascosDaVenda(v), 0) + ' frascos'} />
-        {!isLogistica && <Kpi label="Sem aviso M02" valor={semAviso.length} cor={semAviso.length > 0 ? '#E8A838' : '#E0E0E0'} sub="rastreio não enviado ao cliente" />}
+        {!isLogistica && <Kpi label="Sem aviso M02" valor={semAviso.length} cor={semAviso.length > 0 ? '#E6C374' : '#E0E0E0'} sub="rastreio não enviado ao cliente" />}
       </div>
 
       <InnerTabs tabs={tabs} activeTab={aba} onChange={(id) => setAba(id as Aba)} />

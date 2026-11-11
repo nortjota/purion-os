@@ -144,7 +144,7 @@ export function TarefaFiltros({ tarefas, filtros, onChange }: TarefaFiltrosProps
             <span
               key={c.key}
               className="inline-flex items-center gap-1.5 text-[12px]"
-              style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.25)', color: '#C9A84C', borderRadius: 20, padding: '4px 10px' }}
+              style={{ background: 'rgba(245,245,240,0.1)', border: '1px solid rgba(245,245,240,0.25)', color: 'var(--text-primary)', borderRadius: 20, padding: '4px 10px' }}
             >
               {c.label}
               <button onClick={() => set(c.key, FILTROS_VAZIOS[c.key] as never)} style={{ display: 'flex', cursor: 'pointer' }}>

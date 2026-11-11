@@ -121,8 +121,8 @@ export function TicketDetalhe({ ticket, onAtualizado, onFechar }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
             {[1,2,3,4,5].map(n => (
               <button key={n} onClick={() => setSatisfacao(n)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: n <= satisfacao ? '#F59E0B' : 'var(--border)' }}>
-                <Star size={16} fill={n <= satisfacao ? '#F59E0B' : 'none'} />
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: n <= satisfacao ? 'var(--status-warning)' : 'var(--border)' }}>
+                <Star size={16} fill={n <= satisfacao ? '#E6C374' : 'none'} />
               </button>
             ))}
           </div>
@@ -156,9 +156,9 @@ export function TicketDetalhe({ ticket, onAtualizado, onFechar }: Props) {
             <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: m.autor === 'atendente' ? 'flex-end' : 'flex-start' }}>
               <div style={{
                 maxWidth: '80%', padding: '10px 14px', borderRadius: m.autor === 'atendente' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
-                background: m.autor === 'atendente' ? '#C9A84C' : 'var(--bg-surface)',
+                background: m.autor === 'atendente' ? 'var(--brand-accent)' : 'var(--bg-surface)',
                 border: m.autor === 'atendente' ? 'none' : '1px solid var(--border)',
-                color: m.autor === 'atendente' ? '#0D0D0D' : 'var(--text-primary)',
+                color: m.autor === 'atendente' ? '#0B0B0B' : 'var(--text-primary)',
                 fontSize: 13, lineHeight: 1.5,
               }}>{m.conteudo}</div>
               <span style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 3 }}>

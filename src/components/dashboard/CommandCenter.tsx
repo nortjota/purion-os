@@ -87,7 +87,7 @@ function MetaFaturamento({ receitas }: { receitas: { valor: number }[] }) {
     <div className="card-purion card-section">
       <div className="flex items-center justify-between mb-5 gap-4">
         <div className="flex items-center gap-2">
-          <Target size={15} className="text-[#C9A84C]" />
+          <Target size={15} className="text-[var(--text-primary)]" />
           <span className="section-title text-[15px]">Meta de Faturamento — 90 dias</span>
         </div>
         <ProgressRing value={percentual} size={64} stroke={6} labelSize={14} />
@@ -95,7 +95,7 @@ function MetaFaturamento({ receitas }: { receitas: { valor: number }[] }) {
 
       <div className="flex items-center justify-between caption">
         <span>
-          <AnimatedNumber value={totalReceita} prefix="R$ " decimals={2} className="text-[#C9A84C] font-[500]" />
+          <AnimatedNumber value={totalReceita} prefix="R$ " decimals={2} className="text-[var(--text-primary)] font-[500]" />
           {' '}de{' '}
           <span className="text-[var(--text-primary)]">{formatarMoeda(META_90_DIAS)}</span>
         </span>
@@ -115,9 +115,9 @@ function MetaFaturamento({ receitas }: { receitas: { valor: number }[] }) {
 const COR_ALERTA: Record<Alerta['tipo'], {
   bg: string; border: string; text: string; icon: React.ElementType
 }> = {
-  danger:  { bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   text: '#EF4444', icon: AlertTriangle },
-  warning: { bg: 'rgba(201,168,76,0.08)',  border: 'rgba(201,168,76,0.2)',  text: '#C9A84C', icon: AlertCircle  },
-  info:    { bg: 'rgba(91,143,232,0.08)',  border: 'rgba(91,143,232,0.2)',  text: '#5B8FE8', icon: Info         },
+  danger:  { bg: 'rgba(229,84,75,0.08)',   border: 'rgba(229,84,75,0.2)',   text: '#E5544B', icon: AlertTriangle },
+  warning: { bg: 'rgba(230,195,116,0.08)',  border: 'rgba(230,195,116,0.2)',  text: '#E6C374', icon: AlertCircle  },
+  info:    { bg: 'rgba(156,195,219,0.08)',  border: 'rgba(156,195,219,0.2)',  text: '#9CC3DB', icon: Info         },
 }
 
 function SecaoAlertas({ alertas }: { alertas: Alerta[] }) {
@@ -188,8 +188,8 @@ function SocioCard({
         rounded-xl border p-5 text-left w-full
         transition-all duration-150
         ${ativo
-          ? 'bg-[rgba(201,168,76,0.04)] border-[rgba(201,168,76,0.25)] shadow-[0_0_0_1px_rgba(201,168,76,0.15)]'
-          : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[rgba(201,168,76,0.2)]'
+          ? 'bg-[rgba(212,252,60,0.04)] border-[rgba(212,252,60,0.25)] shadow-[0_0_0_1px_rgba(212,252,60,0.15)]'
+          : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[rgba(212,252,60,0.2)]'
         }
       `}
     >
@@ -214,9 +214,9 @@ function SocioCard({
 
       <div className="grid grid-cols-3 gap-2 mb-2">
         {[
-          { label: 'Abertas',    valor: abertas,    cor: '#C9A84C' },
+          { label: 'Abertas',    valor: abertas,    cor: '#D4FC3C' },
           { label: 'Andamento',  valor: emAndamento, cor: info.cor  },
-          { label: 'Concluídas', valor: concluidas,  cor: '#22C55E' },
+          { label: 'Concluídas', valor: concluidas,  cor: '#8FD14F' },
         ].map(({ label, valor, cor }) => (
           <div key={label} className="bg-[var(--bg-surface-2)] rounded-lg p-2.5 text-center border border-[var(--border)]">
             <span className="block text-[18px] font-semibold leading-none mb-1" style={{ color: cor }}>
@@ -230,7 +230,7 @@ function SocioCard({
       </div>
 
       {atrasadas > 0 && (
-        <div className="mb-2 flex items-center gap-1.5 text-[12px] text-[#EF4444]">
+        <div className="mb-2 flex items-center gap-1.5 text-[12px] text-[var(--status-danger)]">
           <AlertTriangle size={11} />
           {atrasadas} tarefa{atrasadas > 1 ? 's' : ''} atrasada{atrasadas > 1 ? 's' : ''}
         </div>
@@ -240,7 +240,7 @@ function SocioCard({
           <span>Última entrega: <span className="text-[var(--text-primary)]">{ultimaConcluida.titulo}</span></span>
         )}
         {perfilId === 'joao' && gastoAds > 0 && (
-          <span>Ads investidos: <span className="text-[#C9A84C]">{formatarMoeda(gastoAds)}</span></span>
+          <span>Ads investidos: <span className="text-[var(--text-primary)]">{formatarMoeda(gastoAds)}</span></span>
         )}
       </div>
     </button>
@@ -264,7 +264,7 @@ function FeedAtividade({ items }: { items: AtividadeItem[] }) {
     <div className="card-purion">
       <div className="card-header">
         <div className="flex items-center gap-2">
-          <Activity size={14} className="text-[#C9A84C]" />
+          <Activity size={14} className="text-[var(--text-primary)]" />
           <span className="section-title text-[15px]">Atividade Recente</span>
         </div>
       </div>
@@ -280,7 +280,7 @@ function FeedAtividade({ items }: { items: AtividadeItem[] }) {
     <div className="card-purion overflow-hidden">
       <div className="card-header">
         <div className="flex items-center gap-2">
-          <Activity size={14} className="text-[#C9A84C]" />
+          <Activity size={14} className="text-[var(--text-primary)]" />
           <span className="section-title text-[15px]">Atividade Recente</span>
         </div>
         <span className="caption uppercase" style={{ letterSpacing: '0.06em' }}>
@@ -296,7 +296,7 @@ function FeedAtividade({ items }: { items: AtividadeItem[] }) {
               className={`
                 flex items-start gap-3 px-6 py-3 border-b border-[var(--border)] last:border-0
                 transition-colors duration-150 hover:bg-[var(--bg-surface-2)]
-                ${idx === 0 ? 'bg-[rgba(201,168,76,0.02)]' : ''}
+                ${idx === 0 ? 'bg-[rgba(212,252,60,0.02)]' : ''}
               `}
             >
               <div
@@ -364,7 +364,7 @@ function LeadsFunil({ leads }: { leads: import('@/store').Lead[] }) {
     <div className="card-purion">
       <div className="card-header">
         <div className="flex items-center gap-2">
-          <Users size={14} className="text-[#C9A84C]" />
+          <Users size={14} className="text-[var(--text-primary)]" />
           <span className="section-title text-[15px]">Funil de Leads</span>
         </div>
         <span className="caption">{ativos.length} ativos</span>
@@ -379,7 +379,7 @@ function LeadsFunil({ leads }: { leads: import('@/store').Lead[] }) {
               <div className="flex-1 h-1.5 bg-[var(--bg-surface-2)] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${pct}%`, backgroundColor: '#C9A84C' }}
+                  style={{ width: `${pct}%`, backgroundColor: 'var(--brand-accent)' }}
                 />
               </div>
               <span className="text-[13px] font-[500] text-[var(--text-primary)] w-5 text-right">{count}</span>
@@ -407,7 +407,7 @@ function UltimosDailies({ entries }: { entries: import('@/store').DailyEntry[] }
     <div className="card-purion overflow-hidden">
       <div className="card-header">
         <div className="flex items-center gap-2">
-          <Calendar size={14} className="text-[#C9A84C]" />
+          <Calendar size={14} className="text-[var(--text-primary)]" />
           <span className="section-title text-[15px]">Últimos Daily Updates</span>
         </div>
       </div>
@@ -486,12 +486,12 @@ function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
                 <div key={id}>
                   <div className="flex items-center justify-between mb-0.5">
                     <span className="text-[11px] text-[var(--text-secondary)]">{label}</span>
-                    <span className="text-[11px] font-semibold" style={{ color: p === 100 ? '#4CAF7A' : cor }}>{p}%</span>
+                    <span className="text-[11px] font-semibold" style={{ color: p === 100 ? 'var(--status-ok)' : cor }}>{p}%</span>
                   </div>
                   <div className="w-full h-1 bg-[var(--border)] rounded-full overflow-hidden">
                     <div className="h-full rounded-full" style={{
                       width: '100%', transform: `scaleX(${p / 100})`, transformOrigin: 'left center',
-                      background: p === 100 ? '#4CAF7A' : cor, transition: 'transform var(--dur-slow) var(--ease-expo)',
+                      background: p === 100 ? 'var(--status-ok)' : cor, transition: 'transform var(--dur-slow) var(--ease-expo)',
                     }} />
                   </div>
                 </div>
@@ -654,7 +654,7 @@ export function CommandCenter() {
         delta={variacaoFaturamento} deltaLabel="vs período anterior"
         sub={`${resumoFrascosPeriodo.pedidos} pedidos pagos`}
         sparkline={sparkFaturamento}
-        color="#C9A84C"
+        color="#D4FC3C"
       />
     ),
     frascos: (
@@ -707,18 +707,18 @@ export function CommandCenter() {
     const b2c = pagas.filter((v) => v.canal === 'b2c').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
     const b2b = pagas.filter((v) => v.canal === 'b2b').reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
     return [
-      { name: 'B2C', value: b2c, cor: '#C9A84C' },
-      { name: 'B2B', value: b2b, cor: '#5B8FE8' },
+      { name: 'B2C', value: b2c, cor: '#D4FC3C' },
+      { name: 'B2B', value: b2b, cor: '#9CC3DB' },
     ]
   }, [vendas, periodo])
 
   const funilB2BEtapas = useMemo(() => {
     const norm = leads.map((l) => estagioNormalizado(l.status))
     return [
-      { label: 'Abordagens',    valor: norm.filter((s) => s === 'prospecto' || s === 'abordado').length, cor: '#5B8FE8' },
-      { label: 'Reuniões',      valor: norm.filter((s) => s === 'reuniao_agendada').length, cor: '#C9A84C' },
-      { label: 'Oportunidades', valor: norm.filter((s) => s === 'oportunidade').length, cor: '#E8A838' },
-      { label: 'Ganhos',        valor: norm.filter((s) => ESTAGIOS_GANHOS.includes(s)).length, cor: '#4CAF7A' },
+      { label: 'Abordagens',    valor: norm.filter((s) => s === 'prospecto' || s === 'abordado').length, cor: '#9CC3DB' },
+      { label: 'Reuniões',      valor: norm.filter((s) => s === 'reuniao_agendada').length, cor: '#D4FC3C' },
+      { label: 'Oportunidades', valor: norm.filter((s) => s === 'oportunidade').length, cor: '#E6C374' },
+      { label: 'Ganhos',        valor: norm.filter((s) => ESTAGIOS_GANHOS.includes(s)).length, cor: '#8FD14F' },
     ]
   }, [leads])
 
@@ -733,12 +733,12 @@ export function CommandCenter() {
   // ── LINHA 3 — Listas rápidas ──
   const northStarItems: ItemLista[] = useMemo(() => {
     const itens: ItemLista[] = [{
-      id: 'north-star', titulo: 'Clientes e parceiros ativos que recompram', subtitulo: 'North Star da PURION', cor: '#C9A84C',
+      id: 'north-star', titulo: 'Clientes e parceiros ativos que recompram', subtitulo: 'North Star da PURION', cor: '#D4FC3C',
     }]
     if (faseAtual) {
       itens.push({
         id: 'fase-atual', titulo: faseAtual.nome, subtitulo: 'Fase atual do roadmap',
-        valor: `${faseAtual.percentualConclusao}%`, cor: '#5B8FE8',
+        valor: `${faseAtual.percentualConclusao}%`, cor: '#9CC3DB',
       })
     }
     return itens
@@ -755,7 +755,7 @@ export function CommandCenter() {
       return {
         id: t.id, titulo: t.titulo, subtitulo: t.responsavel,
         badge: atrasada ? `${dias}d atrasada` : dias === 0 ? 'Hoje' : `em ${dias}d`,
-        cor: atrasada ? '#EF4444' : dias <= 2 ? '#E8A838' : '#4CAF7A',
+        cor: atrasada ? '#E5544B' : dias <= 2 ? '#E6C374' : '#8FD14F',
       }
     })
   }, [tarefas])
@@ -771,7 +771,7 @@ export function CommandCenter() {
       .slice(0, 5)
       .map((l) => {
         const dias = Math.floor((Date.now() - new Date(l.updatedAt).getTime()) / 86_400_000)
-        return { id: l.id, titulo: l.nomeEmpresa, subtitulo: `${l.cidade} · ${l.regiao}`, badge: `D+${dias}`, cor: dias >= 21 ? '#E8A838' : '#4CAF7A' }
+        return { id: l.id, titulo: l.nomeEmpresa, subtitulo: `${l.cidade} · ${l.regiao}`, badge: `D+${dias}`, cor: dias >= 21 ? '#E6C374' : '#8FD14F' }
       })
   }, [leads])
 
@@ -780,7 +780,7 @@ export function CommandCenter() {
       .filter((e) => e.status === 'backlog')
       .sort((a, b) => b.score - a.score)
       .slice(0, 3)
-      .map((e) => ({ id: e.id, titulo: e.nome, subtitulo: e.etapa, valor: e.score.toFixed(1), cor: '#C9A84C' }))
+      .map((e) => ({ id: e.id, titulo: e.nome, subtitulo: e.etapa, valor: e.score.toFixed(1), cor: '#D4FC3C' }))
   }, [experimentos])
 
   return (
@@ -806,7 +806,7 @@ export function CommandCenter() {
             {PERIODO_OPCOES.map((p) => (
               <button key={p.id} onClick={() => setPeriodo(p.id)}
                 className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors"
-                style={periodo === p.id ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}>
+                style={periodo === p.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}>
                 {p.label}
               </button>
             ))}
@@ -903,12 +903,12 @@ export function CommandCenter() {
           <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
             <strong><AnimatedNumber value={resumoFrascosPeriodo.pedidos} /></strong> pedidos pagos
             <span style={{ color: 'var(--text-secondary)' }}> = </span>
-            <strong style={{ color: '#5B8FE8' }}><AnimatedNumber value={resumoFrascosPeriodo.frascos} /></strong> frascos vendidos
+            <strong style={{ color: 'var(--status-info)' }}><AnimatedNumber value={resumoFrascosPeriodo.frascos} /></strong> frascos vendidos
           </span>
           <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
-            <strong style={{ color: '#22C55E' }}>{resumoFrascosPeriodo.despachados}</strong>
+            <strong style={{ color: 'var(--status-ok)' }}>{resumoFrascosPeriodo.despachados}</strong>
             <span style={{ color: 'var(--text-secondary)' }}> despachados · </span>
-            <strong style={{ color: '#A855F7' }}>{resumoFrascosPeriodo.ugc}</strong>
+            <strong style={{ color: 'var(--status-neutral)' }}>{resumoFrascosPeriodo.ugc}</strong>
             <span style={{ color: 'var(--text-secondary)' }}> doados UGC</span>
           </span>
         </div>
@@ -917,7 +917,7 @@ export function CommandCenter() {
       {/* ── Card Próximos Eventos ── */}
       <div className="card-purion" style={{ padding: '14px 16px' }}>
         <Link href="/calendario" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-          <Calendar size={14} style={{ color: '#C9A84C' }} />
+          <Calendar size={14} style={{ color: 'var(--text-primary)' }} />
           <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Próximos eventos</span>
         </Link>
         <Proximos7Dias eventos={eventos} limite={3} />

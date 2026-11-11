@@ -163,7 +163,7 @@ export function ModalVendaB2B({ venda, onFechar }: { venda?: Venda; onFechar: ()
           </div>
           <div>
             <label className="label-purion">Valor total</label>
-            <div className="input-purion font-semibold" style={{ color: '#C9A84C' }}>
+            <div className="input-purion font-semibold" style={{ color: 'var(--text-primary)' }}>
               {valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </div>
           </div>

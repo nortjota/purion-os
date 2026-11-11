@@ -49,7 +49,7 @@ function CardObjecao({ item }: { item: Objecao }) {
         }}
       >
         <div className="flex items-center gap-2">
-          <MessageCircleQuestion size={14} style={{ color: '#E8A838' }} />
+          <MessageCircleQuestion size={14} style={{ color: 'var(--status-warning)' }} />
           <span style={{ fontSize: 13, fontWeight: 600 }}>{item.pergunta}</span>
         </div>
         <ChevronDown size={14} style={{ color: 'var(--text-secondary)', transform: aberto ? 'rotate(180deg)' : undefined, transition: 'transform 0.2s ease' }} />
@@ -74,13 +74,13 @@ export function TabB2B() {
         <div className="flex flex-col gap-4">
           <div className="card-purion" style={{ padding: '14px 16px' }}>
             <div className="flex items-center gap-2 mb-3">
-              <ShieldCheck size={15} style={{ color: '#C9A84C' }} />
+              <ShieldCheck size={15} style={{ color: 'var(--text-primary)' }} />
               <p style={{ fontSize: 13, fontWeight: 700 }}>Regras de Ouro B2B</p>
             </div>
             <div className="flex flex-col gap-3">
               {REGRAS_DE_OURO.map((r) => (
                 <div key={r.titulo}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C' }}>{r.titulo}</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{r.titulo}</p>
                   <p style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.4, marginTop: 2 }}>{r.desc}</p>
                 </div>
               ))}

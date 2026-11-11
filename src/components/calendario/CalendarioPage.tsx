@@ -99,8 +99,8 @@ export function CalendarioPage() {
       </div>
 
       {googleStatus && !googleStatus.configurado && (
-        <div className="card-purion" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, borderColor: 'rgba(232,168,56,0.3)', background: 'rgba(232,168,56,0.05)' }}>
-          <AlertTriangle size={16} style={{ color: '#E8A838', flexShrink: 0 }} />
+        <div className="card-purion" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, borderColor: 'rgba(230,195,116,0.3)', background: 'rgba(230,195,116,0.05)' }}>
+          <AlertTriangle size={16} style={{ color: 'var(--status-warning)', flexShrink: 0 }} />
           <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
             O calendário interno já funciona sozinho. Para os eventos também aparecerem no Google Calendar da PURION (<strong>puriongt@gmail.com</strong>) e no celular dos sócios, configure a integração — veja o passo a passo em <code>INTEGRACAO_GOOGLE.md</code>.
           </p>
@@ -131,7 +131,7 @@ export function CalendarioPage() {
               key={v}
               onClick={() => setVisao(v)}
               className="px-3 py-1.5 rounded-md text-xs font-medium capitalize"
-              style={visao === v ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+              style={visao === v ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
             >
               {v}
             </button>
@@ -143,7 +143,7 @@ export function CalendarioPage() {
         <button
           onClick={() => setFiltroTipo('todos')}
           className="px-3 py-1.5 rounded-md text-xs font-medium"
-          style={filtroTipo === 'todos' ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+          style={filtroTipo === 'todos' ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
         >
           Todos os tipos
         </button>
@@ -161,7 +161,7 @@ export function CalendarioPage() {
         <button
           onClick={() => setFiltroResponsavel('todos')}
           className="px-3 py-1.5 rounded-md text-xs font-medium"
-          style={filtroResponsavel === 'todos' ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+          style={filtroResponsavel === 'todos' ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
         >
           Todos
         </button>
@@ -170,7 +170,7 @@ export function CalendarioPage() {
             key={r.id}
             onClick={() => setFiltroResponsavel(r.id)}
             className="px-3 py-1.5 rounded-md text-xs font-medium"
-            style={filtroResponsavel === r.id ? { background: 'rgba(201,168,76,0.15)', color: '#C9A84C' } : { color: 'var(--text-secondary)' }}
+            style={filtroResponsavel === r.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
           >
             {r.nome}
           </button>

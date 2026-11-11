@@ -88,7 +88,7 @@ export function VendasDashboard() {
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2">
             <span className="kpi-label">Faturamento</span>
-            <DollarSign size={14} className="text-[var(--gold)] opacity-70" />
+            <DollarSign size={14} className="text-[var(--brand-accent)] opacity-70" />
           </div>
           <span className="kpi-value">{fmtR(kpis.faturamento)}</span>
         </div>
@@ -110,9 +110,9 @@ export function VendasDashboard() {
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-2">
             <span className="kpi-label">Taxa de Aprovação</span>
-            <CheckCircle2 size={14} className="text-[#4CAF7A] opacity-70" />
+            <CheckCircle2 size={14} className="text-[var(--status-ok)] opacity-70" />
           </div>
-          <span className="kpi-value" style={{ color: kpis.taxaAprovacao >= 70 ? '#4CAF7A' : '#E8A838' }}>
+          <span className="kpi-value" style={{ color: kpis.taxaAprovacao >= 70 ? 'var(--status-ok)' : 'var(--status-warning)' }}>
             {kpis.taxaAprovacao.toFixed(1)}%
           </span>
         </div>
@@ -154,7 +154,7 @@ export function VendasDashboard() {
               </div>
               <p className="caption mb-1">{v.produto || '—'} · {CANAL_LABEL[v.canal]} · {METODO_LABEL[v.metodoPagamento] ?? v.metodoPagamento}</p>
               <div className="flex items-center justify-between">
-                <span className="text-[13px] font-semibold" style={{ color: '#C9A84C' }}>{fmtR(v.valorLiquido)}</span>
+                <span className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>{fmtR(v.valorLiquido)}</span>
                 <span className="caption">{formatarDataBR(v.dataVenda.slice(0, 10))}</span>
               </div>
               {v.afiliadoCodigo && <p className="caption mt-1">Afiliado: {v.afiliadoCodigo}</p>}

@@ -30,7 +30,7 @@ export function ModalTemplates({ socio, onFechar, onAplicar }: ModalTemplatesPro
       <div className="modal-container" style={{ maxWidth: 440 }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Sparkles size={16} style={{ color: '#C9A84C' }} />
+            <Sparkles size={16} style={{ color: 'var(--text-primary)' }} />
             <h2 style={{ fontSize: 16, fontWeight: 700 }}>Modelo de metas — {nomeSocio}</h2>
           </div>
           <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
@@ -52,7 +52,7 @@ export function ModalTemplates({ socio, onFechar, onAplicar }: ModalTemplatesPro
                   {CATEGORIAS.find((c) => c.id === t.categoria)?.label}
                 </span>
               </div>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C' }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>
                 {t.valorAlvo} {t.unidade}
               </span>
             </label>

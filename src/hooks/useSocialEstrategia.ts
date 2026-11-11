@@ -47,7 +47,7 @@ function toArray(val: unknown): string[] {
   return []
 }
 
-const CORES_PILAR = ['#C9A84C', '#5B8FE8', '#4CAF7A', '#E8A838', '#A855F7']
+const CORES_PILAR = ['#D4FC3C', '#9CC3DB', '#8FD14F', '#E6C374', '#A7A9A6']
 
 function toPilar(r: Row, idx: number): SocialPilar {
   return {

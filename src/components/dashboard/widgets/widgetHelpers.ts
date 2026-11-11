@@ -5,12 +5,12 @@
 
 export { formatCurrency, formatPercent, formatNumber } from '@/lib/formatters'
 
-// Dourado da marca + tons complementares legíveis no fundo escuro — usados em todos os gráficos.
-export const PALETA_GRAFICOS = ['#C9A84C', '#5B8FE8', '#4CAF7A', '#E8A838', '#A855F7', '#E85238', '#B8B8B8']
+// Acento da marca + tons complementares legíveis no fundo escuro — usados em todos os gráficos.
+export const PALETA_GRAFICOS = ['#D4FC3C', '#9CC3DB', '#8FD14F', '#E6C374', '#A7A9A6', '#E5544B', '#B8B8B8']
 
 export const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A',
-  border: '1px solid rgba(201,168,76,0.2)',
+  background: '#1B1D1C',
+  border: '1px solid rgba(245,245,240,0.2)',
   borderRadius: 8,
   fontSize: 12,
   color: '#F5F5F5',

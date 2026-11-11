@@ -8,7 +8,7 @@ import { ESTAGIOS_LOTE, normalizarStatusLote, formatarMoeda } from './producaoHe
 import { useInsumos, useBomReceita, capacidadeProducao, custoReceitaPorUnidade } from '@/hooks/useInsumosBOM'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
+  background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
 }
 
 function KpiCard({ label, value, cor, sub, icon: Icon }: {
@@ -70,13 +70,13 @@ export function ProducaoPainelView() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 1200 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12 }}>
-        <KpiCard label="Valor total em estoque" value={formatarMoeda(metricas.valorTotalEstoque)} icon={Package} cor="#C9A84C" sub="insumos + prontos" />
-        <KpiCard label="Frascos prontos"        value={metricas.frascosProntos}    icon={Package} cor="#4CAF7A" sub={formatarMoeda(metricas.valorEstoquePronto) + ' em estoque'} />
-        <KpiCard label="Capacidade restante"    value={`${metricas.capacidade} frascos`} icon={Package} cor="#C9A84C" sub="com os insumos atuais" />
+        <KpiCard label="Valor total em estoque" value={formatarMoeda(metricas.valorTotalEstoque)} icon={Package} cor="#D4FC3C" sub="insumos + prontos" />
+        <KpiCard label="Frascos prontos"        value={metricas.frascosProntos}    icon={Package} cor="#8FD14F" sub={formatarMoeda(metricas.valorEstoquePronto) + ' em estoque'} />
+        <KpiCard label="Capacidade restante"    value={`${metricas.capacidade} frascos`} icon={Package} cor="#D4FC3C" sub="com os insumos atuais" />
         <KpiCard label="Custo real / frasco"    value={formatarMoeda(metricas.custoReceita)} icon={Factory} sub="calculado da receita (BOM)" />
-        <KpiCard label="Lotes ativos"           value={metricas.lotesAtivos}       icon={Boxes} cor="#E8A838" />
-        <KpiCard label="Insumos em alerta"      value={metricas.insumosAlerta}     icon={AlertTriangle} cor={metricas.insumosAlerta > 0 ? '#E85238' : undefined} />
-        <KpiCard label="Vendidos + doados"      value={metricas.frascosVendidos + metricas.frascosDoados} icon={TrendingDown} cor="#5B8FE8" sub={`${metricas.frascosVendidos} vendidos · ${metricas.frascosDoados} UGC`} />
+        <KpiCard label="Lotes ativos"           value={metricas.lotesAtivos}       icon={Boxes} cor="#E6C374" />
+        <KpiCard label="Insumos em alerta"      value={metricas.insumosAlerta}     icon={AlertTriangle} cor={metricas.insumosAlerta > 0 ? '#E5544B' : undefined} />
+        <KpiCard label="Vendidos + doados"      value={metricas.frascosVendidos + metricas.frascosDoados} icon={TrendingDown} cor="#9CC3DB" sub={`${metricas.frascosVendidos} vendidos · ${metricas.frascosDoados} UGC`} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12 }}>
@@ -89,9 +89,9 @@ export function ProducaoPainelView() {
               <BarChart data={metricas.saidasChart} barGap={4}>
                 <XAxis dataKey="name" tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(201,168,76,0.05)' }} />
-                <Bar dataKey="Vendas" fill="rgba(91,143,232,0.75)" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="UGC" fill="rgba(168,85,247,0.75)" radius={[3, 3, 0, 0]} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(245,245,240,0.05)' }} />
+                <Bar dataKey="Vendas" fill="rgba(156,195,219,0.75)" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="UGC" fill="rgba(167,169,166,0.75)" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}

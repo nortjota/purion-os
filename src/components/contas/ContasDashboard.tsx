@@ -21,7 +21,7 @@ const STATUS_BADGE: Record<string, string> = {
 
 const STATUS_LABEL: Record<string, string> = { ativo: 'Ativo', pendente: 'Pendente', inativo: 'Inativo' }
 
-const COR_RESPONSAVEL: Record<string, string> = { matheus: '#C9A84C', joao: '#4A90D9', logistica: '#2E9E5B', gabriel: '#8A8A8A' }
+const COR_RESPONSAVEL: Record<string, string> = { matheus: '#F5F5F0', joao: '#4A90D9', logistica: '#2E9E5B', gabriel: '#8A8A8A' }
 
 export function ContasDashboard() {
   const { isMaster, loading } = useIsMaster()
@@ -78,9 +78,9 @@ export function ContasDashboard() {
         </select>
       </div>
 
-      <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)' }}>
-        <ShieldAlert size={14} className="text-[#C9A84C] shrink-0" />
-        <p className="text-[12px] text-[#C9A84C]">Senhas não ficam aqui — apenas a referência de onde estão guardadas (vault_ref).</p>
+      <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: 'rgba(245,245,240,0.06)', border: '1px solid rgba(245,245,240,0.2)' }}>
+        <ShieldAlert size={14} className="text-[var(--text-primary)] shrink-0" />
+        <p className="text-[12px] text-[var(--text-primary)]">Senhas não ficam aqui — apenas a referência de onde estão guardadas (vault_ref).</p>
       </div>
 
       {categoriasComConta.length === 0 && (
@@ -104,7 +104,7 @@ export function ContasDashboard() {
                   </div>
                   {conta.identificador && <p className="caption mb-1">{conta.identificador}</p>}
                   {conta.url && (
-                    <a href={conta.url.startsWith('http') ? conta.url : `https://${conta.url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[12px] mb-2" style={{ color: '#5B8FE8' }}>
+                    <a href={conta.url.startsWith('http') ? conta.url : `https://${conta.url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[12px] mb-2" style={{ color: 'var(--status-info)' }}>
                       {conta.url} <ExternalLink size={10} />
                     </a>
                   )}
@@ -122,7 +122,7 @@ export function ContasDashboard() {
                         <Pencil size={12} />
                       </button>
                       <button onClick={() => setDeletando(conta)} className="icon-btn border-0" style={{ width: 24, height: 24 }}>
-                        <Trash2 size={12} className="text-[#E85238]" />
+                        <Trash2 size={12} className="text-[var(--status-danger)]" />
                       </button>
                     </div>
                   </div>

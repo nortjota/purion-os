@@ -112,8 +112,8 @@ export function VendasDespachoLogistica() {
       {estoqueAlerta && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-          borderRadius: 10, padding: '12px 16px', color: '#EF4444',
+          background: 'rgba(229,84,75,0.1)', border: '1px solid rgba(229,84,75,0.3)',
+          borderRadius: 10, padding: '12px 16px', color: 'var(--status-danger)',
         }}>
           <AlertTriangle size={18} />
           <span style={{ fontSize: 14, fontWeight: 500 }}>
@@ -127,14 +127,14 @@ export function VendasDespachoLogistica() {
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           <div className="kpi-card" style={{ minWidth: 160 }}>
             <span className="caption">Em estoque</span>
-            <span style={{ fontSize: 28, fontWeight: 700, color: estoqueAlerta ? '#EF4444' : '#22C55E' }}>
+            <span style={{ fontSize: 28, fontWeight: 700, color: estoqueAlerta ? 'var(--status-danger)' : 'var(--status-ok)' }}>
               {estoqueProduto.quantidadeAtual}
             </span>
             <span className="caption">{estoqueProduto.produto}</span>
           </div>
           <div className="kpi-card" style={{ minWidth: 160 }}>
             <span className="caption">Aguardando despacho</span>
-            <span style={{ fontSize: 28, fontWeight: 700, color: '#C9A84C' }}>{pendentes.length}</span>
+            <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--status-warning)' }}>{pendentes.length}</span>
             <span className="caption">pedidos</span>
           </div>
           <div className="kpi-card" style={{ minWidth: 160 }}>
@@ -171,8 +171,8 @@ export function VendasDespachoLogistica() {
         {erroLote && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
-            background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-            borderRadius: 8, padding: '8px 12px', color: '#EF4444', fontSize: 12,
+            background: 'rgba(229,84,75,0.1)', border: '1px solid rgba(229,84,75,0.3)',
+            borderRadius: 8, padding: '8px 12px', color: 'var(--status-danger)', fontSize: 12,
           }}>
             <AlertTriangle size={14} /> {erroLote}
           </div>
@@ -212,7 +212,7 @@ export function VendasDespachoLogistica() {
                       <div style={{
                         display: 'inline-flex', alignItems: 'center', gap: 4,
                         marginTop: 6, padding: '2px 8px', borderRadius: 99,
-                        background: 'rgba(201,168,76,0.12)', color: '#C9A84C', fontSize: 11, fontWeight: 500,
+                        background: 'rgba(245,245,240,0.12)', color: 'var(--text-primary)', fontSize: 11, fontWeight: 500,
                       }}>
                         <Package size={11} />
                         {v.statusEntrega === 'aguardando' ? 'Aguardando envio' : v.statusEntrega}
@@ -221,7 +221,7 @@ export function VendasDespachoLogistica() {
                         <div style={{
                           display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 6,
                           marginTop: 6, padding: '2px 8px', borderRadius: 99,
-                          background: 'rgba(239,68,68,0.12)', color: '#EF4444', fontSize: 11, fontWeight: 500,
+                          background: 'rgba(229,84,75,0.12)', color: 'var(--status-danger)', fontSize: 11, fontWeight: 500,
                         }}>
                           <AlertTriangle size={11} /> Estoque insuficiente
                         </div>

@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 
 const BANNER_COLORS = [
-  '#C9A84C',
-  '#22C55E',
-  '#5B8FE8',
-  '#E85238',
+  '#D4FC3C',
+  '#8FD14F',
+  '#9CC3DB',
+  '#E5544B',
 ] as const
 
 const DEFAULT_TEXT = '🚀 PURION OS — Bem-vindo ao sistema operacional da marca. Clique duas vezes para editar este banner.'
@@ -22,7 +22,7 @@ interface DashboardBannerProps {
 
 export function DashboardBanner({ isAdmin = true }: DashboardBannerProps) {
   const [bannerText, setBannerText]   = useState(DEFAULT_TEXT)
-  const [bannerColor, setBannerColor] = useState<string>('#C9A84C')
+  const [bannerColor, setBannerColor] = useState<string>('#D4FC3C')
   const [dismissed, setDismissed]     = useState(false)
   const [isEditing, setIsEditing]     = useState(false)
   const [draft, setDraft]             = useState('')

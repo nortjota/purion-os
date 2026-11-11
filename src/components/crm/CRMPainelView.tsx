@@ -19,7 +19,7 @@ interface Props {
 }
 
 const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)',
+  background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)',
   borderRadius: 8, fontSize: 12, color: '#F5F5F5',
 }
 
@@ -100,9 +100,9 @@ export function CRMPainelView({ leads, onAbrirLead }: Props) {
       {/* ── KPIs ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12 }}>
         <KpiCard label="Total de Leads"     value={metricas.total}                        icon={Users} />
-        <KpiCard label="Taxa de Conversão"  value={`${metricas.taxaConversao.toFixed(1)}%`} icon={Target} cor="#A855F7" sub={`${metricas.ganhos} ganhos / ${metricas.total}`} />
-        <KpiCard label="Valor do Pipeline"  value={formatarMoeda(metricas.pipeline) + '/mês'} icon={DollarSign} cor="#C9A84C" />
-        <KpiCard label="Fechamentos no mês" value={metricas.fechamentosMes}                icon={TrendingUp} cor="#4CAF7A" />
+        <KpiCard label="Taxa de Conversão"  value={`${metricas.taxaConversao.toFixed(1)}%`} icon={Target} cor="#A7A9A6" sub={`${metricas.ganhos} ganhos / ${metricas.total}`} />
+        <KpiCard label="Valor do Pipeline"  value={formatarMoeda(metricas.pipeline) + '/mês'} icon={DollarSign} cor="#D4FC3C" />
+        <KpiCard label="Fechamentos no mês" value={metricas.fechamentosMes}                icon={TrendingUp} cor="#8FD14F" />
       </div>
 
       {/* ── Placar Comercial ── */}
@@ -112,19 +112,19 @@ export function CRMPainelView({ leads, onAbrirLead }: Props) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Estéticas fechadas</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#4CAF7A' }}>{metricas.fechamentosMes} / {metaMes.ganhos}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--status-ok)' }}>{metricas.fechamentosMes} / {metaMes.ganhos}</span>
             </div>
             <div style={{ height: 6, background: 'var(--bg-surface-2)', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ width: `${pctGanhos}%`, height: '100%', background: '#4CAF7A', borderRadius: 3, transition: 'width 0.4s ease' }} />
+              <div style={{ width: `${pctGanhos}%`, height: '100%', background: 'var(--status-ok)', borderRadius: 3, transition: 'width 0.4s ease' }} />
             </div>
           </div>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Receita B2B</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C' }}>{formatarMoeda(receitaMes)} / {formatarMoeda(metaMes.receita)}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{formatarMoeda(receitaMes)} / {formatarMoeda(metaMes.receita)}</span>
             </div>
             <div style={{ height: 6, background: 'var(--bg-surface-2)', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ width: `${pctReceita}%`, height: '100%', background: '#C9A84C', borderRadius: 3, transition: 'width 0.4s ease' }} />
+              <div style={{ width: `${pctReceita}%`, height: '100%', background: 'var(--brand-accent)', borderRadius: 3, transition: 'width 0.4s ease' }} />
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@ export function CRMPainelView({ leads, onAbrirLead }: Props) {
               <BarChart data={metricas.porEstagio} barGap={4}>
                 <XAxis dataKey="name" tick={{ fill: '#B8B8B8', fontSize: 10 }} axisLine={false} tickLine={false} interval={0} angle={-15} textAnchor="end" height={50} />
                 <YAxis tick={{ fill: '#B8B8B8', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(201,168,76,0.05)' }} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'rgba(245,245,240,0.05)' }} />
                 <Bar dataKey="value" name="Leads" radius={[3, 3, 0, 0]}>
                   {metricas.porEstagio.map((entry, i) => <Cell key={i} fill={entry.cor} />)}
                 </Bar>
@@ -175,11 +175,11 @@ export function CRMPainelView({ leads, onAbrirLead }: Props) {
       {/* ── Reposições D+21 ── */}
       <div className="card-purion" style={{ padding: '16px 20px' }}>
         <div className="flex items-center gap-2 mb-3">
-          <Bell size={14} style={{ color: reposicoesPendentes.length > 0 ? '#E8A838' : 'var(--text-secondary)' }} />
+          <Bell size={14} style={{ color: reposicoesPendentes.length > 0 ? 'var(--status-warning)' : 'var(--text-secondary)' }} />
           <p style={{ fontSize: 13, fontWeight: 700 }}>
             Reposições desta semana
             {reposicoesPendentes.length > 0 && (
-              <span style={{ marginLeft: 8, fontSize: 12, color: '#E8A838', fontWeight: 600 }}>
+              <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--status-warning)', fontWeight: 600 }}>
                 {reposicoesPendentes.length} pendente{reposicoesPendentes.length !== 1 ? 's' : ''}
               </span>
             )}
@@ -200,7 +200,7 @@ export function CRMPainelView({ leads, onAbrirLead }: Props) {
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 14px', borderRadius: 8, cursor: 'pointer', textAlign: 'left',
                     background: 'var(--bg-surface-2)',
-                    border: `1px solid ${urgente ? 'rgba(232,168,56,0.4)' : 'var(--border)'}`,
+                    border: `1px solid ${urgente ? 'rgba(230,195,116,0.4)' : 'var(--border)'}`,
                   }}
                 >
                   <div>
@@ -208,7 +208,7 @@ export function CRMPainelView({ leads, onAbrirLead }: Props) {
                     <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{lead.cidade} · {lead.regiao}</p>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: urgente ? '#E8A838' : '#4CAF7A' }}>D+{dias}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: urgente ? 'var(--status-warning)' : 'var(--status-ok)' }}>D+{dias}</p>
                     <p style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{urgente ? '⚡ Follow-up agora' : 'Prepare abordagem'}</p>
                   </div>
                 </button>
@@ -231,7 +231,7 @@ export function CRMPainelView({ leads, onAbrirLead }: Props) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
             {OBJECOES.map((o) => (
               <div key={o.objecao} style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#C9A84C', marginBottom: 4 }}>{o.objecao}</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>{o.objecao}</p>
                 <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{o.resposta}</p>
               </div>
             ))}

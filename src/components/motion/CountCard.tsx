@@ -45,7 +45,7 @@ export function CountCard({
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <span style={{
-          fontFamily: 'var(--font-geist-mono, ui-monospace), monospace', fontSize: 11, fontWeight: 500,
+          fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500,
           letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A7A9A6',
           display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0,
         }}>

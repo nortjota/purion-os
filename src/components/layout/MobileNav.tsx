@@ -118,7 +118,7 @@ export function MobileNav() {
               style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 gap: 3, minWidth: 44, minHeight: 44, justifyContent: 'center',
-                color: active ? '#C9A84C' : 'var(--text-secondary)',
+                color: active ? 'var(--brand-accent)' : 'var(--text-secondary)',
                 textDecoration: 'none', flex: 1, position: 'relative',
               }}
             >
@@ -141,7 +141,7 @@ export function MobileNav() {
           style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             gap: 3, minWidth: 44, minHeight: 44, justifyContent: 'center',
-            color: isDrawerActive ? '#C9A84C' : 'var(--text-secondary)',
+            color: isDrawerActive ? 'var(--brand-accent)' : 'var(--text-secondary)',
             background: 'none', border: 'none', cursor: 'pointer', flex: 1,
           }}
         >
@@ -232,8 +232,8 @@ export function MobileNav() {
                           style={{
                             display: 'flex', alignItems: 'center', gap: 14,
                             height: 48, padding: '0 20px',
-                            color: active ? '#C9A84C' : '#B8B8B8',
-                            background: active ? 'rgba(201,168,76,0.06)' : 'transparent',
+                            color: active ? 'var(--brand-accent)' : '#B8B8B8',
+                            background: active ? 'rgba(212,252,60,0.06)' : 'transparent',
                             textDecoration: 'none',
                             fontSize: 14, fontWeight: active ? 500 : 400,
                           }}

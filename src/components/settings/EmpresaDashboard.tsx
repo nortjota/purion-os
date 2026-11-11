@@ -97,7 +97,7 @@ export default function EmpresaDashboard() {
       <section className="grid grid-cols-3 gap-3">
         <div className="kpi-card">
           <div className="flex items-center gap-2 mb-2">
-            <Building2 size={14} className="text-[#C9A84C]" />
+            <Building2 size={14} className="text-[var(--text-primary)]" />
             <p className="kpi-label">Empresa</p>
           </div>
           <p className="kpi-value text-[18px]">{tenant?.nome ?? '—'}</p>
@@ -105,7 +105,7 @@ export default function EmpresaDashboard() {
         </div>
         <div className="kpi-card">
           <div className="flex items-center gap-2 mb-2">
-            <Zap size={14} className="text-[#C9A84C]" />
+            <Zap size={14} className="text-[var(--text-primary)]" />
             <p className="kpi-label">Plano atual</p>
           </div>
           <p className="kpi-value text-[18px]">{PLANO_LABEL[tenant?.plano ?? 'starter']}</p>
@@ -113,7 +113,7 @@ export default function EmpresaDashboard() {
         </div>
         <div className="kpi-card">
           <div className="flex items-center gap-2 mb-2">
-            <User size={14} className="text-[#C9A84C]" />
+            <User size={14} className="text-[var(--text-primary)]" />
             <p className="kpi-label">Seu perfil</p>
           </div>
           <p className="kpi-value text-[18px]">{perfil?.nome ?? user?.email ?? '—'}</p>
@@ -136,7 +136,7 @@ export default function EmpresaDashboard() {
         </div>
 
         {inviteOk && (
-          <div className="mb-3 p-3 rounded-lg border border-[#10B981]/30 bg-[#10B981]/5 text-[12px] text-[#10B981]">
+          <div className="mb-3 p-3 rounded-lg border border-[var(--status-ok)]/30 bg-[var(--status-ok)]/5 text-[12px] text-[var(--status-ok)]">
             Convite enviado com sucesso!
           </div>
         )}
@@ -168,7 +168,7 @@ export default function EmpresaDashboard() {
                   />
                 </div>
               </div>
-              {inviteError && <p className="text-[12px] text-[#EF4444]">{inviteError}</p>}
+              {inviteError && <p className="text-[12px] text-[var(--status-danger)]">{inviteError}</p>}
               <div className="flex gap-2">
                 <button type="submit" disabled={inviting} className="btn btn-primary btn-sm">
                   {inviting ? 'Enviando…' : 'Enviar convite por e-mail'}
@@ -207,7 +207,7 @@ export default function EmpresaDashboard() {
                   <tr key={u.id}>
                     <td>
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#C9A84C] text-[#0D0D0D] flex items-center justify-center text-[10px] font-semibold shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center text-[10px] font-semibold shrink-0">
                           {u.nome?.[0]?.toUpperCase() ?? '?'}
                         </div>
                         <div>
@@ -230,7 +230,7 @@ export default function EmpresaDashboard() {
                       <td>
                         {u.id !== user?.id && (
                           <button
-                            className="icon-btn text-[#EF4444] hover:bg-[rgba(239,68,68,0.1)]"
+                            className="icon-btn text-[var(--status-danger)] hover:bg-[rgba(229,84,75,0.1)]"
                             title="Revogar acesso"
                             onClick={() => revogarAcesso(u.id)}
                           >
@@ -250,8 +250,8 @@ export default function EmpresaDashboard() {
       {/* Upgrade */}
       {tenant?.plano === 'starter' && (
         <section>
-          <div className="flex items-start gap-3 p-4 rounded-xl border border-[#C9A84C]/20 bg-[rgba(201,168,76,0.04)]">
-            <Zap size={16} className="text-[#C9A84C] mt-0.5 shrink-0" />
+          <div className="flex items-start gap-3 p-4 rounded-xl border border-[var(--border)]/20 bg-[rgba(245,245,240,0.04)]">
+            <Zap size={16} className="text-[var(--text-primary)] mt-0.5 shrink-0" />
             <div>
               <p className="text-[13px] font-semibold text-[var(--text-primary)]">Upgrade para Pro</p>
               <p className="caption mt-0.5">Tenha até 10 usuários, integrações avançadas e suporte prioritário.</p>

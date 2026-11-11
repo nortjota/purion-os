@@ -102,8 +102,8 @@ export default function DiagnosticoPage() {
   useEffect(() => { rodarDiagnostico() }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0D0D0D', color: '#FAFAF8', padding: 32, fontFamily: 'monospace' }}>
-      <h1 style={{ color: '#C9A84C', fontSize: 20, marginBottom: 8 }}>PURION OS — Diagnóstico</h1>
+    <div style={{ minHeight: '100vh', background: '#0B0B0B', color: '#F5F5F0', padding: 32, fontFamily: 'monospace' }}>
+      <h1 style={{ color: 'var(--text-primary)', fontSize: 20, marginBottom: 8 }}>PURION OS — Diagnóstico</h1>
       <p style={{ color: '#B8B8B8', fontSize: 13, marginBottom: 24 }}>
         Testa autenticação e permissões de banco em tempo real.
       </p>
@@ -112,7 +112,7 @@ export default function DiagnosticoPage() {
         onClick={rodarDiagnostico}
         disabled={rodando}
         style={{
-          padding: '10px 24px', background: '#C9A84C', color: '#0D0D0D',
+          padding: '10px 24px', background: 'var(--primary)', color: 'var(--primary-foreground)',
           border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13,
           cursor: rodando ? 'not-allowed' : 'pointer', marginBottom: 32,
         }}
@@ -125,12 +125,12 @@ export default function DiagnosticoPage() {
           <div
             key={i}
             style={{
-              background: res.ok ? 'rgba(74,207,90,0.08)' : 'rgba(232,82,56,0.08)',
-              border: `1px solid ${res.ok ? 'rgba(74,207,90,0.3)' : 'rgba(232,82,56,0.3)'}`,
+              background: res.ok ? 'rgba(143,209,79,0.08)' : 'rgba(229,84,75,0.08)',
+              border: `1px solid ${res.ok ? 'rgba(143,209,79,0.3)' : 'rgba(229,84,75,0.3)'}`,
               borderRadius: 8, padding: '12px 16px',
             }}
           >
-            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: res.ok ? '#4ACF5A' : '#E85238' }}>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: res.ok ? '#4ACF5A' : 'var(--status-danger)' }}>
               {res.titulo}
             </p>
             <p style={{ margin: '4px 0 0', fontSize: 12, color: '#8A8A8A', wordBreak: 'break-all' }}>

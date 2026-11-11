@@ -15,9 +15,9 @@ export const COLUNAS: Array<{
   icon: React.ElementType
 }> = [
   { id: 'pendente',     label: 'Pendente',     cor: '#B8B8B8', icon: CheckSquare  },
-  { id: 'em_andamento', label: 'Em Andamento', cor: '#5B8FE8', icon: Zap          },
-  { id: 'bloqueada',    label: 'Bloqueada',    cor: '#E8A838', icon: AlertTriangle},
-  { id: 'concluida',    label: 'Concluída',    cor: '#4CAF7A', icon: CheckSquare  },
+  { id: 'em_andamento', label: 'Em Andamento', cor: '#9CC3DB', icon: Zap          },
+  { id: 'bloqueada',    label: 'Bloqueada',    cor: '#E6C374', icon: AlertTriangle},
+  { id: 'concluida',    label: 'Concluída',    cor: '#8FD14F', icon: CheckSquare  },
 ]
 
 export const STATUS_LABEL: Record<StatusTarefa, string> = {
@@ -30,9 +30,9 @@ export const STATUS_LABEL: Record<StatusTarefa, string> = {
 
 export const PRIORIDADE_CONFIG: Record<PrioridadeTarefa, { label: string; cor: string; bg: string }> = {
   baixa:   { label: 'Baixa',   cor: '#9A9A94', bg: 'rgba(154,154,148,0.15)' },
-  media:   { label: 'Média',   cor: '#5B8FE8', bg: 'rgba(91,143,232,0.12)' },
-  alta:    { label: 'Alta',    cor: '#E8A838', bg: 'rgba(232,168,56,0.15)' },
-  urgente: { label: 'Urgente', cor: '#E85238', bg: 'rgba(232,82,56,0.15)'  },
+  media:   { label: 'Média',   cor: '#9CC3DB', bg: 'rgba(156,195,219,0.12)' },
+  alta:    { label: 'Alta',    cor: '#E6C374', bg: 'rgba(230,195,116,0.15)' },
+  urgente: { label: 'Urgente', cor: '#E5544B', bg: 'rgba(229,84,75,0.15)'  },
 }
 
 export const PRIORIDADE_ICON = Flag
@@ -77,10 +77,10 @@ export function prazoVisual(dueDate: string | null, status?: StatusTarefa): Praz
   }
   const diffDias = Math.round((new Date(dueDate + 'T00:00:00').getTime() - new Date(HOJE + 'T00:00:00').getTime()) / 86_400_000)
   if (diffDias < 0) {
-    return { cor: '#E85238', bg: 'rgba(232,82,56,0.14)', label: `Atrasada ${Math.abs(diffDias)}d` }
+    return { cor: '#E5544B', bg: 'rgba(229,84,75,0.14)', label: `Atrasada ${Math.abs(diffDias)}d` }
   }
   if (diffDias <= 2) {
-    return { cor: '#E8A838', bg: 'rgba(232,168,56,0.14)', label: '' }
+    return { cor: '#E6C374', bg: 'rgba(230,195,116,0.14)', label: '' }
   }
-  return { cor: '#4CAF7A', bg: 'rgba(76,175,122,0.12)', label: '' }
+  return { cor: '#8FD14F', bg: 'rgba(143,209,79,0.12)', label: '' }
 }

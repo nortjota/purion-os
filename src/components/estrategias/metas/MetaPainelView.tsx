@@ -9,7 +9,7 @@ import { SOCIOS } from '@/components/tarefas/tarefasHelpers'
 import { STATUS_OBJETIVO_LABEL, STATUS_OBJETIVO_COR, STATUS_OBJETIVO_OPCOES, formatarDataAlvo } from './metasHelpers'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
-  background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
+  background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
 }
 
 interface Props {

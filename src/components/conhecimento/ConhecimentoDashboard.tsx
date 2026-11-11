@@ -119,7 +119,7 @@ export function ConhecimentoDashboard() {
           <button
             onClick={() => setSidebarMobileAberta(true)}
             className="fixed bottom-24 right-4 z-40 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-            style={{ background: '#C9A84C', color: '#0D0D0D' }}
+            style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
           >
             <Menu size={20} />
           </button>

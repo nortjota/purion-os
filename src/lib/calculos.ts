@@ -407,7 +407,7 @@ export interface AtividadeItem {
 
 // Cor de avatar por sócio
 const COR_AVATAR: Record<string, string> = {
-  matheus:   '#C9A84C',
+  matheus:   '#F5F5F0',
   joao:      '#4A90D9',
   logistica: '#2E9E5B',
   gabriel:   '#8A8A8A', // arquivado — mantido só para histórico
@@ -550,35 +550,35 @@ export function calcularSplit(valor: number, config: ConfigSplit): SplitItem[] {
       categoria: 'Estoque',
       percentual: config.splitEstoque * 100,
       valor: valor * config.splitEstoque,
-      cor: '#4CAF7A',
+      cor: '#8FD14F',
       emoji: '📦',
     },
     {
       categoria: 'Marketing',
       percentual: config.splitMarketing * 100,
       valor: valor * config.splitMarketing,
-      cor: '#5B8FE8',
+      cor: '#9CC3DB',
       emoji: '📣',
     },
     {
       categoria: 'Caixa / Operacional',
       percentual: config.splitOperacional * 100,
       valor: valor * config.splitOperacional,
-      cor: '#C9A84C',
+      cor: '#D4FC3C',
       emoji: '💰',
     },
     {
       categoria: 'Desenvolvimento',
       percentual: config.splitReserva * 100,
       valor: valor * config.splitReserva,
-      cor: '#E8A838',
+      cor: '#E6C374',
       emoji: '🚀',
     },
     {
       categoria: 'Reserva Societária',
       percentual: config.splitSocietario * 100,
       valor: valor * config.splitSocietario,
-      cor: '#8B5CF6',
+      cor: '#A7A9A6',
       emoji: '🏛️',
     },
   ]
@@ -642,10 +642,10 @@ export function calcularHealthScore(
     'Crítico'
 
   const cor =
-    score >= 8 ? '#4CAF7A' :
-    score >= 6 ? '#C9A84C' :
-    score >= 4 ? '#E8A838' :
-    '#E85238'
+    score >= 8 ? '#8FD14F' :
+    score >= 6 ? '#D4FC3C' :
+    score >= 4 ? '#E6C374' :
+    '#E5544B'
 
   return {
     score,

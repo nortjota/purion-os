@@ -32,10 +32,10 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null)
 
 const BORDER_COLOR: Record<ToastType, string> = {
-  success: '#22C55E',
-  error:   '#EF4444',
-  warning: '#C9A84C',
-  info:    '#3B82F6',
+  success: '#8FD14F',
+  error:   '#E5544B',
+  warning: '#E6C374',
+  info:    '#9CC3DB',
 }
 
 const ICONE: Record<ToastType, React.ElementType> = {

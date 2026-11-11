@@ -115,7 +115,7 @@ export function LixeiraSettings() {
             onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-all -mb-px ${
               activeTab === tab.key
-                ? 'border-[#C9A84C] text-[#C9A84C]'
+                ? 'border-[var(--brand-accent)] text-[var(--brand-accent)]'
                 : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >

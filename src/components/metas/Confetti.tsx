@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 
-const CORES = ['#C9A84C', '#22C55E', '#5B8FE8', '#A855F7', '#E8A838']
+const CORES = ['#D4FC3C', '#8FD14F', '#9CC3DB', '#A7A9A6', '#E6C374']
 
 function particula(i: number) {
   const angulo = (i / 14) * Math.PI * 2

@@ -95,8 +95,8 @@ export function WidgetCustomizer() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       padding: '10px 12px', borderRadius: 10,
-                      background: checked ? 'rgba(201,168,76,0.06)' : 'var(--bg-surface-2)',
-                      border: `1px solid ${checked ? 'rgba(201,168,76,0.3)' : 'var(--border)'}`,
+                      background: checked ? 'rgba(212,252,60,0.06)' : 'var(--bg-surface-2)',
+                      border: `1px solid ${checked ? 'rgba(212,252,60,0.3)' : 'var(--border)'}`,
                       cursor: 'pointer', userSelect: 'none',
                     }}
                   >
@@ -104,7 +104,7 @@ export function WidgetCustomizer() {
                       type="checkbox"
                       checked={checked}
                       onChange={() => handleToggle(widget.id)}
-                      style={{ accentColor: '#C9A84C' }}
+                      style={{ accentColor: 'var(--text-primary)' }}
                     />
                     <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{widget.label}</span>
                   </label>

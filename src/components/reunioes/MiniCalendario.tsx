@@ -85,17 +85,17 @@ export function MiniCalendario({ reunioes, diaSelecionado, onSelecionarDia }: Mi
               className="relative flex flex-col items-center justify-center rounded-lg transition-colors"
               style={{
                 height: 32,
-                background: selecionado ? 'rgba(201,168,76,0.18)' : ehHoje ? 'rgba(201,168,76,0.08)' : 'transparent',
-                border: ehHoje ? '1px solid rgba(201,168,76,0.3)' : '1px solid transparent',
+                background: selecionado ? 'rgba(212,252,60,0.18)' : ehHoje ? 'rgba(212,252,60,0.08)' : 'transparent',
+                border: ehHoje ? '1px solid rgba(212,252,60,0.3)' : '1px solid transparent',
               }}
             >
-              <span className="text-[11px]" style={{ color: selecionado || ehHoje ? '#C9A84C' : 'var(--text-primary)' }}>
+              <span className="text-[11px]" style={{ color: selecionado || ehHoje ? 'var(--brand-accent)' : 'var(--text-primary)' }}>
                 {data.getDate()}
               </span>
               {reunioesNoDia.length > 0 && (
                 <span
                   className="absolute bottom-0.5 rounded-full"
-                  style={{ width: 4, height: 4, background: '#C9A84C' }}
+                  style={{ width: 4, height: 4, background: 'var(--primary)' }}
                   title={`${reunioesNoDia.length} reunião(ões)`}
                 />
               )}

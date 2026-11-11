@@ -44,7 +44,7 @@ function VarBadge({ v }: { v: number | null; positiveIsGood?: boolean }) {
   if (v === null) return <span className="caption">—</span>
   const good = v >= 0
   return (
-    <span className={`text-[11px] font-medium ${good ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+    <span className={`text-[11px] font-medium ${good ? 'text-[var(--status-ok)]' : 'text-[var(--status-danger)]'}`}>
       {v > 0 ? '+' : ''}{v.toFixed(1)}%
     </span>
   )
@@ -54,7 +54,7 @@ function VarBadgeCusto({ v }: { v: number | null }) {
   if (v === null) return <span className="caption">—</span>
   const good = v <= 0
   return (
-    <span className={`text-[11px] font-medium ${good ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+    <span className={`text-[11px] font-medium ${good ? 'text-[var(--status-ok)]' : 'text-[var(--status-danger)]'}`}>
       {v > 0 ? '+' : ''}{v.toFixed(1)}%
     </span>
   )
@@ -155,7 +155,7 @@ export default function ContabilidadeDashboard() {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
 
     doc.setFontSize(16)
-    doc.setTextColor(201, 168, 76)
+    doc.setTextColor(11, 11, 11)
     doc.text('PURION OS — Relatório Contábil', 14, 18)
     doc.setFontSize(9)
     doc.setTextColor(120, 120, 120)
@@ -178,7 +178,7 @@ export default function ContabilidadeDashboard() {
         ]
       }),
       styles: { fontSize: 9 },
-      headStyles: { fillColor: [201, 168, 76], textColor: [13, 13, 13] },
+      headStyles: { fillColor: [11, 11, 11], textColor: [245, 245, 240] },
       alternateRowStyles: { fillColor: [245, 245, 245] },
     })
 
@@ -194,7 +194,7 @@ export default function ContabilidadeDashboard() {
         ['Impostos Estimados (mês)', fmt(dre.atual.impostos)],
       ],
       styles: { fontSize: 9 },
-      headStyles: { fillColor: [201, 168, 76] },
+      headStyles: { fillColor: [11, 11, 11], textColor: [245, 245, 240] },
     })
 
     doc.save(`purion-contabilidade-${MES_ATUAL}.pdf`)
@@ -234,9 +234,9 @@ export default function ContabilidadeDashboard() {
                 const v = variacao(linha.atual, linha.anterior)
                 const isPositive = linha.atual >= 0
                 return (
-                  <tr key={linha.label} className={linha.negrito ? 'bg-[rgba(201,168,76,0.04)]' : ''}>
+                  <tr key={linha.label} className={linha.negrito ? 'bg-[rgba(212,252,60,0.04)]' : ''}>
                     <td className={linha.negrito ? 'font-semibold text-[var(--text-primary)]' : ''}>{linha.label}</td>
-                    <td className={`td-mono text-right ${isPositive ? 'text-[var(--text-primary)]' : 'text-[#EF4444]'} ${linha.negrito ? 'font-semibold' : ''}`}>
+                    <td className={`td-mono text-right ${isPositive ? 'text-[var(--text-primary)]' : 'text-[var(--status-danger)]'} ${linha.negrito ? 'font-semibold' : ''}`}>
                       {fmt(linha.atual)}
                     </td>
                     <td className="td-mono text-right text-[var(--text-secondary)]">{fmt(linha.anterior)}</td>
@@ -262,7 +262,7 @@ export default function ContabilidadeDashboard() {
           ].map(({ label, value }) => (
             <div key={label} className="kpi-card">
               <p className="kpi-label">{label}</p>
-              <p className={`kpi-value ${value >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>{fmt(value)}</p>
+              <p className={`kpi-value ${value >= 0 ? 'text-[var(--status-ok)]' : 'text-[var(--status-danger)]'}`}>{fmt(value)}</p>
             </div>
           ))}
         </div>
@@ -283,7 +283,7 @@ export default function ContabilidadeDashboard() {
 
         {semCategoria.length === 0 ? (
           <div className="empty-state">
-            <CheckCircle size={24} className="mx-auto mb-2 text-[#10B981]" />
+            <CheckCircle size={24} className="mx-auto mb-2 text-[var(--status-ok)]" />
             <p className="text-[13px] text-[var(--text-primary)] font-medium">Tudo conciliado</p>
             <p className="caption mt-1">Nenhuma despesa sem categoria</p>
           </div>
@@ -302,7 +302,7 @@ export default function ContabilidadeDashboard() {
                 {semCategoria.map((d) => (
                   <tr key={d.id}>
                     <td>{d.descricao}</td>
-                    <td className="td-mono text-right text-[#EF4444]">{fmt(d.valor)}</td>
+                    <td className="td-mono text-right text-[var(--status-danger)]">{fmt(d.valor)}</td>
                     <td className="caption">{new Date(d.data).toLocaleDateString('pt-BR')}</td>
                     <td>
                       {categorizando === d.id ? (
@@ -389,7 +389,7 @@ export default function ContabilidadeDashboard() {
                       </tr>
                     )
                   })}
-                  <tr className="bg-[rgba(201,168,76,0.04)]">
+                  <tr className="bg-[rgba(245,245,240,0.04)]">
                     <td className="font-semibold" colSpan={2}>Total</td>
                     <td className="td-mono text-right font-semibold">{fmt(totalCustos)}</td>
                     <td />
@@ -419,12 +419,12 @@ export default function ContabilidadeDashboard() {
             <div className="flex items-center justify-between mb-1">
               <p className="kpi-label">Alíquota Estimada</p>
               {configuracoes.aliquotaContabil > 0.10 && (
-                <span title="Alíquota alta" className="text-[#F59E0B]">
+                <span title="Alíquota alta" className="text-[var(--status-warning)]">
                   <AlertTriangle size={12} />
                 </span>
               )}
             </div>
-            <p className="kpi-value text-[#C9A84C]">{(configuracoes.aliquotaContabil * 100).toFixed(1)}%</p>
+            <p className="kpi-value text-[var(--text-primary)]">{(configuracoes.aliquotaContabil * 100).toFixed(1)}%</p>
             <p className="caption mt-0.5">Impostos est.: {fmt(dre.atual.impostos)}/mês</p>
           </div>
           <div className="kpi-card">
@@ -435,8 +435,8 @@ export default function ContabilidadeDashboard() {
         </div>
 
         {configuracoes.regimeTributario === 'lucro_presumido' && (
-          <div className="mt-3 flex items-start gap-2 p-3 rounded-lg border border-[#F59E0B]/30 bg-[#F59E0B]/5">
-            <AlertTriangle size={14} className="text-[#F59E0B] mt-0.5 shrink-0" />
+          <div className="mt-3 flex items-start gap-2 p-3 rounded-lg border border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5">
+            <AlertTriangle size={14} className="text-[var(--status-warning)] mt-0.5 shrink-0" />
             <p className="text-[12px] text-[var(--text-secondary)]">
               Regime Lucro Presumido geralmente implica obrigações acessórias adicionais. Verifique com seu contador.
             </p>

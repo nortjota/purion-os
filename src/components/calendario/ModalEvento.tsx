@@ -71,7 +71,7 @@ export function ModalEvento({ evento, dataPadrao, onFechar, onSalvar, onDeletar,
         </div>
 
         {isVirtual && (
-          <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(91,143,232,0.08)', border: '1px solid rgba(91,143,232,0.2)', marginBottom: 14, fontSize: 12, color: 'var(--text-secondary)' }}>
+          <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(156,195,219,0.08)', border: '1px solid rgba(156,195,219,0.2)', marginBottom: 14, fontSize: 12, color: 'var(--text-secondary)' }}>
             Este evento vem de <strong>{TIPO_EVENTO_LABEL[evento!.tipo]}</strong> ({evento!.origemTabela}) — edite direto no módulo de origem.
           </div>
         )}
@@ -144,7 +144,7 @@ export function ModalEvento({ evento, dataPadrao, onFechar, onSalvar, onDeletar,
           <div className="flex justify-between gap-2 mt-2">
             <div>
               {evento && !isVirtual && onDeletar && (
-                <button type="button" onClick={onDeletar} className="btn btn-sm" style={{ background: 'rgba(232,82,56,0.15)', color: '#E85238' }}>
+                <button type="button" onClick={onDeletar} className="btn btn-sm" style={{ background: 'rgba(229,84,75,0.15)', color: 'var(--status-danger)' }}>
                   <Trash2 size={12} /> Excluir
                 </button>
               )}

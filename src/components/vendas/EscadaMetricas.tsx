@@ -10,8 +10,8 @@ import { fmtR } from '@/lib/vendas-helpers'
 
 const COR_SKU: Record<string, string> = {
   frasco_60ml: '#E0E0E0',
-  kit_2: '#C9A84C',
-  kit_3: '#E8A838',
+  kit_2: '#D4FC3C',
+  kit_3: '#E6C374',
   discovery: '#4A90D9',
 }
 
@@ -86,11 +86,11 @@ export function EscadaMetricas({ vendas, todas }: { vendas: Venda[]; todas: Vend
 
   return (
     <div style={{
-      background: 'var(--bg-surface)', border: '1px solid var(--border)', borderTop: '3px solid #C9A84C',
+      background: 'var(--bg-surface)', border: '1px solid var(--border)', borderTop: '3px solid var(--border)',
       borderRadius: 12, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 14,
     }}>
       <div>
-        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', color: '#C9A84C', textTransform: 'uppercase' }}>
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--text-primary)', textTransform: 'uppercase' }}>
           Escada de produtos · AOV
         </span>
         <p style={{ fontSize: 12, color: '#B8B8B8', marginTop: 4 }}>
@@ -119,7 +119,7 @@ export function EscadaMetricas({ vendas, todas }: { vendas: Venda[]; todas: Vend
         </div>
         {r.porSku.map((s) => {
           const pct = r.pedidos > 0 ? (s.pedidos / r.pedidos) * 100 : 0
-          const cor = COR_SKU[s.codigo] ?? '#C9A84C'
+          const cor = COR_SKU[s.codigo] ?? '#D4FC3C'
           return (
             <div key={s.codigo} style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, 1.4fr) 2fr 70px 70px', gap: 8, alignItems: 'center' }}>
               <span style={{ fontSize: 13, color: '#F5F5F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={`${s.nome} · ${fmtR(s.receita)}`}>{s.nome}</span>

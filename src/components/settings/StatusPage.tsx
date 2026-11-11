@@ -17,9 +17,9 @@ interface Service {
 
 function StatusBadge({ status }: { status: ServiceStatus }) {
   const cfg: Record<ServiceStatus, { label: string; color: string }> = {
-    online:    { label: 'Online',    color: '#22C55E' },
-    degradado: { label: 'Degradado', color: '#E8A838' },
-    offline:   { label: 'Offline',   color: '#E85238' },
+    online:    { label: 'Online',    color: '#8FD14F' },
+    degradado: { label: 'Degradado', color: '#E6C374' },
+    offline:   { label: 'Offline',   color: '#E5544B' },
     em_breve:  { label: 'Em breve',  color: '#B8B8B8' },
   }
   const { label, color } = cfg[status]
@@ -41,7 +41,7 @@ function UptimeBar({ uptime }: { uptime: number[] }) {
   return (
     <div style={{ display: 'flex', gap: 2, marginTop: 8 }}>
       {uptime.map((val, i) => {
-        const bg = val === 1 ? '#22C55E' : val === 0.5 ? '#E8A838' : '#2A2A2A'
+        const bg = val === 1 ? '#8FD14F' : val === 0.5 ? '#E6C374' : '#2A2C2B'
         return (
           <div
             key={i}

@@ -44,7 +44,7 @@ export function WidgetLista({ title, icon, items, emptyMessage, isLoading, href,
                 )}
               </div>
               {item.badge && (
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 999, background: `${item.cor ?? '#C9A84C'}18`, color: item.cor ?? '#C9A84C', flexShrink: 0 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 999, background: `${item.cor ?? '#D4FC3C'}18`, color: item.cor ?? 'var(--brand-accent)', flexShrink: 0 }}>
                   {item.badge}
                 </span>
               )}

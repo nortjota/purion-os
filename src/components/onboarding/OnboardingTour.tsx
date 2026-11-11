@@ -72,7 +72,7 @@ export function OnboardingTour() {
           position: 'fixed', zIndex: 9001,
           top: rect.top - 4, left: rect.left - 4,
           width: rect.width + 8, height: rect.height + 8,
-          borderRadius: 10, border: '2px solid #C9A84C',
+          borderRadius: 10, border: '2px solid var(--border)',
           boxShadow: '0 0 0 9999px rgba(0,0,0,0.45)',
           pointerEvents: 'none',
         }} />
@@ -81,7 +81,7 @@ export function OnboardingTour() {
       <div style={{
         position: 'fixed', top, left, zIndex: 9002,
         width: 280, background: 'var(--bg-surface)',
-        border: '1px solid rgba(201,168,76,0.35)',
+        border: '1px solid rgba(245,245,240,0.35)',
         borderRadius: 12, padding: '16px 18px',
         boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
       }}>
@@ -100,7 +100,7 @@ export function OnboardingTour() {
             </button>
             <button
               onClick={next}
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 7, border: 'none', background: '#C9A84C', color: '#0D0D0D', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 7, border: 'none', background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
             >
               {step < STEPS.length - 1 ? 'Próximo' : 'Concluir'} <ChevronRight size={12} />
             </button>

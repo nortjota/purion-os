@@ -19,12 +19,12 @@ interface CampoPersonalizado {
 }
 
 const DEFAULT_COLUNAS: KanbanColuna[] = [
-  { id: '1', label: 'Identificado',      cor: '#3B82F6', tipo: 'normal' },
-  { id: '2', label: 'Abordagem',          cor: '#8B5CF6', tipo: 'normal' },
-  { id: '3', label: 'Proposta Enviada',   cor: '#F59E0B', tipo: 'normal' },
+  { id: '1', label: 'Identificado',      cor: '#9CC3DB', tipo: 'normal' },
+  { id: '2', label: 'Abordagem',          cor: '#A7A9A6', tipo: 'normal' },
+  { id: '3', label: 'Proposta Enviada',   cor: '#E6C374', tipo: 'normal' },
   { id: '4', label: 'Negociando',         cor: '#F97316', tipo: 'normal' },
-  { id: '5', label: 'Fechado',            cor: '#22C55E', tipo: 'ganho'  },
-  { id: '6', label: 'Perdido',            cor: '#EF4444', tipo: 'perdido'},
+  { id: '5', label: 'Fechado',            cor: '#8FD14F', tipo: 'ganho'  },
+  { id: '6', label: 'Perdido',            cor: '#E5544B', tipo: 'perdido'},
 ]
 
 export function PipelineSettings() {
@@ -35,7 +35,7 @@ export function PipelineSettings() {
   const [tiposEst, setTiposEst] = useState(['Estética', 'Detailer', 'Concessionária', 'Outro'])
 
   const [novaColunaNome, setNovaColunaNome] = useState('')
-  const [novaColunaCor, setNovaColunaCor] = useState('#3B82F6')
+  const [novaColunaCor, setNovaColunaCor] = useState('#9CC3DB')
   const [novoCampoNome, setNovoCampoNome] = useState('')
   const [novoCampoTipo, setNovoCampoTipo] = useState<CampoPersonalizado['tipo']>('texto')
   const [novoCampoObrig, setNovoCampoObrig] = useState(false)
@@ -120,7 +120,7 @@ export function PipelineSettings() {
               <div key={campo.id} className="flex items-center gap-2 bg-[var(--bg-surface-2)] rounded-lg px-3 py-2">
                 <span className="flex-1 text-sm text-[var(--text-primary)]">{campo.nome}</span>
                 <span className="text-xs bg-[var(--bg-surface)] px-2 py-0.5 rounded text-[var(--text-secondary)]">{campo.tipo}</span>
-                {campo.obrigatorio && <span className="text-xs text-[#C9A84C]">Obrigatório</span>}
+                {campo.obrigatorio && <span className="text-xs text-[var(--brand-accent)]">Obrigatório</span>}
                 <button onClick={() => setCampos(prev => prev.filter(c => c.id !== campo.id))}
                   className="text-red-400 hover:text-red-300 p-1">
                   <Trash2 size={13} />

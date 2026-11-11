@@ -123,7 +123,7 @@ export function CRMModalNovaLead({ perfilAtivo, onCriar, onFechar }: Props) {
           <input type="number" min={0} value={form.valorMedioMensal} onChange={(e) => set('valorMedioMensal', e.target.value)}
             placeholder="Valor médio mensal (R$)" className={inputCls} />
 
-          {erro && <p style={{ fontSize: 12, color: '#E85238' }}>{erro}</p>}
+          {erro && <p style={{ fontSize: 12, color: 'var(--status-danger)' }}>{erro}</p>}
 
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onFechar} className="btn btn-secondary flex-1">Cancelar</button>
