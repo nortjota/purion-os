@@ -27,7 +27,7 @@ export function VendasPage() {
     <div className="page-content section-gap">
       <div>
         <h1 className="page-title">Vendas</h1>
-        <p className="caption mt-1">Pipeline de pedidos B2C/B2B, despacho e métricas — estilo Asana</p>
+        <p className="caption mt-1">Pedidos B2C e B2B, despacho e métricas</p>
       </div>
 
       <InnerTabs tabs={TABS} activeTab={aba} onChange={(id) => setAba(id as TabId)} />

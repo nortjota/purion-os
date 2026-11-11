@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { dbLog } from '@/lib/dbLog'
 
+/** Linha de resumo do dia (gerada pela rotina de notificações) — só aparece se for de hoje. */
 export function ResumoDiario() {
   const [mensagem, setMensagem] = useState<string | null>(null)
   const [criadoEm, setCriadoEm] = useState<string | null>(null)
@@ -17,7 +19,8 @@ export function ResumoDiario() {
       .order('criado_em', { ascending: false })
       .limit(1)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        dbLog('SELECT', 'notificacoes (resumo_diario)', error, data ? '1 row' : '0 rows')
         if (data) { setMensagem(data.mensagem); setCriadoEm(data.criado_em) }
       })
   }, [])
@@ -28,14 +31,12 @@ export function ResumoDiario() {
   if (!ehHoje) return null
 
   return (
-    <div className="card-purion p-4 flex items-start gap-3">
-      <div className="shrink-0 mt-0.5 text-[var(--text-primary)]"><Sparkles size={16} /></div>
-      <div>
-        <p className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider mb-1 flex items-center gap-2">
-          <span className="pulse" aria-hidden /> Resumo de hoje
-        </p>
-        <p className="text-sm text-[var(--text-primary)]">{mensagem}</p>
-      </div>
-    </div>
+    <p style={{
+      display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 10, paddingTop: 10,
+      borderTop: '1px solid var(--border)', fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.5,
+    }}>
+      <Sparkles size={13} style={{ flexShrink: 0, marginTop: 2 }} aria-hidden />
+      <span><span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Resumo de hoje:</span> {mensagem}</span>
+    </p>
   )
 }

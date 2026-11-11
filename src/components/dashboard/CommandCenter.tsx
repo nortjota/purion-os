@@ -5,9 +5,9 @@ import { useMobile } from '@/hooks/useMobile'
 import { ResumoDiario } from './ResumoDiario'
 import {
   TrendingUp, DollarSign, Target,
-  ShoppingCart, BarChart2, AlertTriangle, AlertCircle,
-  Info, Activity, Clock, Calendar, Users, FlaskConical, Compass,
-  Package, RefreshCw, ListChecks, RotateCcw,
+  ShoppingCart, BarChart2, AlertTriangle,
+  Activity, Clock, Calendar, Users, FlaskConical, Compass,
+  Package, ListChecks, RotateCcw,
 } from 'lucide-react'
 import { usePurionStore } from '@/store'
 import type { MetaDiaria } from '@/store'
@@ -22,14 +22,12 @@ import {
   gerarFeedAtividade,
   formatarMoeda,
   formatarDataBR,
-  LABEL_STATUS_LEAD,
   type Alerta,
   type AtividadeItem,
   type HealthScore,
   type PeriodoDashboard,
 } from '@/lib/calculos'
 import Link from 'next/link'
-import { DashboardBanner } from '@/components/dashboard/DashboardBanner'
 import { useGrowth } from '@/hooks/useGrowth'
 import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
 import { useEventosCalendario } from '@/hooks/useEventosCalendario'
@@ -42,11 +40,16 @@ import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
 import { WidgetDonut, WidgetBarras, WidgetLinha, WidgetLista, WidgetFunil, type ItemLista } from '@/components/dashboard/widgets'
 import { PainelMetasG4 } from '@/components/dashboard/PainelMetasG4'
-import { PERIODO_OPCOES, type Periodo, inicioPeriodo } from '@/components/dashboard/widgets/widgetHelpers'
+import { type Periodo, inicioPeriodo } from '@/components/dashboard/widgets/widgetHelpers'
 import { estagioNormalizado, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS } from '@/components/crm/crmHelpers'
 import { STATUS_OBJETIVO_COR, STATUS_OBJETIVO_LABEL } from '@/components/estrategias/metas/metasHelpers'
 import { PERFIS_INFO, SOCIOS_ATIVOS, SOCIOS_ATIVOS_IDS, corPerfil, type SocioAtivo } from '@/lib/socios'
-import { KpisPlaybook } from './KpisPlaybook'
+import { KpisPlaybook, NorthStar, useKpisPlaybook } from './KpisPlaybook'
+import { FilaDeAcao, type ItemAcao } from './FilaDeAcao'
+import { Secao, Segmentado } from './Secao'
+import { useDashboardLayout } from './useDashboardLayout'
+import { WidgetShell } from '@/components/dashboard/widgets/WidgetShell'
+import { aguardandoDespacho, despachoAtrasado } from '@/hooks/useDespacho'
 import { frascosDaVenda } from '@/lib/escadaProdutos'
 import { CountCard, Stagger, StaggerItem, ProgressRing, AnimatedNumber, STATUS } from '@/components/motion'
 
@@ -54,12 +57,19 @@ import { CountCard, Stagger, StaggerItem, ProgressRing, AnimatedNumber, STATUS }
 // CONSTANTES
 // ─────────────────────────────────────────────
 
-const META_90_DIAS = 30_000
+const PERIODOS: ReadonlyArray<{ id: Periodo; label: string }> = [
+  { id: 'hoje', label: 'Hoje' },
+  { id: 'semana', label: '7 dias' },
+  { id: 'mes', label: 'Mês' },
+  { id: 'trimestre', label: '90 dias' },
+]
+const DIAS_PLAYBOOK: ReadonlyArray<{ id: 30 | 90; label: string }> = [{ id: 30, label: '30 dias' }, { id: 90, label: '90 dias' }]
 
-const MESES_PT: Record<string, string> = {
-  '01': 'Janeiro', '02': 'Fevereiro', '03': 'Março',    '04': 'Abril',
-  '05': 'Maio',    '06': 'Junho',     '07': 'Julho',    '08': 'Agosto',
-  '09': 'Setembro','10': 'Outubro',   '11': 'Novembro', '12': 'Dezembro',
+/** Para onde cada alerta automático leva. */
+function hrefDoAlerta(id: string): string {
+  if (id.startsWith('roas') || id.startsWith('cpa')) return '/marketing'
+  if (id.startsWith('estoque') || id.startsWith('lote')) return '/producao'
+  return '/financeiro'
 }
 
 const PERIODO_LABEL_LONGO: Record<PeriodoDashboard, string> = {
@@ -72,83 +82,6 @@ const PERIODO_LABEL_LONGO: Record<PeriodoDashboard, string> = {
 const INFO_SOCIOS = {
   matheus: { nome: PERFIS_INFO.matheus.nome, cidade: PERFIS_INFO.matheus.cidade, dominio: PERFIS_INFO.matheus.eixo, cor: PERFIS_INFO.matheus.cor, inicial: 'M' },
   joao:    { nome: PERFIS_INFO.joao.nome,    cidade: PERFIS_INFO.joao.cidade,    dominio: PERFIS_INFO.joao.eixo,    cor: PERFIS_INFO.joao.cor,    inicial: 'J' },
-}
-
-// ─────────────────────────────────────────────
-// META FATURAMENTO
-// ─────────────────────────────────────────────
-
-function MetaFaturamento({ receitas }: { receitas: { valor: number }[] }) {
-  const totalReceita = receitas.reduce((s, r) => s + r.valor, 0)
-  const percentual   = Math.min(100, (totalReceita / META_90_DIAS) * 100)
-  const diasRestantes = 59
-
-  return (
-    <div className="card-purion card-section">
-      <div className="flex items-center justify-between mb-5 gap-4">
-        <div className="flex items-center gap-2">
-          <Target size={15} className="text-[var(--text-primary)]" />
-          <span className="section-title text-[15px]">Meta de Faturamento — 90 dias</span>
-        </div>
-        <ProgressRing value={percentual} size={64} stroke={6} labelSize={14} />
-      </div>
-
-      <div className="flex items-center justify-between caption">
-        <span>
-          <AnimatedNumber value={totalReceita} prefix="R$ " decimals={2} className="text-[var(--text-primary)] font-[500]" />
-          {' '}de{' '}
-          <span className="text-[var(--text-primary)]">{formatarMoeda(META_90_DIAS)}</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Clock size={11} />
-          {diasRestantes} dias restantes
-        </span>
-      </div>
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────
-// ALERTAS
-// ─────────────────────────────────────────────
-
-const COR_ALERTA: Record<Alerta['tipo'], {
-  bg: string; border: string; text: string; icon: React.ElementType
-}> = {
-  danger:  { bg: 'rgba(229,84,75,0.08)',   border: 'rgba(229,84,75,0.2)',   text: '#E5544B', icon: AlertTriangle },
-  warning: { bg: 'rgba(230,195,116,0.08)',  border: 'rgba(230,195,116,0.2)',  text: '#E6C374', icon: AlertCircle  },
-  info:    { bg: 'rgba(156,195,219,0.08)',  border: 'rgba(156,195,219,0.2)',  text: '#9CC3DB', icon: Info         },
-}
-
-function SecaoAlertas({ alertas }: { alertas: Alerta[] }) {
-  if (alertas.length === 0) return null
-  return (
-    <div>
-      <p className="kpi-label flex items-center gap-1.5 mb-3">
-        <AlertTriangle size={11} /> Alertas Automáticos
-      </p>
-      <div className="flex flex-wrap gap-2 alerts-flex">
-        {alertas.map((alerta) => {
-          const { bg, border, text, icon: Icon } = COR_ALERTA[alerta.tipo]
-          return (
-            <div
-              key={alerta.id}
-              className="flex items-start gap-2 px-3 py-2 rounded-lg text-[13px] border"
-              style={{ backgroundColor: bg, borderColor: border }}
-            >
-              <Icon size={13} style={{ color: text, marginTop: 1, flexShrink: 0 }} />
-              <div>
-                <span className="font-[500]" style={{ color: text }}>{alerta.mensagem}</span>
-                {alerta.detalhe && (
-                  <span className="text-[var(--text-secondary)] ml-1.5">— {alerta.detalhe}</span>
-                )}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
 }
 
 // ─────────────────────────────────────────────
@@ -329,65 +262,20 @@ function FeedAtividade({ items }: { items: AtividadeItem[] }) {
 }
 
 // ─────────────────────────────────────────────
-// HEALTH SCORE
+// SAÚDE DO NEGÓCIO (chip compacto)
 // ─────────────────────────────────────────────
 
-function HealthScoreBadge({ hs }: { hs: HealthScore }) {
+function ChipSaude({ hs }: { hs: HealthScore }) {
   return (
-    <div
-      className="flex items-center gap-3 px-4 py-2.5 rounded-xl border"
-      style={{ backgroundColor: `${hs.cor}0D`, borderColor: `${hs.cor}25` }}
+    <span
+      className="chip-saude"
+      style={{ ['--tom' as string]: hs.cor }}
+      title="Saúde do negócio (0–10): margem bruta 30% · ROAS 30% · estoque 20% · crescimento vs mês anterior 20%."
     >
-      <div className="flex flex-col items-center leading-none">
-        <span className="text-[22px] font-semibold" style={{ color: hs.cor }}>
-          {hs.score}
-        </span>
-        <span className="caption text-[10px] mt-0.5">/10</span>
-      </div>
-      <div className="flex flex-col leading-none">
-        <span className="text-[13px] font-[500]" style={{ color: hs.cor }}>{hs.status}</span>
-        <span className="caption text-[11px]">Health Score</span>
-      </div>
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────
-// FUNIL DE LEADS
-// ─────────────────────────────────────────────
-
-function LeadsFunil({ leads }: { leads: import('@/store').Lead[] }) {
-  const ESTAGIOS = Object.entries(LABEL_STATUS_LEAD).filter(([k]) => k !== 'inativo')
-  const ativos = leads.filter((l) => l.status !== 'inativo')
-
-  return (
-    <div className="card-purion">
-      <div className="card-header">
-        <div className="flex items-center gap-2">
-          <Users size={14} className="text-[var(--text-primary)]" />
-          <span className="section-title text-[15px]">Funil de Leads</span>
-        </div>
-        <span className="caption">{ativos.length} ativos</span>
-      </div>
-      <div className="px-6 pb-6 flex flex-col gap-3">
-        {ESTAGIOS.map(([key, label]) => {
-          const count = leads.filter((l) => l.status === key).length
-          const pct = ativos.length > 0 ? Math.round((count / ativos.length) * 100) : 0
-          return (
-            <div key={key} className="flex items-center gap-3">
-              <span className="text-[12px] text-[var(--text-secondary)] w-36 shrink-0 truncate">{label}</span>
-              <div className="flex-1 h-1.5 bg-[var(--bg-surface-2)] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${pct}%`, backgroundColor: 'var(--brand-accent)' }}
-                />
-              </div>
-              <span className="text-[13px] font-[500] text-[var(--text-primary)] w-5 text-right">{count}</span>
-            </div>
-          )
-        })}
-      </div>
-    </div>
+      <span className="chip-saude-ponto" aria-hidden />
+      <span className="tnum"><strong>{hs.score}</strong><span style={{ opacity: 0.6 }}>/10</span></span>
+      <span style={{ color: 'var(--text-secondary)' }}>{hs.status}</span>
+    </span>
   )
 }
 
@@ -462,8 +350,8 @@ function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
   const socios = SOCIOS_ATIVOS.map((s) => ({ id: s.id, label: s.nome, cor: s.cor }))
 
   return (
-    <Link href="/metas" className="block no-underline">
-      <section className="card-purion lift p-4 cursor-pointer">
+    <Link href="/metas" className="block no-underline h-full">
+      <section className="card-purion lift p-4 cursor-pointer h-full">
         <div className="flex items-center justify-between mb-3">
           <p className="kpi-label flex items-center gap-1.5">
             <Target size={11} /> Metas de hoje
@@ -511,7 +399,7 @@ export function CommandCenter() {
     tarefas, leads, lotes, reunioes,
     dailyEntries, vendas, doacoesUGC, metasDiarias,
     perfilAtivo, setPerfilAtivo,
-    dashboardWidgets, estoqueProduto,
+    estoqueProduto,
     dashboardContadoresOrdem, setDashboardContadoresOrdem,
   } = usePurionStore()
   const { experimentos } = useGrowth()
@@ -523,7 +411,9 @@ export function CommandCenter() {
   const faseAtual = fases.find((f) => f.status === 'atual')
 
   const [periodo, setPeriodo] = useState<Periodo>('mes')
-  const [ultimaAtualizacao, setUltimaAtualizacao] = useState(() => new Date())
+  const [diasPlaybook, setDiasPlaybook] = useState<30 | 90>(30)
+  const kPlaybook = useKpisPlaybook(diasPlaybook)
+  const layout = useDashboardLayout()
 
   const saudacao = useMemo(() => {
     const h = new Date().getHours()
@@ -536,11 +426,6 @@ export function CommandCenter() {
     () => new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }),
     []
   )
-
-  // Dados chegam em tempo real via Supabase Realtime — o carimbo acompanha qualquer mudança.
-  useEffect(() => { setUltimaAtualizacao(new Date()) }, [vendas, receitas, leads, tarefas, estoqueProduto])
-
-  const showWidget = (id: string) => dashboardWidgets.includes(id)
 
   // Alertas e health score ficam ancorados no mês corrente (thresholds mensais) —
   // não mudam com o seletor de período abaixo, que é só para os KPIs/gráficos visíveis.
@@ -614,8 +499,6 @@ export function CommandCenter() {
     return { pedidos, frascos, despachados, ugc }
   }, [vendas, doacoesUGC, dataInicioPeriodo, dataFimPeriodo])
 
-  const [ano, mes] = mesAtual.split('-')
-  const nomeMes    = `${MESES_PT[mes] ?? mes} ${ano}`
   const periodoLabel = PERIODO_LABEL_LONGO[periodo]
 
   // ── LINHA 1 — Contadores grandes ──
@@ -649,7 +532,7 @@ export function CommandCenter() {
   const contadoresMap = useMemo(() => ({
     faturamento: (
       <CountCard
-        label={`Faturamento — ${periodoLabel}`} icon={<DollarSign size={12} aria-hidden />} live
+        label="Faturamento" icon={<DollarSign size={12} aria-hidden />} live
         value={kpisPeriodo.faturamento} prefix="R$ " decimals={2}
         delta={variacaoFaturamento} deltaLabel="vs período anterior"
         sub={`${resumoFrascosPeriodo.pedidos} pedidos pagos`}
@@ -661,7 +544,7 @@ export function CommandCenter() {
       <CountCard
         label="Frascos vendidos" icon={<Package size={12} aria-hidden />}
         value={resumoFrascosPeriodo.frascos}
-        sub={`${resumoFrascosPeriodo.pedidos} pedido${resumoFrascosPeriodo.pedidos !== 1 ? 's' : ''} — ${periodoLabel}`}
+        sub={`${resumoFrascosPeriodo.despachados} despachados · ${resumoFrascosPeriodo.ugc} doados UGC`}
         sparkline={sparkFrascos}
       />
     ),
@@ -732,13 +615,11 @@ export function CommandCenter() {
 
   // ── LINHA 3 — Listas rápidas ──
   const northStarItems: ItemLista[] = useMemo(() => {
-    const itens: ItemLista[] = [{
-      id: 'north-star', titulo: 'Clientes e parceiros ativos que recompram', subtitulo: 'North Star da PURION', cor: '#D4FC3C',
-    }]
+    const itens: ItemLista[] = []
     if (faseAtual) {
       itens.push({
         id: 'fase-atual', titulo: faseAtual.nome, subtitulo: 'Fase atual do roadmap',
-        valor: `${faseAtual.percentualConclusao}%`, cor: '#9CC3DB',
+        valor: `${faseAtual.percentualConclusao}%`, cor: '#D4FC3C',
       })
     }
     return itens
@@ -783,186 +664,170 @@ export function CommandCenter() {
       .map((e) => ({ id: e.id, titulo: e.nome, subtitulo: e.etapa, valor: e.score.toFixed(1), cor: '#D4FC3C' }))
   }, [experimentos])
 
+  // ── Fila de ação: pendências + alertas automáticos, com link para resolver ──
+  const filaDeAcao = useMemo<ItemAcao[]>(() => {
+    const hoje = new Date().toISOString().slice(0, 10)
+    const abertas = tarefas.filter((t) => t.status !== 'concluida' && t.status !== 'cancelada' && t.dueDate)
+    const atrasadas = abertas.filter((t) => t.dueDate! < hoje).length
+    const paraHoje = abertas.filter((t) => t.dueDate === hoje).length
+    const fila = vendas.filter(aguardandoDespacho)
+    const despAtrasados = fila.filter((v) => despachoAtrasado(v)).length
+    const metasHoje = metasDiarias.filter((m) => m.data === hoje)
+    const metasPendentes = metasHoje.filter((m) => !m.concluida).length
+
+    const itens: ItemAcao[] = []
+    if (atrasadas > 0) itens.push({ id: 'tarefas-atrasadas', valor: atrasadas, titulo: `Tarefa${atrasadas > 1 ? 's' : ''} atrasada${atrasadas > 1 ? 's' : ''}`, detalhe: 'prazo vencido', tom: 'danger', href: '/tarefas' })
+    if (despAtrasados > 0) itens.push({ id: 'despacho-atrasado', valor: despAtrasados, titulo: `Despacho${despAtrasados > 1 ? 's' : ''} há +48h`, detalhe: 'pago e ainda não enviado', tom: 'danger', href: '/despacho' })
+    if (fila.length - despAtrasados > 0) itens.push({ id: 'despacho-fila', valor: fila.length - despAtrasados, titulo: 'Na fila de despacho', detalhe: 'pedidos pagos aguardando envio', tom: 'warning', href: '/despacho' })
+    if (alertaEstoque && estoqueProduto) itens.push({ id: 'estoque-prontos', valor: estoqueProduto.quantidadeAtual, titulo: 'Frascos prontos em estoque', detalhe: `abaixo do mínimo (${estoqueProduto.quantidadeMinima})`, tom: 'danger', href: '/producao' })
+    if (reposicoesItems.length > 0) itens.push({ id: 'reposicoes', valor: reposicoesItems.length, titulo: `Reposiç${reposicoesItems.length > 1 ? 'ões' : 'ão'} B2B a oferecer`, detalhe: 'parceiros entre D+14 e D+35', tom: 'warning', href: '/crm' })
+    if (paraHoje > 0) itens.push({ id: 'tarefas-hoje', valor: paraHoje, titulo: `Tarefa${paraHoje > 1 ? 's' : ''} para hoje`, tom: 'neutral', href: '/tarefas' })
+    if (metasPendentes > 0) itens.push({ id: 'metas-hoje', valor: metasPendentes, titulo: `Meta${metasPendentes > 1 ? 's' : ''} de hoje em aberto`, detalhe: `${metasHoje.length - metasPendentes}/${metasHoje.length} concluídas`, tom: 'neutral', href: '/metas' })
+    todosAlertas
+      // estoque de frascos prontos já entra acima com número; aqui ficam ROAS/CPA/insumos/lotes
+      .forEach((a) => itens.push({ id: a.id, titulo: a.mensagem, detalhe: a.detalhe, tom: a.tipo, href: hrefDoAlerta(a.id) }))
+    return itens
+  }, [tarefas, vendas, metasDiarias, alertaEstoque, estoqueProduto, reposicoesItems, todosAlertas])
+
   return (
-    <div className="page-content section-gap">
+    <div className="page-content dash">
 
-      {/* ── Onboarding ── */}
-      <OnboardingChecklist />
-      <OnboardingTour />
-
-      {/* ── Banner ── */}
-      <DashboardBanner isAdmin={true} />
-
-      {/* ── Header ── */}
-      <div className="flex items-start justify-between flex-wrap gap-3">
+      {/* ── Cabeçalho: saudação + controles globais da tela ── */}
+      <div className="flex items-end justify-between flex-wrap gap-3">
         <div>
-          <p className="caption uppercase mb-1" style={{ letterSpacing: '0.08em' }}>
-            {dataExtenso} · {nomeMes}
-          </p>
+          <p className="kpi-label mb-1">{dataExtenso}</p>
           <h1 className="page-title">{saudacao}{perfil?.nome ? `, ${perfil.nome.split(' ')[0]}` : ''}</h1>
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex gap-0.5 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)]">
-            {PERIODO_OPCOES.map((p) => (
-              <button key={p.id} onClick={() => setPeriodo(p.id)}
-                className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors"
-                style={periodo === p.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={() => setUltimaAtualizacao(new Date())}
-            title="Os dados já são sincronizados em tempo real — atualiza o carimbo de horário"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8,
-              background: 'var(--bg-surface-2)', border: '1px solid var(--border)', cursor: 'pointer',
-              fontSize: 11, color: 'var(--text-secondary)',
-            }}
-          >
-            <RefreshCw size={12} />
-            Atualizado {ultimaAtualizacao.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-          </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <ChipSaude hs={healthScore} />
+          <Segmentado opcoes={PERIODOS} valor={periodo} onChange={setPeriodo} rotulo="Período dos resultados" />
           <WidgetCustomizer />
-          {showWidget('health-score') && <HealthScoreBadge hs={healthScore} />}
         </div>
       </div>
 
-      {/* ── Resumo de hoje ── */}
-      <ResumoDiario />
+      {/* ── Onboarding (some sozinho quando concluído) ── */}
+      <OnboardingChecklist />
+      <OnboardingTour />
 
-      {/* ── KPIs oficiais do Playbook 360 + North Star ── */}
-      <KpisPlaybook />
+      {/* ── 1. Precisa de você ── */}
+      {layout.visivel('fila') && <FilaDeAcao itens={filaDeAcao} rodape={<ResumoDiario />} />}
 
-      {/* ══════════════════════════════════════════════════════════
-          PAINEL EXECUTIVO — estilo Asana
-      ══════════════════════════════════════════════════════════ */}
-      {showWidget('kpis') && (
-        <section className="flex flex-col gap-4">
-          {/* Linha 1 — contadores grandes (arraste para reordenar) */}
-          <Stagger className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-            {contadoresOrdenados.map(({ id, node }) => (
-              <StaggerItem key={id} style={{ height: '100%' }}>
-                <div
-                  draggable
-                  onDragStart={() => setDragContadorId(id)}
-                  onDragEnd={() => setDragContadorId(null)}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => handleDropContador(id)}
-                  style={{ opacity: dragContadorId === id ? 0.4 : 1, cursor: 'grab', height: '100%' }}
-                  title="Arraste para reordenar"
-                >
-                  {node}
-                </div>
+      {/* ── 2. Resultado do período ── */}
+      {layout.visivel('resultado') && (
+        <Secao titulo="Resultado" sub={periodoLabel} recolhida={layout.recolhida('resultado')} onAlternar={() => layout.alternarRecolhida('resultado')}>
+          <div className="flex flex-col gap-4">
+            {/* contadores (arraste para reordenar) */}
+            <Stagger className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
+              {contadoresOrdenados.map(({ id, node }) => (
+                <StaggerItem key={id} style={{ height: '100%' }}>
+                  <div
+                    draggable
+                    onDragStart={() => setDragContadorId(id)}
+                    onDragEnd={() => setDragContadorId(null)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => handleDropContador(id)}
+                    style={{ opacity: dragContadorId === id ? 0.4 : 1, height: '100%' }}
+                    title="Arraste para reordenar"
+                  >
+                    {node}
+                  </div>
+                </StaggerItem>
+              ))}
+            </Stagger>
+
+            <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }} delay={0.1}>
+              <StaggerItem style={{ gridColumn: isMobile ? undefined : 'span 2' }}>
+                <WidgetLinha title="Vendas por dia" icon={Activity} data={vendasDiarias} formatarValor={(v) => formatarMoeda(v)} />
               </StaggerItem>
-            ))}
-          </Stagger>
+              <StaggerItem>
+                <WidgetDonut title="Vendas por canal" icon={ShoppingCart} data={vendasPorCanal} formatarValor={(v) => formatarMoeda(v)} href="/vendas" />
+              </StaggerItem>
+              <StaggerItem>
+                <WidgetFunil title="Funil B2B" icon={TrendingUp} etapas={funilB2BEtapas} href="/crm" />
+              </StaggerItem>
+            </Stagger>
+          </div>
+        </Secao>
+      )}
 
-          {/* Linha 2 — gráficos */}
-          <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }} delay={0.12}>
-            <StaggerItem style={{ gridColumn: isMobile ? undefined : 'span 2' }}>
-              <WidgetLinha title={`Vendas por dia — ${periodoLabel}`} icon={Activity} data={vendasDiarias} formatarValor={(v) => formatarMoeda(v)} />
-            </StaggerItem>
-            <StaggerItem>
-              <WidgetDonut title="Vendas por canal" icon={ShoppingCart} data={vendasPorCanal} formatarValor={(v) => formatarMoeda(v)} href="/vendas" />
-            </StaggerItem>
-            <StaggerItem>
-              <WidgetFunil title="Funil B2B" icon={TrendingUp} etapas={funilB2BEtapas} href="/crm" />
-            </StaggerItem>
-          </Stagger>
-          <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }} delay={0.24}>
-            <StaggerItem>
-              <WidgetDonut title="Metas por status" icon={Target} data={metasPorStatus} href="/estrategias" />
-            </StaggerItem>
+      {/* ── 3. KPIs oficiais (Playbook 360) ── */}
+      {layout.visivel('playbook') && (
+        <Secao
+          titulo="KPIs do Playbook 360"
+          recolhida={layout.recolhida('playbook')} onAlternar={() => layout.alternarRecolhida('playbook')}
+          acao={<Segmentado opcoes={DIAS_PLAYBOOK} valor={diasPlaybook} onChange={setDiasPlaybook} rotulo="Janela dos KPIs" />}
+        >
+          <div className="flex flex-col gap-4">
+            <NorthStar k={kPlaybook} />
+            <KpisPlaybook k={kPlaybook} dias={diasPlaybook} />
+          </div>
+        </Secao>
+      )}
 
-            {/* Linha 3 — listas rápidas */}
-            <StaggerItem>
-              <WidgetLista title="North Star & Estratégia" icon={Compass} items={northStarItems} href="/estrategias" emptyMessage="Nenhuma fase cadastrada" />
-            </StaggerItem>
+      {/* ── 4. Execução: o que fazer agora ── */}
+      {layout.visivel('execucao') && (
+        <Secao titulo="Execução" recolhida={layout.recolhida('execucao')} onAlternar={() => layout.alternarRecolhida('execucao')}>
+          <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
             <StaggerItem>
               <WidgetLista title="Tarefas atrasadas / próximas" icon={ListChecks} items={tarefasListaItems} href="/tarefas" emptyMessage="Nenhuma tarefa com prazo" />
             </StaggerItem>
             <StaggerItem>
               <WidgetLista title="Reposições B2B (D+21)" icon={RotateCcw} items={reposicoesItems} href="/crm" emptyMessage="Nenhuma reposição esta semana" />
             </StaggerItem>
-          </Stagger>
-          <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }} delay={0.36}>
             <StaggerItem>
-              <WidgetLista title="Próximo experimento (maior ICE)" icon={FlaskConical} items={proximoICEItems} href="/growth" emptyMessage="Backlog de growth vazio" />
+              <WidgetShell title="Próximos 7 dias" icon={Calendar} href="/calendario">
+                <Proximos7Dias eventos={eventos} limite={4} />
+              </WidgetShell>
+            </StaggerItem>
+            <StaggerItem>
+              <CardMetasHoje metas={metasDiarias} />
             </StaggerItem>
           </Stagger>
-        </section>
+        </Secao>
       )}
 
-      {/* ── Resumo Pedidos vs Frascos ── */}
-      {resumoFrascosPeriodo.pedidos > 0 && (
-        <div className="card-purion" style={{ padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            {periodoLabel}
-          </span>
-          <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
-            <strong><AnimatedNumber value={resumoFrascosPeriodo.pedidos} /></strong> pedidos pagos
-            <span style={{ color: 'var(--text-secondary)' }}> = </span>
-            <strong style={{ color: 'var(--status-info)' }}><AnimatedNumber value={resumoFrascosPeriodo.frascos} /></strong> frascos vendidos
-          </span>
-          <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
-            <strong style={{ color: 'var(--status-ok)' }}>{resumoFrascosPeriodo.despachados}</strong>
-            <span style={{ color: 'var(--text-secondary)' }}> despachados · </span>
-            <strong style={{ color: 'var(--status-neutral)' }}>{resumoFrascosPeriodo.ugc}</strong>
-            <span style={{ color: 'var(--text-secondary)' }}> doados UGC</span>
-          </span>
-        </div>
+      {/* ── 5. Estratégia: para onde estamos indo ── */}
+      {layout.visivel('estrategia') && (
+        <Secao titulo="Estratégia" recolhida={layout.recolhida('estrategia')} onAlternar={() => layout.alternarRecolhida('estrategia')}>
+          <div className="flex flex-col gap-4">
+            <PainelMetasG4 />
+            <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+              <StaggerItem>
+                <WidgetDonut title="Metas por status" icon={Target} data={metasPorStatus} href="/estrategias" />
+              </StaggerItem>
+              <StaggerItem>
+                <WidgetLista title="Fase do roadmap" icon={Compass} items={northStarItems} href="/estrategias" emptyMessage="Nenhuma fase cadastrada" />
+              </StaggerItem>
+              <StaggerItem>
+                <WidgetLista title="Próximo experimento (maior ICE)" icon={FlaskConical} items={proximoICEItems} href="/growth" emptyMessage="Backlog de growth vazio" />
+              </StaggerItem>
+            </Stagger>
+          </div>
+        </Secao>
       )}
 
-      {/* ── Card Próximos Eventos ── */}
-      <div className="card-purion" style={{ padding: '14px 16px' }}>
-        <Link href="/calendario" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-          <Calendar size={14} style={{ color: 'var(--text-primary)' }} />
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Próximos eventos</span>
-        </Link>
-        <Proximos7Dias eventos={eventos} limite={3} />
-      </div>
-
-      {/* ── Painel de Metas do Ano — G4 ── */}
-      <PainelMetasG4 />
-
-      {/* ── Meta de Faturamento ── */}
-      {showWidget('metas-progress') && <MetaFaturamento receitas={receitas} />}
-
-      {/* ── Metas de Hoje ── */}
-      {showWidget('metas-diarias') && <CardMetasHoje metas={metasDiarias} />}
-
-      {/* ── Alertas ── */}
-      {showWidget('alertas') && <SecaoAlertas alertas={todosAlertas} />}
-
-      {/* ── Status dos Sócios ── */}
-      <section>
-        <p className="kpi-label flex items-center gap-1.5 mb-4">
-          <Activity size={11} /> Status dos Sócios
-        </p>
-        <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: `repeat(${SOCIOS_ATIVOS_IDS.length}, 1fr)` }}>
-          {SOCIOS_ATIVOS_IDS.map((perfil) => (
-            <SocioCard
-              key={perfil}
-              perfilId={perfil}
-              tarefas={tarefas}
-              campanhas={campanhasAds}
-              ativo={perfilAtivo === perfil}
-              onClick={() => setPerfilAtivo(perfil)}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* ── Funil de Leads + Daily Updates ── */}
-      <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-        <LeadsFunil leads={leads} />
-        <UltimosDailies entries={dailyEntries} />
-      </div>
-
-      {/* ── Feed de Atividade — mobile: 5 items max ── */}
-      {showWidget('atividade') && (
-        <FeedAtividade items={isMobile ? feedAtividade.slice(0, 5) : feedAtividade} />
+      {/* ── 6. Time & atividade (recolhido por padrão) ── */}
+      {layout.visivel('time') && (
+        <Secao titulo="Time & atividade" recolhida={layout.recolhida('time')} onAlternar={() => layout.alternarRecolhida('time')}>
+          <div className="flex flex-col gap-4">
+            <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: `repeat(${SOCIOS_ATIVOS_IDS.length}, minmax(0, 1fr))` }}>
+              {SOCIOS_ATIVOS_IDS.map((perfil) => (
+                <SocioCard
+                  key={perfil}
+                  perfilId={perfil}
+                  tarefas={tarefas}
+                  campanhas={campanhasAds}
+                  ativo={perfilAtivo === perfil}
+                  onClick={() => setPerfilAtivo(perfil)}
+                />
+              ))}
+            </div>
+            <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+              <FeedAtividade items={feedAtividade.slice(0, isMobile ? 5 : 8)} />
+              <UltimosDailies entries={dailyEntries} />
+            </div>
+          </div>
+        </Secao>
       )}
 
     </div>

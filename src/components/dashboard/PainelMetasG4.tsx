@@ -56,7 +56,7 @@ export function PainelMetasG4() {
       <section className="card-purion lift p-4 cursor-pointer">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <span className="flex items-center gap-2" style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-            <Target size={14} style={{ color: 'var(--text-primary)' }} /> Painel de Metas do Ano — método G4
+            <Target size={14} style={{ color: 'var(--text-primary)' }} /> Metas do ano
           </span>
           {percentualGeral != null ? (
             <ProgressRing value={percentualGeral} size={56} stroke={5} labelSize={13}

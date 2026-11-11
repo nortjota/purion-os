@@ -1,124 +1,49 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Layout } from 'lucide-react'
-import { usePurionStore } from '@/store'
+import { X, SlidersHorizontal, RotateCcw } from 'lucide-react'
+import { SECOES_DASHBOARD, useDashboardLayout } from './useDashboardLayout'
 
-export const WIDGET_LIST: Array<{ id: string; label: string }> = [
-  { id: 'kpis',               label: 'KPIs Principais'         },
-  { id: 'health-score',       label: 'Health Score'            },
-  { id: 'atividade',          label: 'Feed de Atividade'       },
-  { id: 'tarefas-board',      label: 'Board de Tarefas'        },
-  { id: 'pipeline-top5',      label: 'Top 5 Pipeline'          },
-  { id: 'estoque',            label: 'Estoque'                 },
-  { id: 'creators-top5',      label: 'Top 5 Creators'          },
-  { id: 'grafico-financeiro', label: 'Gráfico Financeiro'      },
-  { id: 'metas-progress',     label: 'Progresso de Metas'      },
-  { id: 'metas-diarias',     label: 'Metas Diárias de hoje'   },
-  { id: 'decisoes',           label: 'Decisões Estratégicas'   },
-  { id: 'alertas',            label: 'Alertas Automáticos'     },
-  { id: 'notas-fixadas',      label: 'Notas Fixadas'           },
-]
-
+/** Escolhe quais seções aparecem na tela inicial (preferência por navegador). */
 export function WidgetCustomizer() {
   const [open, setOpen] = useState(false)
-  const { dashboardWidgets, setDashboardWidgets } = usePurionStore()
-  const [local, setLocal] = useState<string[]>(dashboardWidgets)
-
-  function handleOpen() {
-    setLocal([...dashboardWidgets])
-    setOpen(true)
-  }
-
-  function handleToggle(id: string) {
-    setLocal((prev) =>
-      prev.includes(id) ? prev.filter((w) => w !== id) : [...prev, id]
-    )
-  }
-
-  function handleSave() {
-    setDashboardWidgets(local)
-    setOpen(false)
-  }
+  const { visivel, alternarVisivel, restaurar } = useDashboardLayout()
 
   return (
     <>
-      <button
-        onClick={handleOpen}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '7px 14px', borderRadius: 8,
-          background: 'var(--bg-surface-2)', border: '1px solid var(--border)',
-          cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)',
-        }}
-      >
-        <Layout size={13} />
-        Personalizar
+      <button type="button" onClick={() => setOpen(true)} className="icon-btn" title="Personalizar tela inicial" aria-label="Personalizar tela inicial">
+        <SlidersHorizontal size={15} />
       </button>
 
       {open && (
-        <div
-          style={{
-            position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}
-        >
-          <div
-            style={{
-              background: 'var(--bg-surface)', border: '1px solid var(--border)',
-              borderRadius: 16, padding: 24, width: 400, maxWidth: '90vw',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>Personalizar Dashboard</h2>
-              <button
-                onClick={() => setOpen(false)}
-                style={{
-                  width: 28, height: 28, borderRadius: '50%',
-                  background: 'var(--bg-surface-2)', border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                <X size={14} />
-              </button>
+        <div className="modal-backdrop" style={{ zIndex: 200 }} onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}>
+          <div className="modal-container" style={{ maxWidth: 420, padding: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
+              <div>
+                <h2 className="modal-title">Personalizar tela inicial</h2>
+                <p className="caption" style={{ marginTop: 2 }}>Mostre só o que você acompanha. Vale para este navegador.</p>
+              </div>
+              <button type="button" onClick={() => setOpen(false)} className="icon-btn" aria-label="Fechar"><X size={14} /></button>
             </div>
 
-            <div style={{ display: 'grid', gap: 8, marginBottom: 20 }}>
-              {WIDGET_LIST.map((widget) => {
-                const checked = local.includes(widget.id)
+            <div style={{ display: 'grid', gap: 6 }}>
+              {SECOES_DASHBOARD.map((secao) => {
+                const ligada = visivel(secao.id)
                 return (
-                  <label
-                    key={widget.id}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      padding: '10px 12px', borderRadius: 10,
-                      background: checked ? 'rgba(212,252,60,0.06)' : 'var(--bg-surface-2)',
-                      border: `1px solid ${checked ? 'rgba(212,252,60,0.3)' : 'var(--border)'}`,
-                      cursor: 'pointer', userSelect: 'none',
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => handleToggle(widget.id)}
-                      style={{ accentColor: 'var(--text-primary)' }}
-                    />
-                    <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{widget.label}</span>
+                  <label key={secao.id} className="opcao-linha" data-ativa={ligada || undefined}>
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ display: 'block', fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>{secao.label}</span>
+                      <span className="caption" style={{ display: 'block' }}>{secao.descricao}</span>
+                    </span>
+                    <input type="checkbox" className="toggle" checked={ligada} onChange={() => alternarVisivel(secao.id)} />
                   </label>
                 )
               })}
             </div>
 
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button className="btn btn-secondary btn-sm" onClick={() => setOpen(false)}>
-                Cancelar
-              </button>
-              <button className="btn btn-primary btn-sm" onClick={handleSave}>
-                Salvar
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={restaurar}><RotateCcw size={13} /> Restaurar padrão</button>
+              <button type="button" className="btn btn-primary btn-sm" onClick={() => setOpen(false)}>Concluir</button>
             </div>
           </div>
         </div>

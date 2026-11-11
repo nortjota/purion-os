@@ -28,7 +28,7 @@ export function RelatoriosPage() {
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h1 className="page-title">Relatórios</h1>
-          <p className="caption mt-1">Painéis temáticos com dados reais, estilo Asana</p>
+          <p className="caption mt-1">Painéis temáticos com dados reais</p>
         </div>
         <div className="flex gap-0.5 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)]">
           {PERIODO_OPCOES.map((p) => (
