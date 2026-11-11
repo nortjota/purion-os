@@ -3,6 +3,7 @@
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { WidgetShell } from './WidgetShell'
 import { TOOLTIP_STYLE, CHART_GRID_STROKE, CHART_TICK_FILL } from './widgetHelpers'
+import { useChartAnim } from '@/components/motion/useChartAnim'
 
 export interface PontoLinha {
   name: string
@@ -23,6 +24,7 @@ interface Props {
 export function WidgetLinha({ title, icon, data, cor = '#C9A84C', height = 200, isLoading, href, formatarValor }: Props) {
   const isEmpty = data.length === 0 || data.every((d) => d.valor === 0)
   const gradId = `grad-${title.replace(/\s+/g, '-').toLowerCase()}`
+  const anim = useChartAnim(1)
 
   return (
     <WidgetShell title={title} icon={icon} isLoading={isLoading} isEmpty={isEmpty} height={height} href={href}>
@@ -42,7 +44,7 @@ export function WidgetLinha({ title, icon, data, cor = '#C9A84C', height = 200, 
           <YAxis tick={{ fill: CHART_TICK_FILL, fontSize: 10 }} axisLine={false} tickLine={false} width={40} allowDecimals={false}
             tickFormatter={(v) => formatarValor ? formatarValor(v) : String(v)} />
           <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(value) => formatarValor ? formatarValor(Number(value)) : value} />
-          <Area type="monotone" dataKey="valor" stroke={cor} strokeWidth={2} fill={`url(#${gradId})`} dot={false} activeDot={{ r: 4, fill: cor }} />
+          <Area type="monotone" dataKey="valor" stroke={cor} strokeWidth={2} fill={`url(#${gradId})`} dot={false} activeDot={{ r: 4, fill: cor }} {...anim} />
         </AreaChart>
       </ResponsiveContainer>
     </WidgetShell>

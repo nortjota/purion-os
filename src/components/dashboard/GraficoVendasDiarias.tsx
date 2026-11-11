@@ -1,6 +1,7 @@
 'use client'
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useChartAnim } from '@/components/motion/useChartAnim'
 
 interface Props {
   data: Array<{ data: string; valor: number }>
@@ -24,6 +25,7 @@ function TooltipVendas({ active, payload, label }: {
 }
 
 export default function GraficoVendasDiarias({ data }: Props) {
+  const anim = useChartAnim(0)
   return (
     <ResponsiveContainer width="100%" height={180}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -31,7 +33,7 @@ export default function GraficoVendasDiarias({ data }: Props) {
         <XAxis dataKey="data" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} axisLine={false} tickLine={false} width={36} />
         <Tooltip content={<TooltipVendas />} />
-        <Bar dataKey="valor" fill="#C9A84C" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="valor" fill="#C9A84C" radius={[4, 4, 0, 0]} {...anim} />
       </BarChart>
     </ResponsiveContainer>
   )

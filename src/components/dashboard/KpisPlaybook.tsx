@@ -6,29 +6,34 @@ import { usePurionStore } from '@/store'
 import { useConfiguracoes } from '@/hooks/useConfiguracoes'
 import { formatCurrency, formatNumber, formatPercent } from '@/lib/formatters'
 import { calcularKpisPlaybook } from '@/lib/kpisPlaybook'
+import { AnimatedNumber, Stagger, StaggerItem } from '@/components/motion'
+
+/** Valor monetário com count-up (R$ pt-BR) ou "—". */
+const R$n = (v: number | null) => (v == null ? '—' : <AnimatedNumber value={v} prefix="R$ " decimals={2} />)
+/** Fração 0–1 como % com count-up ou "—". */
+const Pctn = (v: number | null) => (v == null ? '—' : <AnimatedNumber value={v * 100} suffix="%" decimals={1} />)
 
 const DOURADO = '#C9A84C'
 
 const fmtPct = (v: number | null) => (v == null ? '—' : formatPercent(v * 100, 1))
-const fmtR$ = (v: number | null) => (v == null ? '—' : formatCurrency(v))
 
 function Kpi({ label, valor, sub, formula, cor = '#F5F5F5', children }: {
   label: string
-  valor: string
+  valor: React.ReactNode
   sub?: string
   formula: string
   cor?: string
   children?: React.ReactNode
 }) {
   return (
-    <div className="kpi-card" style={{ minWidth: 0, gap: 2 }} title={formula}>
+    <StaggerItem className="kpi-card lift" style={{ minWidth: 0, gap: 2, display: 'flex', flexDirection: 'column' }} title={formula}>
       <span style={{ fontSize: 12, color: '#B8B8B8', display: 'flex', alignItems: 'center', gap: 4 }}>
         {label} <Info size={11} style={{ opacity: 0.6 }} />
       </span>
       <span style={{ fontSize: 22, fontWeight: 700, color: cor, lineHeight: 1.25, wordBreak: 'break-word' }}>{valor}</span>
       {sub && <span style={{ fontSize: 11, color: '#B8B8B8' }}>{sub}</span>}
       {children}
-    </div>
+    </StaggerItem>
   )
 }
 
@@ -119,7 +124,7 @@ export function KpisPlaybook() {
           <p style={{ fontSize: 12, color: '#B8B8B8', marginTop: 2 }}>≥ 2 pedidos pagos, último nos últimos 90 dias</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 40, fontWeight: 800, color: DOURADO, lineHeight: 1 }}>{k.northStar.total}</span>
+          <AnimatedNumber value={k.northStar.total} mode="odometer" style={{ fontSize: 40, fontWeight: 800, color: DOURADO, lineHeight: 1 }} />
           <span style={{ fontSize: 13, color: '#E0E0E0' }}>{k.northStar.b2c} B2C · {k.northStar.b2b} B2B</span>
           <span style={{ fontSize: 13, fontWeight: 600, color: nsDelta > 0 ? '#86EFAC' : nsDelta < 0 ? '#FCA5A5' : '#B8B8B8' }}>
             {nsDelta > 0 ? '+' : ''}{nsDelta} vs 30 dias atrás
@@ -127,24 +132,24 @@ export function KpisPlaybook() {
         </div>
       </div>
 
-      <div className="cards-gap grid-mobile-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))' }}>
-        <Kpi label="Pedidos pagos" valor={formatNumber(k.pedidosPagos)} sub={`últimos ${dias} dias`}
+      <Stagger key={dias} className="cards-gap grid-mobile-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))' }}>
+        <Kpi label="Pedidos pagos" valor={<AnimatedNumber value={k.pedidosPagos} />} sub={`últimos ${dias} dias`}
           formula="Pedidos pagos = nº de order_id ÚNICOS com status de pagamento 'pago' (order_id = pedido da loja ou id do pedido manual)." />
-        <Kpi label="Receita líquida" valor={fmtR$(k.receitaLiquida)} cor={DOURADO}
+        <Kpi label="Receita líquida" valor={R$n(k.receitaLiquida)} cor={DOURADO}
           sub={`itens ${formatCurrency(k.itensPagos)} − desc. ${formatCurrency(k.descontos)} − reemb. ${formatCurrency(k.reembolsos)}`}
           formula="Receita líquida = Σ itens pagos (valor unitário × quantidade) − Σ descontos − Σ reembolsos/estornos do período." />
-        <Kpi label="Ticket médio" valor={fmtR$(k.ticketMedio)}
+        <Kpi label="Ticket médio" valor={R$n(k.ticketMedio)}
           formula="Ticket médio = receita líquida ÷ pedidos pagos." />
-        <Kpi label="Contribuição B2C" valor={fmtR$(b2c.contribuicao)} cor={b2c.contribuicao >= 0 ? '#86EFAC' : '#FCA5A5'}
+        <Kpi label="Contribuição B2C" valor={R$n(b2c.contribuicao)} cor={b2c.contribuicao >= 0 ? '#86EFAC' : '#FCA5A5'}
           sub={`margem ${fmtPct(b2c.margem)} · mídia+creators+frete ${formatCurrency(b2c.custosVariaveis)}`}
           formula="Contribuição B2C = receita líquida B2C − CMV (custo unitário × unidades) − taxas de pagamento − mídia paga (Meta/Google) − creators/UGC − logística rateada por unidades." />
-        <Kpi label="Contribuição B2B" valor={fmtR$(b2b.contribuicao)} cor={b2b.contribuicao >= 0 ? '#86EFAC' : '#FCA5A5'}
+        <Kpi label="Contribuição B2B" valor={R$n(b2b.contribuicao)} cor={b2b.contribuicao >= 0 ? '#86EFAC' : '#FCA5A5'}
           sub={`margem ${fmtPct(b2b.margem)} · CMV ${formatCurrency(b2b.cmv)}`}
           formula="Contribuição B2B = receita líquida B2B − CMV (custo unitário × unidades) − taxas de pagamento − logística rateada por unidades." />
-        <Kpi label="CAC novos compradores" valor={fmtR$(k.cac)}
+        <Kpi label="CAC novos compradores" valor={R$n(k.cac)}
           sub={`${formatCurrency(k.investimentoAquisicao)} ÷ ${k.novosCompradores} novos`}
           formula="CAC = (mídia paga Meta/Google + creators/UGC do período) ÷ clientes cuja 1ª compra paga ocorreu no período." />
-        <Kpi label="Conversão do site (30d)" valor={fmtPct(k.conversaoSite)}
+        <Kpi label="Conversão do site (30d)" valor={Pctn(k.conversaoSite)}
           sub={`${k.pedidosSite30d} pedidos pagos do site`}
           formula="Conversão do site = pedidos pagos B2C do site nos últimos 30 dias ÷ sessões do site nos últimos 30 dias (informadas manualmente: GA4/Shopify).">
           <EditorSessoes valor={Number(configuracoes.sessoesSite30d ?? 0)} />
@@ -161,7 +166,7 @@ export function KpisPlaybook() {
         <Kpi label="Giro B2B (30d)" valor={k.giroB2B30d.porParceiro == null ? '—' : `${formatNumber(k.giroB2B30d.porParceiro, 1)} un/parceiro`}
           sub={`${k.giroB2B30d.unidades} un · ${k.giroB2B30d.parceiros} parceiros ativos`}
           formula="Giro B2B 30d = unidades B2B pagas nos últimos 30 dias ÷ parceiros B2B com pedido pago nos últimos 30 dias." />
-      </div>
+      </Stagger>
     </section>
   )
 }

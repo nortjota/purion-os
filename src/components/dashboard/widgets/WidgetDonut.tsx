@@ -3,6 +3,7 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { WidgetShell } from './WidgetShell'
 import { PALETA_GRAFICOS, TOOLTIP_STYLE } from './widgetHelpers'
+import { useChartAnim } from '@/components/motion/useChartAnim'
 
 export interface DonutFatia {
   name: string
@@ -25,6 +26,7 @@ interface Props {
 export function WidgetDonut({ title, icon, data, centerLabel, centerValor, height = 180, isLoading, href, formatarValor }: Props) {
   const total = data.reduce((s, d) => s + d.value, 0)
   const isEmpty = total <= 0
+  const anim = useChartAnim(2)
 
   return (
     <WidgetShell title={title} icon={icon} isLoading={isLoading} isEmpty={isEmpty} height={height} href={href}>
@@ -32,7 +34,8 @@ export function WidgetDonut({ title, icon, data, centerLabel, centerValor, heigh
         <div style={{ position: 'relative', width: height, height, flexShrink: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={data} dataKey="value" nameKey="name" innerRadius="62%" outerRadius="92%" paddingAngle={3} stroke="none">
+              <Pie data={data} dataKey="value" nameKey="name" innerRadius="62%" outerRadius="92%" paddingAngle={3} stroke="none"
+                startAngle={90} endAngle={-270} {...anim}>
                 {data.map((d, i) => <Cell key={d.name} fill={d.cor ?? PALETA_GRAFICOS[i % PALETA_GRAFICOS.length]} />)}
               </Pie>
               <Tooltip

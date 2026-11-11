@@ -17,7 +17,7 @@ interface Props {
 
 export function WidgetShell({ title, icon: Icon, isLoading, isEmpty, emptyMessage = 'Sem dados no período', href, action, children, height }: Props) {
   const conteudo = (
-    <div className="card-purion" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12, height: '100%' }}>
+    <div className={`card-purion ${href ? 'lift' : ''}`} style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12, height: '100%', cursor: href ? 'pointer' : undefined }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <span className="kpi-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {Icon && <Icon size={12} />} {title}
@@ -27,8 +27,8 @@ export function WidgetShell({ title, icon: Icon, isLoading, isEmpty, emptyMessag
 
       {isLoading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minHeight: height ?? 120 }}>
-          <div className="skeleton-pulse" style={{ height: 24, width: '60%', borderRadius: 6 }} />
-          <div className="skeleton-pulse" style={{ flex: 1, borderRadius: 8 }} />
+          <div className="skeleton" style={{ height: 24, width: '60%', borderRadius: 6 }} />
+          <div className="skeleton" style={{ flex: 1, borderRadius: 8 }} />
         </div>
       ) : isEmpty ? (
         <div style={{
@@ -40,17 +40,6 @@ export function WidgetShell({ title, icon: Icon, isLoading, isEmpty, emptyMessag
         </div>
       ) : children}
 
-      <style>{`
-        .skeleton-pulse {
-          background: linear-gradient(90deg, var(--bg-surface-2) 25%, rgba(255,255,255,0.04) 50%, var(--bg-surface-2) 75%);
-          background-size: 200% 100%;
-          animation: skeleton-shimmer 1.4s ease-in-out infinite;
-        }
-        @keyframes skeleton-shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
     </div>
   )
 

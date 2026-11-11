@@ -3,6 +3,7 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid, Legend } from 'recharts'
 import { WidgetShell } from './WidgetShell'
 import { PALETA_GRAFICOS, TOOLTIP_STYLE, CHART_GRID_STROKE, CHART_TICK_FILL } from './widgetHelpers'
+import { useChartAnim } from '@/components/motion/useChartAnim'
 
 export interface BarraItem {
   name: string
@@ -30,6 +31,7 @@ interface Props {
 
 export function WidgetBarras({ title, icon, data, series, height = 200, isLoading, href, formatarValor, horizontal }: Props) {
   const isEmpty = data.length === 0
+  const anim = useChartAnim(1)
 
   return (
     <WidgetShell title={title} icon={icon} isLoading={isLoading} isEmpty={isEmpty} height={height} href={href}>
@@ -55,10 +57,10 @@ export function WidgetBarras({ title, icon, data, series, height = 200, isLoadin
           {series ? (
             <>
               <Legend formatter={(v) => <span style={{ color: CHART_TICK_FILL, fontSize: 11 }}>{v}</span>} />
-              {series.map((s) => <Bar key={s.key} dataKey={s.key} name={s.label} fill={s.cor} radius={[3, 3, 0, 0]} />)}
+              {series.map((s, i) => <Bar key={s.key} dataKey={s.key} name={s.label} fill={s.cor} radius={[3, 3, 0, 0]} {...anim} animationBegin={anim.animationBegin + i * 90} />)}
             </>
           ) : (
-            <Bar dataKey="value" radius={[3, 3, 0, 0]}>
+            <Bar dataKey="value" radius={[3, 3, 0, 0]} {...anim}>
               {data.map((d, i) => <Cell key={String(d.name)} fill={(d.cor as string) ?? PALETA_GRAFICOS[i % PALETA_GRAFICOS.length]} />)}
             </Bar>
           )}

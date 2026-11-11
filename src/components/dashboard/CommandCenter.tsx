@@ -40,7 +40,7 @@ import { Proximos7Dias } from '@/components/calendario/Proximos7Dias'
 import { WidgetCustomizer } from '@/components/dashboard/WidgetCustomizer'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
-import { WidgetContador, WidgetDonut, WidgetBarras, WidgetLinha, WidgetLista, WidgetFunil, type ItemLista } from '@/components/dashboard/widgets'
+import { WidgetDonut, WidgetBarras, WidgetLinha, WidgetLista, WidgetFunil, type ItemLista } from '@/components/dashboard/widgets'
 import { PainelMetasG4 } from '@/components/dashboard/PainelMetasG4'
 import { PERIODO_OPCOES, type Periodo, inicioPeriodo } from '@/components/dashboard/widgets/widgetHelpers'
 import { estagioNormalizado, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS } from '@/components/crm/crmHelpers'
@@ -48,6 +48,7 @@ import { STATUS_OBJETIVO_COR, STATUS_OBJETIVO_LABEL } from '@/components/estrate
 import { PERFIS_INFO, SOCIOS_ATIVOS, SOCIOS_ATIVOS_IDS, corPerfil, type SocioAtivo } from '@/lib/socios'
 import { KpisPlaybook } from './KpisPlaybook'
 import { frascosDaVenda } from '@/lib/escadaProdutos'
+import { CountCard, Stagger, StaggerItem, ProgressRing, AnimatedNumber, STATUS } from '@/components/motion'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -84,21 +85,17 @@ function MetaFaturamento({ receitas }: { receitas: { valor: number }[] }) {
 
   return (
     <div className="card-purion card-section">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-5 gap-4">
         <div className="flex items-center gap-2">
           <Target size={15} className="text-[#C9A84C]" />
           <span className="section-title text-[15px]">Meta de Faturamento — 90 dias</span>
         </div>
-        <span className="kpi-value text-[22px]">{percentual.toFixed(1)}%</span>
-      </div>
-
-      <div className="progress-bar mb-4">
-        <div className="progress-fill" style={{ width: `${percentual}%` }} />
+        <ProgressRing value={percentual} size={64} stroke={6} labelSize={14} />
       </div>
 
       <div className="flex items-center justify-between caption">
         <span>
-          <span className="text-[#C9A84C] font-[500]">{formatarMoeda(totalReceita)}</span>
+          <AnimatedNumber value={totalReceita} prefix="R$ " decimals={2} className="text-[#C9A84C] font-[500]" />
           {' '}de{' '}
           <span className="text-[var(--text-primary)]">{formatarMoeda(META_90_DIAS)}</span>
         </span>
@@ -466,18 +463,14 @@ function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
 
   return (
     <Link href="/metas" className="block no-underline">
-      <section className="card-purion p-4 hover:border-[rgba(201,168,76,0.35)] transition-colors cursor-pointer">
+      <section className="card-purion lift p-4 cursor-pointer">
         <div className="flex items-center justify-between mb-3">
           <p className="kpi-label flex items-center gap-1.5">
             <Target size={11} /> Metas de hoje
           </p>
           {pctGeral !== null && (
-            <span
-              className="text-[13px] font-black"
-              style={{ fontFamily: 'Montserrat, sans-serif', color: pctGeral === 100 ? '#4CAF7A' : '#C9A84C' }}
-            >
-              {pctGeral}%
-            </span>
+            <ProgressRing value={pctGeral} size={44} stroke={4} labelSize={11}
+              color={pctGeral === 100 ? STATUS.ok : undefined} glow={pctGeral >= 80} />
           )}
         </div>
         {total === 0 ? (
@@ -496,7 +489,10 @@ function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
                     <span className="text-[11px] font-semibold" style={{ color: p === 100 ? '#4CAF7A' : cor }}>{p}%</span>
                   </div>
                   <div className="w-full h-1 bg-[var(--border)] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${p}%`, background: p === 100 ? '#4CAF7A' : cor }} />
+                    <div className="h-full rounded-full" style={{
+                      width: '100%', transform: `scaleX(${p / 100})`, transformOrigin: 'left center',
+                      background: p === 100 ? '#4CAF7A' : cor, transition: 'transform var(--dur-slow) var(--ease-expo)',
+                    }} />
                   </div>
                 </div>
               )
@@ -631,40 +627,62 @@ export function CommandCenter() {
 
   const [dragContadorId, setDragContadorId] = useState<string | null>(null)
 
+  // Sparklines (só leitura dos dados já carregados — tendência diária do período)
+  const sparkFaturamento = useMemo(() => vendasDiarias.map((d) => d.valor), [vendasDiarias])
+  const sparkFrascos = useMemo(() => {
+    const porDia = new Map<string, number>()
+    vendas.forEach((v) => {
+      if (v.statusPagamento !== 'pago') return
+      const dia = v.dataVenda.slice(0, 10)
+      if (dia < dataInicioPeriodo || dia > dataFimPeriodo) return
+      porDia.set(dia, (porDia.get(dia) ?? 0) + frascosDaVenda(v))
+    })
+    // mesmos dias do gráfico de vendas por dia
+    const fim = new Date(`${dataFimPeriodo}T00:00:00`)
+    return vendasDiarias.map((_, i) => {
+      const d = new Date(fim)
+      d.setDate(d.getDate() - (vendasDiarias.length - 1 - i))
+      return porDia.get(d.toISOString().slice(0, 10)) ?? 0
+    })
+  }, [vendas, vendasDiarias, dataInicioPeriodo, dataFimPeriodo])
+
   const contadoresMap = useMemo(() => ({
     faturamento: (
-      <WidgetContador
-        label={`Faturamento — ${periodoLabel}`} icon={DollarSign} destaque
-        valor={formatarMoeda(kpisPeriodo.faturamento)}
-        variacao={variacaoFaturamento}
-        variacaoLabel="vs período anterior"
-        subvalor={`${resumoFrascosPeriodo.pedidos} pedidos pagos`}
+      <CountCard
+        label={`Faturamento — ${periodoLabel}`} icon={<DollarSign size={12} aria-hidden />} live
+        value={kpisPeriodo.faturamento} prefix="R$ " decimals={2}
+        delta={variacaoFaturamento} deltaLabel="vs período anterior"
+        sub={`${resumoFrascosPeriodo.pedidos} pedidos pagos`}
+        sparkline={sparkFaturamento}
+        color="#C9A84C"
       />
     ),
     frascos: (
-      <WidgetContador
-        label="Frascos vendidos" icon={Package}
-        valor={String(resumoFrascosPeriodo.frascos)}
-        subvalor={`${resumoFrascosPeriodo.pedidos} pedido${resumoFrascosPeriodo.pedidos !== 1 ? 's' : ''} — ${periodoLabel}`}
+      <CountCard
+        label="Frascos vendidos" icon={<Package size={12} aria-hidden />}
+        value={resumoFrascosPeriodo.frascos}
+        sub={`${resumoFrascosPeriodo.pedidos} pedido${resumoFrascosPeriodo.pedidos !== 1 ? 's' : ''} — ${periodoLabel}`}
+        sparkline={sparkFrascos}
       />
     ),
     estoque: (
-      <WidgetContador
-        label="Estoque de prontos" icon={Package} alerta={alertaEstoque}
-        valor={estoqueProduto ? String(estoqueProduto.quantidadeAtual) : '—'}
-        subvalor={estoqueProduto ? (alertaEstoque ? `Abaixo do mínimo (${estoqueProduto.quantidadeMinima})` : `Mínimo: ${estoqueProduto.quantidadeMinima} · OK`) : 'Sem dados'}
+      <CountCard
+        label="Estoque de prontos" icon={<Package size={12} aria-hidden />}
+        value={estoqueProduto ? estoqueProduto.quantidadeAtual : 0}
+        color={alertaEstoque ? STATUS.danger : undefined}
+        sub={estoqueProduto ? (alertaEstoque ? `Abaixo do mínimo (${estoqueProduto.quantidadeMinima})` : `Mínimo: ${estoqueProduto.quantidadeMinima} · OK`) : 'Sem dados'}
         href="/producao"
       />
     ),
     'leads-b2b': (
-      <WidgetContador
-        label="Leads B2B ativos" icon={Users}
-        valor={String(leadsB2BAtivos)}
-        subvalor="no pipeline comercial"
+      <CountCard
+        label="Leads B2B ativos" icon={<Users size={12} aria-hidden />}
+        value={leadsB2BAtivos}
+        sub="no pipeline comercial"
         href="/crm"
       />
     ),
-  }), [periodoLabel, kpisPeriodo.faturamento, variacaoFaturamento, resumoFrascosPeriodo, alertaEstoque, estoqueProduto, leadsB2BAtivos])
+  }), [periodoLabel, kpisPeriodo.faturamento, variacaoFaturamento, resumoFrascosPeriodo, alertaEstoque, estoqueProduto, leadsB2BAtivos, sparkFaturamento, sparkFrascos])
 
   const contadoresOrdenados = useMemo(() => {
     const ids = dashboardContadoresOrdem.filter((id) => id in contadoresMap)
@@ -822,42 +840,57 @@ export function CommandCenter() {
       {showWidget('kpis') && (
         <section className="flex flex-col gap-4">
           {/* Linha 1 — contadores grandes (arraste para reordenar) */}
-          <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+          <Stagger className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
             {contadoresOrdenados.map(({ id, node }) => (
-              <div
-                key={id}
-                draggable
-                onDragStart={() => setDragContadorId(id)}
-                onDragEnd={() => setDragContadorId(null)}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => handleDropContador(id)}
-                style={{ opacity: dragContadorId === id ? 0.4 : 1, cursor: 'grab' }}
-                title="Arraste para reordenar"
-              >
-                {node}
-              </div>
+              <StaggerItem key={id} style={{ height: '100%' }}>
+                <div
+                  draggable
+                  onDragStart={() => setDragContadorId(id)}
+                  onDragEnd={() => setDragContadorId(null)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDropContador(id)}
+                  style={{ opacity: dragContadorId === id ? 0.4 : 1, cursor: 'grab', height: '100%' }}
+                  title="Arraste para reordenar"
+                >
+                  {node}
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
 
           {/* Linha 2 — gráficos */}
-          <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-            <div style={{ gridColumn: isMobile ? undefined : 'span 2' }}>
+          <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }} delay={0.12}>
+            <StaggerItem style={{ gridColumn: isMobile ? undefined : 'span 2' }}>
               <WidgetLinha title={`Vendas por dia — ${periodoLabel}`} icon={Activity} data={vendasDiarias} formatarValor={(v) => formatarMoeda(v)} />
-            </div>
-            <WidgetDonut title="Vendas por canal" icon={ShoppingCart} data={vendasPorCanal} formatarValor={(v) => formatarMoeda(v)} href="/vendas" />
-            <WidgetFunil title="Funil B2B" icon={TrendingUp} etapas={funilB2BEtapas} href="/crm" />
-          </div>
-          <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-            <WidgetDonut title="Metas por status" icon={Target} data={metasPorStatus} href="/estrategias" />
+            </StaggerItem>
+            <StaggerItem>
+              <WidgetDonut title="Vendas por canal" icon={ShoppingCart} data={vendasPorCanal} formatarValor={(v) => formatarMoeda(v)} href="/vendas" />
+            </StaggerItem>
+            <StaggerItem>
+              <WidgetFunil title="Funil B2B" icon={TrendingUp} etapas={funilB2BEtapas} href="/crm" />
+            </StaggerItem>
+          </Stagger>
+          <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }} delay={0.24}>
+            <StaggerItem>
+              <WidgetDonut title="Metas por status" icon={Target} data={metasPorStatus} href="/estrategias" />
+            </StaggerItem>
 
             {/* Linha 3 — listas rápidas */}
-            <WidgetLista title="North Star & Estratégia" icon={Compass} items={northStarItems} href="/estrategias" emptyMessage="Nenhuma fase cadastrada" />
-            <WidgetLista title="Tarefas atrasadas / próximas" icon={ListChecks} items={tarefasListaItems} href="/tarefas" emptyMessage="Nenhuma tarefa com prazo" />
-            <WidgetLista title="Reposições B2B (D+21)" icon={RotateCcw} items={reposicoesItems} href="/crm" emptyMessage="Nenhuma reposição esta semana" />
-          </div>
-          <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-            <WidgetLista title="Próximo experimento (maior ICE)" icon={FlaskConical} items={proximoICEItems} href="/growth" emptyMessage="Backlog de growth vazio" />
-          </div>
+            <StaggerItem>
+              <WidgetLista title="North Star & Estratégia" icon={Compass} items={northStarItems} href="/estrategias" emptyMessage="Nenhuma fase cadastrada" />
+            </StaggerItem>
+            <StaggerItem>
+              <WidgetLista title="Tarefas atrasadas / próximas" icon={ListChecks} items={tarefasListaItems} href="/tarefas" emptyMessage="Nenhuma tarefa com prazo" />
+            </StaggerItem>
+            <StaggerItem>
+              <WidgetLista title="Reposições B2B (D+21)" icon={RotateCcw} items={reposicoesItems} href="/crm" emptyMessage="Nenhuma reposição esta semana" />
+            </StaggerItem>
+          </Stagger>
+          <Stagger className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }} delay={0.36}>
+            <StaggerItem>
+              <WidgetLista title="Próximo experimento (maior ICE)" icon={FlaskConical} items={proximoICEItems} href="/growth" emptyMessage="Backlog de growth vazio" />
+            </StaggerItem>
+          </Stagger>
         </section>
       )}
 
@@ -868,9 +901,9 @@ export function CommandCenter() {
             {periodoLabel}
           </span>
           <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
-            <strong>{resumoFrascosPeriodo.pedidos}</strong> pedidos pagos
+            <strong><AnimatedNumber value={resumoFrascosPeriodo.pedidos} /></strong> pedidos pagos
             <span style={{ color: 'var(--text-secondary)' }}> = </span>
-            <strong style={{ color: '#5B8FE8' }}>{resumoFrascosPeriodo.frascos}</strong> frascos vendidos
+            <strong style={{ color: '#5B8FE8' }}><AnimatedNumber value={resumoFrascosPeriodo.frascos} /></strong> frascos vendidos
           </span>
           <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
             <strong style={{ color: '#22C55E' }}>{resumoFrascosPeriodo.despachados}</strong>

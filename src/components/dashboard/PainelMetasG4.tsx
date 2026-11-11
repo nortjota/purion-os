@@ -6,6 +6,7 @@ import { Target, AlertTriangle } from 'lucide-react'
 import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
 import { useMedicoesMensais, percentualMedicao, percentualPonderado, corPercentual } from '@/hooks/useMetaG4'
 import { SOCIOS } from '@/components/tarefas/tarefasHelpers'
+import { ProgressRing, Stagger, StaggerItem } from '@/components/motion'
 
 /** Card estilo G4: percentual geral ponderado, distribuição verde/amarelo/vermelho, e o % de cada sócio. */
 export function PainelMetasG4() {
@@ -52,14 +53,17 @@ export function PainelMetasG4() {
 
   return (
     <Link href="/estrategias" className="block no-underline">
-      <section className="card-purion p-4 hover:border-[rgba(201,168,76,0.35)] transition-colors cursor-pointer">
+      <section className="card-purion lift p-4 cursor-pointer">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <span className="flex items-center gap-2" style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
             <Target size={14} style={{ color: '#C9A84C' }} /> Painel de Metas do Ano — método G4
           </span>
-          <span style={{ fontSize: 22, fontWeight: 800, color: corPercentual(percentualGeral) }}>
-            {percentualGeral != null ? `${percentualGeral}%` : '—'}
-          </span>
+          {percentualGeral != null ? (
+            <ProgressRing value={percentualGeral} size={56} stroke={5} labelSize={13}
+              color={corPercentual(percentualGeral)} glow={percentualGeral >= 90} />
+          ) : (
+            <span style={{ fontSize: 22, fontWeight: 800, color: corPercentual(percentualGeral) }}>—</span>
+          )}
         </div>
 
         {/* Distribuição verde/amarelo/vermelho */}
@@ -71,9 +75,10 @@ export function PainelMetasG4() {
         </div>
 
         {/* Por sócio */}
-        <div className="cards-gap grid-mobile-1" style={{ display: 'grid', gridTemplateColumns: `repeat(${porSocio.length || 1}, 1fr)`, gap: 10, marginBottom: metasVermelhas.length > 0 ? 12 : 0 }}>
+        <Stagger className="cards-gap grid-mobile-1" style={{ display: 'grid', gridTemplateColumns: `repeat(${porSocio.length || 1}, 1fr)`, gap: 10, marginBottom: metasVermelhas.length > 0 ? 12 : 0 }}>
           {porSocio.map(({ socio, pct, qtd }) => (
-            <div key={socio.id} style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--bg-surface-2)' }}>
+            <StaggerItem key={socio.id} style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--bg-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+              <div style={{ minWidth: 0 }}>
               <div className="flex items-center gap-2 mb-1">
                 <span style={{
                   width: 18, height: 18, borderRadius: 999, background: `${socio.cor}25`, color: socio.cor,
@@ -83,10 +88,13 @@ export function PainelMetasG4() {
                 </span>
                 <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{socio.nome} · {qtd} meta{qtd !== 1 ? 's' : ''}</span>
               </div>
-              <span style={{ fontSize: 16, fontWeight: 800, color: corPercentual(pct) }}>{pct != null ? `${pct}%` : '—'}</span>
-            </div>
+              </div>
+              {pct != null
+                ? <ProgressRing value={pct} size={44} stroke={4} labelSize={11} color={corPercentual(pct)} glow={pct >= 90} />
+                : <span style={{ fontSize: 16, fontWeight: 800, color: corPercentual(pct) }}>—</span>}
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
 
         {/* Alerta metas vermelhas */}
         {metasVermelhas.length > 0 && (

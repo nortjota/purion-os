@@ -1,6 +1,8 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { WidgetShell } from './WidgetShell'
+import { soft } from '@/components/motion/presets'
 
 export interface EtapaFunil {
   label: string
@@ -24,7 +26,7 @@ export function WidgetFunil({ title, icon, etapas, isLoading, href }: Props) {
   return (
     <WidgetShell title={title} icon={icon} isLoading={isLoading} isEmpty={isEmpty} height={200} href={href}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {etapas.map((etapa) => {
+        {etapas.map((etapa, idx) => {
           const largura = Math.max(8, (etapa.valor / maior) * 100)
           const pctMeta = etapa.meta && etapa.meta > 0 ? Math.min(100, Math.round((etapa.valor / etapa.meta) * 100)) : null
           return (
@@ -36,10 +38,14 @@ export function WidgetFunil({ title, icon, etapas, isLoading, href }: Props) {
                 </span>
               </div>
               <div style={{ height: 8, borderRadius: 999, background: 'var(--bg-surface-2)', overflow: 'hidden' }}>
-                <div
+                {/* cresce da esquerda (scaleX = só transform) */}
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: largura / 100 }}
+                  transition={{ ...soft, delay: 0.08 * idx }}
                   style={{
-                    height: '100%', width: `${largura}%`, background: etapa.cor, borderRadius: 999,
-                    transition: 'width 0.4s ease',
+                    height: '100%', width: '100%', background: etapa.cor, borderRadius: 999,
+                    transformOrigin: 'left center', willChange: 'transform',
                     opacity: pctMeta !== null && pctMeta < 100 ? 0.85 : 1,
                   }}
                 />
