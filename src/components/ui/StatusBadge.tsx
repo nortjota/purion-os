@@ -43,7 +43,6 @@ export function StatusBadge({ status, label, className }: StatusBadgeProps) {
   return (
     <span
       className={cn('badge', VARIANT_MAP[status], className)}
-      style={{ borderRadius: 4 }}
     >
       {label ?? LABEL_MAP[status]}
     </span>

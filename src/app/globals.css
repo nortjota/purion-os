@@ -12,9 +12,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-title);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -52,18 +52,22 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --color-purion-black: #0D0D0D;
-  --color-purion-gold: #C9A84C;
-  --color-purion-gold-muted: rgba(201, 168, 76, 0.1);
-  --color-purion-gold-border: rgba(201, 168, 76, 0.25);
-  --color-purion-white: #FAFAF8;
-  --color-purion-surface: #1A1A1A;
-  --color-purion-surface-2: #141414;
-  --color-purion-border: #2A2A2A;
-  --color-purion-muted: #B8B8B8;
-  --color-purion-success: #22C55E;
-  --color-purion-warning: #C9A84C;
-  --color-purion-danger: #EF4444;
+  /* Marca PURION GT — apontam para os tokens semânticos (sem dourado na UI) */
+  --color-brand-accent: var(--brand-accent);
+  --color-status-ok: var(--status-ok);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --color-status-info: var(--status-info);
+  --color-status-neutral: var(--status-neutral);
+  --color-purion-black: #0B0B0B;
+  --color-purion-white: #F5F5F0;
+  --color-purion-surface: #1B1D1C;
+  --color-purion-surface-2: #242726;
+  --color-purion-border: #2A2C2B;
+  --color-purion-muted: #A7A9A6;
+  --color-purion-success: var(--status-ok);
+  --color-purion-warning: var(--status-warning);
+  --color-purion-danger: var(--status-danger);
 }
 
 /* ── Sidebar width CSS variable (updated by JS on collapse/expand) ── */
@@ -89,95 +93,117 @@
   .purion-main-area { margin-left: 0 !important; }
 }
 
-/* ── PURION — Modo Claro ── */
+/* ── PURION GT — Marca (Brand Book v1.0) ──
+   Fonte única do acento: --brand-accent. O dourado é só de embalagem, nunca de UI.
+   Regra: 1 acento por tela (ação principal / estado ativo). Status tem tokens próprios. */
 :root {
-  --background: #FAFAF8;
-  --foreground: #0D0D0D;
-  --card: #F0EFED;
-  --card-foreground: #0D0D0D;
-  --popover: #E8E7E4;
-  --popover-foreground: #0D0D0D;
-  --primary: #C9A84C;
-  --primary-foreground: #0D0D0D;
-  --secondary: #F0EFED;
-  --secondary-foreground: #0D0D0D;
-  --muted: #E8E7E4;
-  --muted-foreground: #555550;
-  --accent: rgba(201, 168, 76, 0.12);
-  --accent-foreground: #9B7A28;
-  --destructive: #C23B1E;
-  --border: #D4D3CF;
-  --input: #F0EFED;
-  --ring: rgba(201, 168, 76, 0.4);
-  --chart-1: #C9A84C;
-  --chart-2: #3A9B5F;
-  --chart-3: #C88A20;
-  --chart-4: #3B70C4;
-  --chart-5: #C23B1E;
-  --radius: 0.5rem;
-  --sidebar: #F5F4F0;
-  --sidebar-foreground: #0D0D0D;
-  --sidebar-primary: #C9A84C;
-  --sidebar-primary-foreground: #0D0D0D;
-  --sidebar-accent: rgba(201, 168, 76, 0.1);
-  --sidebar-accent-foreground: #9B7A28;
-  --sidebar-border: #D4D3CF;
-  --sidebar-ring: rgba(201, 168, 76, 0.4);
+  --brand-accent: #D4FC3C;          /* verde-limão */
+  --on-accent: #0B0B0B;             /* texto SOBRE o acento = preto */
+  --accent-motion: var(--brand-accent);
+  --on-accent-motion: var(--on-accent);
 
-  /* ✦ PURION semânticas */
-  --bg-primary:     #FAFAF8;
-  --bg-surface:     #F0EFED;
-  --bg-surface-2:   #E8E7E4;
-  --text-primary:   #0D0D0D;
-  --text-secondary: #595955;
-  --border-purion:  #D4D3CF;
-  --sidebar-bg:     #F5F4F0;
-  --gold:           #C9A84C;
+  /* Status (nunca usar o acento como "ok" genérico) */
+  --status-ok: #8FD14F;
+  --status-warning: #E6C374;
+  --status-danger: #E5544B;
+  --status-info: #9CC3DB;
+  --status-neutral: #A7A9A6;
+
+  /* Tipografia: Archivo (títulos, substituta oficial da Grift) · Geist (texto) · Geist Mono (rótulos/números) */
+  --font-title: var(--font-archivo), 'Archivo', system-ui, sans-serif;
+  --font-body: var(--font-geist-sans), 'Geist', system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace;
 }
 
-/* ── PURION — Modo Escuro ── */
-.dark {
-  --background: #0D0D0D;
-  --foreground: #FAFAF8;
-  --card: #1A1A1A;
-  --card-foreground: #FAFAF8;
-  --popover: #141414;
-  --popover-foreground: #FAFAF8;
-  --primary: #C9A84C;
-  --primary-foreground: #0D0D0D;
-  --secondary: #1A1A1A;
-  --secondary-foreground: #FAFAF8;
-  --muted: #141414;
-  --muted-foreground: #B8B8B8;
-  --accent: rgba(201, 168, 76, 0.1);
-  --accent-foreground: #C9A84C;
-  --destructive: #EF4444;
-  --border: #252525;
-  --input: #1A1A1A;
-  --ring: rgba(201, 168, 76, 0.4);
-  --chart-1: #C9A84C;
-  --chart-2: #22C55E;
-  --chart-3: #E8A838;
-  --chart-4: #5B8FE8;
-  --chart-5: #EF4444;
-  --sidebar: #0F0F0F;
-  --sidebar-foreground: #FAFAF8;
-  --sidebar-primary: #C9A84C;
-  --sidebar-primary-foreground: #0D0D0D;
-  --sidebar-accent: rgba(201, 168, 76, 0.1);
-  --sidebar-accent-foreground: #C9A84C;
-  --sidebar-border: #252525;
-  --sidebar-ring: rgba(201, 168, 76, 0.4);
+/* ── PURION — Modo Claro (o app roda em dark; claro segue o manual) ── */
+:root {
+  --background: #F5F5F0;
+  --foreground: #0B0B0B;
+  --card: #FFFFFF;
+  --card-foreground: #0B0B0B;
+  --popover: #FFFFFF;
+  --popover-foreground: #0B0B0B;
+  --primary: #0B0B0B;
+  --primary-foreground: #F5F5F0;
+  --secondary: #ECECE6;
+  --secondary-foreground: #0B0B0B;
+  --muted: #ECECE6;
+  --muted-foreground: #5B5D5A;
+  --accent: #D4FC3C;
+  --accent-foreground: #0B0B0B;
+  --destructive: #C8372D;
+  --destructive-foreground: #F5F5F0;
+  --border: #E2E2DD;               /* ≈ preto 8% sobre off-white */
+  --input: #FFFFFF;
+  --ring: #5E9BBF;                 /* azul-gelo escurecido p/ contraste no claro */
+  --chart-1: #0B0B0B;
+  --chart-2: #4F8F1F;
+  --chart-3: #A8801F;
+  --chart-4: #3F7FA6;
+  --chart-5: #C8372D;
+  --radius: 0.75rem;
+  --sidebar: #F5F5F0;
+  --sidebar-foreground: #0B0B0B;
+  --sidebar-primary: #D4FC3C;
+  --sidebar-primary-foreground: #0B0B0B;
+  --sidebar-accent: #D4FC3C;
+  --sidebar-accent-foreground: #0B0B0B;
+  --sidebar-border: #E2E2DD;
+  --sidebar-ring: #5E9BBF;
 
   /* ✦ PURION semânticas */
-  --bg-primary:     #0D0D0D;
-  --bg-surface:     #161616;
-  --bg-surface-2:   #121212;
-  --text-primary:   #F5F5F5;
-  --text-secondary: #B8B8B8;
-  --border-purion:  #252525;
-  --sidebar-bg:     #0F0F0F;
-  --gold:           #C9A84C;
+  --bg-primary:     #F5F5F0;
+  --bg-surface:     #FFFFFF;
+  --bg-surface-2:   #ECECE6;
+  --text-primary:   #0B0B0B;
+  --text-secondary: #5B5D5A;
+  --border-purion:  #E2E2DD;
+  --sidebar-bg:     #F5F5F0;
+}
+
+/* ── PURION — Modo Escuro (padrão) ── */
+.dark {
+  --background: #0B0B0B;            /* preto profundo */
+  --foreground: #F5F5F0;            /* off-white */
+  --card: #1B1D1C;                  /* grafite */
+  --card-foreground: #F5F5F0;
+  --popover: #1B1D1C;
+  --popover-foreground: #F5F5F0;
+  --primary: #F5F5F0;               /* botão primário neutro (claro, texto preto) */
+  --primary-foreground: #0B0B0B;
+  --secondary: #1B1D1C;
+  --secondary-foreground: #F5F5F0;
+  --muted: #1B1D1C;
+  --muted-foreground: #A7A9A6;      /* cinza metálico */
+  --accent: #D4FC3C;                /* = --brand-accent (destaque: 1 por tela) */
+  --accent-foreground: #0B0B0B;
+  --destructive: #E5544B;
+  --destructive-foreground: #F5F5F0;
+  --border: #2A2C2B;                /* ≈ off-white 10% sobre preto */
+  --input: #242726;
+  --ring: #9CC3DB;                  /* anel de foco azul-gelo */
+  --chart-1: #D4FC3C;
+  --chart-2: #8FD14F;
+  --chart-3: #E6C374;
+  --chart-4: #9CC3DB;
+  --chart-5: #E5544B;
+  --sidebar: #0B0B0B;
+  --sidebar-foreground: #F5F5F0;
+  --sidebar-primary: #D4FC3C;
+  --sidebar-primary-foreground: #0B0B0B;
+  --sidebar-accent: rgba(212, 252, 60, 0.1);
+  --sidebar-accent-foreground: #D4FC3C;
+  --sidebar-border: #2A2C2B;
+  --sidebar-ring: #9CC3DB;
+
+  /* ✦ PURION semânticas */
+  --bg-primary:     #0B0B0B;
+  --bg-surface:     #1B1D1C;
+  --bg-surface-2:   #242726;
+  --text-primary:   #F5F5F0;
+  --text-secondary: #A7A9A6;
+  --border-purion:  #2A2C2B;
+  --sidebar-bg:     #0B0B0B;
 }
 
 /* ── BASE ── */
@@ -187,13 +213,32 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Montserrat', 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 14px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
   html {
     @apply font-sans;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-title);
+    letter-spacing: -0.02em;
+  }
+  /* Títulos grandes em caixa baixa (manual) */
+  h1 { text-transform: lowercase; letter-spacing: -0.03em; }
+  code, kbd, pre { font-family: var(--font-mono); }
+
+  /* Foco acessível, sempre visível: anel azul-gelo */
+  :where(button, a, input, select, textarea, [tabindex], [role="button"]):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+
+  /* Transição de tema. Fica na camada base para NÃO limitar componentes/utilitários:
+     qualquer classe (.btn, .lift, transition-transform…) pode animar transform e opacity. */
+  *, *::before, *::after {
+    transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
   }
 }
 
@@ -202,23 +247,27 @@
 
   /* TYPOGRAPHY */
   .page-title {
-    font-size: 24px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-family: var(--font-title);
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: -0.03em;
     color: var(--text-primary);
     line-height: 1.2;
   }
   .section-title {
+    font-family: var(--font-title);
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--text-primary);
     line-height: 1.3;
   }
   .kpi-label {
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-secondary);
   }
@@ -226,7 +275,9 @@
     font-size: 28px;
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: var(--gold);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
     line-height: 1;
   }
   .caption {
@@ -235,62 +286,76 @@
     color: var(--text-secondary);
   }
 
-  /* BUTTONS */
+  /* BUTTONS — sempre pílula, alvo mínimo 44px.
+     3 tipos: primário (off-white) · destaque (verde, 1 por tela) · secundário (contorno) */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    height: 40px;
-    padding: 0 20px;
-    border-radius: 8px;
+    min-height: 44px;
+    padding: 0 22px;
+    border-radius: 999px;
     font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
     cursor: pointer;
-    border: none;
-    transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+    border: 1px solid transparent;
+    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+    transition-duration: var(--dur-fast);
+    transition-timing-function: var(--ease-press);
     outline: none;
   }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
   .btn-primary {
-    background-color: #C9A84C;
-    color: #0D0D0D;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
   }
   .btn-primary:hover {
-    background-color: #B8943E;
+    background-color: color-mix(in srgb, var(--primary) 88%, var(--background));
+    transform: translateY(-1px);
+  }
+  .btn-accent {
+    background-color: var(--brand-accent);
+    color: var(--on-accent);
+  }
+  .btn-accent:hover {
+    background-color: color-mix(in srgb, var(--brand-accent) 88%, #FFFFFF);
     transform: translateY(-1px);
   }
   .btn-sm {
-    height: 32px;
-    padding: 0 14px;
+    min-height: 36px;
+    padding: 0 16px;
     font-size: 12px;
-    border-radius: 6px;
+  }
+  @media (pointer: coarse) {
+    .btn-sm { min-height: 44px; }
   }
   .btn-secondary {
     background-color: transparent;
     color: var(--text-primary);
-    border: 1px solid var(--border);
+    border-color: color-mix(in srgb, var(--foreground) 18%, transparent);
   }
   .btn-secondary:hover {
     background-color: var(--bg-surface);
+    border-color: color-mix(in srgb, var(--foreground) 32%, transparent);
   }
   .btn-ghost {
     background-color: transparent;
     color: var(--text-secondary);
-    border: none;
-    padding: 0 12px;
+    padding: 0 14px;
   }
   .btn-ghost:hover {
     background-color: var(--bg-surface);
     color: var(--text-primary);
   }
   .btn-danger {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    background-color: color-mix(in srgb, var(--status-danger) 12%, transparent);
+    color: var(--status-danger);
+    border-color: color-mix(in srgb, var(--status-danger) 28%, transparent);
   }
   .btn-danger:hover {
-    background-color: rgba(239, 68, 68, 0.18);
+    background-color: color-mix(in srgb, var(--status-danger) 20%, transparent);
   }
   .btn:disabled,
   .btn[disabled] {
@@ -298,17 +363,17 @@
     cursor: not-allowed;
     pointer-events: none;
   }
-  .btn-primary:focus-visible {
+  .btn:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.35);
+    box-shadow: 0 0 0 4px var(--ring);
   }
 
   /* INPUTS */
   .input-purion {
-    height: 40px;
+    height: 44px;
     padding: 0 12px;
-    border-radius: 8px;
-    background-color: var(--bg-surface);
+    border-radius: 12px;
+    background-color: var(--input);
     color: var(--text-primary);
     font-size: 14px;
     font-family: inherit;
@@ -318,18 +383,18 @@
     transition: border-color 150ms ease, box-shadow 150ms ease;
   }
   .input-purion:focus {
-    border-color: #C9A84C;
-    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+    border-color: var(--ring);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ring) 35%, transparent);
   }
   .input-purion::placeholder {
     color: var(--text-secondary);
     opacity: 0.7;
   }
   .select-purion {
-    height: 40px;
+    height: 44px;
     padding: 0 12px;
-    border-radius: 8px;
-    background-color: var(--bg-surface);
+    border-radius: 12px;
+    background-color: var(--input);
     color: var(--text-primary);
     font-size: 14px;
     font-family: inherit;
@@ -340,13 +405,13 @@
     transition: border-color 150ms ease, box-shadow 150ms ease;
   }
   .select-purion:focus {
-    border-color: #C9A84C;
-    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+    border-color: var(--ring);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ring) 35%, transparent);
   }
   .textarea-purion {
     padding: 10px 12px;
-    border-radius: 8px;
-    background-color: var(--bg-surface);
+    border-radius: 12px;
+    background-color: var(--input);
     color: var(--text-primary);
     font-size: 14px;
     font-family: inherit;
@@ -358,13 +423,16 @@
     line-height: 1.5;
   }
   .textarea-purion:focus {
-    border-color: #C9A84C;
-    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+    border-color: var(--ring);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ring) 35%, transparent);
   }
   .label-purion {
     display: block;
-    font-size: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
     font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--text-secondary);
     margin-bottom: 6px;
   }
@@ -374,51 +442,51 @@
     gap: 20px;
   }
 
-  /* BADGES */
+  /* BADGES — status usa tokens --status-*; o acento só em .badge-accent */
   .badge {
     display: inline-flex;
     align-items: center;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
     font-size: 11px;
     font-weight: 500;
     white-space: nowrap;
     border: 1px solid transparent;
   }
   .badge-success {
-    background-color: rgba(34, 197, 94, 0.1);
-    color: #22C55E;
-    border-color: rgba(34, 197, 94, 0.2);
+    background-color: color-mix(in srgb, var(--status-ok) 12%, transparent);
+    color: var(--status-ok);
+    border-color: color-mix(in srgb, var(--status-ok) 24%, transparent);
   }
   .badge-warning {
-    background-color: rgba(201, 168, 76, 0.1);
-    color: #C9A84C;
-    border-color: rgba(201, 168, 76, 0.2);
+    background-color: color-mix(in srgb, var(--status-warning) 12%, transparent);
+    color: var(--status-warning);
+    border-color: color-mix(in srgb, var(--status-warning) 24%, transparent);
   }
   .badge-danger {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
-    border-color: rgba(239, 68, 68, 0.2);
+    background-color: color-mix(in srgb, var(--status-danger) 12%, transparent);
+    color: var(--status-danger);
+    border-color: color-mix(in srgb, var(--status-danger) 24%, transparent);
   }
-  .badge-neutral {
-    background-color: rgba(128, 128, 128, 0.08);
+  .badge-info {
+    background-color: color-mix(in srgb, var(--status-info) 12%, transparent);
+    color: var(--status-info);
+    border-color: color-mix(in srgb, var(--status-info) 24%, transparent);
+  }
+  .badge-neutral,
+  .badge-default {
+    background-color: color-mix(in srgb, var(--status-neutral) 10%, transparent);
     color: var(--text-secondary);
     border-color: var(--border);
   }
-  .badge-info {
-    background-color: rgba(91, 143, 232, 0.1);
-    color: #5B8FE8;
-    border-color: rgba(91, 143, 232, 0.2);
-  }
-  .badge-gold {
-    background-color: rgba(201, 168, 76, 0.1);
-    color: #C9A84C;
-    border-color: rgba(201, 168, 76, 0.25);
+  .badge-accent {
+    background-color: var(--brand-accent);
+    color: var(--on-accent);
   }
 
   /* KPI CARDS */
   .kpi-card {
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 20px 24px;
     background-color: var(--bg-surface);
     border: 1px solid var(--border);
@@ -427,12 +495,12 @@
     overflow: hidden;
   }
   .kpi-card:hover {
-    box-shadow: 0 0 0 1px #C9A84C;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 18%, transparent);
   }
 
   /* CARDS GENÉRICOS */
   .card-purion {
-    border-radius: 12px;
+    border-radius: 20px;
     background-color: var(--bg-surface);
     border: 1px solid var(--border);
     transition: border-color 150ms ease;
@@ -455,9 +523,10 @@
     border-collapse: collapse;
   }
   .table-purion th {
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-secondary);
     padding: 0 16px;
@@ -485,7 +554,8 @@
     font-weight: 500;
   }
   .td-mono {
-    font-family: var(--font-geist-mono), 'Courier New', monospace;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     text-align: right;
     font-size: 13px;
   }
@@ -529,7 +599,7 @@
   .modal-container {
     width: 100%;
     max-width: 480px;
-    border-radius: 16px;
+    border-radius: 20px;
     background-color: var(--bg-surface);
     border: 1px solid var(--border);
     padding: 28px;
@@ -545,8 +615,9 @@
     border-bottom: 1px solid var(--border);
   }
   .modal-title {
+    font-family: var(--font-title);
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--text-primary);
   }
@@ -597,7 +668,7 @@
   .progress-fill {
     height: 100%;
     border-radius: 2px;
-    background: linear-gradient(90deg, #C9A84C, #DEB96A);
+    background: var(--brand-accent);
     transition: width 700ms ease;
   }
 
@@ -622,8 +693,8 @@
     color: var(--text-primary);
   }
   .tab-item.active {
-    color: #C9A84C;
-    border-bottom-color: #C9A84C;
+    color: var(--text-primary);
+    border-bottom-color: var(--brand-accent);
     font-weight: 500;
   }
 
@@ -632,18 +703,24 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
     border: 1px solid var(--border);
     background-color: transparent;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+    transition-duration: var(--dur-fast);
+    transition-timing-function: var(--ease-press);
   }
   .icon-btn:hover {
-    border-color: #C9A84C;
-    color: #C9A84C;
+    border-color: color-mix(in srgb, var(--foreground) 32%, transparent);
+    color: var(--text-primary);
+  }
+  .icon-btn:active:not(:disabled) { transform: scale(0.97); }
+  @media (pointer: coarse) {
+    .icon-btn { width: 44px; height: 44px; }
   }
 
   /* DIVIDER */
@@ -685,17 +762,11 @@
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 168, 76, 0.35);
+  background: var(--status-neutral);
 }
 
-/* Transição de tema */
-*, *::before, *::after {
-  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
-}
-/* Exceto animações e transforms */
-*:not([class*="transition-"]):not([class*="animate-"]) {
-  transition-property: background-color, border-color, color;
-}
+/* A transição de tema (cor/borda) agora vive em @layer base (acima), sem restringir
+   transition-property: transform e opacity ficam livres para classes e utilitários. */
 
 /* ══════════════════════════════════════════════
    PURION OS — MOBILE RESPONSIVE (max-width 768px)
@@ -826,12 +897,7 @@
    Acento de movimento = verde-limão (Brand Book v1.0).
 ══════════════════════════════════════════════ */
 :root {
-  --accent-motion: #D4FC3C;        /* verde-limão — único destaque do movimento */
-  --on-accent-motion: #0B0B0B;
-  --status-ok: #8FD14F;
-  --status-warning: #E6C374;
-  --status-danger: #E5544B;
-
+  /* --accent-motion aponta para --brand-accent (definido no bloco de marca, no topo) */
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);      /* entradas */
   --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);  /* modais, fades */
   --ease-press: cubic-bezier(0.34, 1.56, 0.64, 1); /* soltura com leve overshoot */
@@ -870,7 +936,8 @@
 }
 
 /* Números tabulares (count-up sem "pular" a largura) */
-.tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+/* Números em Geist Mono tabular */
+.tnum { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
 
 /* Entrada simples via CSS (onde não há Framer) */
 .purion-rise { animation: purion-rise var(--dur-base) var(--ease-expo) both; }
@@ -880,14 +947,14 @@
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 .skeleton::after {
   content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--foreground) 7%, transparent), transparent);
   animation: purion-shimmer 1.4s var(--ease-soft) infinite;
 }
 
@@ -910,25 +977,15 @@
   animation: purion-pulse 2s var(--ease-soft) infinite;
 }
 
-/* Hover que levanta (cards clicáveis). Duplicar a classe vence a regra global de transition. */
-.lift.lift {
+/* Hover que levanta (cards clicáveis) */
+.lift {
   transition-property: transform, box-shadow, border-color, background-color;
   transition-duration: var(--dur-base);
   transition-timing-function: var(--ease-expo);
   will-change: transform;
 }
-.lift.lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
-.lift.lift:active { transform: translateY(0) scale(0.99); transition-duration: var(--dur-fast); }
-
-/* Botões: press 0.97 com soltura elástica */
-.btn.btn,
-.icon-btn.icon-btn {
-  transition-property: background-color, border-color, color, box-shadow, transform;
-  transition-duration: var(--dur-fast);
-  transition-timing-function: var(--ease-press);
-}
-.btn.btn:active:not(:disabled),
-.icon-btn.icon-btn:active:not(:disabled) { transform: scale(0.97); }
+.lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
+.lift:active { transform: translateY(0) scale(0.99); transition-duration: var(--dur-fast); }
 
 /* Modais: entrada soft (fade + scale 0.98→1) */
 @keyframes modal-slide-in {
@@ -936,7 +993,7 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .modal-backdrop { animation: modal-fade-in var(--dur-base) var(--ease-soft) both; }
-.modal-container.modal-container { animation: modal-slide-in var(--dur-base) var(--ease-expo) both; }
+.modal-container { animation: modal-slide-in var(--dur-base) var(--ease-expo) both; }
 
 /* Acessibilidade: sem movimento para quem pediu */
 @media (prefers-reduced-motion: reduce) {
@@ -947,13 +1004,13 @@
     scroll-behavior: auto !important;
   }
   .pulse::after, .skeleton::after { animation: none !important; }
-  .lift.lift:hover { transform: none; }
+  .lift:hover { transform: none; }
 }
 
 /* Checkbox com check desenhado: input nativo invisível mantém teclado/leitor de tela */
 .check-draw-label { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
 .check-draw-label > input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
-.check-draw-label > input:focus-visible + .check-draw { box-shadow: 0 0 0 3px #9CC3DB; }
+.check-draw-label > input:focus-visible + .check-draw { box-shadow: 0 0 0 4px var(--ring); }
 
 /* Linhas de tabela/lista: entrada escalonada sutil (só nas 10 primeiras) */
 .purion-row { animation: purion-rise var(--dur-base) var(--ease-expo) both; }
@@ -966,3 +1023,10 @@
 .purion-row:nth-child(8)  { animation-delay: calc(var(--stagger) * 3.5); }
 .purion-row:nth-child(9)  { animation-delay: calc(var(--stagger) * 4); }
 .purion-row:nth-child(n+10) { animation-delay: calc(var(--stagger) * 4.5); }
+
+/* Classes de tipo do Brand Book (opcionais) */
+.t-display { font-family: var(--font-title); font-weight: 800; font-size: clamp(56px, 8vw, 136px); line-height: 0.90; letter-spacing: -0.045em; text-transform: lowercase; }
+.t-h1 { font-family: var(--font-title); font-weight: 700; font-size: clamp(40px, 5vw, 56px); line-height: 1.02; letter-spacing: -0.03em; text-transform: lowercase; }
+.t-h2 { font-family: var(--font-title); font-weight: 700; font-size: clamp(30px, 3.5vw, 40px); line-height: 1.05; letter-spacing: -0.03em; }
+.t-h3 { font-family: var(--font-title); font-weight: 600; font-size: clamp(22px, 2.2vw, 28px); line-height: 1.15; letter-spacing: -0.02em; }
+.t-label { font-family: var(--font-mono); font-weight: 500; font-size: 12px; line-height: 1.20; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-secondary); }

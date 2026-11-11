@@ -13,22 +13,17 @@
 
   /* Raios */
   --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-full: 9999px;
 
   /* Sombras */
-  --shadow-focus: 0 0 0 3px rgba(201, 168, 76, 0.2);
-  --shadow-card-hover: 0 0 0 1px #C9A84C;
+  --shadow-focus: 0 0 0 4px #9CC3DB;
+  --shadow-card-hover: 0 0 0 1px rgba(245, 245, 240, 0.18);
 
   /* Transições */
   --transition-fast: 120ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 300ms ease;
-
-  /* Dourado */
-  --gold: #C9A84C;
-  --gold-subtle: rgba(201, 168, 76, 0.08);
-  --gold-border: rgba(201, 168, 76, 0.25);
 }
