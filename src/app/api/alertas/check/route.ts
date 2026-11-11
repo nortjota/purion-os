@@ -84,6 +84,24 @@ export async function GET() {
       }
     }
 
+    // 3b. Pedido PAGO há mais de 48h sem despacho (handoff com a Logística · Goiânia)
+    const limite48h = new Date(now.getTime() - 48 * 3_600_000).toISOString()
+    const { data: semDespacho } = await db.from('vendas')
+      .select('id, cliente_nome, data_venda')
+      .is('deleted_at', null)
+      .eq('status_pagamento', 'pago')
+      .in('status_entrega', ['aguardando', 'separando'])
+      .lt('data_venda', limite48h)
+    if (semDespacho && semDespacho.length > 0) {
+      const nomes = semDespacho.slice(0, 5).map((v) => v.cliente_nome || 'cliente').join(', ')
+      const extra = semDespacho.length > 5 ? ` e mais ${semDespacho.length - 5}` : ''
+      alertas.push({
+        titulo: '🚚 Despacho atrasado',
+        mensagem: `${semDespacho.length} pedido(s) pago(s) há mais de 48h sem despacho: ${nomes}${extra}. Cobrar a Logística (Goiânia).`,
+        canal: ['sistema', 'whatsapp'], link: '/despacho', papel: 'matheus',
+      })
+    }
+
     // 4. Leads B2B sem contato há >7 dias
     const sete = new Date(now.getTime() - 7 * 86_400_000).toISOString()
     const { data: leads } = await db.from('leads_crm').select('nome_empresa, ultimo_contato').lt('ultimo_contato', sete).eq('status', 'ativo')

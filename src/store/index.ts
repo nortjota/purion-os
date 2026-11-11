@@ -580,6 +580,10 @@ export interface Venda {
   estoqueBaixado: boolean
   financeiroLancado: boolean
   origemVenda: OrigemVenda | null
+  /** Despacho (handoff com a Logística · Goiânia) */
+  despachadoPor?: string | null
+  despachadoPorNome?: string | null
+  m02EnviadaEm?: string | null
   cupom: string | null
   tipoCliente: TipoCliente
   notaFiscal: string | null

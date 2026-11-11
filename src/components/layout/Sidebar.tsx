@@ -14,6 +14,7 @@ import { useIsLogistica } from '@/hooks/useIsLogistica'
 import { usePreferenciasMenu } from '@/hooks/usePreferenciasMenu'
 import { PERFIS_INFO, SOCIOS_ATIVOS, corPerfil } from '@/lib/socios'
 import { NAV_GROUPS, NAV_GROUPS_LOGISTICA } from './navConfig'
+import { aguardandoDespacho, despachoAtrasado } from '@/hooks/useDespacho'
 import { PersonalizarMenuModal } from './PersonalizarMenuModal'
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
@@ -31,7 +32,7 @@ export function Sidebar() {
   const { isLogistica } = useIsLogistica()
   const {
     perfilAtivo, setPerfilAtivo,
-    pedidosExpedicao, campanhasAds, produtosSKU, configuracoes,
+    pedidosExpedicao, campanhasAds, produtosSKU, configuracoes, vendas,
     mobileSidebarAberta, setMobileSidebarAberta,
     sidebarRecolhida, setSidebarRecolhida,
   } = usePurionStore()
@@ -83,6 +84,12 @@ export function Sidebar() {
     return count
   }, [campanhasAds, configuracoes])
 
+  const despachos = useMemo(() => {
+    const agora = Date.now()
+    const fila = vendas.filter(aguardandoDespacho)
+    return { fila: fila.length, atrasados: fila.filter((v) => despachoAtrasado(v, agora)).length }
+  }, [vendas])
+
   const alertasEstoque = useMemo(
     () => produtosSKU.filter((s) => s.unidades < s.threshold).length,
     [produtosSKU],
@@ -104,6 +111,8 @@ export function Sidebar() {
   )
 
   function getBadge(href: string) {
+    if (href === '/despacho' && despachos.atrasados > 0) return { label: `${despachos.atrasados} +48h`, cls: 'badge-danger' }
+    if (href === '/despacho' && despachos.fila > 0) return { label: String(despachos.fila), cls: 'badge-warning' }
     if (href === '/producao' && temPedidoExpirado) return { label: 'SLA', cls: 'badge-danger' }
     if (href === '/marketing' && alertasTrafego > 0) return { label: String(alertasTrafego), cls: 'badge-warning' }
     if (href === '/producao' && alertasEstoque > 0) return { label: String(alertasEstoque), cls: 'badge-warning' }
