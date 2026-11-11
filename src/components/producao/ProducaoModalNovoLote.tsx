@@ -29,7 +29,7 @@ export function ProducaoModalNovoLote({ onConfirmar, onFechar }: Props) {
     produto: 'PURION GT 60ml',
     dataInicio: new Date().toISOString().slice(0, 10),
     quantidade: '',
-    responsavel: 'gabriel' as PerfilUsuario,
+    responsavel: 'matheus' as PerfilUsuario,
   })
   const [forcar, setForcar] = useState(false)
   const [erro, setErro] = useState('')

@@ -92,7 +92,7 @@ function toDecisao(r: Row): DecisaoEstrategica {
     votos: {
       matheus: (votos.matheus ?? 'pendente') as VotoDecisao,
       joao:    (votos.joao    ?? 'pendente') as VotoDecisao,
-      gabriel: (votos.gabriel ?? 'pendente') as VotoDecisao,
+      ...(votos.gabriel ? { gabriel: votos.gabriel as VotoDecisao } : {}), // histórico (arquivado)
     },
     status:    String(r.status ?? 'aberta') as DecisaoEstrategica['status'],
     createdAt: String(r.created_at ?? new Date().toISOString()),

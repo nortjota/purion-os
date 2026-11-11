@@ -2,6 +2,7 @@ import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Settings,
   BookOpen, Megaphone, Link2, Headphones, Mail, KeyRound, ShoppingBag, Target, Shapes, FlaskConical, Compass, CalendarDays,
+  Truck,
 } from 'lucide-react'
 
 export interface NavItemConfig {
@@ -13,6 +14,8 @@ export interface NavItemConfig {
   masterOnly?: boolean
   /** não pode ser ocultada — trava o toggle para o usuário não se trancar fora do sistema */
   essencial?: boolean
+  /** visível para o perfil de apoio 'logistica' (acesso restrito) */
+  logistica?: boolean
 }
 
 export interface NavGroupConfig {
@@ -41,6 +44,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
   {
     label: 'OPERAÇÃO',
     items: [
+      { key: 'despacho', href: '/despacho', label: 'Despachos', icon: Truck, logistica: true },
       { key: 'tarefas',  href: '/tarefas',  label: 'Tarefas',  icon: CheckSquare },
       { key: 'metas',    href: '/metas',    label: 'Metas',    icon: Target },
       { key: 'quadros',  href: '/quadros',  label: 'Quadros',  icon: Shapes },
@@ -71,6 +75,11 @@ export const NAV_GROUPS: NavGroupConfig[] = [
 ]
 
 export const TODOS_OS_ITENS: NavItemConfig[] = NAV_GROUPS.flatMap((g) => g.items)
+
+/** Menu do perfil 'logistica': só os itens marcados com `logistica: true`. */
+export const NAV_GROUPS_LOGISTICA: NavGroupConfig[] = [
+  { label: 'LOGÍSTICA · GOIÂNIA', items: TODOS_OS_ITENS.filter((i) => i.logistica).map((i) => ({ ...i, label: i.key === 'despacho' ? 'Fila de Despacho' : i.label, essencial: true })) },
+]
 
 /** Deriva a mesma aba_key a partir do href — usado onde o item não carrega o NavItemConfig completo (ex: MobileNav). */
 export function hrefParaChave(href: string): string {

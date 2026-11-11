@@ -45,6 +45,7 @@ import { PainelMetasG4 } from '@/components/dashboard/PainelMetasG4'
 import { PERIODO_OPCOES, type Periodo, inicioPeriodo } from '@/components/dashboard/widgets/widgetHelpers'
 import { estagioNormalizado, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS } from '@/components/crm/crmHelpers'
 import { STATUS_OBJETIVO_COR, STATUS_OBJETIVO_LABEL } from '@/components/estrategias/metas/metasHelpers'
+import { PERFIS_INFO, SOCIOS_ATIVOS, SOCIOS_ATIVOS_IDS, corPerfil, type SocioAtivo } from '@/lib/socios'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -66,9 +67,8 @@ const PERIODO_LABEL_LONGO: Record<PeriodoDashboard, string> = {
 }
 
 const INFO_SOCIOS = {
-  matheus: { nome: 'Matheus',  cidade: 'Brasília · DF',        dominio: 'Comercial & CRM',    cor: '#C9A84C', inicial: 'M' },
-  gabriel: { nome: 'Gabriel',  cidade: 'São Paulo · SP',        dominio: 'Produção & Supply',  cor: '#22C55E', inicial: 'G' },
-  joao:    { nome: 'João',     cidade: 'Florianópolis · SC',    dominio: 'Marketing & Growth', cor: '#5B8FE8', inicial: 'J' },
+  matheus: { nome: PERFIS_INFO.matheus.nome, cidade: PERFIS_INFO.matheus.cidade, dominio: PERFIS_INFO.matheus.eixo, cor: PERFIS_INFO.matheus.cor, inicial: 'M' },
+  joao:    { nome: PERFIS_INFO.joao.nome,    cidade: PERFIS_INFO.joao.cidade,    dominio: PERFIS_INFO.joao.eixo,    cor: PERFIS_INFO.joao.cor,    inicial: 'J' },
 }
 
 // ─────────────────────────────────────────────
@@ -159,7 +159,7 @@ function SecaoAlertas({ alertas }: { alertas: Alerta[] }) {
 function SocioCard({
   perfilId, tarefas, campanhas, ativo, onClick,
 }: {
-  perfilId: 'matheus' | 'gabriel' | 'joao'
+  perfilId: SocioAtivo
   tarefas: import('@/store').Tarefa[]
   campanhas: import('@/store').CampanhaAds[]
   ativo: boolean
@@ -403,11 +403,6 @@ function UltimosDailies({ entries }: { entries: import('@/store').DailyEntry[] }
 
   if (ultimos.length === 0) return null
 
-  const COR_SOCIO: Record<string, string> = {
-    matheus: '#C9A84C',
-    gabriel: '#22C55E',
-    joao:    '#5B8FE8',
-  }
 
   return (
     <div className="card-purion overflow-hidden">
@@ -419,7 +414,7 @@ function UltimosDailies({ entries }: { entries: import('@/store').DailyEntry[] }
       </div>
       <ul>
         {ultimos.map((entry) => {
-          const cor = COR_SOCIO[entry.socio] ?? '#6B6B6B'
+          const cor = corPerfil(entry.socio)
           return (
             <li
               key={entry.id}
@@ -465,11 +460,7 @@ function CardMetasHoje({ metas }: { metas: MetaDiaria[] }) {
   const conc      = metasHoje.filter((m) => m.concluida).length
   const pctGeral  = total > 0 ? Math.round((conc / total) * 100) : null
 
-  const socios = [
-    { id: 'matheus' as const, label: 'Matheus', cor: '#C9A84C' },
-    { id: 'gabriel' as const, label: 'Gabriel', cor: '#22C55E' },
-    { id: 'joao'    as const, label: 'João',    cor: '#5B8FE8' },
-  ]
+  const socios = SOCIOS_ATIVOS.map((s) => ({ id: s.id, label: s.nome, cor: s.cor }))
 
   return (
     <Link href="/metas" className="block no-underline">
@@ -911,8 +902,8 @@ export function CommandCenter() {
         <p className="kpi-label flex items-center gap-1.5 mb-4">
           <Activity size={11} /> Status dos Sócios
         </p>
-        <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {(['matheus', 'gabriel', 'joao'] as const).map((perfil) => (
+        <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: `repeat(${SOCIOS_ATIVOS_IDS.length}, 1fr)` }}>
+          {SOCIOS_ATIVOS_IDS.map((perfil) => (
             <SocioCard
               key={perfil}
               perfilId={perfil}

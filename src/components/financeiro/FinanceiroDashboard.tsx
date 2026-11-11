@@ -71,7 +71,7 @@ const REGIAO_POR_RESPONSAVEL: Record<PerfilUsuario, Regiao> = {
 const LABEL_RESPONSAVEL: Record<PerfilUsuario, string> = {
   matheus: 'Matheus',
   joao:    'João',
-  gabriel: 'Gabriel',
+  gabriel: 'Gabriel (arquivado)',
 }
 
 // ─────────────────────────────────────────────
@@ -282,7 +282,6 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
                 >
                   <option value="matheus">Matheus</option>
                   <option value="joao">João</option>
-                  <option value="gabriel">Gabriel</option>
                 </select>
                 <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
               </div>
@@ -449,7 +448,6 @@ function FormMovimentacao({ onRegistrado }: FormMovProps) {
           <select value={responsavel} onChange={(e) => setResponsavel(e.target.value as PerfilUsuario)} className="input-purion appearance-none pr-8 cursor-pointer">
             <option value="matheus">Matheus</option>
             <option value="joao">João</option>
-            <option value="gabriel">Gabriel</option>
           </select>
           <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A0A0A0] pointer-events-none" />
         </div>
@@ -673,7 +671,6 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
           <option value="">Todos os responsáveis</option>
           <option value="matheus">Matheus</option>
           <option value="joao">João</option>
-          <option value="gabriel">Gabriel</option>
         </select>
         {temFiltro && (
           <button onClick={limparFiltros} className="text-[10px] text-[#C9A84C] hover:underline flex items-center gap-1">

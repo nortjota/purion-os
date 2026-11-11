@@ -26,12 +26,16 @@ const MODULE_NAMES: Record<string, string> = {
   '/afiliados':        'Afiliados',
   '/sac':              'SAC',
   '/planos':           'Planos',
+  '/despacho':         'Despachos',
+  '/vendas':           'Vendas',
+  '/metas':            'Metas',
 }
 
 const PERFIL_INICIAIS: Record<string, string> = {
-  matheus: 'M',
-  gabriel: 'G',
-  joao:    'J',
+  matheus:   'M',
+  joao:      'J',
+  logistica: 'L',
+  gabriel:   'G',
 }
 
 interface SearchResult {
@@ -48,6 +52,7 @@ export function ContentHeader() {
   const { theme, setTheme } = useTheme()
   const { perfilAtivo, leads, tarefas, creators, receitas, despesas, focusMode, setFocusMode } = usePurionStore()
   const { user, perfil } = useAuth()
+  const isLogistica = perfil?.role === 'logistica'
   const [mounted, setMounted] = useState(false)
 
   // Search state
@@ -70,7 +75,8 @@ export function ContentHeader() {
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!searchQuery.trim()) {
+      // perfil logística (acesso restrito) não pesquisa dados de outros módulos
+      if (!searchQuery.trim() || isLogistica) {
         setSearchResults([])
         return
       }
@@ -102,7 +108,7 @@ export function ContentHeader() {
       setSearchResults(results)
     }, 200)
     return () => clearTimeout(timer)
-  }, [searchQuery, leads, tarefas, creators, receitas, despesas])
+  }, [searchQuery, leads, tarefas, creators, receitas, despesas, isLogistica])
 
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {

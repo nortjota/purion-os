@@ -137,11 +137,12 @@ export default function ContabilidadeDashboard() {
     const all = despesas.filter((d) => d.data.startsWith(MES_ATUAL))
     const comercial  = all.filter((d) => d.responsavel === 'matheus').reduce((s, d) => s + d.valor, 0)
     const digital    = all.filter((d) => d.responsavel === 'joao').reduce((s, d) => s + d.valor, 0)
-    const producao   = all.filter((d) => d.responsavel === 'gabriel').reduce((s, d) => s + d.valor, 0)
+    // histórico: despesas antigas atribuídas ao ex-sócio Gabriel (arquivado)
+    const historico  = all.filter((d) => d.responsavel !== 'matheus' && d.responsavel !== 'joao').reduce((s, d) => s + d.valor, 0)
     return [
       { nome: 'Comercial', total: comercial },
-      { nome: 'Digital',   total: digital   },
-      { nome: 'Produção',  total: producao  },
+      { nome: 'Aquisição', total: digital   },
+      { nome: 'Histórico', total: historico },
     ].filter((c) => c.total > 0)
   }, [despesas])
 
@@ -370,7 +371,7 @@ export default function ContabilidadeDashboard() {
                 </thead>
                 <tbody>
                   {centroCustos.map((c) => {
-                    const resp = c.nome === 'Comercial' ? 'Matheus' : c.nome === 'Digital' ? 'João' : 'Gabriel'
+                    const resp = c.nome === 'Comercial' ? 'Matheus' : c.nome === 'Aquisição' ? 'João' : 'Gabriel (arquivado)'
                     const pct = totalCustos > 0 ? (c.total / totalCustos) * 100 : 0
                     return (
                       <tr key={c.nome}>

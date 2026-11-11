@@ -3,6 +3,7 @@ import {
   addDays, addMonths, subMonths, format, isSameDay, isSameMonth, isToday, isBefore,
 } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { SOCIOS_ATIVOS } from '@/lib/socios'
 import type { EventoCalendario, TipoEvento, PerfilUsuario } from '@/store'
 import { COR_TIPO_EVENTO } from '@/hooks/useEventosCalendario'
 
@@ -71,10 +72,9 @@ export const LEMBRETE_OPCOES = [
   { valor: 2880, label: '2 dias antes' },
 ]
 
-export const RESPONSAVEIS: Array<{ id: PerfilUsuario; nome: string }> = [
-  { id: 'matheus', nome: 'Matheus' },
-  { id: 'joao',    nome: 'João' },
-  { id: 'gabriel', nome: 'Gabriel' },
-]
+export const RESPONSAVEIS: Array<{ id: PerfilUsuario; nome: string }> = SOCIOS_ATIVOS.map((s) => ({
+  id: s.id as PerfilUsuario,
+  nome: s.nome,
+}))
 
 export { addDays, addMonths, subMonths, isSameDay, isSameMonth, isToday }

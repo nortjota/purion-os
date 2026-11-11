@@ -62,8 +62,8 @@ export function FinanceiroSettings() {
   const [catDespesa, setCatDespesa] = useState(['Estoque', 'Marketing', 'Operacional', 'Societário', 'Outros'])
   const [centrosCusto, setCentrosCusto] = useState([
     { id: '1', nome: 'Matheus – Comercial' },
-    { id: '2', nome: 'João – Marketing' },
-    { id: '3', nome: 'Gabriel – Produção' },
+    { id: '2', nome: 'João – Aquisição' },
+    { id: '3', nome: 'Logística – Goiânia (terceirizada)' },
   ])
   const [newCatReceita, setNewCatReceita] = useState('')
   const [newCatDespesa, setNewCatDespesa] = useState('')

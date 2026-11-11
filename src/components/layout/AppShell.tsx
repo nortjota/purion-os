@@ -1,6 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useIsLogistica } from '@/hooks/useIsLogistica'
+import { ROTA_LOGISTICA, rotaPermitidaLogistica } from '@/lib/socios'
 import { Sidebar } from './Sidebar'
 import { ContentHeader } from './ContentHeader'
 import { PageTransition } from './PageTransition'
@@ -15,6 +18,15 @@ import { X } from 'lucide-react'
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { focusMode, setFocusMode } = usePurionStore()
   const [paletteOpen, setPaletteOpen] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
+  const { isLogistica, loading: authLoading } = useIsLogistica()
+  const logisticaForaDaRota = isLogistica && !rotaPermitidaLogistica(pathname)
+
+  // Perfil 'logistica' (Goiânia): só acessa a Fila de Despacho — qualquer outra rota redireciona.
+  useEffect(() => {
+    if (!authLoading && logisticaForaDaRota) router.replace(ROTA_LOGISTICA)
+  }, [authLoading, logisticaForaDaRota, router])
 
   // Listen for open palette event
   useEffect(() => {
@@ -56,6 +68,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     )
   }
 
+  // Enquanto redireciona o perfil logística, não renderiza conteúdo restrito
+  if (logisticaForaDaRota) {
+    return <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }} />
+  }
+
   return (
     <>
       {/* Sidebar — self-manages mobile visibility via slide-in drawer */}
@@ -77,11 +94,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <MobileNav />
       </div>
 
-      {/* Global overlays — always mounted */}
-      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
-      <KeyboardShortcuts />
-      <QuickNotes />
-      <TrialBanner />
+      {/* Global overlays — not for the restricted logistics profile */}
+      {!isLogistica && (
+        <>
+          <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+          <KeyboardShortcuts />
+          <QuickNotes />
+          <TrialBanner />
+        </>
+      )}
     </>
   )
 }

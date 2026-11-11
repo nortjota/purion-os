@@ -2,6 +2,7 @@ import {
   CheckSquare, AlertTriangle, Zap, Flag,
 } from 'lucide-react'
 import type { PerfilUsuario, PrioridadeTarefa, StatusTarefa } from '@/store'
+import { SOCIOS_ATIVOS } from '@/lib/socios'
 
 export const HOJE = new Date().toISOString().slice(0, 10)
 
@@ -36,11 +37,10 @@ export const PRIORIDADE_CONFIG: Record<PrioridadeTarefa, { label: string; cor: s
 
 export const PRIORIDADE_ICON = Flag
 
-export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inicial: string; dominio: string }> = [
-  { id: 'matheus', nome: 'Matheus', cor: '#C9A84C', inicial: 'M', dominio: 'Estratégia & B2B' },
-  { id: 'joao',    nome: 'João',    cor: '#5B8FE8', inicial: 'J', dominio: 'Marketing & Growth' },
-  { id: 'gabriel', nome: 'Gabriel', cor: '#22C55E', inicial: 'G', dominio: 'Produção & Qualidade' },
-]
+/** Apenas sócios ativos (matheus, joao). Gabriel está arquivado — veja src/lib/socios.ts. */
+export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inicial: string; dominio: string }> = SOCIOS_ATIVOS.map((s) => ({
+  id: s.id as PerfilUsuario, nome: s.nome, cor: s.cor, inicial: s.inicial, dominio: s.eixo,
+}))
 
 export const MODULOS = ['crm', 'marketing', 'producao', 'financeiro', 'geral'] as const
 

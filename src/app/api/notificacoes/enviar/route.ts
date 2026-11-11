@@ -7,7 +7,7 @@ const PURION_TENANT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
 type Payload = {
   tenant_id?: string
   usuario_id?: string
-  papel?: 'matheus' | 'joao' | 'gabriel'
+  papel?: 'matheus' | 'joao' | 'gabriel' | 'logistica'
   tipo: string
   titulo: string
   mensagem: string

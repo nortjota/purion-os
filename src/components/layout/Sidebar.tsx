@@ -10,23 +10,25 @@ import { usePurionStore, type PerfilUsuario } from '@/store'
 import { useAuth } from '@/hooks/useAuth'
 import { useMobile } from '@/hooks/useMobile'
 import { useIsMaster } from '@/hooks/useIsMaster'
+import { useIsLogistica } from '@/hooks/useIsLogistica'
 import { usePreferenciasMenu } from '@/hooks/usePreferenciasMenu'
-import { NAV_GROUPS } from './navConfig'
+import { PERFIS_INFO, SOCIOS_ATIVOS, corPerfil } from '@/lib/socios'
+import { NAV_GROUPS, NAV_GROUPS_LOGISTICA } from './navConfig'
 import { PersonalizarMenuModal } from './PersonalizarMenuModal'
 
 const DATA_REF = new Date('2024-02-12T12:00:00Z')
 
-const DEMO_PERFIS: Array<{ id: PerfilUsuario; nome: string; cargo: string; inicial: string }> = [
-  { id: 'matheus', nome: 'Matheus', cargo: 'Comercial', inicial: 'M' },
-  { id: 'gabriel', nome: 'Gabriel', cargo: 'Operações', inicial: 'G' },
-  { id: 'joao',    nome: 'João',    cargo: 'Marketing', inicial: 'J' },
-]
+// Apenas sócios ativos (gabriel arquivado)
+const DEMO_PERFIS: Array<{ id: PerfilUsuario; nome: string; cargo: string; inicial: string }> = SOCIOS_ATIVOS.map((s) => ({
+  id: s.id as PerfilUsuario, nome: s.nome, cargo: s.eixo.split(' · ')[0], inicial: s.inicial,
+}))
 
 export function Sidebar() {
   const isMobile = useMobile()
   const pathname = usePathname()
   const { user, perfil: authPerfil, signOut } = useAuth()
   const { isMaster } = useIsMaster()
+  const { isLogistica } = useIsLogistica()
   const {
     perfilAtivo, setPerfilAtivo,
     pedidosExpedicao, campanhasAds, produtosSKU, configuracoes,
@@ -57,9 +59,10 @@ export function Sidebar() {
     return () => window.removeEventListener('keydown', handler)
   }, [isMobile, setMobileSidebarAberta])
 
-  const displayNome    = authPerfil?.nome ?? user?.email?.split('@')[0] ?? DEMO_PERFIS.find((p) => p.id === perfilAtivo)?.nome ?? 'Usuário'
-  const displayCargo   = authPerfil?.cargo ?? DEMO_PERFIS.find((p) => p.id === perfilAtivo)?.cargo ?? ''
+  const displayNome    = isLogistica ? PERFIS_INFO.logistica.nomeCompleto : (authPerfil?.nome ?? user?.email?.split('@')[0] ?? DEMO_PERFIS.find((p) => p.id === perfilAtivo)?.nome ?? 'Usuário')
+  const displayCargo   = isLogistica ? 'Operador terceirizado' : (authPerfil?.cargo ?? DEMO_PERFIS.find((p) => p.id === perfilAtivo)?.cargo ?? '')
   const displayInicial = displayNome[0]?.toUpperCase() ?? 'U'
+  const corAvatar      = isLogistica ? PERFIS_INFO.logistica.cor : corPerfil(perfilAtivo)
   const isAuthenticated = !!user
 
   const temPedidoExpirado = pedidosExpedicao.some((p) => {
@@ -89,13 +92,15 @@ export function Sidebar() {
   const [menuPersonalizarAberto, setMenuPersonalizarAberto] = useState(false)
 
   const visibleNavGroups = useMemo(
-    () => NAV_GROUPS
-      .map((g) => ({
-        ...g,
-        items: g.items.filter((i) => (isMaster || !i.masterOnly) && (i.essencial || !abasOcultas.has(i.key))),
-      }))
-      .filter((g) => g.items.length > 0),
-    [isMaster, abasOcultas],
+    () => isLogistica
+      ? NAV_GROUPS_LOGISTICA
+      : NAV_GROUPS
+        .map((g) => ({
+          ...g,
+          items: g.items.filter((i) => (isMaster || !i.masterOnly) && (i.essencial || !abasOcultas.has(i.key))),
+        }))
+        .filter((g) => g.items.length > 0),
+    [isMaster, isLogistica, abasOcultas],
   )
 
   function getBadge(href: string) {
@@ -273,8 +278,8 @@ export function Sidebar() {
                 title={`${displayNome}${displayCargo ? ` · ${displayCargo}` : ''}`}
                 style={{
                   width: 30, height: 30, borderRadius: '50%',
-                  background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.25)',
-                  color: '#C9A84C', fontSize: 11, fontWeight: 600,
+                  background: `${corAvatar}14`, border: `1px solid ${corAvatar}40`,
+                  color: corAvatar, fontSize: 11, fontWeight: 600,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none',
                 }}
               >
@@ -285,8 +290,8 @@ export function Sidebar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
               <div style={{
                 width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.25)',
-                color: '#C9A84C', fontSize: 11, fontWeight: 600,
+                background: `${corAvatar}14`, border: `1px solid ${corAvatar}40`,
+                color: corAvatar, fontSize: 11, fontWeight: 600,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none',
               }}>
                 {displayInicial}
@@ -338,7 +343,7 @@ export function Sidebar() {
             </div>
           )}
 
-          <button
+          {!isLogistica && <button
             onClick={() => setMenuPersonalizarAberto(true)}
             title="Personalizar menu"
             style={{
@@ -362,7 +367,7 @@ export function Sidebar() {
           >
             <LayoutGrid size={14} />
             {!recolhida && <span>Personalizar menu</span>}
-          </button>
+          </button>}
 
           {!isMobile && (
             <button

@@ -13,15 +13,15 @@ interface DemoUser {
   nome: string
   email: string
   cargo: string
-  role: 'master' | 'admin' | 'membro'
+  role: 'master' | 'admin' | 'membro' | 'logistica'
   ativo: boolean
   ultima_atividade: string | null
 }
 
 const DEMO_USERS: DemoUser[] = [
-  { id: '1', nome: 'Matheus', email: 'matheus@purion.com', cargo: 'CEO', role: 'admin', ativo: true, ultima_atividade: new Date().toISOString() },
-  { id: '2', nome: 'João', email: 'joao@purion.com', cargo: 'Marketing', role: 'membro', ativo: true, ultima_atividade: null },
-  { id: '3', nome: 'Gabriel', email: 'gabriel@purion.com', cargo: 'Produção', role: 'membro', ativo: true, ultima_atividade: null },
+  { id: '1', nome: 'Matheus', email: 'matheus@purion.com', cargo: 'Sócio · Comercial (DF)', role: 'admin', ativo: true, ultima_atividade: new Date().toISOString() },
+  { id: '2', nome: 'João', email: 'joao@purion.com', cargo: 'Sócio · Aquisição (SC)', role: 'admin', ativo: true, ultima_atividade: null },
+  { id: '3', nome: 'Logística · Goiânia', email: 'logistica@purion.com', cargo: 'Operador terceirizado', role: 'logistica', ativo: true, ultima_atividade: null },
 ]
 
 interface EditModal {
@@ -73,7 +73,7 @@ export function UsuariosSettings() {
   const openEdit = (u: DemoUser) => {
     setEditNome(u.nome)
     setEditCargo(u.cargo)
-    setEditRole(u.role === 'master' ? 'admin' : u.role)
+    setEditRole(u.role === 'master' ? 'admin' : u.role === 'logistica' ? 'membro' : u.role)
     setEditDisponibilidade('')
     setEditModal({ open: true, user: u })
   }
@@ -177,8 +177,8 @@ export function UsuariosSettings() {
                 <td className="px-4 py-3 text-[var(--text-secondary)]">{u.email}</td>
                 <td className="px-4 py-3 text-[var(--text-secondary)]">{u.cargo}</td>
                 <td className="px-4 py-3">
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-[#C9A84C]/10 text-[#C9A84C]' : 'bg-[var(--bg-surface-2)] text-[var(--text-secondary)]'}`}>
-                    {u.role}
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-[#C9A84C]/10 text-[#C9A84C]' : u.role === 'logistica' ? 'bg-[#2E9E5B]/15 text-[#5FD08E]' : 'bg-[var(--bg-surface-2)] text-[var(--text-secondary)]'}`}>
+                    {u.role === 'logistica' ? 'logística (restrito)' : u.role}
                   </span>
                 </td>
                 <td className="px-4 py-3">

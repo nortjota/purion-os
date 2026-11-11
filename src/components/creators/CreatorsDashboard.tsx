@@ -283,7 +283,6 @@ function ModalCreator({ onSalvar, onFechar }: {
             <select className="select-purion" value={f.responsavel} onChange={(e) => setF({ ...f, responsavel: e.target.value as PerfilUsuario })}>
               <option value="joao">João</option>
               <option value="matheus">Matheus</option>
-              <option value="gabriel">Gabriel</option>
             </select>
           </div>
           <div className="col-span-2 field-gap">
@@ -420,7 +419,6 @@ function ModalEditarCreator({ creator, onSalvar, onFechar }: {
             <select className="select-purion" value={f.responsavel} onChange={(e) => setF({ ...f, responsavel: e.target.value as PerfilUsuario })}>
               <option value="joao">João</option>
               <option value="matheus">Matheus</option>
-              <option value="gabriel">Gabriel</option>
             </select>
           </div>
           <div className="col-span-2 field-gap">

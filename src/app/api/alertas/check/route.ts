@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { gravarSnapshotAds } from '@/lib/ads/snapshot'
 
-type Alerta = { titulo: string; mensagem: string; canal: string[]; link?: string; papel?: 'matheus' | 'joao' | 'gabriel' }
+type Alerta = { titulo: string; mensagem: string; canal: string[]; link?: string; papel?: 'matheus' | 'joao' | 'logistica' }
 
-const RESPONSAVEL_PARA_PAPEL: Record<string, 'matheus' | 'joao' | 'gabriel'> = {
-  matheus: 'matheus', joao: 'joao', gabriel: 'gabriel',
+// gabriel arquivado: itens antigos dele passam a notificar o Matheus
+const RESPONSAVEL_PARA_PAPEL: Record<string, 'matheus' | 'joao'> = {
+  matheus: 'matheus', joao: 'joao', gabriel: 'matheus',
 }
 
 // Called once daily by Vercel cron (0 11 * * * UTC)
@@ -41,7 +42,7 @@ export async function GET() {
       alertas.push({
         titulo: '📦 Estoque baixo',
         mensagem: `${estoqueProduto.produto}: ${estoqueProduto.quantidade_atual} frascos — abaixo do mínimo de ${estoqueProduto.quantidade_minima}.`,
-        canal: ['sistema', 'whatsapp'], link: '/producao', papel: 'gabriel',
+        canal: ['sistema', 'whatsapp'], link: '/producao', papel: 'matheus',
       })
 
       // Cria tarefa "produzir mais" — idempotente: só cria se não houver uma já aberta
@@ -54,7 +55,7 @@ export async function GET() {
         const { error: tarefaErr } = await db.from('tarefas').insert({
           titulo: '🏭 Produzir mais — estoque de prontos abaixo do mínimo',
           descricao: `Estoque atual: ${estoqueProduto.quantidade_atual} frascos (mínimo: ${estoqueProduto.quantidade_minima}). Planeje um novo lote de produção.`,
-          status: 'aberta', prioridade: 'alta', responsavel: 'gabriel', modulo: 'producao',
+          status: 'aberta', prioridade: 'alta', responsavel: 'matheus', modulo: 'producao',
           tags: ['reposicao-estoque'],
         })
         if (tarefaErr) console.error('[alertas/check] erro ao criar tarefa produzir mais', tarefaErr)
@@ -66,7 +67,7 @@ export async function GET() {
     if (skus) {
       for (const s of skus) {
         if (s.unidades < s.threshold) {
-          alertas.push({ titulo: '📦 Estoque baixo', mensagem: `SKU "${s.nome}": ${s.unidades} unidades — abaixo do mínimo de ${s.threshold}.`, canal: ['sistema'], link: '/producao', papel: 'gabriel' })
+          alertas.push({ titulo: '📦 Estoque baixo', mensagem: `SKU "${s.nome}": ${s.unidades} unidades — abaixo do mínimo de ${s.threshold}.`, canal: ['sistema'], link: '/producao', papel: 'matheus' })
         }
       }
     }
@@ -78,7 +79,7 @@ export async function GET() {
         const deadline = new Date(new Date(p.data_pedido).getTime() + p.prazo_horas * 3_600_000)
         if (now > deadline) {
           const horas = Math.round((now.getTime() - deadline.getTime()) / 3_600_000)
-          alertas.push({ titulo: '🚨 Prazo vencido', mensagem: `Pedido ${p.referencia} com prazo de expedição vencido há ${horas}h.`, canal: ['sistema', 'whatsapp'], link: '/producao', papel: 'gabriel' })
+          alertas.push({ titulo: '🚨 Prazo vencido', mensagem: `Pedido ${p.referencia} com prazo de expedição vencido há ${horas}h.`, canal: ['sistema', 'whatsapp'], link: '/producao', papel: 'matheus' })
         }
       }
     }

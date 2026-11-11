@@ -13,6 +13,10 @@ import { devtools, persist } from 'zustand/middleware'
 // TIPOS BASE
 // ─────────────────────────────────────────────
 
+/**
+ * Sócios ativos: 'matheus' | 'joao'. 'gabriel' está ARQUIVADO e permanece no tipo
+ * apenas para preservar histórico. Para listas/seletores use SOCIOS_ATIVOS em src/lib/socios.ts.
+ */
 export type PerfilUsuario = 'matheus' | 'joao' | 'gabriel'
 export type Regiao = 'DF' | 'SP' | 'SC'
 
@@ -431,7 +435,7 @@ export interface DecisaoEstrategica {
   votos: {
     matheus: VotoDecisao
     joao: VotoDecisao
-    gabriel: VotoDecisao
+    gabriel?: VotoDecisao // arquivado — só em decisões antigas
   }
   status: 'aberta' | 'aprovada' | 'rejeitada'
   createdAt: string
@@ -1115,7 +1119,7 @@ export const usePurionStore = create<PurionState>()(
             const all = [...s.dailyEntries, entry]
             // Mantém os últimos 7 entries por sócio
             const result: DailyEntry[] = []
-            const socios: PerfilUsuario[] = ['matheus', 'joao', 'gabriel']
+            const socios: PerfilUsuario[] = ['matheus', 'joao', 'gabriel'] // inclui histórico
             socios.forEach((socio) => {
               const porSocio = all
                 .filter((e) => e.socio === socio)

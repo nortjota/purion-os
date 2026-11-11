@@ -201,7 +201,6 @@ export function ModalVendaB2B({ venda, onFechar }: { venda?: Venda; onFechar: ()
             <select className="select-purion" value={form.responsavel} onChange={(e) => set('responsavel', e.target.value as PerfilUsuario)}>
               <option value="matheus">Matheus</option>
               <option value="joao">João</option>
-              <option value="gabriel">Gabriel</option>
             </select>
           </div>
           <div className="col-span-2">

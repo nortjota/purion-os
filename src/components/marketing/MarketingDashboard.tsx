@@ -74,8 +74,8 @@ const SOCIO_INICIAL: Record<PerfilUsuario, string> = {
 
 const SOCIO_COLOR: Record<PerfilUsuario, string> = {
   matheus: 'bg-[#C9A84C] text-[#0D0D0D]',
-  joao:    'bg-blue-500 text-white',
-  gabriel: 'bg-emerald-600 text-white',
+  joao:    'bg-[#4A90D9] text-white',
+  gabriel: 'bg-[#8A8A8A] text-white',
 }
 
 // ─────────────────────────────────────────────
@@ -200,7 +200,6 @@ function ModalCreator({ onSalvar, onFechar }: {
               >
                 <option value="joao">João</option>
                 <option value="matheus">Matheus</option>
-                <option value="gabriel">Gabriel</option>
               </select>
             </div>
             <div className="col-span-2">
@@ -308,7 +307,6 @@ function ModalConteudo({
             >
               <option value="joao">João</option>
               <option value="matheus">Matheus</option>
-              <option value="gabriel">Gabriel</option>
             </select>
           </div>
           <div className="field-gap">

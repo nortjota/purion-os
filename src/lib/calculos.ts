@@ -407,9 +407,10 @@ export interface AtividadeItem {
 
 // Cor de avatar por sócio
 const COR_AVATAR: Record<string, string> = {
-  matheus: '#C9A84C',
-  gabriel: '#22C55E',
-  joao:    '#5B8FE8',
+  matheus:   '#C9A84C',
+  joao:      '#4A90D9',
+  logistica: '#2E9E5B',
+  gabriel:   '#8A8A8A', // arquivado — mantido só para histórico
 }
 
 function capitalize(s: string) {

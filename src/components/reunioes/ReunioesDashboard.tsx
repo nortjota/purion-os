@@ -11,6 +11,7 @@ import { useMobile } from '@/hooks/useMobile'
 import { useReunioes } from '@/hooks/useReunioes'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { MiniCalendario } from './MiniCalendario'
+import { SOCIOS_ATIVOS_IDS } from '@/lib/socios'
 import {
   usePurionStore,
   type PerfilUsuario,
@@ -27,18 +28,19 @@ const DATA_REF = new Date('2024-02-12T12:00:00Z')
 // CONSTANTES
 // ─────────────────────────────────────────────
 
-const SOCIOS: PerfilUsuario[] = ['matheus', 'joao', 'gabriel']
+// Apenas sócios ativos — gabriel arquivado (histórico preservado via SOCIO_NOME/INICIAL/COLOR)
+const SOCIOS: PerfilUsuario[] = [...SOCIOS_ATIVOS_IDS]
 
 const SOCIO_NOME: Record<PerfilUsuario, string> = {
   matheus: 'Matheus',
   joao: 'João',
-  gabriel: 'Gabriel',
+  gabriel: 'Gabriel (arquivado)',
 }
 
 const SOCIO_CARGO: Record<PerfilUsuario, string> = {
   matheus: 'Comercial · DF',
-  joao: 'Marketing · SC',
-  gabriel: 'Operações · SP',
+  joao: 'Aquisição · SC',
+  gabriel: 'Arquivado',
 }
 
 const SOCIO_INICIAL: Record<PerfilUsuario, string> = {
@@ -49,8 +51,8 @@ const SOCIO_INICIAL: Record<PerfilUsuario, string> = {
 
 const SOCIO_COLOR: Record<PerfilUsuario, string> = {
   matheus: 'bg-[#C9A84C] text-[#0D0D0D]',
-  joao:    'bg-[#5B8FE8] text-white',
-  gabriel: 'bg-[#22C55E] text-white',
+  joao:    'bg-[#4A90D9] text-white',
+  gabriel: 'bg-[#8A8A8A] text-white',
 }
 
 const TIPO_REUNIAO_LABEL: Record<ReuniaoItem['tipo'], string> = {
@@ -98,11 +100,12 @@ function calcularStatusDecisao(
   status: DecisaoEstrategica['status']
 ): DecisaoEstrategica['status'] {
   if (status !== 'aberta') return status
-  const lista = Object.values(votos)
+  // 2 sócios ativos: aprovação/rejeição exige unanimidade (2×0). Empate 1×1 fica aberta.
+  const lista = SOCIOS_ATIVOS_IDS.map((s) => votos[s])
   const sims = lista.filter((v) => v === 'sim').length
   const naos = lista.filter((v) => v === 'nao').length
-  if (sims >= 2) return 'aprovada'
-  if (naos >= 2) return 'rejeitada'
+  if (sims >= SOCIOS_ATIVOS_IDS.length) return 'aprovada'
+  if (naos >= SOCIOS_ATIVOS_IDS.length) return 'rejeitada'
   return 'aberta'
 }
 
@@ -123,7 +126,7 @@ function ModalReuniao({ onSalvar, onFechar }: {
     pauta: '',
     ata: '',
     decisoes: '',
-    participantes: ['matheus', 'joao', 'gabriel'] as PerfilUsuario[],
+    participantes: [...SOCIOS_ATIVOS_IDS] as PerfilUsuario[],
   })
 
   const handleSubmit = () => {
@@ -463,7 +466,7 @@ function ModalDecisao({ onSalvar, onFechar, propostoPor }: {
       propostoPor,
       data: agora.toISOString().slice(0, 10),
       prazoVotacao: prazo.toISOString(),
-      votos: { matheus: 'pendente', joao: 'pendente', gabriel: 'pendente' },
+      votos: { matheus: 'pendente', joao: 'pendente' },
       status: 'aberta',
       createdAt: agora.toISOString(),
     }
@@ -736,10 +739,7 @@ export function ReunioesDashboard() {
     const decisao = decisoes.find((d) => d.id === decisaoId)
     if (!decisao || decisao.status !== 'aberta') return
     const novosVotos = { ...decisao.votos, [perfilAtivo]: voto }
-    const sims = Object.values(novosVotos).filter((v) => v === 'sim').length
-    const naos = Object.values(novosVotos).filter((v) => v === 'nao').length
-    const novoStatus: DecisaoEstrategica['status'] =
-      sims >= 2 ? 'aprovada' : naos >= 2 ? 'rejeitada' : 'aberta'
+    const novoStatus = calcularStatusDecisao(novosVotos, 'aberta')
     atualizarDecisao(decisaoId, { votos: novosVotos, status: novoStatus })
   }
 
@@ -974,7 +974,7 @@ export function ReunioesDashboard() {
               aberta: expirado
                 ? <span className="flex items-center gap-1 text-[10px] font-bold text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full"><AlertTriangle size={9} />PRAZO EXPIRADO</span>
                 : <span className="flex items-center gap-1 text-[10px] font-bold text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-full"><Clock size={9} />Aberta</span>,
-              aprovada: <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">Aprovada 2×1</span>,
+              aprovada: <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">Aprovada 2×0</span>,
               rejeitada: <span className="text-[10px] font-bold text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full">Rejeitada</span>,
             }[statusEfetivo]
 
@@ -1039,10 +1039,10 @@ export function ReunioesDashboard() {
                   <div className="flex items-center gap-2">
                     <span className="caption text-[10px] shrink-0">Votos:</span>
                     <div className="flex gap-2 flex-1">
-                      {(['matheus', 'joao', 'gabriel'] as PerfilUsuario[]).map((s) => (
+                      {SOCIOS.map((s) => (
                         <div key={s} className="flex-1">
                           <p className="caption text-[9px] text-center mb-1">{SOCIO_INICIAL[s]}</p>
-                          {renderVoto(decisao.votos[s], s)}
+                          {renderVoto(decisao.votos[s] ?? 'pendente', s)}
                         </div>
                       ))}
                     </div>
@@ -1077,8 +1077,8 @@ export function ReunioesDashboard() {
 
                 {/* Votos M · J · G */}
                 <div className="flex items-center gap-2">
-                  {(['matheus', 'joao', 'gabriel'] as PerfilUsuario[]).map((s) =>
-                    renderVoto(decisao.votos[s], s)
+                  {SOCIOS.map((s) =>
+                    renderVoto(decisao.votos[s] ?? 'pendente', s)
                   )}
                 </div>
 

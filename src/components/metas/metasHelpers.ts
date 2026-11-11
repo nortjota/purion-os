@@ -1,12 +1,12 @@
+import { SOCIOS_ATIVOS, corPerfil } from '@/lib/socios'
 import type { MetaDiaria, MetaChecklistItem, PerfilUsuario, CategoriaMeta, TipoMeta, EscopoMeta } from '@/store'
 
 export type EscopoFiltro = PerfilUsuario | 'time'
 
-export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inicial: string }> = [
-  { id: 'matheus', nome: 'Matheus', cor: '#C9A84C', inicial: 'M' },
-  { id: 'joao',    nome: 'João',    cor: '#5B8FE8', inicial: 'J' },
-  { id: 'gabriel', nome: 'Gabriel', cor: '#22C55E', inicial: 'G' },
-]
+/** Apenas sócios ativos (matheus, joao). Gabriel está arquivado — veja src/lib/socios.ts. */
+export const SOCIOS: Array<{ id: PerfilUsuario; nome: string; cor: string; inicial: string }> = SOCIOS_ATIVOS.map((s) => ({
+  id: s.id as PerfilUsuario, nome: s.nome, cor: s.cor, inicial: s.inicial,
+}))
 
 export const CATEGORIAS: Array<{ id: CategoriaMeta; label: string; cor: string }> = [
   { id: 'ads',      label: 'Ads',      cor: '#5B8FE8' },
@@ -22,7 +22,7 @@ export function corCategoria(cat: CategoriaMeta): string {
 }
 
 export function corSocio(socio: PerfilUsuario | null): string {
-  return SOCIOS.find((s) => s.id === socio)?.cor ?? '#C9A84C'
+  return socio ? corPerfil(socio) : '#C9A84C'
 }
 
 export function hojeISO(): string {
@@ -191,16 +191,14 @@ export interface TemplateMeta {
 
 export const TEMPLATES_POR_SOCIO: Record<PerfilUsuario, TemplateMeta[]> = {
   joao: [
-    { titulo: 'DMs para creators',    tipo: 'numerica', categoria: 'creators', valorAlvo: 5, unidade: 'dm' },
-    { titulo: 'Criativo novo',        tipo: 'numerica', categoria: 'ads',      valorAlvo: 1, unidade: 'criativo' },
+    { titulo: 'DMs para creators',    tipo: 'numerica', categoria: 'creators', valorAlvo: 5, unidade: 'DMs' },
+    { titulo: 'Criativo novo produzido', tipo: 'numerica', categoria: 'ads',   valorAlvo: 1, unidade: 'criativo' },
   ],
   matheus: [
-    { titulo: 'Contatos B2B',  tipo: 'numerica', categoria: 'b2b',    valorAlvo: 3, unidade: 'contato' },
-    { titulo: 'Follow-ups',    tipo: 'numerica', categoria: 'b2b',    valorAlvo: 2, unidade: 'follow-up' },
+    { titulo: 'Abordagens B2B novas', tipo: 'numerica', categoria: 'b2b',    valorAlvo: 4, unidade: 'estéticas' },
+    { titulo: 'Follow-ups B2B (D+21 e pipeline)', tipo: 'numerica', categoria: 'b2b', valorAlvo: 3, unidade: 'contatos' },
   ],
-  gabriel: [
-    { titulo: 'Frascos envasados', tipo: 'numerica', categoria: 'producao', valorAlvo: 150, unidade: 'frasco' },
-  ],
+  gabriel: [], // arquivado
 }
 
 export const TIPO_LABEL: Record<TipoMeta, string> = { numerica: 'Numérica', checklist: 'Checklist' }

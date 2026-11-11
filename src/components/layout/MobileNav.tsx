@@ -8,12 +8,18 @@ import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
   Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
-  Compass, FlaskConical, Mail, CalendarDays, LayoutGrid,
+  Compass, FlaskConical, Mail, CalendarDays, LayoutGrid, Truck,
 } from 'lucide-react'
 import { useIsMaster } from '@/hooks/useIsMaster'
+import { useIsLogistica } from '@/hooks/useIsLogistica'
 import { usePreferenciasMenu } from '@/hooks/usePreferenciasMenu'
 import { hrefParaChave } from './navConfig'
 import { PersonalizarMenuModal } from './PersonalizarMenuModal'
+
+// Perfil 'logistica' (Goiânia): só a fila de despacho
+const MAIN_ITEMS_LOGISTICA = [
+  { href: '/despacho', label: 'Despacho', icon: Truck },
+]
 
 const MAIN_ITEMS = [
   { href: '/',            label: 'Início',     icon: LayoutDashboard },
@@ -39,6 +45,7 @@ const DRAWER_GROUPS: DrawerGroup[] = [
   {
     label: 'OPERAÇÃO',
     items: [
+      { href: '/despacho', label: 'Despachos', icon: Truck },
       { href: '/calendario', label: 'Calendário', icon: CalendarDays },
       { href: '/quadros',  label: 'Quadros',   icon: Shapes   },
       { href: '/producao', label: 'Produção',  icon: Package  },
@@ -71,11 +78,14 @@ export function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [menuPersonalizarAberto, setMenuPersonalizarAberto] = useState(false)
   const { isMaster } = useIsMaster()
+  const { isLogistica } = useIsLogistica()
   const { ocultas: abasOcultas } = usePreferenciasMenu()
 
-  const visibleMainItems = MAIN_ITEMS.filter((i) => !abasOcultas.has(hrefParaChave(i.href)))
+  const visibleMainItems = isLogistica
+    ? MAIN_ITEMS_LOGISTICA
+    : MAIN_ITEMS.filter((i) => !abasOcultas.has(hrefParaChave(i.href)))
 
-  const visibleGroups = DRAWER_GROUPS.map((g) => ({
+  const visibleGroups = isLogistica ? [] : DRAWER_GROUPS.map((g) => ({
     ...g,
     items: g.items.filter((i) => (isMaster || !i.masterOnly) && !abasOcultas.has(hrefParaChave(i.href))),
   })).filter((g) => g.items.length > 0)
@@ -116,7 +126,7 @@ export function MobileNav() {
           )
         })}
 
-        <button
+        {!isLogistica && <button
           onClick={() => setDrawerOpen(true)}
           style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -127,7 +137,7 @@ export function MobileNav() {
         >
           <MoreHorizontal size={20} />
           <span style={{ fontSize: 10, fontWeight: 500 }}>Menu</span>
-        </button>
+        </button>}
       </nav>
 
       {/* Drawer */}
