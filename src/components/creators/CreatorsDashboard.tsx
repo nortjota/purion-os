@@ -1,5 +1,6 @@
 'use client'
 
+import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { useState, useMemo } from 'react'
 import { useMobile } from '@/hooks/useMobile'
 import dynamic from 'next/dynamic'
@@ -986,26 +987,17 @@ function AbaOverview({ onSelectCreator }: { onSelectCreator: (id: string) => voi
     return new Date(d + (d.includes('T') ? '' : 'T12:00:00Z')).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' })
   }
 
-  const KPI_ITEMS = [
-    { label: 'Total na base',         value: String(kpis.total) },
-    { label: 'Ativos (30 dias)',       value: String(kpis.ativos) },
-    { label: 'Alcance total',          value: fmtSeg(kpis.alcanceTotal) },
-    { label: 'Posts no mês',           value: String(kpis.postsMes) },
-    { label: 'ROI médio',              value: kpis.roiMedio > 0 ? `${kpis.roiMedio.toFixed(1)}×` : '—' },
-    { label: 'Custo / 1k seguidores',  value: kpis.custoPorAlcance > 0 ? fmtR(kpis.custoPorAlcance) : '—' },
+  const metricas: MetricaFaixa[] = [
+    { label: 'Na base', valor: kpis.total, sub: `${kpis.ativos} ativos em 30 dias` },
+    { label: 'Alcance total', valor: fmtSeg(kpis.alcanceTotal), sub: 'seguidores somados' },
+    { label: 'Posts no mês', valor: kpis.postsMes, sub: 'publicações de creators' },
+    { label: 'ROI médio', valor: kpis.roiMedio > 0 ? `${kpis.roiMedio.toFixed(1).replace('.', ',')}×` : '—', sub: 'receita ÷ custo', tom: kpis.roiMedio > 0 && kpis.roiMedio < 1 ? 'warning' : undefined, dica: 'ROI abaixo de 1× significa que os creators custaram mais do que geraram em receita rastreada.' },
+    { label: 'Custo / 1k seguidores', valor: kpis.custoPorAlcance > 0 ? fmtR(kpis.custoPorAlcance) : '—', sub: 'investido ÷ alcance' },
   ]
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {KPI_ITEMS.map(({ label, value }) => (
-          <div key={label} className="kpi-card">
-            <p className="kpi-label">{label}</p>
-            <p className="kpi-value mt-2">{value}</p>
-          </div>
-        ))}
-      </div>
+    <div className="flex flex-col gap-5">
+      <MetricStrip metricas={metricas} rotulo="Resumo de creators" />
 
       {/* Creators list — table on desktop, cards on mobile */}
       <div className="card-purion overflow-hidden">
@@ -1761,16 +1753,15 @@ export function CreatorsDashboard() {
   const [deletandoCreator, setDeletandoCreator] = useState<Creator | null>(null)
 
   return (
-    <div className="page-content section-gap">
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-4">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="page-title">Hub de Creators</h1>
-          <p className="caption mt-1">Influencer marketing — prospecção, campanhas e análise de ROI</p>
+          <h1 className="page-title">Creators</h1>
         </div>
         <button
           onClick={() => setShowModalCreator(true)}
-          className="btn btn-primary"
+          className="btn btn-accent btn-sm"
         >
           <Plus size={14} /> Novo creator
         </button>

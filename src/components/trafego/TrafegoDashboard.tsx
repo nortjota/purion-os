@@ -5,6 +5,7 @@
  * Painel unificado + sub-abas Meta / Google / TikTok.
  */
 
+import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { useEffect, useState, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { AlertTriangle, CheckCircle, RefreshCw, Settings } from 'lucide-react'
@@ -353,20 +354,20 @@ export function TrafegoDashboard() {
       {/* ══ TAB: PAINEL ══ */}
       {activeTab === 'painel' && (
         <div className="space-y-6">
-          {/* 4 KPI cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {anyLoading
-              ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-              : [
-                  { label: 'Gasto Consolidado', valor: fmtR(totalGasto),          destaque: true },
-                  { label: 'ROAS Consolidado',  valor: roasCons > 0 ? `${roasCons.toFixed(1)}×` : '—', aviso: roasCons > 0 && roasCons < roasMinimo },
-                  { label: 'CPA Consolidado',   valor: cpaCons > 0 ? fmtR(cpaCons) : '—', alerta: cpaCons > cpaMaximo && cpaCons > 0 },
-                  { label: 'Mais Eficiente',    valor: plataformaMaisEficiente },
-                ].map((kpi) => (
-                  <KpiCard key={kpi.label} {...kpi} />
-                ))
-            }
-          </div>
+          {/* Números consolidados */}
+          {anyLoading
+            ? <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}</div>
+            : (
+              <MetricStrip
+                rotulo="Tráfego pago consolidado"
+                metricas={[
+                  { label: 'Gasto consolidado', valor: fmtR(totalGasto), sub: 'Meta + Google + TikTok' },
+                  { label: 'ROAS consolidado', valor: roasCons > 0 ? `${roasCons.toFixed(1).replace('.', ',')}×` : '—', sub: `mínimo ${String(roasMinimo).replace('.', ',')}×`, tom: roasCons > 0 ? (roasCons < roasMinimo ? 'danger' : 'ok') : undefined },
+                  { label: 'CPA consolidado', valor: cpaCons > 0 ? fmtR(cpaCons) : '—', sub: `máximo ${fmtR(cpaMaximo)}`, tom: cpaCons > 0 ? (cpaCons > cpaMaximo ? 'danger' : 'ok') : undefined },
+                  { label: 'Mais eficiente', valor: plataformaMaisEficiente, sub: 'maior ROAS no período' },
+                ]}
+              />
+            )}
 
           {/* Gráfico empilhado */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-5">

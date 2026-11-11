@@ -7,15 +7,15 @@ import { TrafegoDashboard } from '@/components/trafego/TrafegoDashboard'
 import { InteligenciaDashboard } from '@/components/inteligencia/InteligenciaDashboard'
 
 const TABS = [
-  { id: 'organico',     label: 'Orgânico & Creators' },
-  { id: 'trafego',      label: 'Tráfego Pago' },
+  { id: 'trafego',      label: 'Tráfego pago' },
+  { id: 'organico',     label: 'Conteúdo & kits' },
   { id: 'inteligencia', label: 'Inteligência' },
 ]
 
 export function MarketingHub() {
   const router       = useRouter()
   const searchParams = useSearchParams()
-  const tab          = searchParams.get('tab') ?? 'organico'
+  const tab          = searchParams.get('tab') ?? 'trafego'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -23,7 +23,7 @@ export function MarketingHub() {
         tabs={TABS}
         activeTab={tab}
         onChange={(id) => router.push(`/marketing?tab=${id}`)}
-        className="px-4"
+        className="px-2 md:px-[14px]"
         style={{ borderBottom: '1px solid var(--border)', flexShrink: 0 }}
       />
       <div style={{ flex: 1, overflowY: 'auto' }}>

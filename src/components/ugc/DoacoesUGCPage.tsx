@@ -1,5 +1,6 @@
 'use client'
 
+import { MetricStrip } from '@/components/ui/MetricStrip'
 import { useState } from 'react'
 import { usePurionStore } from '@/store'
 import { useDoacoesUGC } from '@/hooks/useDoacoesUGC'
@@ -104,40 +105,27 @@ export function DoacoesUGCPage() {
   }
 
   return (
-    <div className="page-content section-gap">
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 className="page-title">Doações UGC</h1>
           <p className="caption mt-1">Produtos enviados para creators em troca de conteúdo</p>
         </div>
-        <button className="btn btn-primary" onClick={abrirCriar} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Plus size={15} />
-          Nova Doação
+        <button className="btn btn-accent btn-sm" onClick={abrirCriar}>
+          <Plus size={14} />
+          Nova doação
         </button>
       </div>
 
-      {/* KPIs */}
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <div className="kpi-card" style={{ minWidth: 140 }}>
-          <span className="caption">Total enviado</span>
-          <span style={{ fontSize: 28, fontWeight: 700 }}>{totalEnviados}</span>
-          <span className="caption">frascos</span>
-        </div>
-        <div className="kpi-card" style={{ minWidth: 140 }}>
-          <span className="caption">Aguardando</span>
-          <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--status-warning)' }}>{totalAguardando}</span>
-          <span className="caption">doações</span>
-        </div>
-        <div className="kpi-card" style={{ minWidth: 140 }}>
-          <span className="caption">Conteúdos entregues</span>
-          <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--status-ok)' }}>{totalConteudos}</span>
-          <span className="caption">de {doacoesUGC.length}</span>
-        </div>
-        <div className="kpi-card" style={{ minWidth: 140 }}>
-          <span className="caption">Custo total</span>
-          <span style={{ fontSize: 22, fontWeight: 700 }}>R$ {totalCusto.toFixed(2)}</span>
-        </div>
-      </div>
+      <MetricStrip
+        rotulo="Resumo das doações UGC"
+        metricas={[
+          { label: 'Frascos enviados', valor: totalEnviados, sub: 'saem do estoque de prontos' },
+          { label: 'Aguardando envio', valor: totalAguardando, sub: 'doações', tom: totalAguardando > 0 ? 'warning' : undefined },
+          { label: 'Conteúdos entregues', valor: totalConteudos, sub: `de ${doacoesUGC.length} doações` },
+          { label: 'Custo total', valor: totalCusto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), sub: 'custo dos frascos doados' },
+        ]}
+      />
 
       {/* Filtros */}
       <div className="flex gap-1 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit overflow-x-auto">

@@ -21,7 +21,7 @@ export function CreatorsHub() {
         tabs={TABS}
         activeTab={tab}
         onChange={(id) => router.push(`/creators?tab=${id}`)}
-        className="px-4"
+        className="px-2 md:px-[14px]"
       />
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {tab === 'influencers' && <CreatorsDashboard />}

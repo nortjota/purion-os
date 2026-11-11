@@ -1,5 +1,6 @@
 'use client'
 
+import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { Skeleton } from '@/components/motion/Skeleton'
 
 import { useState, useMemo } from 'react'
@@ -25,7 +26,7 @@ const GraficoTopAfiliados = dynamic(
 )
 
 const fmt   = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-const fmtPc = (v: number) => `${v.toFixed(1)}%`
+const fmtPc = (v: number) => `${v.toFixed(1).replace('.', ',')}%`
 
 const STATUS_BADGE: Record<string, { label: string; color: string; bg: string }> = {
   ativo:     { label: 'Ativo',     color: '#8FD14F', bg: 'rgba(143,209,79,0.1)' },
@@ -133,13 +134,13 @@ export function AfiliadosDashboard() {
     setTimeout(() => setCopiado(null), 2000)
   }
 
-  const KPI_CARDS = [
-    { label: 'Afiliados ativos',       value: String(kpis.ativos),              icon: Users,     cor: '#9CC3DB' },
-    { label: 'Vendas via afiliados',    value: fmt(kpis.receitaMes),             icon: TrendingUp, cor: '#8FD14F', sub: 'no mês' },
-    { label: 'Comissões a pagar',       value: fmt(kpis.comPendentes),           icon: DollarSign, cor: '#E6C374' },
-    { label: 'Comissões pagas no mês',  value: fmt(kpis.comPagasMes),            icon: Check,     cor: '#8FD14F' },
-    { label: 'Melhor afiliado do mês',  value: kpis.melhor?.nome.split(' ')[0] ?? '—', icon: Award, cor: '#D4FC3C', sub: kpis.melhorVal > 0 ? fmt(kpis.melhorVal) : undefined },
-    { label: 'Taxa de conversão média', value: fmtPc(kpis.taxaConv),            icon: BarChart2, cor: '#A7A9A6' },
+  const metricas: MetricaFaixa[] = [
+    { label: 'Afiliados ativos', valor: kpis.ativos, sub: `${afiliados.length} cadastrado${afiliados.length !== 1 ? 's' : ''}` },
+    { label: 'Vendas via afiliados', valor: fmt(kpis.receitaMes), sub: 'no mês' },
+    { label: 'Comissões a pagar', valor: fmt(kpis.comPendentes), sub: 'pendentes', tom: kpis.comPendentes > 0 ? 'warning' : undefined },
+    { label: 'Comissões pagas', valor: fmt(kpis.comPagasMes), sub: 'no mês' },
+    { label: 'Melhor do mês', valor: kpis.melhor?.nome.split(' ')[0] ?? '—', sub: kpis.melhorVal > 0 ? fmt(kpis.melhorVal) : 'sem vendas' },
+    { label: 'Conversão média', valor: fmtPc(kpis.taxaConv), sub: 'vendas ÷ cliques' },
   ]
 
   if (carregando) {
@@ -153,45 +154,23 @@ export function AfiliadosDashboard() {
   return (
     <div className="page-content section-gap">
       {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="page-title">Afiliados</h1>
-          <p className="caption mt-1">
-            {afiliados.length} afiliado{afiliados.length !== 1 ? 's' : ''} cadastrado{afiliados.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        <button
-          onClick={() => { setEditando(null); setModalAberto(true) }}
-          className="btn btn-primary"
-        >
-          <Plus size={15} /> Novo afiliado
+      <div className="toolbar">
+        <h1 className="page-title" style={{ flex: '1 1 200px' }}>Afiliados</h1>
+        <button onClick={() => { setEditando(null); setModalAberto(true) }} className="btn btn-accent btn-sm">
+          <Plus size={14} /> Novo afiliado
         </button>
       </div>
 
-      {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
-        {KPI_CARDS.map(({ label, value, icon: Icon, cor, sub }) => (
-          <div key={label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size={15} color={cor} />
-              </div>
-              <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.3 }}>{label}</p>
-            </div>
-            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{value}</p>
-            {sub && <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '2px 0 0' }}>{sub}</p>}
-          </div>
-        ))}
-      </div>
+      <MetricStrip metricas={metricas} rotulo="Resumo de afiliados" />
 
       {/* Gráficos */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="grid-mobile-1">
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 20 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 16px' }}>Vendas via afiliados — últimos 30 dias</p>
+          <p className="kpi-label mb-4">Vendas via afiliados · 30 dias</p>
           <GraficoVendasDiarias dados={dadosVendasDiarias} />
         </div>
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 20 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 16px' }}>Top afiliados do mês</p>
+          <p className="kpi-label mb-4">Top afiliados do mês</p>
           {dadosTopAfiliados.length === 0
             ? <p style={{ color: 'var(--text-secondary)', fontSize: 13, textAlign: 'center', padding: '40px 0' }}>Sem vendas registradas no mês</p>
             : <GraficoTopAfiliados dados={dadosTopAfiliados} onClickAfiliado={id => router.push(`/afiliados/${id}`)} />
@@ -200,20 +179,16 @@ export function AfiliadosDashboard() {
       </div>
 
       {/* Filtros */}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
-          <Search size={14} color="var(--text-secondary)" />
-          <input
-            value={busca} onChange={e => setBusca(e.target.value)}
-            placeholder="Buscar por nome ou código…"
-            style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--text-primary)', width: '100%' }}
-          />
-        </div>
+      <div className="toolbar">
+        <label className="busca" style={{ flex: '1 1 220px', maxWidth: 360 }}>
+          <Search size={13} aria-hidden />
+          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por nome ou código" aria-label="Buscar afiliados" />
+        </label>
         <select
           value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}
-          className="select-purion" style={{ width: 'auto' }}
+          className="filtro" data-ativo={filtroStatus !== 'todos' || undefined} aria-label="Status"
         >
-          <option value="todos">Todos os status</option>
+          <option value="todos">Status</option>
           <option value="ativo">Ativo</option>
           <option value="pausado">Pausado</option>
           <option value="pendente">Pendente</option>
@@ -221,18 +196,16 @@ export function AfiliadosDashboard() {
         </select>
         <select
           value={filtroPlataforma} onChange={e => setFiltroPlataforma(e.target.value)}
-          className="select-purion" style={{ width: 'auto' }}
+          className="filtro" data-ativo={filtroPlataforma !== 'todos' || undefined} aria-label="Plataforma"
         >
-          <option value="todos">Todas as plataformas</option>
+          <option value="todos">Plataforma</option>
           <option value="TikTok">TikTok</option>
           <option value="Instagram">Instagram</option>
           <option value="YouTube">YouTube</option>
           <option value="Direto">Direto</option>
         </select>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
-          <Filter size={13} />
-          {afiliadosFiltrados.length} resultado{afiliadosFiltrados.length !== 1 ? 's' : ''}
-        </div>
+        <span className="toolbar-espaco" />
+        <span className="caption tnum">{afiliadosFiltrados.length} resultado{afiliadosFiltrados.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Tabela */}
@@ -252,7 +225,7 @@ export function AfiliadosDashboard() {
               {afiliadosFiltrados.length === 0 ? (
                 <tr><td colSpan={9} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)', fontSize: 13 }}>
                   <p style={{ marginBottom: 12 }}>Nenhum afiliado encontrado</p>
-                  <button className="btn btn-primary" onClick={() => setModalAberto(true)} style={{ fontSize: 13 }}>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setModalAberto(true)}>
                     <Plus size={14} /> Novo afiliado
                   </button>
                 </td></tr>

@@ -387,8 +387,8 @@ export function MarketingDashboard() {
 
       {/* ── Header ── */}
       <div>
-        <h1 className="page-title">Marketing & Creators</h1>
-        <p className="caption mt-1">KPIs, tracker de influenciadores e calendário de conteúdo</p>
+        <h1 className="page-title">Conteúdo & kits</h1>
+        <p className="caption mt-1">Metas de kits e vídeos, envio de kits e calendário de conteúdo. O cadastro completo fica em Creators.</p>
       </div>
 
       {/* ══════════════════════════════════════
