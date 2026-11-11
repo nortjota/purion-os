@@ -62,14 +62,15 @@ export function useConfiguracoes() {
         return true
       }
       // Precificação grava em chaves snake_case (custo_unitario, preco_b2c…); o resto mantém a chave do app.
-      // tenant_id NÃO é enviado: o DEFAULT public.meu_tenant_id() preenche e o conflito resolve por (chave, tenant_id).
+      // tenant_id NÃO é enviado (DEFAULT public.meu_tenant_id()). A chave primária da tabela é só `chave`,
+      // então o conflito é resolvido por ela.
       const upserts = Object.entries(config).map(([campo, valor]) => {
         const chave = CAMPO_PARA_CHAVE[campo] ?? campo
         const def = CHAVES_PRECIFICACAO[chave as keyof typeof CHAVES_PRECIFICACAO]
         const v = def?.pct && typeof valor === 'number' ? Math.round(valor * 10000) / 100 : valor
         return { chave, valor: v, updated_at: new Date().toISOString() }
       })
-      const { error } = await sb.from('configuracoes').upsert(upserts, { onConflict: 'chave,tenant_id' })
+      const { error } = await sb.from('configuracoes').upsert(upserts, { onConflict: 'chave' })
       dbLog('UPSERT', 'configuracoes', error, Object.keys(config))
       if (error) { toastError('Erro ao salvar configurações', error.message); return false }
       usePurionStore.getState().setConfiguracoes(config)

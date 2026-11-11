@@ -1,6 +1,7 @@
 -- ============================================================
 -- PURION OS — Precificação oficial: B2C R$ 97,90 · custo R$ 30,00
--- Substitui R$ 109,90 / R$ 28,00. Idempotente (upsert por chave + tenant).
+-- Substitui R$ 109,90 / R$ 28,00. Idempotente (upsert pela chave primária `chave`;
+-- linhas antigas sem tenant passam a ser da PURION, para o app conseguir lê-las via RLS).
 -- Adapta-se ao tipo real da coluna configuracoes.valor (text, numeric ou jsonb).
 --
 -- tenant_id: no SQL Editor não há usuário logado (meu_tenant_id() = NULL), então o script
@@ -39,7 +40,7 @@ BEGIN
     EXECUTE format(
       'INSERT INTO public.configuracoes (chave, valor, tenant_id, updated_at)
        VALUES (%L, %L::%s, %L, now())
-       ON CONFLICT (chave, tenant_id) DO UPDATE SET valor = EXCLUDED.valor, updated_at = now()',
+       ON CONFLICT (chave) DO UPDATE SET valor = EXCLUDED.valor, updated_at = now(), tenant_id = COALESCE(public.configuracoes.tenant_id, EXCLUDED.tenant_id)',
       r.chave, r.valor, v_tipo, v_tenant);
   END LOOP;
 
@@ -47,6 +48,6 @@ BEGIN
   EXECUTE format(
     'INSERT INTO public.configuracoes (chave, valor, tenant_id, updated_at)
      VALUES (%L, %L::%s, %L, now())
-     ON CONFLICT (chave, tenant_id) DO UPDATE SET valor = EXCLUDED.valor, updated_at = now()',
+     ON CONFLICT (chave) DO UPDATE SET valor = EXCLUDED.valor, updated_at = now(), tenant_id = COALESCE(public.configuracoes.tenant_id, EXCLUDED.tenant_id)',
     'margemMinimaAlvo', '0.65', v_tipo, v_tenant);
 END $$;
