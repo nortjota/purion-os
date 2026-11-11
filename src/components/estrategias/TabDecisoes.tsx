@@ -69,7 +69,7 @@ export function ModalDecisao({ onFechar, onSalvar }: { onFechar: () => void; onS
           </div>
           <div>
             <label className="kpi-label mb-1 block">Título *</label>
-            <input className="input-purion w-full" value={form.titulo} onChange={(e) => set('titulo', e.target.value)} placeholder="Ex: Preço oficial fixado em R$109,90" required />
+            <input className="input-purion w-full" value={form.titulo} onChange={(e) => set('titulo', e.target.value)} placeholder="Ex: Preço oficial fixado em R$ 97,90" required />
           </div>
           <div>
             <label className="kpi-label mb-1 block">Justificativa</label>
@@ -130,7 +130,7 @@ export function TabDecisoes() {
         <div className="empty-state">
           <Milestone size={36} className="empty-state-icon" />
           <p className="empty-state-title">Nenhuma decisão registrada</p>
-          <p className="empty-state-subtitle">Preço R$109,90, fragrância única, North Star… registre os marcos que definem a estratégia.</p>
+          <p className="empty-state-subtitle">Preço R$ 97,90, fragrância única, North Star… registre os marcos que definem a estratégia.</p>
         </div>
       ) : (
         <div style={{ position: 'relative', paddingLeft: 20 }}>

@@ -6,7 +6,7 @@ import type { Venda, PerfilUsuario, StatusPagamentoVenda, StatusEntregaVenda } f
 import { useVendas, type NovaVendaManual } from '@/hooks/useVendas'
 import { SelectBuscavel } from '@/components/ui/SelectBuscavel'
 
-const VALOR_UNITARIO_B2B_PADRAO = 60
+
 const QUANTIDADE_PADRAO_LOTE = 10
 
 function nowLocalInput() {
@@ -16,7 +16,8 @@ function nowLocalInput() {
 }
 
 export function ModalVendaB2B({ venda, onFechar }: { venda?: Venda; onFechar: () => void }) {
-  const { leads } = usePurionStore()
+  const { leads, configuracoes } = usePurionStore()
+  const VALOR_UNITARIO_B2B_PADRAO = configuracoes.precoB2B
   const { criarVenda, atualizarVenda } = useVendas()
   const editando = !!venda
 

@@ -1,4 +1,5 @@
 import type { StatusPagamentoVenda, StatusEntregaVenda, CanalVenda, OrigemVenda, TipoCliente, Venda } from '@/store'
+import { CUSTO_PRODUCAO_FRASCO } from './precificacao'
 
 export const STATUS_PAGAMENTO_LABEL: Record<StatusPagamentoVenda, string> = {
   pendente: 'Pendente', pago: 'Pago', estornado: 'Estornado', cancelado: 'Cancelado',
@@ -37,15 +38,13 @@ export function fmtR(v: number) {
 export const CANAL_LABEL: Record<CanalVenda, string> = { b2c: 'B2C', b2b: 'B2B' }
 export const CANAL_BADGE: Record<CanalVenda, string> = { b2c: 'badge-info', b2b: 'badge-neutral' }
 
-// Preço oficial de referência e custo de produção — usados no cálculo de margem.
-export const PRECO_OFICIAL_B2C = 109.90
-export const PRECO_OFICIAL_B2B = 60
-export const CUSTO_UNITARIO_PRODUTO = 28
+// Preço oficial e custo de produção: fonte única em src/lib/precificacao.ts (R$ 97,90 / R$ 30,00).
+export { PRECO_B2C_OFICIAL as PRECO_OFICIAL_B2C, PRECO_B2B_OFICIAL as PRECO_OFICIAL_B2B, CUSTO_PRODUCAO_FRASCO as CUSTO_UNITARIO_PRODUTO } from './precificacao'
 
 /** Margem = valor da venda − (custo de produção × qtd) − taxa de pagamento. */
-export function calcularMargem(v: Venda): number {
+export function calcularMargem(v: Venda, custoUnitario = CUSTO_PRODUCAO_FRASCO): number {
   const valor = v.valorTotal ?? v.valorLiquido
-  const custo = CUSTO_UNITARIO_PRODUTO * (v.quantidade || 1)
+  const custo = custoUnitario * (v.quantidade || 1)
   return valor - custo - (v.taxa || 0)
 }
 

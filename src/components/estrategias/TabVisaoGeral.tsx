@@ -6,13 +6,17 @@ import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
 import { formatCurrency, formatNumber } from '@/lib/formatters'
 import type { EstrategiaFase, StatusFase } from '@/hooks/useEstrategia'
 import { SecaoNotas } from './SecaoNotas'
+import { PRECO_B2C_OFICIAL } from '@/lib/precificacao'
 
 // ─── Constantes de negócio (referência do plano da marca) ────────────
+// Preço oficial R$ 97,90 · contribuição orgânica R$ 39,90/frasco (97,90 − 30 custo − 28 variáveis).
+// Ponto de equilíbrio mantém o mesmo custo fixo de referência do plano (≈ R$ 2.154/mês).
+const CUSTO_FIXO_MES_REF = 2154
 const CONTA_DO_MILHAO = {
-  preco: 109.9,
-  contribuicao: 76.94,
-  pontoEquilibrioMes: 28,
-  frascosMilhao: 9100,
+  preco: PRECO_B2C_OFICIAL,
+  contribuicao: 39.9,
+  pontoEquilibrioMes: Math.ceil(CUSTO_FIXO_MES_REF / 39.9),
+  frascosMilhao: Math.ceil(1_000_000 / PRECO_B2C_OFICIAL),
 }
 
 const STATUS_COR: Record<StatusFase, string> = {

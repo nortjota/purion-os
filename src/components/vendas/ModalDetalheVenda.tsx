@@ -155,7 +155,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
           {/* MARGEM */}
           <Secao icon={TrendingUp} titulo="Margem">
             <Campo label="Margem estimada" valor={fmtR(margem)} destaque />
-            <p className="text-[10px] text-[#8A8A8A]">Valor − custo de produção (R$28/frasco × {v.quantidade}) − taxa</p>
+            <p className="text-[10px] text-[#B8B8B8]">Valor − custo de produção (R$ 30,00/frasco × {v.quantidade}) − taxa</p>
           </Secao>
 
           {/* PAGAMENTO */}

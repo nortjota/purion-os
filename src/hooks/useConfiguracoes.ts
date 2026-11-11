@@ -6,6 +6,13 @@ import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import { useToast } from '@/components/ui/Toast'
 import type { Configuracoes } from '@/store'
+import { CHAVES_PRECIFICACAO, CAMPO_PARA_CHAVE } from '@/lib/precificacao'
+
+/** "97.9" → 97.9 (a coluna valor pode ser text/jsonb); demais valores passam como estão. */
+function normalizarValor(v: unknown): unknown {
+  if (typeof v === 'string' && v.trim() !== '' && /^-?\d+([.,]\d+)?$/.test(v.trim())) return Number(v.trim().replace(',', '.'))
+  return v
+}
 
 export function useConfiguracoes() {
   const { success, error: toastError } = useToast()
@@ -18,11 +25,19 @@ export function useConfiguracoes() {
       const { data, error } = await sb.from('configuracoes').select('chave, valor')
       dbLog('SELECT', 'configuracoes', error, `${data?.length ?? 0} rows`)
       if (!data || !data.length) return
-      const patch = data.reduce<Partial<Configuracoes>>((acc, row) => {
-        (acc as Record<string, unknown>)[row.chave] = row.valor
-        return acc
-      }, {})
-      usePurionStore.getState().setConfiguracoes(patch)
+      const patch: Record<string, unknown> = {}
+      // 1º chaves legadas (camelCase), depois as de precificação (snake_case), que têm prioridade
+      for (const row of data) {
+        if (row.chave in CHAVES_PRECIFICACAO) continue
+        patch[row.chave] = normalizarValor(row.valor)
+      }
+      for (const row of data) {
+        const def = CHAVES_PRECIFICACAO[row.chave as keyof typeof CHAVES_PRECIFICACAO]
+        if (!def) continue
+        const n = Number(normalizarValor(row.valor))
+        if (Number.isFinite(n)) patch[def.campo] = def.pct ? n / 100 : n
+      }
+      usePurionStore.getState().setConfiguracoes(patch as Partial<Configuracoes>)
     }
 
     load()
@@ -46,10 +61,15 @@ export function useConfiguracoes() {
         usePurionStore.getState().setConfiguracoes(config)
         return true
       }
-      const upserts = Object.entries(config).map(([chave, valor]) => ({
-        chave, valor, updated_at: new Date().toISOString(),
-      }))
-      const { error } = await sb.from('configuracoes').upsert(upserts, { onConflict: 'tenant_id,chave' })
+      // Precificação grava em chaves snake_case (custo_unitario, preco_b2c…); o resto mantém a chave do app.
+      // tenant_id NÃO é enviado: o DEFAULT public.meu_tenant_id() preenche e o conflito resolve por (chave, tenant_id).
+      const upserts = Object.entries(config).map(([campo, valor]) => {
+        const chave = CAMPO_PARA_CHAVE[campo] ?? campo
+        const def = CHAVES_PRECIFICACAO[chave as keyof typeof CHAVES_PRECIFICACAO]
+        const v = def?.pct && typeof valor === 'number' ? Math.round(valor * 10000) / 100 : valor
+        return { chave, valor: v, updated_at: new Date().toISOString() }
+      })
+      const { error } = await sb.from('configuracoes').upsert(upserts, { onConflict: 'chave,tenant_id' })
       dbLog('UPSERT', 'configuracoes', error, Object.keys(config))
       if (error) { toastError('Erro ao salvar configurações', error.message); return false }
       usePurionStore.getState().setConfiguracoes(config)

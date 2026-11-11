@@ -722,9 +722,13 @@ export interface MetaChecklistItem {
 export interface Configuracoes {
   // Precificação — preço é definido comercialmente, não calculado por fórmula.
   // markup/margem real são DERIVADOS de custo × preço (calculados ao vivo na UI, não persistidos).
-  custoProdutoUnitario: number    // R$ 28,00 — custo real de produção de 1 frasco
-  precoB2C: number                // R$ 109,90 — preço comercial real (B2C)
-  precoB2B: number                // R$ 60,00 — preço comercial real (B2B), referência
+  custoProdutoUnitario: number    // R$ 30,00 — custo real de produção de 1 frasco
+  precoB2C: number                // R$ 97,90 — preço comercial oficial (B2C)
+  precoB2B: number                // R$ 64,90 — preço ao parceiro B2B (hipótese)
+  custosVariaveis: number         // R$ 28,00 por frasco: embalagem 6 + taxas 5 + impostos 7 + frete 8 + perdas 2
+  contribuicaoOrganica: number    // R$ 39,90 = preço − custo − custos variáveis
+  markupPct?: number              // 226 — referência gravada (recalculado ao vivo na UI)
+  margemRealPct?: number          // 69 — referência gravada (recalculado ao vivo na UI)
   margemLucro: number             // legado — não usado no cálculo de preço
   markupPadrao: number            // legado — não usado no cálculo de preço
   margemMinimaAlvo: number        // 0.65 = 65% — piso aceitável, usado só para alerta/referência
@@ -966,9 +970,13 @@ interface PurionState {
 // ─────────────────────────────────────────────
 
 const configPadrao: Configuracoes = {
-  custoProdutoUnitario: 28,
-  precoB2C: 109.90,
-  precoB2B: 60,
+  custoProdutoUnitario: 30,
+  precoB2C: 97.90,
+  precoB2B: 64.90,
+  custosVariaveis: 28,
+  contribuicaoOrganica: 39.90,
+  markupPct: 226,
+  margemRealPct: 69,
   margemLucro: 0.65,
   markupPadrao: 1 / (1 - 0.65), // ≈ 2.857 — legado, não usado no cálculo de preço
   margemMinimaAlvo: 0.65,
@@ -1324,10 +1332,14 @@ export const usePurionStore = create<PurionState>()(
         merge: (persisted, current) => ({
           ...current,
           ...(persisted as object),
-          configuracoes: {
-            ...configPadrao,
-            ...((persisted as { configuracoes?: Partial<Configuracoes> }).configuracoes ?? {}),
-          },
+          configuracoes: (() => {
+            const salvo = { ...((persisted as { configuracoes?: Partial<Configuracoes> }).configuracoes ?? {}) }
+            // Cache local com a precificação antiga (R$109,90 / R$28) é descartado — vale a oficial nova
+            if (salvo.precoB2C === 109.9 || salvo.custoProdutoUnitario === 28) {
+              delete salvo.precoB2C; delete salvo.custoProdutoUnitario; delete salvo.precoB2B
+            }
+            return { ...configPadrao, ...salvo }
+          })(),
         }),
       }
     ),
