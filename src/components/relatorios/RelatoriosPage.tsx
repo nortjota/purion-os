@@ -3,7 +3,12 @@
 import { useState } from 'react'
 import { useMobile } from '@/hooks/useMobile'
 import { InnerTabs } from '@/components/ui/InnerTabs'
-import { PERIODO_OPCOES, type Periodo } from '@/components/dashboard/widgets/widgetHelpers'
+import { type Periodo } from '@/components/dashboard/widgets/widgetHelpers'
+import { Segmentado } from '@/components/ui/Segmentado'
+
+const PERIODOS: ReadonlyArray<{ id: Periodo; label: string }> = [
+  { id: 'hoje', label: 'Hoje' }, { id: 'semana', label: '7 dias' }, { id: 'mes', label: '30 dias' }, { id: 'trimestre', label: '90 dias' },
+]
 import { RelatorioComercial } from './RelatorioComercial'
 import { RelatorioFinanceiro } from './RelatorioFinanceiro'
 import { RelatorioMarketing } from './RelatorioMarketing'
@@ -24,21 +29,10 @@ export function RelatoriosPage() {
   const [periodo, setPeriodo] = useState<Periodo>('mes')
 
   return (
-    <div className="page-content section-gap">
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="page-title">Relatórios</h1>
-          <p className="caption mt-1">Painéis temáticos com dados reais</p>
-        </div>
-        <div className="flex gap-0.5 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)]">
-          {PERIODO_OPCOES.map((p) => (
-            <button key={p.id} onClick={() => setPeriodo(p.id)}
-              className="px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors"
-              style={periodo === p.id ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}>
-              {p.label}
-            </button>
-          ))}
-        </div>
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div className="toolbar">
+        <h1 className="page-title" style={{ flex: '1 1 200px' }}>Relatórios</h1>
+        <Segmentado rotulo="Período" valor={periodo} onChange={setPeriodo} opcoes={PERIODOS} />
       </div>
 
       {isMobile ? (

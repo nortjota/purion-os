@@ -1,5 +1,7 @@
 'use client'
 
+import { MetricStrip } from '@/components/ui/MetricStrip'
+import { Segmentado } from '@/components/ui/Segmentado'
 import { Skeleton } from '@/components/motion/Skeleton'
 
 import { useState, useMemo } from 'react'
@@ -602,74 +604,28 @@ export function GrowthPage({ embutido = false }: { embutido?: boolean } = {}) {
   ]
 
   return (
-    <div className={embutido ? 'flex flex-col gap-5' : 'page-content section-gap'}>
+    <div className={embutido ? 'flex flex-col gap-5' : 'page-content flex flex-col gap-[18px]'}>
       <div className="flex items-center justify-between flex-wrap gap-2">
         {embutido ? <div /> : (
-          <div>
-            <h1 className="page-title">Growth</h1>
-            <p className="caption mt-1">Experimentação ICE · Funil AARRR · Banco de Aprendizados</p>
-          </div>
+          <h1 className="page-title">Growth</h1>
         )}
-        <button onClick={() => { setEditando(null); setModalAberto(true) }} className="btn btn-primary btn-sm">
-          <Plus size={12} /> Novo Experimento
+        <button onClick={() => { setEditando(null); setModalAberto(true) }} className="btn btn-accent btn-sm">
+          <Plus size={12} /> Novo experimento
         </button>
       </div>
 
-      {/* KPIs rápidos */}
-      <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Total ICE</span>
-            <FlaskConical size={14} className="text-[var(--text-secondary)] opacity-60" />
-          </div>
-          <span className="kpi-value">{kpis.total}</span>
-          <span className="caption">experimentos</span>
-        </div>
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Rodando agora</span>
-            <TrendingUp size={14} style={{ color: 'var(--status-info)', opacity: 0.7 }} />
-          </div>
-          <span className="kpi-value" style={{ color: 'var(--status-info)' }}>{kpis.rodando}</span>
-          <span className="caption">em execução</span>
-        </div>
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="kpi-label">Para escalar</span>
-            <Award size={14} style={{ color: 'var(--status-ok)', opacity: 0.7 }} />
-          </div>
-          <span className="kpi-value" style={{ color: 'var(--status-ok)' }}>{kpis.escalando}</span>
-          <span className="caption">validados</span>
-        </div>
-        {kpis.scoreTop && (
-          <div className="kpi-card">
-            <div className="flex items-center justify-between mb-2">
-              <span className="kpi-label">Próximo da fila</span>
-              <Target size={14} style={{ color: 'var(--text-primary)', opacity: 0.7 }} />
-            </div>
-            <p style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.3 }}>{kpis.scoreTop.nome}</p>
-            <div className="flex items-center gap-1 mt-1">
-              <ScoreBadge score={kpis.scoreTop.score} />
-              <EtapaBadge etapa={kpis.scoreTop.etapa} />
-            </div>
-          </div>
-        )}
-      </div>
+      <MetricStrip
+        rotulo="Resumo de experimentos"
+        metricas={[
+          { label: 'Experimentos', valor: kpis.total, sub: 'no total' },
+          { label: 'Rodando agora', valor: kpis.rodando, sub: 'em execução' },
+          { label: 'Para escalar', valor: kpis.escalando, sub: 'validados', tom: kpis.escalando > 0 ? 'ok' : undefined },
+          { label: 'Próximo da fila', valor: kpis.scoreTop ? kpis.scoreTop.score.toFixed(1).replace('.', ',') : '—', sub: kpis.scoreTop ? kpis.scoreTop.nome : 'backlog vazio', dica: 'Experimento do backlog com maior score ICE (impacto, confiança, facilidade).' },
+        ]}
+      />
 
-      {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setAba(t.id)}
-            className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-            style={aba === t.id
-              ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
-              : { color: 'var(--text-secondary)' }}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="toolbar">
+        <Segmentado rotulo="Visão" valor={aba} onChange={setAba} opcoes={TABS} />
       </div>
 
       {carregando ? (

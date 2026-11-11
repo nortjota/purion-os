@@ -75,7 +75,7 @@ export function RelatorioComercial({ periodo }: Props) {
       <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
         <WidgetContador label="Faturamento" icon={DollarSign} destaque valor={formatarMoeda(faturamento)} subvalor={`${vendasPeriodo.length} pedidos`} />
         <WidgetContador label="Ticket médio" icon={ShoppingBag} valor={formatarMoeda(ticketMedio)} />
-        <WidgetContador label="Conversão B2B" icon={Percent} valor={`${conversaoB2B.toFixed(1)}%`} subvalor="ganhos / total de leads" />
+        <WidgetContador label="Conversão B2B" icon={Percent} valor={`${conversaoB2B.toFixed(1).replace('.', ',')}%`} subvalor="ganhos / total de leads" />
         <WidgetContador label="Leads ativos" icon={Target} valor={String(leadsAtivos)} subvalor="pipeline em andamento" />
       </div>
 

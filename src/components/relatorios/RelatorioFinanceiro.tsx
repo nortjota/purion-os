@@ -76,7 +76,7 @@ export function RelatorioFinanceiro({ periodo }: Props) {
       <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
         <WidgetContador label="Receita" icon={DollarSign} destaque valor={formatarMoeda(totalReceita)} />
         <WidgetContador label="Despesa" icon={TrendingDown} valor={formatarMoeda(totalDespesa)} />
-        <WidgetContador label="Margem" icon={Percent} valor={`${margem.toFixed(1)}%`} alerta={margem < 0} />
+        <WidgetContador label="Margem" icon={Percent} valor={`${margem.toFixed(1).replace('.', ',')}%`} alerta={margem < 0} />
         <WidgetContador label="Resultado" icon={Wallet} valor={formatarMoeda(resultado)} alerta={resultado < 0} />
       </div>
 
@@ -103,7 +103,7 @@ export function RelatorioFinanceiro({ periodo }: Props) {
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid var(--border)' }}>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Margem de contribuição</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{margem.toFixed(1)}%</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{margem.toFixed(1).replace('.', ',')}%</span>
             </div>
           </div>
         </div>

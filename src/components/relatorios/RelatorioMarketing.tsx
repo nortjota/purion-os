@@ -13,7 +13,7 @@ const PLATAFORMA_LABEL: Record<string, string> = { meta: 'Meta Ads', google: 'Go
 const PLATAFORMA_COR: Record<string, string> = { meta: '#1877F2', google: '#34A853', tiktok: '#EE1D52' }
 
 export function RelatorioMarketing({ periodo }: Props) {
-  const { campanhasAds, creators } = usePurionStore()
+  const { campanhasAds, creators, configuracoes } = usePurionStore()
 
   const gastoTotal = useMemo(() => campanhasAds.reduce((s, c) => s + c.gastoTotal, 0), [campanhasAds])
   const receitaGerada = useMemo(() => campanhasAds.reduce((s, c) => s + c.receitaGerada, 0), [campanhasAds])
@@ -54,8 +54,8 @@ export function RelatorioMarketing({ periodo }: Props) {
     <div className="flex flex-col gap-4">
       <div className="cards-gap kpi-grid-mobile" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
         <WidgetContador label="Gasto em Ads" icon={DollarSign} destaque valor={formatarMoeda(gastoTotal)} />
-        <WidgetContador label="ROAS" icon={TrendingUp} valor={roas > 0 ? `${roas.toFixed(2)}x` : '—'} alerta={roas > 0 && roas < 2.5} />
-        <WidgetContador label="CPA médio" icon={ShoppingCart} valor={cpa > 0 ? formatarMoeda(cpa) : '—'} alerta={cpa > 43.76} />
+        <WidgetContador label="ROAS" icon={TrendingUp} valor={roas > 0 ? `${roas.toFixed(2).replace('.', ',')}×` : '—'} alerta={roas > 0 && roas < configuracoes.roasMinimo} />
+        <WidgetContador label="CPA médio" icon={ShoppingCart} valor={cpa > 0 ? formatarMoeda(cpa) : '—'} alerta={cpa > configuracoes.cpaMaximo} />
         <WidgetContador label="Creators ativos" icon={Users2} valor={String(creatorsAtivos)} subvalor={`${creators.length} cadastrados`} />
       </div>
 
