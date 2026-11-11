@@ -1,5 +1,6 @@
 'use client'
 
+import { MetricStrip } from '@/components/ui/MetricStrip'
 import { useState, useMemo, useCallback } from 'react'
 import { Plus, Search, Clock, CheckCircle, AlertCircle, MessageSquare, RefreshCw } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -98,6 +99,10 @@ export function SacDashboard({ ticketsInicial }: Props) {
     ? (tickets.reduce((s, t) => s + (t.satisfacao ?? 0), 0) / tickets.filter(t => t.satisfacao).length).toFixed(1)
     : '—'
 
+  const aguardandoCliente = tickets.filter(t => t.status === 'aguardando_cliente').length
+  const resolvidos = tickets.filter(t => t.status === 'resolvido').length
+  const urgentesSemResposta = tickets.filter(t => isUrgenteSemResposta(t)).length
+
   function handleCriado(novo: Ticket) {
     setTickets(p => [novo, ...p])
     setNovoAberto(false)
@@ -110,57 +115,42 @@ export function SacDashboard({ ticketsInicial }: Props) {
 
   return (
     <div className="page-content">
-      {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-3" style={{ marginBottom: 24 }}>
-        <div>
-          <p className="kpi-label mb-1">Suporte ao Cliente</p>
-          <h1 className="page-title">SAC</h1>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={carregar} disabled={carregando} className="btn btn-secondary btn-sm">
-            <RefreshCw size={13} style={{ animation: carregando ? 'spin 1s linear infinite' : 'none' }} />
-            Atualizar
-          </button>
-          <button onClick={() => setNovoAberto(true)} className="btn btn-primary btn-sm">
-            <Plus size={14} /> Novo ticket
-          </button>
-        </div>
+      <div className="toolbar" style={{ marginBottom: 18 }}>
+        <h1 className="page-title" style={{ flex: '1 1 200px' }}>SAC</h1>
+        <button onClick={carregar} disabled={carregando} className="icon-btn" title="Atualizar tickets" aria-label="Atualizar tickets">
+          <RefreshCw size={14} style={{ animation: carregando ? 'spin 1s linear infinite' : 'none' }} />
+        </button>
+        <button onClick={() => setNovoAberto(true)} className="btn btn-accent btn-sm">
+          <Plus size={14} /> Novo ticket
+        </button>
       </div>
 
-      {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
-        {[
-          { label: 'Abertos',            value: abertos,         color: '#9CC3DB' },
-          { label: 'Em atendimento',     value: emAtendimento,   color: '#D4FC3C' },
-          { label: 'Resolvidos hoje',    value: resolvidosHoje,  color: '#8FD14F' },
-          { label: 'CSAT médio',         value: `${csatMedio}⭐`, color: '#E6C374' },
-        ].map(({ label, value, color }) => (
-          <div key={label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
-            <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 6px' }}>{label}</p>
-            <p style={{ fontSize: 22, fontWeight: 700, color, margin: 0 }}>{value}</p>
-          </div>
-        ))}
+      {/* Números = filtro de status (clicar de novo volta para todos) */}
+      <div style={{ marginBottom: 14 }}>
+        <MetricStrip
+          rotulo="Tickets por status"
+          metricas={[
+            { label: 'Abertos', valor: abertos, sub: urgentesSemResposta > 0 ? `${urgentesSemResposta} urgente${urgentesSemResposta > 1 ? 's' : ''} sem resposta` : 'aguardando 1º atendimento', tom: urgentesSemResposta > 0 ? 'danger' : undefined, onClick: () => setFiltro(filtroStatus === 'aberto' ? 'todos' : 'aberto'), ativo: filtroStatus === 'aberto' },
+            { label: 'Em atendimento', valor: emAtendimento, sub: 'com alguém do time', onClick: () => setFiltro(filtroStatus === 'em_atendimento' ? 'todos' : 'em_atendimento'), ativo: filtroStatus === 'em_atendimento' },
+            { label: 'Aguardando cliente', valor: aguardandoCliente, sub: 'retorno pendente', onClick: () => setFiltro(filtroStatus === 'aguardando_cliente' ? 'todos' : 'aguardando_cliente'), ativo: filtroStatus === 'aguardando_cliente' },
+            { label: 'Resolvidos', valor: resolvidos, sub: `${resolvidosHoje} hoje`, onClick: () => setFiltro(filtroStatus === 'resolvido' ? 'todos' : 'resolvido'), ativo: filtroStatus === 'resolvido' },
+            { label: 'Satisfação média', valor: csatMedio === '—' ? '—' : `${String(csatMedio).replace('.', ',')} / 5`, sub: 'notas dos clientes' },
+          ]}
+        />
       </div>
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '0 12px', flex: 1, minWidth: 200 }}>
-          <Search size={13} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
-          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar ticket…"
-            style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--text-primary)', width: '100%', padding: '9px 0' }} />
-        </div>
-        <div style={{ display: 'flex', gap: 4 }}>
-          {['todos', 'aberto', 'em_atendimento', 'aguardando_cliente', 'resolvido'].map(s => (
-            <button key={s} onClick={() => setFiltro(s)}
-              style={{ padding: '7px 12px', borderRadius: 7, border: filtroStatus === s ? '1px solid var(--brand-accent)' : '1px solid var(--border)', background: filtroStatus === s ? 'rgba(212,252,60,0.08)' : 'var(--bg-surface)', color: filtroStatus === s ? 'var(--brand-accent)' : 'var(--text-secondary)', fontSize: 11, fontWeight: filtroStatus === s ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              {s === 'todos' ? 'Todos' : STATUS_CFG[s as Ticket['status']]?.label ?? s}
-            </button>
-          ))}
-        </div>
+      <div className="toolbar" style={{ marginBottom: 14 }}>
+        <label className="busca" style={{ flex: '1 1 240px', maxWidth: 380 }}>
+          <Search size={13} aria-hidden />
+          <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar ticket" aria-label="Buscar ticket" />
+        </label>
+        {filtroStatus !== 'todos' && <button type="button" className="link-limpar" onClick={() => setFiltro('todos')}>Ver todos os status</button>}
+        <span className="toolbar-espaco" />
+        <span className="caption tnum">{filtrados.length} ticket{filtrados.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Tickets table */}
-      <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {filtrados.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 13 }}>
             Nenhum ticket encontrado
@@ -186,7 +176,7 @@ export function SacDashboard({ ticketsInicial }: Props) {
                       onMouseEnter={e => { e.currentTarget.style.background = urg ? 'rgba(229,84,75,0.08)' : 'rgba(212,252,60,0.04)' }}
                       onMouseLeave={e => { e.currentTarget.style.background = urg ? 'rgba(229,84,75,0.04)' : 'transparent' }}>
                       <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: 11, whiteSpace: 'nowrap' }}>
-                        {urg && <span style={{ marginRight: 4, animation: 'pulse 1s infinite' }}>🔴</span>}
+                        {urg && <span className="pulse" aria-label="Urgente sem resposta" style={{ marginRight: 6, background: 'var(--status-danger)' }} />}
                         {t.numero}
                       </td>
                       <td style={{ padding: '10px 14px', color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap' }}>{t.cliente_nome}</td>

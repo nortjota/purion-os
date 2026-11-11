@@ -14,7 +14,7 @@ import { ModalTemplates } from './ModalTemplates'
 import { RotinaSocios } from './RotinaSocios'
 import { ProgressRing } from '@/components/motion/ProgressRing'
 import { AnimatedNumber } from '@/components/motion/AnimatedNumber'
-import { InnerTabs } from '@/components/ui/InnerTabs'
+import { Segmentado } from '@/components/ui/Segmentado'
 import { isSocioAtivo } from '@/lib/socios'
 import {
   SOCIOS, CATEGORIAS, corSocio,
@@ -28,19 +28,12 @@ import {
 // Saudação + anel de progresso
 // ─────────────────────────────────────────────
 
-function saudacao(): string {
-  const h = new Date().getHours()
-  if (h < 12) return 'Bom dia'
-  if (h < 18) return 'Boa tarde'
-  return 'Boa noite'
-}
-
 /** Anel do dia: varre com spring, % com count-up e brilho discreto quando o dia está "em dia" (≥ 80%). */
 function AnelProgresso({ pct, size = 128, largura = 10, cor }: {
   pct: number; size?: number; largura?: number; cor?: string
 }) {
   return (
-    <ProgressRing value={pct} size={size} stroke={largura} color={cor} labelSize={26} glow={pct >= 80}
+    <ProgressRing value={pct} size={size} stroke={largura} color={cor} labelSize={size >= 100 ? 26 : 15} glow={pct >= 80}
       trackColor="var(--bg-surface-2)" />
   )
 }
@@ -303,6 +296,8 @@ export function MetasDashboard() {
     />
   )
 
+  const OPCOES_ESCOPO: { id: EscopoFiltro; label: string }[] = [{ id: 'time', label: 'Time' }, ...SOCIOS.map((x) => ({ id: x.id as EscopoFiltro, label: x.nome }))]
+
   const colunasSocios = SOCIOS.map(({ id, nome, cor, inicial }) => {
     const metasSocio = metasPorEscopo(metasDoDiaAtual, id)
     const pct = metasSocio.length > 0 ? Math.round((metasSocio.filter((m) => m.concluida).length / metasSocio.length) * 100) : 0
@@ -336,12 +331,15 @@ export function MetasDashboard() {
 
   if (aba === 'rotina') {
     return (
-      <div className="page-content section-gap">
-        <InnerTabs
-          tabs={[{ id: 'metas', label: 'Metas do dia' }, { id: 'rotina', label: 'Minha Rotina (4h)' }]}
-          activeTab={aba}
-          onChange={(id) => setAba(id as 'metas' | 'rotina')}
-        />
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div className="toolbar">
+          <h1 className="page-title" style={{ marginRight: 8 }}>Metas</h1>
+          <span className="toolbar-espaco" />
+          <Segmentado
+            rotulo="Seção" valor={aba} onChange={setAba}
+            opcoes={[{ id: 'metas', label: 'Metas do dia' }, { id: 'rotina', label: 'Minha rotina (4h)' }]}
+          />
+        </div>
         <RotinaSocios
           socioPrimeiro={isSocioAtivo(perfilAtivo) ? perfilAtivo : undefined}
           onVerCategoria={(c) => { setFiltroCategoria(c); setSelectedDate(hojeISO()); setAba('metas') }}
@@ -351,64 +349,46 @@ export function MetasDashboard() {
   }
 
   return (
-    <div className="page-content section-gap">
-      <InnerTabs
-        tabs={[{ id: 'metas', label: 'Metas do dia' }, { id: 'rotina', label: 'Minha Rotina (4h)' }]}
-        activeTab={aba}
-        onChange={(id) => setAba(id as 'metas' | 'rotina')}
-      />
-      {/* ── HERO DO DIA ── */}
-      <div className="card-purion" style={{
-        padding: '24px 28px', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
-        background: 'linear-gradient(135deg, rgba(245,245,240,0.08), transparent)',
-        borderColor: 'rgba(245,245,240,0.25)',
-      }}>
-        <AnelProgresso pct={pctGeralHoje} />
-        <div style={{ flex: 1, minWidth: 220 }}>
-          <div className="flex items-center gap-2 mb-1">
-            <button onClick={() => setSelectedDate((d) => deslocarData(d, -1))} className="icon-btn"><ChevronLeft size={14} /></button>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)', textTransform: 'capitalize' }}>
-              {formatarDataExtensa(selectedDate)}
-            </span>
-            <button onClick={() => setSelectedDate((d) => deslocarData(d, 1))} disabled={isHoje} className="icon-btn" style={{ opacity: isHoje ? 0.3 : 1 }}>
-              <ChevronRight size={14} />
-            </button>
-            {!isHoje && (
-              <button onClick={() => setSelectedDate(hojeISO())} className="btn btn-secondary btn-sm">hoje</button>
-            )}
-          </div>
-          <h1 className="page-title">{saudacao()}, time PURION 👋</h1>
-          <p style={{ fontSize: 15, marginTop: 6 }}>
-            <strong style={{ color: 'var(--text-primary)' }}><AnimatedNumber value={totaisHoje.feitas} /> de <AnimatedNumber value={totaisHoje.total} /></strong>
-            <span style={{ color: 'var(--text-secondary)' }}> metas batidas hoje</span>
+    <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="toolbar">
+        <h1 className="page-title" style={{ marginRight: 8 }}>Metas</h1>
+        <span className="toolbar-espaco" />
+        <Segmentado
+          rotulo="Seção" valor={aba} onChange={setAba}
+          opcoes={[{ id: 'metas', label: 'Metas do dia' }, { id: 'rotina', label: 'Minha rotina (4h)' }]}
+        />
+      </div>
+      {/* ── Dia: progresso, navegação de data e filtro de categoria em uma faixa ── */}
+      <div className="card-purion" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+        <AnelProgresso pct={pctGeralHoje} size={72} largura={7} />
+        <div style={{ flex: '1 1 240px', minWidth: 0 }}>
+          <p style={{ fontSize: 15 }}>
+            <strong className="tnum" style={{ color: 'var(--text-primary)' }}><AnimatedNumber value={totaisHoje.feitas} /> de <AnimatedNumber value={totaisHoje.total} /></strong>
+            <span style={{ color: 'var(--text-secondary)' }}> metas batidas {isHoje ? 'hoje' : 'no dia'}</span>
           </p>
           {streakTime > 0 && (
-            <p style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--status-warning)', fontWeight: 600 }}>
-              <Flame size={15} /> {streakTime} dia{streakTime !== 1 ? 's' : ''} seguido{streakTime !== 1 ? 's' : ''} do time
+            <p style={{ fontSize: 12.5, marginTop: 2, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--status-warning)' }}>
+              <Flame size={13} /> {streakTime} dia{streakTime !== 1 ? 's' : ''} seguido{streakTime !== 1 ? 's' : ''} do time
             </p>
           )}
         </div>
-      </div>
-
-      {/* ── Filtro de categoria ── */}
-      <div className="flex items-center gap-1 flex-wrap">
-        <button
-          onClick={() => setFiltroCategoria('todas')}
-          className="px-3 py-1.5 rounded-md text-xs font-medium"
-          style={filtroCategoria === 'todas' ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
-        >
-          Todas categorias
-        </button>
-        {CATEGORIAS.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setFiltroCategoria(c.id)}
-            className="px-3 py-1.5 rounded-md text-xs font-medium"
-            style={filtroCategoria === c.id ? { background: `${c.cor}22`, color: c.cor } : { color: 'var(--text-secondary)' }}
-          >
-            {c.label}
+        <div className="toolbar">
+          <button onClick={() => setSelectedDate((d) => deslocarData(d, -1))} className="icon-btn" aria-label="Dia anterior"><ChevronLeft size={14} /></button>
+          <span style={{ fontSize: 12.5, color: 'var(--text-primary)', textTransform: 'capitalize', minWidth: 150, textAlign: 'center' }}>
+            {formatarDataExtensa(selectedDate)}
+          </span>
+          <button onClick={() => setSelectedDate((d) => deslocarData(d, 1))} disabled={isHoje} className="icon-btn" style={{ opacity: isHoje ? 0.3 : 1 }} aria-label="Próximo dia">
+            <ChevronRight size={14} />
           </button>
-        ))}
+          {!isHoje && <button onClick={() => setSelectedDate(hojeISO())} className="btn btn-secondary btn-sm">Hoje</button>}
+          <select
+            className="filtro" data-ativo={filtroCategoria !== 'todas' || undefined} aria-label="Categoria"
+            value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value as typeof filtroCategoria)}
+          >
+            <option value="todas">Todas as categorias</option>
+            {CATEGORIAS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+          </select>
+        </div>
       </div>
 
       {/* ── Metas do time ── */}
@@ -417,20 +397,8 @@ export function MetasDashboard() {
       {/* ── Colunas por sócio ── */}
       {isMobile ? (
         <div>
-          <div className="flex gap-1 mb-4" style={{ overflowX: 'auto' }}>
-            {(['time', ...SOCIOS.map((s) => s.id)] as EscopoFiltro[]).map((e) => {
-              const nome = e === 'time' ? 'Time' : SOCIOS.find((s) => s.id === e)?.nome
-              return (
-                <button
-                  key={e}
-                  onClick={() => setAbaMobile(e)}
-                  className="px-3 py-1.5 rounded-md text-xs font-medium"
-                  style={abaMobile === e ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
-                >
-                  {nome}
-                </button>
-              )
-            })}
+          <div className="mb-4" style={{ overflowX: 'auto' }}>
+            <Segmentado rotulo="Ver metas de" valor={abaMobile} onChange={setAbaMobile} opcoes={OPCOES_ESCOPO} />
           </div>
           {abaMobile !== 'time' && colunasSocios[SOCIOS.findIndex((s) => s.id === abaMobile)]}
         </div>
@@ -443,7 +411,7 @@ export function MetasDashboard() {
       {/* ── Resumo semanal + Heatmap ── */}
       <div className="grid gap-4" style={{ gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr' }}>
         <div className="card-purion" style={{ padding: '16px 18px' }}>
-          <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>Resumo da Semana</p>
+          <p className="kpi-label mb-3">Resumo da semana</p>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Metas batidas</span>
@@ -470,22 +438,8 @@ export function MetasDashboard() {
 
         <div className="card-purion" style={{ padding: '16px 18px' }}>
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <p style={{ fontSize: 13, fontWeight: 700 }}>Histórico</p>
-            <div className="flex gap-1">
-              {(['time', ...SOCIOS.map((s) => s.id)] as EscopoFiltro[]).map((e) => {
-                const nome = e === 'time' ? 'Time' : SOCIOS.find((s) => s.id === e)?.nome
-                return (
-                  <button
-                    key={e}
-                    onClick={() => setEscopoHistorico(e)}
-                    className="px-2 py-0.5 rounded text-[10px] font-medium"
-                    style={escopoHistorico === e ? { background: 'rgba(212,252,60,0.15)', color: 'var(--brand-accent)' } : { color: 'var(--text-secondary)' }}
-                  >
-                    {nome}
-                  </button>
-                )
-              })}
-            </div>
+            <p className="kpi-label">Histórico</p>
+            <Segmentado rotulo="Histórico de" valor={escopoHistorico} onChange={setEscopoHistorico} opcoes={OPCOES_ESCOPO} />
           </div>
           <MetaHeatmap metasEscopo={metasPorEscopo(metasDiarias, escopoHistorico)} />
         </div>
