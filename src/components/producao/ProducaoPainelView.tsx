@@ -2,30 +2,15 @@
 
 import { useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { Package, Factory, TrendingDown, AlertTriangle, Boxes } from 'lucide-react'
 import { usePurionStore } from '@/store'
-import { ESTAGIOS_LOTE, normalizarStatusLote, formatarMoeda } from './producaoHelpers'
+import { ESTAGIOS_LOTE, normalizarStatusLote } from './producaoHelpers'
 import { useInsumos, useBomReceita, capacidadeProducao, custoReceitaPorUnidade } from '@/hooks/useInsumosBOM'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
   background: '#1B1D1C', border: '1px solid rgba(245,245,240,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
 }
 
-function KpiCard({ label, value, cor, sub, icon: Icon }: {
-  label: string; value: string | number; cor?: string; sub?: string; icon: React.ElementType
-}) {
-  return (
-    <div className="kpi-card" style={{ borderColor: cor ? `${cor}30` : undefined }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span className="kpi-label">{label}</span>
-        <Icon size={14} style={{ color: cor ?? 'var(--text-secondary)', opacity: 0.7 }} />
-      </div>
-      <span className="kpi-value" style={{ color: cor }}>{value}</span>
-      {sub && <p className="caption mt-1">{sub}</p>}
-    </div>
-  )
-}
-
+/** Gráficos de produção (saídas por mês e lotes por estágio). Os números ficam na faixa do topo da página. */
 export function ProducaoPainelView() {
   const { estoqueProduto, estoqueMovimentacoes, lotes } = usePurionStore()
   const { insumos, emAlerta, valorTotalInsumos } = useInsumos()
@@ -68,20 +53,10 @@ export function ProducaoPainelView() {
   }, [estoqueProduto, estoqueMovimentacoes, lotes, insumos, receita, emAlerta, valorTotalInsumos])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 1200 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12 }}>
-        <KpiCard label="Valor total em estoque" value={formatarMoeda(metricas.valorTotalEstoque)} icon={Package} cor="#D4FC3C" sub="insumos + prontos" />
-        <KpiCard label="Frascos prontos"        value={metricas.frascosProntos}    icon={Package} cor="#8FD14F" sub={formatarMoeda(metricas.valorEstoquePronto) + ' em estoque'} />
-        <KpiCard label="Capacidade restante"    value={`${metricas.capacidade} frascos`} icon={Package} cor="#D4FC3C" sub="com os insumos atuais" />
-        <KpiCard label="Custo real / frasco"    value={formatarMoeda(metricas.custoReceita)} icon={Factory} sub="calculado da receita (BOM)" />
-        <KpiCard label="Lotes ativos"           value={metricas.lotesAtivos}       icon={Boxes} cor="#E6C374" />
-        <KpiCard label="Insumos em alerta"      value={metricas.insumosAlerta}     icon={AlertTriangle} cor={metricas.insumosAlerta > 0 ? '#E5544B' : undefined} />
-        <KpiCard label="Vendidos + doados"      value={metricas.frascosVendidos + metricas.frascosDoados} icon={TrendingDown} cor="#9CC3DB" sub={`${metricas.frascosVendidos} vendidos · ${metricas.frascosDoados} UGC`} />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12 }}>
+    <div>
+      <div className="cards-gap grid-mobile-1" style={{ gridTemplateColumns: 'minmax(0, 1fr) 300px' }}>
         <div className="card-purion" style={{ padding: '16px 20px' }}>
-          <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 16 }}>Saídas de estoque por mês</p>
+          <p className="kpi-label mb-4">Saídas de estoque por mês</p>
           {metricas.saidasChart.length === 0 ? (
             <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Nenhum dado</p>
           ) : (
@@ -98,7 +73,7 @@ export function ProducaoPainelView() {
         </div>
 
         <div className="card-purion" style={{ padding: '16px 20px' }}>
-          <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Lotes por estágio</p>
+          <p className="kpi-label mb-3">Lotes por estágio</p>
           {metricas.porEstagioLote.length === 0 ? (
             <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Nenhum dado</p>
           ) : (

@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, SlidersHorizontal, Layers, ChevronDown, X } from 'lucide-react'
+import { Plus, SlidersHorizontal, X, List, Columns3, GanttChart, CalendarDays, BarChart3 } from 'lucide-react'
+import { Segmentado } from '@/components/ui/Segmentado'
+import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { usePurionStore } from '@/store'
 import type { Tarefa, StatusTarefa } from '@/store'
 import { useMobile } from '@/hooks/useMobile'
 import { BottomSheet } from '@/components/ui/BottomSheet'
-import { InnerTabs } from '@/components/ui/InnerTabs'
 import { useTarefas } from '@/hooks/useTarefas'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { type ColunaTarefa, type GroupBy } from './tarefasHelpers'
@@ -21,12 +22,12 @@ import { TarefaDetalhesPainel } from './TarefaDetalhesPainel'
 
 type Visao = 'lista' | 'quadro' | 'cronograma' | 'calendario' | 'painel'
 
-const TABS = [
-  { id: 'lista',      label: 'Lista'      },
-  { id: 'quadro',     label: 'Quadro'     },
-  { id: 'cronograma', label: 'Cronograma' },
-  { id: 'calendario', label: 'Calendário' },
-  { id: 'painel',     label: 'Painel'     },
+const TABS: ReadonlyArray<{ id: Visao; label: string; icon: typeof List }> = [
+  { id: 'lista',      label: 'Lista',      icon: List },
+  { id: 'quadro',     label: 'Quadro',     icon: Columns3 },
+  { id: 'cronograma', label: 'Cronograma', icon: GanttChart },
+  { id: 'calendario', label: 'Calendário', icon: CalendarDays },
+  { id: 'painel',     label: 'Painel',     icon: BarChart3 },
 ]
 
 const VISOES_VALIDAS: Visao[] = ['lista', 'quadro', 'cronograma', 'calendario', 'painel']
@@ -57,7 +58,6 @@ export function TarefasDashboard() {
   const [filtros, setFiltros] = useState<FiltrosTarefas>(FILTROS_VAZIOS)
   const [groupBy, setGroupBy] = useState<GroupBy>('modulo')
   const [filtrosAbertos, setFiltrosAbertos] = useState(false)
-  const [groupMenuAberto, setGroupMenuAberto] = useState(false)
   const [modalNova, setModalNova] = useState<{ aberto: boolean; colunaId: ColunaTarefa; dueDatePre?: string }>({
     aberto: false, colunaId: 'pendente',
   })
@@ -66,8 +66,8 @@ export function TarefasDashboard() {
 
   useEffect(() => { setVisao(carregarVisaoSalva()) }, [])
 
-  function mudarVisao(v: string) {
-    setVisao(v as Visao)
+  function mudarVisao(v: Visao) {
+    setVisao(v)
     if (typeof window !== 'undefined') localStorage.setItem('purion:view:tarefas', v)
   }
 
@@ -103,160 +103,79 @@ export function TarefasDashboard() {
     }
   }
 
-  const px = isMobile ? 14 : 24
+  const px = isMobile ? 14 : 32
 
-  const btnStyle = (active = false): React.CSSProperties => ({
-    display: 'flex', alignItems: 'center', gap: 6,
-    height: 30, padding: '0 10px', borderRadius: 6, fontSize: 12,
-    border: `1px solid ${active ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
-    background: 'transparent',
-    color: active ? '#D4FC3C' : 'var(--text-secondary)',
-    cursor: 'pointer', whiteSpace: 'nowrap' as const,
-  })
+  // ── Números das tarefas em aberto; clicar aplica o filtro (clicar de novo remove) ──
+  const metricas = useMemo<MetricaFaixa[]>(() => {
+    const hoje = new Date().toISOString().slice(0, 10)
+    const fim = new Date(); fim.setDate(fim.getDate() + 7)
+    const fimSemana = fim.toISOString().slice(0, 10)
+    const abertas = tarefasAtivas.filter((t) => t.status !== 'concluida')
+    const atrasadas = abertas.filter((t) => t.dueDate && t.dueDate < hoje).length
+    const paraHoje = abertas.filter((t) => t.dueDate === hoje).length
+    const semana = abertas.filter((t) => t.dueDate && t.dueDate >= hoje && t.dueDate <= fimSemana).length
+    const minhas = abertas.filter((t) => t.responsavel === perfilAtivo).length
+    const bloqueadas = abertas.filter((t) => t.status === 'bloqueada').length
+    const prazo = (v: FiltrosTarefas['prazo']) => () => setFiltros((f) => ({ ...f, prazo: f.prazo === v ? 'todos' : v }))
+    return [
+      { label: 'Em aberto', valor: abertas.length, sub: 'ver todas', onClick: () => setFiltros(FILTROS_VAZIOS), ativo: filtrosAtivosCount === 0 },
+      { label: 'Atrasadas', valor: atrasadas, sub: 'prazo vencido', tom: atrasadas > 0 ? 'danger' : undefined, onClick: prazo('atrasadas'), ativo: filtros.prazo === 'atrasadas' },
+      { label: 'Para hoje', valor: paraHoje, sub: 'vencem hoje', onClick: prazo('hoje'), ativo: filtros.prazo === 'hoje' },
+      { label: 'Esta semana', valor: semana, sub: 'próximos 7 dias', onClick: prazo('semana'), ativo: filtros.prazo === 'semana' },
+      { label: 'Minhas', valor: minhas, sub: 'sob minha responsabilidade', onClick: () => setFiltros((f) => ({ ...f, responsavel: f.responsavel === perfilAtivo ? 'todos' : perfilAtivo })), ativo: filtros.responsavel === perfilAtivo },
+      { label: 'Bloqueadas', valor: bloqueadas, sub: 'aguardando algo', tom: bloqueadas > 0 ? 'warning' : undefined, onClick: () => setFiltros((f) => ({ ...f, status: f.status === 'bloqueada' ? 'todos' : 'bloqueada' })), ativo: filtros.status === 'bloqueada' },
+    ]
+  }, [tarefasAtivas, perfilAtivo, filtros, filtrosAtivosCount])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
-      {/* ── Header ── */}
-      <div style={{ padding: `16px ${px}px 0`, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-          <h1 style={{ fontSize: isMobile ? 17 : 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            Tarefas
-          </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            {/* Mobile: filtros button */}
-            {isMobile && (
-              <button
-                onClick={() => setFiltrosAbertos(true)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  height: 34, padding: '0 12px', borderRadius: 8, fontSize: 13,
-                  border: `1px solid ${filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.4)' : 'var(--border)'}`,
-                  background: filtrosAtivosCount > 0 ? 'rgba(212,252,60,0.08)' : 'transparent',
-                  color: filtrosAtivosCount > 0 ? 'var(--brand-accent)' : 'var(--text-secondary)',
-                  cursor: 'pointer',
-                }}
-              >
-                <SlidersHorizontal size={15} />
-                {filtrosAtivosCount > 0 && (
-                  <span style={{
-                    width: 18, height: 18, borderRadius: '50%',
-                    background: 'var(--primary)', color: 'var(--primary-foreground)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 10, fontWeight: 700,
-                  }}>
-                    {filtrosAtivosCount}
-                  </span>
-                )}
-              </button>
-            )}
+      {/* ── Cabeçalho: título, filtros e ação em uma linha; números clicáveis; visão ── */}
+      <div style={{ padding: `${isMobile ? 14 : 24}px ${px}px 0`, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="toolbar">
+          <h1 className="page-title" style={{ marginRight: 8 }}>Tarefas</h1>
+          <span className="caption tnum">
+            {tarefasFiltradas.length} tarefa{tarefasFiltradas.length !== 1 ? 's' : ''}{filtrosAtivosCount > 0 ? ' no filtro' : ''}
+          </span>
+          <span className="toolbar-espaco" />
 
-            {/* Desktop: Filtrar + Agrupar */}
-            {!isMobile && (
-              <>
-                <button style={btnStyle(filtrosAtivosCount > 0)} onClick={() => setFiltrosAbertos((o) => !o)}>
-                  <SlidersHorizontal size={13} />
-                  Filtrar
-                  {filtrosAtivosCount > 0 && (
-                    <span style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 700 }}>
-                      {filtrosAtivosCount}
-                    </span>
-                  )}
-                </button>
-
-                <div style={{ position: 'relative' }}>
-                  <button style={btnStyle(groupBy !== 'none')} onClick={() => setGroupMenuAberto((o) => !o)}>
-                    <Layers size={13} />
-                    Agrupar
-                    <ChevronDown size={11} />
-                  </button>
-                  {groupMenuAberto && (
-                    <>
-                      <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setGroupMenuAberto(false)} />
-                      <div style={{
-                        position: 'absolute', top: '100%', right: 0, marginTop: 4,
-                        background: 'var(--bg-surface)', border: '1px solid var(--border)',
-                        borderRadius: 8, padding: '4px 0', zIndex: 50, minWidth: 170,
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
-                      }}>
-                        {GROUP_OPTIONS.map(([v, label]) => (
-                          <button key={v} onClick={() => { setGroupBy(v); setGroupMenuAberto(false) }}
-                            style={{
-                              display: 'block', width: '100%', textAlign: 'left',
-                              padding: '8px 14px', fontSize: 13, border: 'none', cursor: 'pointer',
-                              background: groupBy === v ? 'rgba(212,252,60,0.08)' : 'transparent',
-                              color: groupBy === v ? 'var(--brand-accent)' : 'var(--text-primary)',
-                            }}
-                          >
-                            {label}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </>
+          {!isMobile && (visao === 'lista' || visao === 'quadro') && (
+            <select className="filtro" data-ativo={groupBy !== 'none' || undefined} value={groupBy} onChange={(e) => setGroupBy(e.target.value as GroupBy)} aria-label="Agrupar por">
+              {GROUP_OPTIONS.map(([v, label]) => <option key={v} value={v}>{v === 'none' ? label : `Agrupar: ${label.replace('Por ', '')}`}</option>)}
+            </select>
+          )}
+          <button
+            onClick={() => setFiltrosAbertos((o) => !o)}
+            className="btn btn-secondary btn-sm" aria-expanded={filtrosAbertos}
+            style={filtrosAtivosCount > 0 ? { borderColor: 'color-mix(in srgb, var(--foreground) 45%, transparent)' } : undefined}
+          >
+            <SlidersHorizontal size={13} />
+            {!isMobile && 'Filtros'}
+            {filtrosAtivosCount > 0 && (
+              <span className="tnum" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 999, padding: '0 6px', fontSize: 10, fontWeight: 700, lineHeight: '16px' }}>
+                {filtrosAtivosCount}
+              </span>
             )}
-
-            {/* Desktop: "+ Adicionar tarefa" */}
-            {!isMobile && (
-              <button
-                onClick={() => handleNovaTarefa()}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  height: 32, padding: '0 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-                  background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer',
-                }}
-              >
-                <Plus size={14} />
-                Adicionar tarefa
-              </button>
-            )}
-          </div>
+          </button>
+          {!isMobile && (
+            <button onClick={() => handleNovaTarefa()} className="btn btn-accent btn-sm">
+              <Plus size={14} /> Nova tarefa
+            </button>
+          )}
         </div>
 
-        {/* ── Abas de visão ── */}
-        {isMobile ? (
-          /* Pill tabs com scroll horizontal — muito mais mobile-friendly que um <select> */
-          <div style={{
-            display: 'flex', gap: 6, overflowX: 'auto',
-            paddingBottom: 10,
-            /* hide scrollbar */
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-          }}>
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => mudarVisao(tab.id)}
-                style={{
-                  flexShrink: 0,
-                  height: 34, padding: '0 16px',
-                  borderRadius: 20,
-                  fontSize: 13, fontWeight: visao === tab.id ? 600 : 400,
-                  background: visao === tab.id ? 'var(--brand-accent)' : 'var(--bg-surface)',
-                  color: visao === tab.id ? '#0B0B0B' : 'var(--text-secondary)',
-                  border: `1px solid ${visao === tab.id ? 'var(--brand-accent)' : 'var(--border)'}`,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 150ms',
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <InnerTabs tabs={TABS} activeTab={visao} onChange={mudarVisao} />
-        )}
+        {!isMobile && <MetricStrip metricas={metricas} rotulo="Resumo das tarefas" />}
+
+        <div className="toolbar" style={{ paddingBottom: 12, borderBottom: '1px solid var(--border)', overflowX: 'auto' }}>
+          <Segmentado rotulo="Visão" valor={visao} onChange={mudarVisao} opcoes={TABS} />
+        </div>
       </div>
 
       {/* ── Painel de filtros (desktop inline) ── */}
       {filtrosAbertos && !isMobile && (
         <div style={{
-          padding: '12px 24px', flexShrink: 0,
+          padding: '12px 32px', flexShrink: 0,
           borderBottom: '1px solid var(--border)',
-          background: 'var(--bg-surface)',
           position: 'relative',
         }}>
           <TarefaFiltros tarefas={tarefasAtivas} filtros={filtros} onChange={setFiltros} />

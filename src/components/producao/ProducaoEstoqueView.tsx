@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { AlertTriangle, Package } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
+import { ProducaoPainelView } from './ProducaoPainelView'
 import { usePurionStore } from '@/store'
 import type { TipoMovimentacao } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
-import { formatarMoeda } from './producaoHelpers'
 
 const TIPO_LABEL: Record<TipoMovimentacao, string> = {
   entrada:     'Entrada (produção)',
@@ -82,8 +82,6 @@ export function ProducaoEstoqueView({ registrarMovimentacao }: Props) {
   const { estoqueProduto, estoqueMovimentacoes } = usePurionStore()
   const [modalAberto, setModalAberto] = useState(false)
 
-  const alerta = estoqueProduto ? estoqueProduto.quantidadeAtual < estoqueProduto.quantidadeMinima : false
-
   const evolucao = useMemo(() => {
     return [...estoqueMovimentacoes]
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
@@ -108,54 +106,10 @@ export function ProducaoEstoqueView({ registrarMovimentacao }: Props) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Saldo grande */}
-      <div
-        className="card-purion"
-        style={{
-          padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: 16,
-          borderColor: alerta ? 'rgba(229,84,75,0.4)' : undefined,
-          background: alerta ? 'rgba(229,84,75,0.04)' : undefined,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 14, flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: alerta ? 'rgba(229,84,75,0.12)' : 'rgba(143,209,79,0.12)',
-            color: alerta ? 'var(--status-danger)' : 'var(--status-ok)',
-          }}>
-            <Package size={26} />
-          </div>
-          <div>
-            <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Frascos prontos em estoque</p>
-            <p style={{ fontSize: 36, fontWeight: 800, lineHeight: 1.1, color: alerta ? 'var(--status-danger)' : 'var(--text-primary)' }}>
-              {estoqueProduto?.quantidadeAtual ?? 0}
-            </p>
-            <p style={{ fontSize: 12, color: alerta ? 'var(--status-danger)' : 'var(--text-secondary)' }}>
-              {alerta
-                ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><AlertTriangle size={12} /> Abaixo do mínimo ({estoqueProduto?.quantidadeMinima})</span>
-                : `Mínimo: ${estoqueProduto?.quantidadeMinima ?? 0} · OK`}
-            </p>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          {estoqueProduto && (
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Custo unitário</p>
-              <p style={{ fontSize: 16, fontWeight: 700 }}>{formatarMoeda(estoqueProduto.custoUnitario)}</p>
-            </div>
-          )}
-          <button onClick={() => setModalAberto(true)} className="btn btn-primary btn-sm">
-            Ajustar estoque
-          </button>
-        </div>
-      </div>
-
       {/* Evolução do estoque */}
       {evolucao.length > 1 && (
         <div className="card-purion" style={{ padding: '16px 20px' }}>
-          <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Evolução do estoque</p>
+          <p className="kpi-label mb-3">Evolução do estoque de prontos</p>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={evolucao}>
               <XAxis dataKey="data" tick={{ fill: '#B8B8B8', fontSize: 10 }} axisLine={false} tickLine={false} />
@@ -167,9 +121,16 @@ export function ProducaoEstoqueView({ registrarMovimentacao }: Props) {
         </div>
       )}
 
+      <ProducaoPainelView />
+
       {/* Livro-razão */}
       <div>
-        <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Livro-razão de movimentações</p>
+        <div className="toolbar" style={{ marginBottom: 12 }}>
+          <p className="kpi-label" style={{ flex: 1 }}>Livro-razão de movimentações</p>
+          <button onClick={() => setModalAberto(true)} className="btn btn-secondary btn-sm" disabled={!estoqueProduto}>
+            <SlidersHorizontal size={13} /> Ajustar estoque
+          </button>
+        </div>
         {movimentacoesOrdenadas.length === 0 ? (
           <div className="empty-state">
             <p className="empty-state-title">Nenhuma movimentação registrada</p>
