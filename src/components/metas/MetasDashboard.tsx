@@ -12,6 +12,8 @@ import { MetaHeatmap } from './MetaHeatmap'
 import { ModalMetaCompleta, type NovaMetaCompleta } from './ModalMetaCompleta'
 import { ModalTemplates } from './ModalTemplates'
 import { RotinaSocios } from './RotinaSocios'
+import { ProgressRing } from '@/components/motion/ProgressRing'
+import { AnimatedNumber } from '@/components/motion/AnimatedNumber'
 import { InnerTabs } from '@/components/ui/InnerTabs'
 import { isSocioAtivo } from '@/lib/socios'
 import {
@@ -33,32 +35,13 @@ function saudacao(): string {
   return 'Boa noite'
 }
 
-function AnelProgresso({ pct, size = 128, largura = 10, cor = '#C9A84C' }: {
+/** Anel do dia: varre com spring, % com count-up e brilho discreto quando o dia está "em dia" (≥ 80%). */
+function AnelProgresso({ pct, size = 128, largura = 10, cor }: {
   pct: number; size?: number; largura?: number; cor?: string
 }) {
-  const raio = (size - largura) / 2
-  const circ = 2 * Math.PI * raio
-  const offset = circ * (1 - Math.min(100, pct) / 100)
   return (
-    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={size / 2} cy={size / 2} r={raio} stroke="var(--bg-surface-2)" strokeWidth={largura} fill="none" />
-        <motion.circle
-          cx={size / 2} cy={size / 2} r={raio} stroke={cor} strokeWidth={largura} fill="none"
-          strokeLinecap="round"
-          strokeDasharray={circ}
-          initial={{ strokeDashoffset: circ }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 0.9, ease: 'easeOut' }}
-        />
-      </svg>
-      <div style={{
-        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexDirection: 'column',
-      }}>
-        <span style={{ fontSize: 26, fontWeight: 800, color: cor }}>{pct}%</span>
-      </div>
-    </div>
+    <ProgressRing value={pct} size={size} stroke={largura} color={cor} labelSize={26} glow={pct >= 80}
+      trackColor="var(--bg-surface-2)" />
   )
 }
 
@@ -396,7 +379,7 @@ export function MetasDashboard() {
           </div>
           <h1 className="page-title">{saudacao()}, time PURION 👋</h1>
           <p style={{ fontSize: 15, marginTop: 6 }}>
-            <strong style={{ color: '#C9A84C' }}>{totaisHoje.feitas} de {totaisHoje.total}</strong>
+            <strong style={{ color: '#C9A84C' }}><AnimatedNumber value={totaisHoje.feitas} /> de <AnimatedNumber value={totaisHoje.total} /></strong>
             <span style={{ color: 'var(--text-secondary)' }}> metas batidas hoje</span>
           </p>
           {streakTime > 0 && (

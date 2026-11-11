@@ -51,10 +51,13 @@ function nomeOperador(v: Venda): string {
 // KPI
 // ─────────────────────────────────────────────
 
-function Kpi({ label, valor, cor, sub }: { label: string; valor: number; cor: string; sub?: string }) {
+function Kpi({ label, valor, cor, sub, live }: { label: string; valor: number; cor: string; sub?: string; live?: boolean }) {
   return (
     <div className="kpi-card" style={{ flex: '1 1 150px', minWidth: 0 }}>
-      <span style={{ fontSize: 12, color: '#B8B8B8' }}>{label}</span>
+      <span style={{ fontSize: 12, color: '#B8B8B8', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        {live && <span className="pulse" aria-hidden />}{label}
+        {live && <span className="sr-only">(ao vivo)</span>}
+      </span>
       <AnimatedNumber value={valor} style={{ fontSize: 28, fontWeight: 700, color: cor, lineHeight: 1.2 }} />
       {sub && <span style={{ fontSize: 11, color: '#B8B8B8' }}>{sub}</span>}
     </div>
@@ -305,9 +308,9 @@ export function DespachoPage() {
 
       {/* KPIs */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <Kpi label="A despachar" valor={fila.length} cor={DOURADO} sub="pagos, aguardando envio" />
+        <Kpi label="A despachar" valor={fila.length} cor={DOURADO} sub="pagos, aguardando envio" live />
         <Kpi label="Atrasados" valor={atrasados.length} cor={atrasados.length > 0 ? VERMELHO : '#E0E0E0'} sub={`pagos há +${HORAS_ALERTA_DESPACHO}h`} />
-        <Kpi label="Despachados hoje" valor={hoje.length} cor={VERDE} sub={hoje.reduce((s, v) => s + frascosDaVenda(v), 0) + ' frascos'} />
+        <Kpi label="Despachados hoje" valor={hoje.length} cor={VERDE} live sub={hoje.reduce((s, v) => s + frascosDaVenda(v), 0) + ' frascos'} />
         {!isLogistica && <Kpi label="Sem aviso M02" valor={semAviso.length} cor={semAviso.length > 0 ? '#E8A838' : '#E0E0E0'} sub="rastreio não enviado ao cliente" />}
       </div>
 

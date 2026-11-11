@@ -306,13 +306,15 @@ export function PosVendaPage() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Para contatar hoje', valor: filaHoje.length, cor: DOURADO },
-          { label: 'Atrasados', valor: atrasados.length, cor: atrasados.length ? '#EF4444' : '#E0E0E0' },
-          { label: 'Próximos', valor: proximos.length, cor: '#E0E0E0' },
-          { label: 'Feitos hoje', valor: feitosHoje, cor: '#4CAF7A' },
+          { label: 'Para contatar hoje', valor: filaHoje.length, cor: DOURADO, live: true },
+          { label: 'Atrasados', valor: atrasados.length, cor: atrasados.length ? '#EF4444' : '#E0E0E0', live: false },
+          { label: 'Próximos', valor: proximos.length, cor: '#E0E0E0', live: false },
+          { label: 'Feitos hoje', valor: feitosHoje, cor: '#4CAF7A', live: false },
         ].map((k) => (
           <div key={k.label} className="kpi-card" style={{ flex: '1 1 140px', minWidth: 0 }}>
-            <span style={{ fontSize: 12, color: '#B8B8B8' }}>{k.label}</span>
+            <span style={{ fontSize: 12, color: '#B8B8B8', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {k.live && <span className="pulse" aria-hidden />}{k.label}
+            </span>
             <AnimatedNumber value={k.valor} style={{ fontSize: 28, fontWeight: 700, color: k.cor, lineHeight: 1.2 }} />
           </div>
         ))}

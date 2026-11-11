@@ -31,7 +31,9 @@ export function ResumoDiario() {
     <div className="card-purion p-4 flex items-start gap-3">
       <div className="shrink-0 mt-0.5 text-[#C9A84C]"><Sparkles size={16} /></div>
       <div>
-        <p className="text-xs font-bold text-[#C9A84C] uppercase tracking-wider mb-1">Resumo de hoje</p>
+        <p className="text-xs font-bold text-[#C9A84C] uppercase tracking-wider mb-1 flex items-center gap-2">
+          <span className="pulse" aria-hidden /> Resumo de hoje
+        </p>
         <p className="text-sm text-[var(--text-primary)]">{mensagem}</p>
       </div>
     </div>
