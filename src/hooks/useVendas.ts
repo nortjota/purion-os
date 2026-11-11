@@ -6,6 +6,12 @@ import { dbLog } from '@/lib/dbLog'
 import { usePurionStore } from '@/store'
 import { useToast } from '@/components/ui/Toast'
 import { normalizarEstagio, criarTarefaReposicaoD21 } from './useCRM'
+import { frascosDaVenda } from '@/lib/escadaProdutos'
+
+/** Antes da migration da escada (vendas.sku_codigo / frascos_por_unidade) o insert não pode quebrar. */
+function erroColunaSku(e: { code?: string; message?: string } | null): boolean {
+  return !!e && (e.code === 'PGRST204' || /sku_codigo|frascos_por_unidade/.test(e.message ?? ''))
+}
 import type {
   Venda, StatusVendaAppmax, CanalVenda, StatusPagamentoVenda, StatusEntregaVenda, PerfilUsuario,
   OrigemVenda, TipoCliente,
@@ -60,6 +66,8 @@ function toVenda(r: Row): Venda {
     despachadoPor:        r.despachado_por ? String(r.despachado_por) : null,
     despachadoPorNome:    r.despachado_por_nome ? String(r.despachado_por_nome) : null,
     m02EnviadaEm:         r.m02_enviada_em ? String(r.m02_enviada_em) : null,
+    skuCodigo:            r.sku_codigo ? String(r.sku_codigo) : null,
+    frascosPorUnidade:    r.frascos_por_unidade != null ? Number(r.frascos_por_unidade) : null,
     optInPesquisa:           Boolean(r.opt_in_pesquisa ?? false),
     optInMarketing:          Boolean(r.opt_in_marketing ?? false),
     optOutWhatsappMarketing: Boolean(r.opt_out_whatsapp_marketing ?? false),
@@ -110,6 +118,9 @@ export type NovaVendaManual = {
   origemVenda?: OrigemVenda | null
   tipoCliente?: TipoCliente
   notaFiscal?: string | null
+  /** Escada de produtos: SKU (frasco_60ml, kit_2, kit_3, discovery) e frascos por unidade */
+  skuCodigo?: string | null
+  frascosPorUnidade?: number | null
 }
 
 export function useVendas() {
@@ -213,8 +224,16 @@ export function useVendas() {
         origem_venda:        v.origemVenda ?? (v.canal === 'b2b' ? 'b2b_presencial' : null),
         tipo_cliente:        tipoCliente,
         nota_fiscal:         v.notaFiscal ?? null,
+        ...(v.skuCodigo !== undefined && { sku_codigo: v.skuCodigo }),
+        ...(v.frascosPorUnidade !== undefined && { frascos_por_unidade: v.frascosPorUnidade }),
       }
-      const { data, error } = await sb.from('vendas').insert(payload).select().single()
+      let { data, error } = await sb.from('vendas').insert(payload).select().single()
+      if (erroColunaSku(error)) {
+        const { sku_codigo: _s, frascos_por_unidade: _f, ...semSku } = payload as Record<string, unknown>
+        void _s; void _f
+        ;({ data, error } = await sb.from('vendas').insert(semSku).select().single())
+        dbLog('INSERT', 'vendas (sem colunas de SKU — rode a migration da escada)', error, data?.id)
+      }
       dbLog('INSERT', 'vendas', error, data?.id)
       if (error) { toastError('Erro ao registrar venda', error.message); return }
       if (!data) return
@@ -246,7 +265,7 @@ export function useVendas() {
     atualizarVenda: async (id: string, dados: Partial<NovaVendaManual>) => {
       const sb = supabase
       if (!sb) return
-      const { error } = await sb.from('vendas').update({
+      const campos: Record<string, unknown> = {
         ...(dados.clienteNome        !== undefined && { cliente_nome:        dados.clienteNome }),
         ...(dados.clienteTelefone    !== undefined && { cliente_telefone:    dados.clienteTelefone }),
         ...(dados.clienteEmail       !== undefined && { cliente_email:       dados.clienteEmail }),
@@ -274,8 +293,16 @@ export function useVendas() {
         ...(dados.origemVenda        !== undefined && { origem_venda:        dados.origemVenda }),
         ...(dados.tipoCliente        !== undefined && { tipo_cliente:        dados.tipoCliente }),
         ...(dados.notaFiscal         !== undefined && { nota_fiscal:         dados.notaFiscal }),
+        ...(dados.produto            !== undefined && { produto:             dados.produto }),
+        ...(dados.skuCodigo          !== undefined && { sku_codigo:          dados.skuCodigo }),
+        ...(dados.frascosPorUnidade  !== undefined && { frascos_por_unidade: dados.frascosPorUnidade }),
         updated_at: new Date().toISOString(),
-      }).eq('id', id)
+      }
+      let { error } = await sb.from('vendas').update(campos).eq('id', id)
+      if (erroColunaSku(error)) {
+        delete campos.sku_codigo; delete campos.frascos_por_unidade
+        ;({ error } = await sb.from('vendas').update(campos).eq('id', id))
+      }
       dbLog('UPDATE', 'vendas', error, id)
       if (error) { toastError('Erro ao salvar venda', error.message); return }
       usePurionStore.getState().atualizarVenda(id, dados as Partial<Venda>)
@@ -309,15 +336,27 @@ export function useVendas() {
       usePurionStore.getState().atualizarVenda(id, { statusEntrega, ...(extras.data_envio && { dataEnvio: extras.data_envio }), ...(extras.data_entrega_realizada && { dataEntregaRealizada: extras.data_entrega_realizada }) })
       success('Status de entrega atualizado')
 
-      // Baixa estoque quando postado (idempotente via estoque_baixado)
+      // Baixa estoque quando postado (idempotente via estoque_baixado + saída única por venda).
+      // Frascos = quantidade × frascos por unidade do SKU (1 Kit 3 = 3 frascos; Discovery = 0).
       if (statusEntrega === 'postado') {
         const venda = usePurionStore.getState().vendas.find((v) => v.id === id)
-        if (venda && !venda.estoqueBaixado) {
+        const frascos = venda ? frascosDaVenda(venda) : 0
+        if (venda && !venda.estoqueBaixado && frascos === 0) {
+          await sb.from('vendas').update({ estoque_baixado: true }).eq('id', id)
+          usePurionStore.getState().atualizarVenda(id, { estoqueBaixado: true })
+        }
+        const { data: jaBaixou } = venda && !venda.estoqueBaixado && frascos > 0
+          ? await sb.from('estoque_movimentacoes').select('id').eq('origem_tipo', 'venda').eq('origem_id', id).eq('tipo', 'saida_venda').limit(1)
+          : { data: [] as unknown[] }
+        if (venda && !venda.estoqueBaixado && frascos > 0 && (jaBaixou?.length ?? 0) > 0) {
+          await sb.from('vendas').update({ estoque_baixado: true }).eq('id', id)
+          usePurionStore.getState().atualizarVenda(id, { estoqueBaixado: true })
+        } else if (venda && !venda.estoqueBaixado && frascos > 0) {
           const { data: estoque } = await sb.from('estoque_produto').select('quantidade_atual').order('created_at', { ascending: true }).limit(1).maybeSingle()
           if (estoque) {
-            const saldo = Math.max(0, estoque.quantidade_atual - (venda.quantidade ?? 1))
+            const saldo = Math.max(0, estoque.quantidade_atual - frascos)
             const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
-              tipo: 'saida_venda', quantidade: venda.quantidade ?? 1,
+              tipo: 'saida_venda', quantidade: frascos,
               motivo: `Venda ${id}`, origem_tipo: 'venda', origem_id: id,
               saldo_apos: saldo, autor: venda.responsavel ?? 'matheus',
             })
@@ -334,12 +373,13 @@ export function useVendas() {
       // Reverte estoque quando devolvido
       if (statusEntrega === 'devolvido') {
         const venda = usePurionStore.getState().vendas.find((v) => v.id === id)
-        if (venda && venda.estoqueBaixado) {
+        if (venda && venda.estoqueBaixado && frascosDaVenda(venda) > 0) {
+          const frascos = frascosDaVenda(venda)
           const { data: estoque } = await sb.from('estoque_produto').select('quantidade_atual').order('created_at', { ascending: true }).limit(1).maybeSingle()
           if (estoque) {
-            const saldo = estoque.quantidade_atual + (venda.quantidade ?? 1)
+            const saldo = estoque.quantidade_atual + frascos
             const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
-              tipo: 'ajuste', quantidade: venda.quantidade ?? 1,
+              tipo: 'ajuste', quantidade: frascos,
               motivo: `Devolução venda ${id}`, origem_tipo: 'venda', origem_id: id,
               saldo_apos: saldo, autor: venda.responsavel ?? 'matheus',
             })

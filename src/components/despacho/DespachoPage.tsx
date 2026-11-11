@@ -9,6 +9,7 @@ import { useMobile } from '@/hooks/useMobile'
 import { useToast } from '@/components/ui/Toast'
 import { InnerTabs } from '@/components/ui/InnerTabs'
 import { PERFIS_INFO } from '@/lib/socios'
+import { frascosDaVenda } from '@/lib/escadaProdutos'
 import {
   useDespacho, aguardandoDespacho, despachoAtrasado, despachadoHoje, horasDesde,
   mensagemM02, linkWhatsApp, TRANSPORTADORAS, HORAS_ALERTA_DESPACHO,
@@ -108,6 +109,7 @@ function CardFila({ venda, onDespachar }: {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 14, color: '#F5F5F5' }}>
             <Package size={14} style={{ color: VERDE, flexShrink: 0 }} />
             <strong>{venda.quantidade}x</strong> {venda.produto || 'PURION GT'}
+            <span style={{ fontSize: 12, color: '#E0E0E0', fontWeight: 600 }}>· {frascosDaVenda(venda)} frasco{frascosDaVenda(venda) !== 1 ? 's' : ''}</span>
             <span style={{ fontSize: 12, color: '#B8B8B8' }}>· {venda.canal.toUpperCase()}</span>
           </div>
 
@@ -304,7 +306,7 @@ export function DespachoPage() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <Kpi label="A despachar" valor={fila.length} cor={DOURADO} sub="pagos, aguardando envio" />
         <Kpi label="Atrasados" valor={atrasados.length} cor={atrasados.length > 0 ? VERMELHO : '#E0E0E0'} sub={`pagos há +${HORAS_ALERTA_DESPACHO}h`} />
-        <Kpi label="Despachados hoje" valor={hoje.length} cor={VERDE} sub={hoje.reduce((s, v) => s + v.quantidade, 0) + ' unidades'} />
+        <Kpi label="Despachados hoje" valor={hoje.length} cor={VERDE} sub={hoje.reduce((s, v) => s + frascosDaVenda(v), 0) + ' frascos'} />
         {!isLogistica && <Kpi label="Sem aviso M02" valor={semAviso.length} cor={semAviso.length > 0 ? '#E8A838' : '#E0E0E0'} sub="rastreio não enviado ao cliente" />}
       </div>
 

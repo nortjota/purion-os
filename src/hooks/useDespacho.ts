@@ -6,6 +6,7 @@ import { usePurionStore } from '@/store'
 import type { Venda } from '@/store'
 import { useToast } from '@/components/ui/Toast'
 import { useAuth } from '@/hooks/useAuth'
+import { frascosDaVenda } from '@/lib/escadaProdutos'
 
 /** Horas a partir das quais um pedido pago sem despacho vira alerta. */
 export const HORAS_ALERTA_DESPACHO = 48
@@ -60,8 +61,20 @@ export function useDespacho() {
   const operador = perfil?.role === 'logistica' ? 'logistica' : perfilAtivo
   const operadorNome = perfil?.nome ?? (operador === 'logistica' ? 'Logística · Goiânia' : operador)
 
-  /** Baixa de estoque idempotente: só 1 saída por venda (checa movimentação + flag estoque_baixado). */
+  /**
+   * Baixa de estoque idempotente: só 1 saída por venda (checa movimentação + flag estoque_baixado).
+   * Frascos = quantidade × frascos por unidade do SKU (1 Kit 3 = 3 frascos; Discovery = 0, sem baixa).
+   */
   async function baixarEstoque(sb: NonNullable<typeof supabase>, venda: Venda) {
+    const qtd = frascosDaVenda(venda)
+    if (qtd === 0) {
+      if (!venda.estoqueBaixado) {
+        const { error } = await sb.from('vendas').update({ estoque_baixado: true }).eq('id', venda.id)
+        dbLog('UPDATE', 'vendas (sem frascos: amostra)', error, venda.id)
+        usePurionStore.getState().atualizarVenda(venda.id, { estoqueBaixado: true })
+      }
+      return
+    }
     const { data: jaTem, error: chkErr } = await sb.from('estoque_movimentacoes')
       .select('id').eq('origem_tipo', 'venda').eq('origem_id', venda.id).eq('tipo', 'saida_venda').limit(1)
     dbLog('SELECT', 'estoque_movimentacoes (checa saida_venda)', chkErr, venda.id)
@@ -80,7 +93,6 @@ export function useDespacho() {
     dbLog('SELECT', 'estoque_produto', estErr)
     if (!estoque) return
 
-    const qtd = venda.quantidade ?? 1
     const saldo = Math.max(0, Number(estoque.quantidade_atual) - qtd)
     const { error: movErr } = await sb.from('estoque_movimentacoes').insert({
       tipo: 'saida_venda', quantidade: qtd,

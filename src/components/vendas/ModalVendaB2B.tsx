@@ -5,6 +5,9 @@ import { usePurionStore } from '@/store'
 import type { Venda, PerfilUsuario, StatusPagamentoVenda, StatusEntregaVenda } from '@/store'
 import { useVendas, type NovaVendaManual } from '@/hooks/useVendas'
 import { SelectBuscavel } from '@/components/ui/SelectBuscavel'
+import { SeletorSKU } from './SeletorSKU'
+import { useCatalogoSKU } from '@/hooks/useCatalogoSKU'
+import type { SkuCatalogo } from '@/lib/escadaProdutos'
 
 
 const QUANTIDADE_PADRAO_LOTE = 10
@@ -40,6 +43,15 @@ export function ModalVendaB2B({ venda, onFechar }: { venda?: Venda; onFechar: ()
     observacoes: venda?.observacoes ?? '',
   })
   const [salvando, setSalvando] = useState(false)
+  const { porCodigo } = useCatalogoSKU()
+  const [skuCodigo, setSkuCodigo] = useState<string>(venda?.skuCodigo ?? 'frasco_60ml')
+
+  // B2B: frasco avulso sai pelo preço ao parceiro; kits/discovery pelo preço do SKU
+  function escolherSku(s: SkuCatalogo) {
+    setSkuCodigo(s.codigo)
+    const preco = s.codigo === 'frasco_60ml' ? configuracoes.precoB2B : s.preco
+    setForm((f) => ({ ...f, valorUnitario: preco != null ? String(preco) : '' }))
+  }
 
   const opcoesLeads = useMemo(
     () => leads.map((l) => ({ value: l.id, label: l.nomeEmpresa, sublabel: [l.cidade, l.telefone].filter(Boolean).join(' · ') })),
@@ -87,7 +99,9 @@ export function ModalVendaB2B({ venda, onFechar }: { venda?: Venda; onFechar: ()
       dataVenda: new Date(form.dataVenda).toISOString(),
       responsavel: form.responsavel,
       observacoes: form.observacoes || undefined,
-      produto: `Lote PURION GT (${form.quantidade} un.)`,
+      produto: `Lote ${porCodigo(skuCodigo)?.nome ?? 'PURION GT 60ml'} (${form.quantidade} un.)`,
+      skuCodigo,
+      frascosPorUnidade: porCodigo(skuCodigo)?.qtdFrascos ?? 1,
     }
 
     if (editando && venda) {
@@ -131,6 +145,10 @@ export function ModalVendaB2B({ venda, onFechar }: { venda?: Venda; onFechar: ()
           </div>
 
           <div className="col-span-2 mt-2"><p className="kpi-label mb-1">Lote</p></div>
+          <div className="col-span-2">
+            <label className="label-purion">Produto (SKU)</label>
+            <SeletorSKU valor={skuCodigo} onEscolher={escolherSku} precoFrasco={configuracoes.precoB2B} />
+          </div>
           <div>
             <label className="label-purion">Quantidade (unidades)</label>
             <input type="number" min={1} className="input-purion" value={form.quantidade} onChange={(e) => set('quantidade', e.target.value)} />

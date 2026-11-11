@@ -5,6 +5,9 @@ import { usePurionStore } from '@/store'
 import type { Venda, PerfilUsuario, StatusPagamentoVenda, StatusEntregaVenda } from '@/store'
 import { useVendas, type NovaVendaManual } from '@/hooks/useVendas'
 import { SelectBuscavel } from '@/components/ui/SelectBuscavel'
+import { SeletorSKU } from './SeletorSKU'
+import { useCatalogoSKU } from '@/hooks/useCatalogoSKU'
+import type { SkuCatalogo } from '@/lib/escadaProdutos'
 
 
 function nowLocalInput() {
@@ -47,6 +50,13 @@ export function ModalVendaB2C({ venda, onFechar }: { venda?: Venda; onFechar: ()
   const [afiliadoCreatorId, setAfiliadoCreatorId] = useState<string | null>(venda?.afiliadoCreatorId ?? null)
   const [buscandoCep, setBuscandoCep] = useState(false)
   const [salvando, setSalvando] = useState(false)
+  const { porCodigo } = useCatalogoSKU()
+  const [skuCodigo, setSkuCodigo] = useState<string>(venda?.skuCodigo ?? 'frasco_60ml')
+
+  function escolherSku(s: SkuCatalogo) {
+    setSkuCodigo(s.codigo)
+    setForm((f) => ({ ...f, valorUnitario: s.preco != null ? String(s.preco) : '' }))
+  }
 
   const valorTotal = useMemo(() => {
     const qtd = parseFloat(form.quantidade) || 0
@@ -109,6 +119,9 @@ export function ModalVendaB2C({ venda, onFechar }: { venda?: Venda; onFechar: ()
       dataVenda: new Date(form.dataVenda).toISOString(),
       responsavel: form.responsavel,
       observacoes: form.observacoes || undefined,
+      skuCodigo,
+      frascosPorUnidade: porCodigo(skuCodigo)?.qtdFrascos ?? 1,
+      produto: porCodigo(skuCodigo)?.nome ?? 'PURION GT 60ml',
     }
 
     if (editando && venda) {
@@ -180,6 +193,10 @@ export function ModalVendaB2C({ venda, onFechar }: { venda?: Venda; onFechar: ()
 
           {/* Produto */}
           <div className="col-span-2 mt-2"><p className="kpi-label mb-1">Produto</p></div>
+          <div className="col-span-2">
+            <label className="label-purion">Produto (SKU)</label>
+            <SeletorSKU valor={skuCodigo} onEscolher={escolherSku} />
+          </div>
           <div>
             <label className="label-purion">Quantidade</label>
             <input type="number" min={1} className="input-purion" value={form.quantidade} onChange={(e) => set('quantidade', e.target.value)} />

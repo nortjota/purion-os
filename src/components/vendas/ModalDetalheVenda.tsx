@@ -6,9 +6,11 @@ import { formatarDataBR } from '@/lib/calculos'
 import {
   STATUS_PAGAMENTO_LABEL, STATUS_PAGAMENTO_BADGE,
   STATUS_ENTREGA_LABEL, STATUS_ENTREGA_BADGE,
-  METODO_PAGAMENTO_LABEL, fmtR, calcularMargem,
+  METODO_PAGAMENTO_LABEL, fmtR,
 } from '@/lib/vendas-helpers'
 import { usePurionStore } from '@/store'
+import { useCatalogoSKU } from '@/hooks/useCatalogoSKU'
+import { contribuicaoVenda, frascosDaVenda, codigoSkuDaVenda } from '@/lib/escadaProdutos'
 
 interface EtapaTimeline { label: string; data: string | null; feita: boolean }
 
@@ -78,14 +80,18 @@ interface Props {
 }
 
 export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
-  const { creators, leads } = usePurionStore()
+  const { creators, leads, configuracoes } = usePurionStore()
+  const { porCodigo } = useCatalogoSKU()
   const creator = v.afiliadoCreatorId ? creators.find((c) => c.id === v.afiliadoCreatorId) : null
   const lead = v.leadId ? leads.find((l) => l.id === v.leadId) : null
 
   const endereco = [v.endereco, v.numero, v.complemento].filter(Boolean).join(', ')
   const enderecoCompleto = [endereco, v.bairro, v.cidade && v.uf ? `${v.cidade}/${v.uf}` : v.cidade ?? v.uf].filter(Boolean).join(' — ')
 
-  const margem = calcularMargem(v)
+  // Contribuição = valor − custo de produção do SKU × qtd − custos variáveis proporcionais ao valor
+  const sku = porCodigo(codigoSkuDaVenda(v))
+  const frascos = frascosDaVenda(v)
+  const contrib = contribuicaoVenda(v, v.skuCodigo ? sku : undefined, configuracoes)
 
   const etapasTimeline: EtapaTimeline[] = [
     { label: 'Criado',     data: v.createdAt, feita: true },
@@ -146,16 +152,30 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
           {/* PRODUTO */}
           <Secao icon={Package} titulo="Produto">
             <Campo label="Produto" valor={v.produto || '—'} />
-            <Campo label="Quantidade" valor={v.quantidade} />
+            {sku && <Campo label="SKU" valor={sku.nome} />}
+            <Campo label="Quantidade (pedido)" valor={v.quantidade} />
+            <Campo label="Frascos do estoque" valor={frascos === 0 ? '0 (amostra)' : frascos} />
             {v.valorUnitario != null && <Campo label="Valor Unitário" valor={fmtR(v.valorUnitario)} />}
             {v.desconto > 0 && <Campo label="Desconto" valor={fmtR(v.desconto)} />}
             <Campo label="Valor Total" valor={fmtR(v.valorTotal ?? v.valorLiquido)} destaque />
           </Secao>
 
-          {/* MARGEM */}
-          <Secao icon={TrendingUp} titulo="Margem">
-            <Campo label="Margem estimada" valor={fmtR(margem)} destaque />
-            <p className="text-[10px] text-[#B8B8B8]">Valor − custo de produção (R$ 30,00/frasco × {v.quantidade}) − taxa</p>
+          {/* CONTRIBUIÇÃO */}
+          <Secao icon={TrendingUp} titulo="Contribuição">
+            {contrib ? (
+              <>
+                <Campo label="Valor da venda" valor={fmtR(contrib.valor)} />
+                <Campo label="Custo de produção" valor={`− ${fmtR(contrib.custoProducao)}`} />
+                <Campo label="Custos variáveis (proporcionais)" valor={`− ${fmtR(contrib.custosVariaveis)}`} />
+                <Campo label="Contribuição" valor={fmtR(contrib.contribuicao)} destaque />
+                <p className="text-[11px] text-[#B8B8B8]">
+                  Preço − custo de produção do SKU − custos variáveis (R$ {(configuracoes.custosVariaveis ?? 28).toFixed(2).replace('.', ',')} por frasco a {fmtR(configuracoes.precoB2C)}, proporcional ao valor).
+                  {contrib.valor > 0 && ` Margem de contribuição: ${((contrib.contribuicao / contrib.valor) * 100).toFixed(0)}%.`}
+                </p>
+              </>
+            ) : (
+              <p className="text-[12px] text-[#F5C26B]">Custo do SKU a validar (Discovery) — contribuição indisponível.</p>
+            )}
           </Secao>
 
           {/* PAGAMENTO */}

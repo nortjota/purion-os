@@ -10,6 +10,7 @@ import { VendasTabelaPedidos } from './VendasTabelaPedidos'
 import { ModalVendaB2C } from './ModalVendaB2C'
 import { ModalVendaB2B } from './ModalVendaB2B'
 import { ModalDetalheVenda } from './ModalDetalheVenda'
+import { frascosDaVenda } from '@/lib/escadaProdutos'
 
 const TRANSPORTADORAS = ['Correios', 'Jadlog', 'Total Express', 'Sequoia', 'Shopee Logística', 'Outra']
 
@@ -82,10 +83,10 @@ export function VendasDespachoLogistica() {
   async function despacharLote() {
     if (selecionados.size === 0) return
     const itens = pendentes.filter((v) => selecionados.has(v.id))
-    const totalNecessario = itens.reduce((s, v) => s + v.quantidade, 0)
+    const totalNecessario = itens.reduce((s, v) => s + frascosDaVenda(v), 0)
 
     if (estoqueProduto && totalNecessario > estoqueProduto.quantidadeAtual) {
-      setErroLote(`Estoque insuficiente: necessário ${totalNecessario} unidades, disponível ${estoqueProduto.quantidadeAtual}.`)
+      setErroLote(`Estoque insuficiente: necessário ${totalNecessario} frascos, disponível ${estoqueProduto.quantidadeAtual}.`)
       return
     }
 
@@ -189,7 +190,7 @@ export function VendasDespachoLogistica() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {pendentes.map((v) => {
-              const insuficiente = estoqueProduto ? v.quantidade > estoqueProduto.quantidadeAtual : false
+              const insuficiente = estoqueProduto ? frascosDaVenda(v) > estoqueProduto.quantidadeAtual : false
               return (
                 <div key={v.id} className="card-purion" style={{ padding: '14px 16px' }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'flex-start' }}>
@@ -201,7 +202,7 @@ export function VendasDespachoLogistica() {
                     <div style={{ flex: '1 1 200px' }}>
                       <div style={{ fontWeight: 600, fontSize: 14 }}>{v.clienteNome}</div>
                       <div className="caption" style={{ marginTop: 2 }}>
-                        {v.quantidade}x {v.produto || 'PURION GT'} · R$ {(v.valorTotal ?? v.valorLiquido).toFixed(2)}
+                        {v.quantidade}x {v.produto || 'PURION GT'} · {frascosDaVenda(v)} frasco{frascosDaVenda(v) !== 1 ? 's' : ''} · R$ {(v.valorTotal ?? v.valorLiquido).toFixed(2).replace('.', ',')}
                       </div>
                       {v.endereco && (
                         <div className="caption" style={{ marginTop: 2 }}>
