@@ -5,7 +5,10 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer, 
 import { usePurionStore } from '@/store'
 import type { OrigemVenda } from '@/store'
 import { ToggleLeft, ToggleRight, Info } from 'lucide-react'
-import { fmtR, calcularMargem, ORIGEM_VENDA_LABEL, TIPO_CLIENTE_LABEL } from '@/lib/vendas-helpers'
+import { fmtR, ORIGEM_VENDA_LABEL, TIPO_CLIENTE_LABEL } from '@/lib/vendas-helpers'
+import { frascosDaVenda, contribuicaoVenda, codigoSkuDaVenda } from '@/lib/escadaProdutos'
+import { useCatalogoSKU } from '@/hooks/useCatalogoSKU'
+import { EscadaMetricas } from './EscadaMetricas'
 
 const TOOLTIP_STYLE: React.CSSProperties = {
   background: '#1A1A1A', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#F5F5F5',
@@ -79,7 +82,8 @@ function Divider() {
 }
 
 export function PainelMetricasVendas() {
-  const { vendas, doacoesUGC } = usePurionStore()
+  const { vendas, doacoesUGC, configuracoes } = usePurionStore()
+  const { porCodigo } = useCatalogoSKU()
   const [periodo, setPeriodo] = useState<Periodo>('30d')
   const [canal, setCanal] = useState<CanalFiltro>('todos')
   const [incluirUGC, setIncluirUGC] = useState(true)
@@ -121,19 +125,23 @@ export function PainelMetricasVendas() {
     const pagas = vendasFiltradas.filter((v) => v.statusPagamento === 'pago')
     const pedidos = vendasFiltradas.length
     const pedidosPagos = pagas.length
-    const frascosTotais = vendasFiltradas.reduce((s, v) => s + v.quantidade, 0)
-    const frascosB2C = vendasFiltradas.filter((v) => v.canal === 'b2c').reduce((s, v) => s + v.quantidade, 0)
-    const frascosB2B = vendasFiltradas.filter((v) => v.canal === 'b2b').reduce((s, v) => s + v.quantidade, 0)
+    // FRASCOS = quantidade × frascos do SKU (1 Kit 3 = 3 frascos; Discovery = 0)
+    const frascosTotais = vendasFiltradas.reduce((s, v) => s + frascosDaVenda(v), 0)
+    const frascosB2C = vendasFiltradas.filter((v) => v.canal === 'b2c').reduce((s, v) => s + frascosDaVenda(v), 0)
+    const frascosB2B = vendasFiltradas.filter((v) => v.canal === 'b2b').reduce((s, v) => s + frascosDaVenda(v), 0)
     const faturamento = pagas.reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
     const ticketMedio = pedidosPagos > 0 ? faturamento / pedidosPagos : 0
     const fracsosPorPedido = pedidos > 0 ? frascosTotais / pedidos : 0
-    const fracsosDespachados = vendasFiltradas.filter((v) => DESPACHADOS_STATUS.includes(v.statusEntrega)).reduce((s, v) => s + v.quantidade, 0)
-    const frascosADespachar = pagas.filter((v) => A_DESPACHAR_STATUS.includes(v.statusEntrega)).reduce((s, v) => s + v.quantidade, 0)
+    const fracsosDespachados = vendasFiltradas.filter((v) => DESPACHADOS_STATUS.includes(v.statusEntrega)).reduce((s, v) => s + frascosDaVenda(v), 0)
+    const frascosADespachar = pagas.filter((v) => A_DESPACHAR_STATUS.includes(v.statusEntrega)).reduce((s, v) => s + frascosDaVenda(v), 0)
     const frascosUGC = doacoesFiltradas.reduce((s, d) => s + d.quantidade, 0)
     const totalSaiu = fracsosDespachados + (incluirUGC ? frascosUGC : 0)
 
-    // Margem por venda: valor − custo de produção − taxa de pagamento
-    const margemTotal = pagas.reduce((s, v) => s + calcularMargem(v), 0)
+    // Contribuição por venda: valor − custo de produção do SKU − custos variáveis proporcionais
+    const margemTotal = pagas.reduce((s, v) => {
+      const c = contribuicaoVenda(v, v.skuCodigo ? porCodigo(codigoSkuDaVenda(v)) : undefined, configuracoes)
+      return s + (c?.contribuicao ?? 0)
+    }, 0)
     const margemMedia = pedidosPagos > 0 ? margemTotal / pedidosPagos : 0
     const margemPct = faturamento > 0 ? (margemTotal / faturamento) * 100 : 0
 
@@ -152,7 +160,7 @@ export function PainelMetricasVendas() {
       fracsosDespachados, frascosADespachar, frascosUGC, totalSaiu,
       margemTotal, margemMedia, margemPct, porOrigem, semOrigem, novos, recompras,
     }
-  }, [vendasFiltradas, doacoesFiltradas, incluirUGC])
+  }, [vendasFiltradas, doacoesFiltradas, incluirUGC, porCodigo, configuracoes])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -280,21 +288,24 @@ export function PainelMetricasVendas() {
         </Bloco>
 
         {/* BLOCO 4 — MARGEM */}
-        <Bloco titulo="Margem" cor="#A855F7">
+        <Bloco titulo="Contribuição" cor="#A855F7">
           <Linha
-            label="Margem total"
+            label="Contribuição total"
             valor={fmtR(m.margemTotal)}
-            sub={`${m.margemPct.toFixed(1)}% do faturamento`}
-            tip="Faturamento − (custo de produção × qtd) − taxa de pagamento, somado nos pedidos pagos"
+            sub={`${m.margemPct.toFixed(1).replace('.', ',')}% do faturamento`}
+            tip="Σ pedidos pagos: valor − custo de produção do SKU − custos variáveis proporcionais (R$ 28 por frasco a R$ 97,90). Discovery com custo a validar fica de fora."
           />
           <Divider />
           <Linha
-            label="Margem média por pedido"
+            label="Contribuição média por pedido"
             valor={fmtR(m.margemMedia)}
-            tip="Margem total ÷ nº de pedidos pagos"
+            tip="Contribuição total ÷ nº de pedidos pagos"
           />
         </Bloco>
       </div>
+
+      {/* Escada de produtos — ticket médio, SKUs, % kit, conversão Discovery */}
+      <EscadaMetricas vendas={vendasFiltradas} todas={vendas} />
 
       {/* Origem da venda + Perfil do cliente */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>

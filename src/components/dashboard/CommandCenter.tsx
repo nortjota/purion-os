@@ -47,6 +47,7 @@ import { estagioNormalizado, ESTAGIOS_ATIVOS, ESTAGIOS_GANHOS } from '@/componen
 import { STATUS_OBJETIVO_COR, STATUS_OBJETIVO_LABEL } from '@/components/estrategias/metas/metasHelpers'
 import { PERFIS_INFO, SOCIOS_ATIVOS, SOCIOS_ATIVOS_IDS, corPerfil, type SocioAtivo } from '@/lib/socios'
 import { KpisPlaybook } from './KpisPlaybook'
+import { frascosDaVenda } from '@/lib/escadaProdutos'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -609,8 +610,8 @@ export function CommandCenter() {
       v.dataVenda.slice(0, 10) >= dataInicioPeriodo && v.dataVenda.slice(0, 10) <= dataFimPeriodo && v.statusPagamento === 'pago'
     )
     const pedidos = vendasPeriodo.length
-    const frascos = vendasPeriodo.reduce((s, v) => s + v.quantidade, 0)
-    const despachados = vendasPeriodo.filter((v) => ['postado', 'em_transito', 'entregue'].includes(v.statusEntrega)).reduce((s, v) => s + v.quantidade, 0)
+    const frascos = vendasPeriodo.reduce((s, v) => s + frascosDaVenda(v), 0)
+    const despachados = vendasPeriodo.filter((v) => ['postado', 'em_transito', 'entregue'].includes(v.statusEntrega)).reduce((s, v) => s + frascosDaVenda(v), 0)
     const ugc = doacoesUGC
       .filter((d) => d.dataEnvio.slice(0, 10) >= dataInicioPeriodo && d.dataEnvio.slice(0, 10) <= dataFimPeriodo && ['postado', 'entregue'].includes(d.statusEnvio))
       .reduce((s, d) => s + d.quantidade, 0)

@@ -10,6 +10,7 @@
  */
 
 import type { Venda, Despesa, CanalVenda } from '@/store'
+import { frascosDaVenda } from './escadaProdutos'
 
 const DIA = 86_400_000
 
@@ -130,13 +131,13 @@ export function calcularKpisPlaybook(params: {
 
   // 3. Contribuição por canal = receita líquida − CMV − taxas de pagamento − custos variáveis do canal
   //    B2C: mídia paga + creators/UGC + logística rateada por unidades · B2B: logística rateada
-  const unidadesTotal = pagas.reduce((s, v) => s + (v.quantidade || 1), 0)
+  const unidadesTotal = pagas.reduce((s, v) => s + frascosDaVenda(v), 0) // frascos (Kit 3 = 3)
   const contribuicao: ContribuicaoCanal[] = (['b2c', 'b2b'] as CanalVenda[]).map((canal) => {
     const doCanal = doPeriodo.filter((v) => v.canal === canal)
     const pagasCanal = doCanal.filter(pago)
     const rl = pagasCanal.reduce((s, v) => s + itensBrutos(v) - (v.desconto || 0), 0)
       - doCanal.filter(reembolsado).reduce((s, v) => s + (v.valorTotal ?? v.valorLiquido), 0)
-    const unidades = pagasCanal.reduce((s, v) => s + (v.quantidade || 1), 0)
+    const unidades = pagasCanal.reduce((s, v) => s + frascosDaVenda(v), 0)
     const cmv = unidades * custoUnitario
     const taxas = pagasCanal.reduce((s, v) => s + (v.taxa || 0), 0)
     const logRateada = unidadesTotal > 0 ? logistica * (unidades / unidadesTotal) : 0
@@ -189,7 +190,7 @@ export function calcularKpisPlaybook(params: {
 
   // 10. Giro B2B 30d = unidades B2B pagas em 30d ÷ parceiros B2B com pedido pago em 30d
   const b2b30 = vendas.filter((v) => pago(v) && v.canal === 'b2b' && noPeriodo(v.dataVenda, inicio30, agora))
-  const unidadesB2B = b2b30.reduce((s, v) => s + (v.quantidade || 1), 0)
+  const unidadesB2B = b2b30.reduce((s, v) => s + frascosDaVenda(v), 0)
   const parceiros = new Set(b2b30.map(clienteKey)).size
 
   // North Star = clientes/parceiros ATIVOS que RECOMPRAM: ≥ 2 pedidos pagos e o último nos últimos 90 dias
