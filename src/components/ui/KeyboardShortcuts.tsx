@@ -12,8 +12,11 @@ interface ShortcutEntry {
 
 const SHORTCUTS: Record<string, ShortcutEntry[]> = {
   Navegação: [
-    { keys: 'G → D', description: 'Dashboard' },
+    { keys: 'G → D', description: 'Início' },
+    { keys: 'G → V', description: 'Vendas' },
     { keys: 'G → C', description: 'CRM' },
+    { keys: 'G → E', description: 'Despachos' },
+    { keys: 'G → M', description: 'Metas' },
     { keys: 'G → T', description: 'Tarefas' },
     { keys: 'G → F', description: 'Financeiro' },
     { keys: 'G → P', description: 'Produção' },
@@ -47,6 +50,9 @@ export function KeyboardShortcuts() {
   // Navigation shortcuts
   useHotkeys('g+d', () => router.push('/'),         { enableOnFormTags: false })
   useHotkeys('g+c', () => router.push('/crm'),      { enableOnFormTags: false })
+  useHotkeys('g+v', () => router.push('/vendas'),   { enableOnFormTags: false })
+  useHotkeys('g+e', () => router.push('/despacho'), { enableOnFormTags: false })
+  useHotkeys('g+m', () => router.push('/metas'),    { enableOnFormTags: false })
   useHotkeys('g+t', () => router.push('/tarefas'),  { enableOnFormTags: false })
   useHotkeys('g+f', () => router.push('/financeiro'),{ enableOnFormTags: false })
   useHotkeys('g+p', () => router.push('/producao'), { enableOnFormTags: false })
@@ -68,8 +74,13 @@ export function KeyboardShortcuts() {
   // Listen for purion:open-palette to show modal
   useEffect(() => {
     const handle = () => setShowModal(false)
+    const abrir = () => setShowModal(true)
     window.addEventListener('purion:close-all', handle)
-    return () => window.removeEventListener('purion:close-all', handle)
+    window.addEventListener('purion:open-shortcuts', abrir)
+    return () => {
+      window.removeEventListener('purion:close-all', handle)
+      window.removeEventListener('purion:open-shortcuts', abrir)
+    }
   }, [])
 
   if (!showModal) return null

@@ -5,16 +5,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { soft } from '@/components/motion/presets'
-import {
-  LayoutDashboard, Users, CheckSquare, TrendingUp,
-  MoreHorizontal, Package, Users2, BookOpen,
-  Settings, Calendar, Megaphone, X, Link2, Headphones, KeyRound, ShoppingBag, Target, Shapes,
-  Compass, FlaskConical, Mail, CalendarDays, LayoutGrid, Truck, HeartHandshake,
-} from 'lucide-react'
+import { MoreHorizontal, X, LayoutGrid, Truck, Sun, Moon, LogOut } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import { useAuth } from '@/hooks/useAuth'
 import { useIsMaster } from '@/hooks/useIsMaster'
 import { useIsLogistica } from '@/hooks/useIsLogistica'
 import { usePreferenciasMenu } from '@/hooks/usePreferenciasMenu'
-import { hrefParaChave } from './navConfig'
+import { NAV_GROUPS, TODOS_OS_ITENS, hrefParaChave } from './navConfig'
 import { PersonalizarMenuModal } from './PersonalizarMenuModal'
 
 // Perfil 'logistica' (Goiânia): só a fila de despacho
@@ -22,58 +19,16 @@ const MAIN_ITEMS_LOGISTICA = [
   { href: '/despacho', label: 'Despacho', icon: Truck },
 ]
 
-const MAIN_ITEMS = [
-  { href: '/',            label: 'Início',     icon: LayoutDashboard },
-  { href: '/estrategias', label: 'Estratégias', icon: Compass        },
-  { href: '/vendas',      label: 'Vendas',      icon: ShoppingBag    },
-  { href: '/tarefas',     label: 'Tarefas',     icon: CheckSquare    },
-  { href: '/metas',       label: 'Metas',       icon: Target         },
-]
+// Barra inferior: o que os sócios abrem no celular (rotina + operação do dia).
+const MAIN_HREFS = ['/', '/vendas', '/tarefas', '/despacho']
+const MAIN_ITEMS = MAIN_HREFS
+  .map((href) => TODOS_OS_ITENS.find((i) => i.href === href)!)
+  .map((i) => ({ href: i.href, label: i.label, icon: i.icon }))
 
-type DrawerGroup = {
-  label: string
-  items: { href: string; label: string; icon: React.ComponentType<{ size?: number }> ; masterOnly?: boolean }[]
-}
-
-const DRAWER_GROUPS: DrawerGroup[] = [
-  {
-    label: 'COMERCIAL',
-    items: [
-      { href: '/crm',        label: 'CRM B2B',      icon: Users  },
-      { href: '/posvenda',   label: 'Pós-venda',    icon: HeartHandshake },
-      { href: '/leads-site', label: 'Leads do Site', icon: Mail  },
-    ],
-  },
-  {
-    label: 'OPERAÇÃO',
-    items: [
-      { href: '/despacho', label: 'Despachos', icon: Truck },
-      { href: '/calendario', label: 'Calendário', icon: CalendarDays },
-      { href: '/quadros',  label: 'Quadros',   icon: Shapes   },
-      { href: '/producao', label: 'Produção',  icon: Package  },
-      { href: '/reunioes', label: 'Reuniões',  icon: Calendar },
-      { href: '/sac',      label: 'SAC',       icon: Headphones },
-    ],
-  },
-  {
-    label: 'CRESCIMENTO',
-    items: [
-      { href: '/marketing', label: 'Marketing', icon: Megaphone   },
-      { href: '/creators',  label: 'Creators',  icon: Users2      },
-      { href: '/growth',    label: 'Growth',    icon: FlaskConical },
-      { href: '/afiliados', label: 'Afiliados', icon: Link2       },
-    ],
-  },
-  {
-    label: 'GESTÃO',
-    items: [
-      { href: '/financeiro',   label: 'Financeiro',       icon: TrendingUp },
-      { href: '/conhecimento', label: 'Conhecimento',      icon: BookOpen  },
-      { href: '/contas',       label: 'Contas & Acessos',  icon: KeyRound,  masterOnly: true },
-      { href: '/settings',     label: 'Configurações',     icon: Settings,  masterOnly: true },
-    ],
-  },
-]
+// Gaveta "Menu": todo o resto, na mesma ordem e nos mesmos grupos da sidebar (fonte única: navConfig).
+const DRAWER_GROUPS = NAV_GROUPS
+  .map((g) => ({ label: g.label, items: g.items.filter((i) => !MAIN_HREFS.includes(i.href)) }))
+  .filter((g) => g.items.length > 0)
 
 export function MobileNav() {
   const pathname = usePathname()
@@ -82,6 +37,9 @@ export function MobileNav() {
   const { isMaster } = useIsMaster()
   const { isLogistica } = useIsLogistica()
   const { ocultas: abasOcultas } = usePreferenciasMenu()
+  const { theme, setTheme } = useTheme()
+  const { user, signOut } = useAuth()
+  const isDark = theme !== 'light'
 
   const visibleMainItems = isLogistica
     ? MAIN_ITEMS_LOGISTICA
@@ -89,7 +47,7 @@ export function MobileNav() {
 
   const visibleGroups = isLogistica ? [] : DRAWER_GROUPS.map((g) => ({
     ...g,
-    items: g.items.filter((i) => (isMaster || !i.masterOnly) && !abasOcultas.has(hrefParaChave(i.href))),
+    items: g.items.filter((i) => (isMaster || !i.masterOnly) && (i.essencial || !abasOcultas.has(i.key))),
   })).filter((g) => g.items.length > 0)
 
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
@@ -247,18 +205,40 @@ export function MobileNav() {
                 ))}
               </div>
 
-              {/* Footer */}
-              <div style={{ borderTop: '1px solid var(--border)', padding: 12, flexShrink: 0 }}>
+              {/* Footer: conta e preferências (no celular não há sidebar) */}
+              <div style={{ borderTop: '1px solid var(--border)', padding: 12, flexShrink: 0, display: 'flex', gap: 8 }}>
                 <button
                   onClick={() => { setMenuPersonalizarAberto(true); closeDrawer() }}
                   style={{
-                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    height: 40, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent',
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    height: 44, borderRadius: 999, border: '1px solid var(--border)', background: 'transparent',
                     cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)',
                   }}
                 >
-                  <LayoutGrid size={14} /> Personalizar menu
+                  <LayoutGrid size={14} /> Personalizar
                 </button>
+                <button
+                  onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                  aria-label={isDark ? 'Tema claro' : 'Tema escuro'}
+                  style={{
+                    width: 44, height: 44, borderRadius: 999, border: '1px solid var(--border)', background: 'transparent',
+                    cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}
+                >
+                  {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                </button>
+                {user && (
+                  <button
+                    onClick={() => void signOut()}
+                    aria-label="Sair"
+                    style={{
+                      width: 44, height: 44, borderRadius: 999, border: '1px solid var(--border)', background: 'transparent',
+                      cursor: 'pointer', color: 'var(--status-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >
+                    <LogOut size={16} />
+                  </button>
+                )}
               </div>
             </motion.div>
           </>

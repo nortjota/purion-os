@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Command } from 'cmdk'
 import { useRouter } from 'next/navigation'
 import {
@@ -16,35 +16,22 @@ import { useEstrategiaDecisoes } from '@/hooks/useEstrategia'
 import { useGrowth } from '@/hooks/useGrowth'
 import { useIcpPersonas } from '@/hooks/useIcpPersonas'
 import { useEventosCalendario } from '@/hooks/useEventosCalendario'
+import { TODOS_OS_ITENS, PAGINAS_EXTRAS } from '@/components/layout/navConfig'
 
-const PAGES = [
-  { label: 'Dashboard',      href: '/',              icon: LayoutDashboard },
-  { label: 'Calendário',     href: '/calendario',    icon: CalendarDays    },
-  { label: 'Estratégias',    href: '/estrategias',   icon: Compass         },
-  { label: 'CRM',            href: '/crm',           icon: Users           },
-  { label: 'Tarefas',        href: '/tarefas',       icon: CheckSquare     },
-  { label: 'Financeiro',     href: '/financeiro',    icon: DollarSign      },
-  { label: 'Vendas',         href: '/vendas',        icon: ShoppingBag    },
-  { label: 'Produção',       href: '/producao',      icon: Package         },
-  { label: 'Creators',       href: '/creators',      icon: Video           },
-  { label: 'Contabilidade',  href: '/contabilidade', icon: BookOpen        },
-  { label: 'Tráfego',        href: '/trafego',       icon: BarChart2       },
-  { label: 'Inteligência',   href: '/inteligencia',  icon: Brain           },
-  { label: 'Central de Conhecimento', href: '/conhecimento', icon: BookOpen },
-  { label: 'Contas & Acessos',        href: '/contas',       icon: KeyRound },
-  { label: 'Quadros',        href: '/quadros',       icon: Shapes          },
-  { label: 'Doações UGC',   href: '/ugc',           icon: Package         },
-  { label: 'Configurações',  href: '/settings',      icon: Settings        },
-]
+// Páginas extras (fora do menu) com ícone próprio na paleta
+const ICONE_EXTRA: Record<string, React.ComponentType<{ size?: number; style?: React.CSSProperties }>> = {
+  '/trafego': BarChart2, '/contabilidade': BookOpen, '/inteligencia': Brain, '/ugc': Package,
+  '/minha-atividade': UserCircle, '/planos': FileText, '/diagnostico': Settings,
+}
 
 const ACTIONS = [
-  { label: 'Nova tarefa',        action: 'nova-tarefa',       icon: Plus         },
-  { label: 'Novo lead',          action: 'novo-lead',         icon: UserPlus     },
-  { label: 'Registrar receita',  action: 'registrar-receita', icon: TrendingUp   },
-  { label: 'Registrar despesa',  action: 'registrar-despesa', icon: TrendingDown },
-  { label: 'Novo lote',          action: 'novo-lote',         icon: Boxes        },
-  { label: 'Adicionar creator',  action: 'adicionar-creator', icon: UserCog      },
-  { label: 'Registrar daily',    action: 'registrar-daily',   icon: Calendar     },
+  { label: 'Nova tarefa',        action: 'nova-tarefa',       href: '/tarefas',    icon: Plus         },
+  { label: 'Novo lead',          action: 'novo-lead',         href: '/crm',        icon: UserPlus     },
+  { label: 'Registrar receita',  action: 'registrar-receita', href: '/financeiro', icon: TrendingUp   },
+  { label: 'Registrar despesa',  action: 'registrar-despesa', href: '/financeiro', icon: TrendingDown },
+  { label: 'Novo lote',          action: 'novo-lote',         href: '/producao',   icon: Boxes        },
+  { label: 'Adicionar creator',  action: 'adicionar-creator', href: '/creators',   icon: UserCog      },
+  { label: 'Registrar daily',    action: 'registrar-daily',   href: '/reunioes',   icon: Calendar     },
 ]
 
 function dispatch(action: string) {
@@ -65,6 +52,12 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const { personas } = useIcpPersonas()
   const { eventos } = useEventosCalendario()
   const [query, setQuery] = useState('')
+
+  // Fonte única: o menu (navConfig) + páginas que vivem fora dele
+  const paginas = useMemo(() => [
+    ...TODOS_OS_ITENS.filter((i) => isMaster || !i.masterOnly).map((i) => ({ label: i.label, href: i.href, icon: i.icon })),
+    ...PAGINAS_EXTRAS.filter((p) => p.href !== '/planos' && p.href !== '/diagnostico').map((p) => ({ label: p.label, href: p.href, icon: ICONE_EXTRA[p.href] ?? FileText })),
+  ], [isMaster])
 
   const filteredLeads = leads
     .filter((l) =>
@@ -174,7 +167,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
           </Command.Empty>
 
           <Command.Group heading="Páginas">
-            {PAGES.map((page) => (
+            {paginas.map((page) => (
               <Command.Item
                 key={page.href}
                 value={page.label}
@@ -196,7 +189,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
               <Command.Item
                 key={action.action}
                 value={action.label}
-                onSelect={() => { dispatch(action.action); onClose() }}
+                onSelect={() => { router.push(action.href); dispatch(action.action); onClose() }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 12px', borderRadius: 8, cursor: 'pointer',

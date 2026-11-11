@@ -13,7 +13,7 @@ type Step = {
 const STEPS: Step[] = [
   { target: 'nav.purion-sidebar, aside.purion-sidebar', title: 'Módulos do sistema',     body: 'Navegue entre CRM, Financeiro, Produção e todos os outros módulos aqui.',             position: 'right'  },
   { target: '.kpi-grid',                                title: 'Métricas em tempo real', body: 'Acompanhe os principais indicadores do seu negócio atualizados automaticamente.',       position: 'bottom' },
-  { target: '.purion-header-desktop',                   title: 'Ações rápidas',          body: 'Busque dados, alterne o tema e acesse notificações no cabeçalho.',                      position: 'bottom' },
+  { target: '.purion-header-desktop',                   title: 'Busca e notificações',  body: 'Use a busca do menu (Ctrl+K) para achar qualquer coisa; as notificações ficam no cabeçalho.',                      position: 'bottom' },
   { target: 'body',                                     title: 'Ctrl+K — Command Center', body: 'Pressione Ctrl+K (ou ⌘K no Mac) para acessar ações rápidas de qualquer lugar.',         position: 'bottom' },
 ]
 

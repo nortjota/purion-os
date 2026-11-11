@@ -120,23 +120,22 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
           bottom: 24,
           right: 20,
           zIndex: 150,
-          width: 48,
-          height: 48,
+          width: 42,
+          height: 42,
           borderRadius: '50%',
-          background: 'var(--primary)',
-          color: '#0B0B0B',
-          border: 'none',
+          // discreto: é um atalho, não a ação principal da tela
+          background: 'var(--bg-surface-2)',
+          color: 'var(--text-primary)',
+          border: '1px solid var(--border)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(245,245,240,0.4)',
-          fontSize: 22,
-          fontWeight: 700,
+          boxShadow: '0 6px 20px rgba(0,0,0,0.35)',
         }}
         className="purion-quick-notes-btn"
       >
-        <StickyNote size={20} />
+        <StickyNote size={17} />
       </button>
 
       {/* Panel */}
