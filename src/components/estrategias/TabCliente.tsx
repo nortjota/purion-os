@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState } from 'react'
 import { Pencil, X, Ban, Sparkles } from 'lucide-react'
 import { useIcpPersonas, type IcpPersona, type NovaPersona } from '@/hooks/useIcpPersonas'
@@ -153,7 +155,7 @@ export function TabCliente() {
   const [editando, setEditando] = useState<IcpPersona | null>(null)
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando personas…</p></div>
+    return <Skeleton rows={4} label="Carregando personas…" />
   }
 
   const ordenadas = [...personas].sort((a, b) => (a.tipo === 'primaria' ? -1 : 1) - (b.tipo === 'primaria' ? -1 : 1) || a.ordem - b.ordem)

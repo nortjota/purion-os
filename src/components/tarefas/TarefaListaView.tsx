@@ -1,5 +1,7 @@
 'use client'
 
+import { CheckDraw } from '@/components/motion/CheckDraw'
+
 import React, { useState, useMemo } from 'react'
 import { ArrowUp, ArrowDown, ArrowUpDown, AlertTriangle, Plus, ChevronDown, ChevronRight } from 'lucide-react'
 import type { Tarefa } from '@/store'
@@ -147,15 +149,18 @@ function TarefaLinha({ t, onAbrirTarefa, onConcluirRapido }: {
     <tr
       onClick={() => onAbrirTarefa(t)}
       style={{ cursor: 'pointer' }}
-      className="hover:bg-[rgba(201,168,76,0.03)]"
+      className="hover:bg-[rgba(201,168,76,0.03)] purion-row"
     >
       <td onClick={(e) => e.stopPropagation()} style={{ width: 36 }}>
-        <input
-          type="checkbox"
-          checked={concluida}
-          onChange={() => onConcluirRapido(t)}
-          style={{ accentColor: '#C9A84C', width: 14, height: 14, cursor: 'pointer' }}
-        />
+        <label className="check-draw-label">
+          <input
+            type="checkbox"
+            checked={concluida}
+            onChange={() => onConcluirRapido(t)}
+            aria-label={`Concluir ${t.titulo}`}
+          />
+          <CheckDraw checked={concluida} size={15} />
+        </label>
       </td>
       <td style={{ maxWidth: 320 }}>
         <span style={{

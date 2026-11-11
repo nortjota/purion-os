@@ -293,8 +293,8 @@ export function CanvasEditor({ quadroId }: { quadroId: string }) {
 
   if (carregando) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--text-secondary,#888)', background: '#111' }}>
-        Carregando quadro...
+      <div style={{ height: '100vh', background: '#111', padding: 24 }} role="status" aria-label="Carregando quadro">
+        <div className="skeleton" style={{ height: '100%', borderRadius: 16 }} />
       </div>
     )
   }

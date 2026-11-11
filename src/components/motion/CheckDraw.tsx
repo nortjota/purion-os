@@ -7,20 +7,22 @@ import { ACCENT, EASE_EXPO, press } from './presets'
  * Caixa de seleção com check DESENHADO (pathLength) — só visual.
  * O estado e o onChange continuam com quem usa (nenhuma lógica muda).
  */
-export function CheckDraw({ checked, size = 18, color = ACCENT, onColor = '#0B0B0B', style }: {
+export function CheckDraw({ checked, size = 18, color = ACCENT, onColor = '#0B0B0B', style, className }: {
   checked: boolean
   size?: number
   color?: string
   onColor?: string
   style?: React.CSSProperties
+  className?: string
 }) {
   const reduzir = useReducedMotion() ?? false
   return (
     <motion.span
       aria-hidden
+      className={`check-draw ${className ?? ''}`}
       initial={false}
       animate={{ scale: checked && !reduzir ? [1, 0.88, 1] : 1, backgroundColor: checked ? 'var(--accent-motion, #D4FC3C)' : 'rgba(0,0,0,0)' }}
-      transition={reduzir ? { duration: 0 } : press}
+      transition={reduzir ? { duration: 0 } : { scale: { duration: 0.28, ease: 'easeOut' }, default: press }}
       style={{
         width: size, height: size, borderRadius: 6, flexShrink: 0,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

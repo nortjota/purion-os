@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import { supabase } from '@/lib/supabase'
@@ -64,7 +66,7 @@ export function SacRelatorio() {
   const chartCard = { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 20 }
   const kpiCard   = { ...chartCard, textAlign: 'center' as const }
 
-  if (carregando) return <div className="page-content" style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Carregando…</div>
+  if (carregando) return <div className="page-content"><Skeleton rows={6} label="Carregando…" /></div>
 
   return (
     <div className="page-content">

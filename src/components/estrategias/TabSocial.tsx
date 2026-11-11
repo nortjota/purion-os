@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { Camera, Music2, Clapperboard, Plus, X, Pencil, Trash2, Layers } from 'lucide-react'
@@ -253,7 +255,7 @@ export function TabSocial() {
   const [modalItem, setModalItem] = useState<{ dia: DiaSemana; editando: SocialCalendarioItem | null } | null>(null)
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando estratégia de redes…</p></div>
+    return <Skeleton rows={4} label="Carregando estratégia de redes…" />
   }
 
   const ativo = pilarSelecionado ?? pilares[0] ?? null

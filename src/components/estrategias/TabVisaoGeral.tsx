@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useMemo } from 'react'
 import { Star, Flag, CalendarClock, DollarSign, Percent, Scale, Package, CheckCircle2, Circle, Target } from 'lucide-react'
 import { useEstrategiaRoadmap } from '@/hooks/useEstrategia'
@@ -108,7 +110,7 @@ export function TabVisaoGeral() {
   )
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando roadmap…</p></div>
+    return <Skeleton rows={4} label="Carregando roadmap…" />
   }
 
   return (

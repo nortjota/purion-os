@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useMemo, useState } from 'react'
 import { Plus, X, Milestone, Trash2 } from 'lucide-react'
 import { useEstrategiaDecisoes, type NovaDecisao } from '@/hooks/useEstrategia'
@@ -96,7 +98,7 @@ export function TabDecisoes() {
   )
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando decisões…</p></div>
+    return <Skeleton rows={4} label="Carregando decisões…" />
   }
 
   return (

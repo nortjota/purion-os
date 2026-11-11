@@ -1,5 +1,7 @@
 'use client'
 
+import { CheckDraw } from '@/components/motion/CheckDraw'
+
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Minus, Check, Trash2, GripVertical, X } from 'lucide-react'
@@ -220,9 +222,9 @@ export function MetaCard({
           <div style={{ height: 5, background: 'var(--bg-surface-2)', borderRadius: 999, overflow: 'hidden' }}>
             <motion.div
               initial={false}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              style={{ height: '100%', background: meta.concluida ? '#22C55E' : cor, borderRadius: 999 }}
+              animate={{ scaleX: pct / 100 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+              style={{ height: '100%', width: '100%', transformOrigin: 'left center', background: meta.concluida ? '#22C55E' : cor, borderRadius: 999 }}
             />
           </div>
         </div>
@@ -237,19 +239,23 @@ export function MetaCard({
           <div style={{ height: 5, background: 'var(--bg-surface-2)', borderRadius: 999, overflow: 'hidden', marginBottom: 8 }}>
             <motion.div
               initial={false}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              style={{ height: '100%', background: meta.concluida ? '#22C55E' : cor, borderRadius: 999 }}
+              animate={{ scaleX: pct / 100 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+              style={{ height: '100%', width: '100%', transformOrigin: 'left center', background: meta.concluida ? '#22C55E' : cor, borderRadius: 999 }}
             />
           </div>
           <div className="flex flex-col gap-1">
             {meusItens.map((item) => (
               <div key={item.id} className="flex items-center gap-2" style={{ fontSize: 12 }}>
-                <input
-                  type="checkbox"
-                  checked={item.feito}
-                  onChange={(e) => onMarcarItem(item.id, e.target.checked)}
-                />
+                <label className="check-draw-label">
+                  <input
+                    type="checkbox"
+                    checked={item.feito}
+                    onChange={(e) => onMarcarItem(item.id, e.target.checked)}
+                    aria-label={item.texto}
+                  />
+                  <CheckDraw checked={item.feito} size={16} />
+                </label>
                 <span style={{
                   flex: 1,
                   textDecoration: item.feito ? 'line-through' : undefined,

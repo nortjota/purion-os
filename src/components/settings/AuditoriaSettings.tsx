@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '@/components/ui/Toast'
 import { supabase } from '@/lib/supabase'
@@ -212,7 +214,7 @@ export function AuditoriaSettings() {
       {/* Table */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-sm text-[var(--text-secondary)]">Carregando...</div>
+          <div className="p-8"><Skeleton rows={5} label="Carregando..." /></div>
         ) : logs.length === 0 ? (
           <div className="p-8 text-center text-sm text-[var(--text-secondary)]">Nenhum registro encontrado.</div>
         ) : (

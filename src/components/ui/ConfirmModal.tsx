@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { AlertTriangle, Trash2 } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { soft } from '@/components/motion/presets'
 
 interface ConfirmModalProps {
   open: boolean
@@ -37,17 +39,26 @@ export function ConfirmModal({
     return () => window.removeEventListener('keydown', handler)
   }, [open, onCancel, onConfirm, bloqueado])
 
-  if (!open) return null
-
   return (
-    <div
+    <AnimatePresence>
+    {open && (
+    <motion.div
+      key="confirm-modal"
       className="fixed inset-0 z-[200] flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
       onClick={onCancel}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
     >
-      <div
+      <motion.div
         className="relative z-10 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-sm shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.98, y: 6 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.98, y: 4 }}
+        transition={soft}
       >
         {/* Icon */}
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
@@ -102,7 +113,9 @@ export function ConfirmModal({
             {confirmLabel}
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+    )}
+    </AnimatePresence>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useEffect, useCallback } from 'react'
 import { RotateCcw, Trash2, Archive } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -91,7 +93,7 @@ export function ArquivadosPanel<T extends { id: string }>({
   }
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando arquivados…</p></div>
+    return <Skeleton rows={4} label="Carregando arquivados…" />
   }
 
   if (itens.length === 0) {

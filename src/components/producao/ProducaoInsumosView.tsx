@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useMemo, useState } from 'react'
 import { AlertTriangle, Plus, Pencil, Trash2, X, PackageSearch, ShoppingCart, SlidersHorizontal } from 'lucide-react'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
@@ -169,7 +171,7 @@ export function ProducaoInsumosView() {
   }, [insumos])
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando insumos…</p></div>
+    return <Skeleton rows={4} label="Carregando insumos…" />
   }
 
   return (

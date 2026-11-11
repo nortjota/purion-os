@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle, History, Target } from 'lucide-react'
 import { useEstrategiaRoadmap, type EstrategiaObjetivo } from '@/hooks/useEstrategia'
@@ -112,7 +114,7 @@ export function PainelRMR() {
   const carregando = carregandoObjetivos || carregandoMedicoes
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando RMR…</p></div>
+    return <Skeleton rows={4} label="Carregando RMR…" />
   }
 
   return (

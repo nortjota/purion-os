@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X } from 'lucide-react'
+import { X, CheckCircle2, AlertTriangle, Info, XCircle } from 'lucide-react'
+import { soft } from '@/components/motion/presets'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -37,7 +38,15 @@ const BORDER_COLOR: Record<ToastType, string> = {
   info:    '#3B82F6',
 }
 
+const ICONE: Record<ToastType, React.ElementType> = {
+  success: CheckCircle2,
+  error: XCircle,
+  warning: AlertTriangle,
+  info: Info,
+}
+
 function ToastItem({ t, onRemove }: { t: Toast; onRemove: () => void }) {
+  const Icone = ICONE[t.type]
   const duration = t.duration ?? 3000
   const [progress, setProgress] = useState(100)
   const startRef = useRef(Date.now())
@@ -62,11 +71,7 @@ function ToastItem({ t, onRemove }: { t: Toast; onRemove: () => void }) {
   }, [duration])
 
   return (
-    <motion.div
-      initial={{ x: 40, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 40, opacity: 0 }}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
+    <div
       style={{
         minWidth: 280, maxWidth: 360,
         background: 'var(--bg-surface)',
@@ -78,6 +83,16 @@ function ToastItem({ t, onRemove }: { t: Toast; onRemove: () => void }) {
       }}
     >
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        {/* ícone com pulse na entrada */}
+        <motion.span
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: [0.5, 1.18, 1], opacity: 1 }}
+          transition={{ duration: 0.45, times: [0, 0.6, 1], ease: 'easeOut', delay: 0.08 }}
+          style={{ display: 'inline-flex', color: BORDER_COLOR[t.type], marginTop: 1, flexShrink: 0 }}
+          aria-hidden
+        >
+          <Icone size={15} />
+        </motion.span>
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', margin: 0 }}>{t.title}</p>
           {t.description && (
@@ -109,11 +124,11 @@ function ToastItem({ t, onRemove }: { t: Toast; onRemove: () => void }) {
           </button>
         </div>
       </div>
-      {/* Progress bar */}
+      {/* Progress bar (scaleX = só transform) */}
       <div style={{ height: 2, background: 'var(--border)' }}>
-        <div style={{ height: '100%', width: `${progress}%`, background: BORDER_COLOR[t.type] }} />
+        <div style={{ height: '100%', width: '100%', transform: `scaleX(${progress / 100})`, transformOrigin: 'left center', background: BORDER_COLOR[t.type] }} />
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -144,11 +159,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         className="fixed bottom-20 right-6 md:bottom-6 md:right-6 flex flex-col gap-2 z-[9999]"
         style={{ pointerEvents: 'none' }}
       >
-        <AnimatePresence mode="sync">
+        {/* filho direto do AnimatePresence = motion.div → a saída anima de verdade; layout reposiciona a pilha */}
+        <AnimatePresence initial={false}>
           {toasts.map((t) => (
-            <div key={t.id} style={{ pointerEvents: 'all' }}>
+            <motion.div
+              key={t.id}
+              layout
+              initial={{ x: 48, opacity: 0, scale: 0.98 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: 48, opacity: 0, transition: { duration: 0.2, ease: [0.22, 0.61, 0.36, 1] } }}
+              transition={soft}
+              style={{ pointerEvents: 'all' }}
+            >
               <ToastItem t={t} onRemove={() => remove(t.id)} />
-            </div>
+            </motion.div>
           ))}
         </AnimatePresence>
       </div>

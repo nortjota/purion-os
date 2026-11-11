@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from 'react'
 import { Plus, Flag, Calendar, MessageSquare, Paperclip, CheckSquare } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { spring } from '@/components/motion/presets'
 import type { Tarefa, StatusTarefa } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
 import {
@@ -112,7 +114,8 @@ function KanbanColuna({
       className="flex flex-col min-w-[270px] max-w-[300px] flex-1 rounded-xl border transition-colors duration-150"
       style={{
         background: 'var(--bg-surface-2)',
-        borderColor: isDragOver ? 'rgba(201,168,76,0.4)' : 'var(--border)',
+        borderColor: isDragOver ? 'rgba(212,252,60,0.45)' : 'var(--border)',
+        boxShadow: isDragOver ? 'inset 0 0 0 1px rgba(212,252,60,0.25)' : undefined,
         scrollSnapAlign: 'start',
       }}
     >
@@ -129,16 +132,18 @@ function KanbanColuna({
           <p className="text-center text-[11px] text-[var(--text-secondary)] py-6">Nenhuma tarefa aqui ainda</p>
         )}
         {tarefas.map((t) => (
-          <TarefaCardKanban
-            key={t.id}
-            tarefa={t}
-            isDragging={dragTarefaId === t.id}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onDragOverCard={onDragOverCard}
-            onDrop={onDropOnCard}
-            onAbrir={onAbrirTarefa}
-          />
+          // ao soltar, o card desliza até a nova coluna/posição com spring (layoutId)
+          <motion.div key={t.id} layout="position" layoutId={`tarefa-card-${t.id}`} transition={spring}>
+            <TarefaCardKanban
+              tarefa={t}
+              isDragging={dragTarefaId === t.id}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onDragOverCard={onDragOverCard}
+              onDrop={onDropOnCard}
+              onAbrir={onAbrirTarefa}
+            />
+          </motion.div>
         ))}
       </div>
 

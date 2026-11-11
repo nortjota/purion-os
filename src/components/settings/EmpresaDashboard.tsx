@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useEffect } from 'react'
 import { UserPlus, Trash2, Shield, User, Building2, Zap } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
@@ -181,7 +183,7 @@ export default function EmpresaDashboard() {
 
         <div className="card-purion overflow-hidden">
           {loadingUsers ? (
-            <div className="empty-state"><p className="caption">Carregando…</p></div>
+            <Skeleton rows={4} label="Carregando…" />
           ) : usuarios.length === 0 && !isSupabaseConfigured() ? (
             <div className="empty-state">
               <p className="text-[13px] text-[var(--text-primary)] font-medium">Supabase não configurado</p>

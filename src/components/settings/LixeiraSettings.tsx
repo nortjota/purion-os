@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useEffect } from 'react'
 import { useToast } from '@/components/ui/Toast'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
@@ -124,7 +126,7 @@ export function LixeiraSettings() {
 
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-[var(--text-secondary)] text-sm">Carregando...</div>
+          <div className="p-8"><Skeleton rows={5} label="Carregando..." /></div>
         ) : records.length === 0 ? (
           <div className="p-8 text-center text-[var(--text-secondary)] text-sm">Nenhum registro excluído nesta categoria.</div>
         ) : (

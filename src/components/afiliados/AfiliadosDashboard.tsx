@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -143,7 +145,7 @@ export function AfiliadosDashboard() {
   if (carregando) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-        <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Carregando dados…</p>
+        <Skeleton rows={3} label="Carregando dados…" />
       </div>
     )
   }

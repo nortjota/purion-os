@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
@@ -12,6 +14,7 @@ import { useMobile } from '@/hooks/useMobile'
 import { InnerTabs } from '@/components/ui/InnerTabs'
 import { usePosVenda, hojeLocalISO, type SinaisCliente } from '@/hooks/usePosVenda'
 import { linkWhatsApp } from '@/hooks/useDespacho'
+import { AnimatedList, AnimatedItem, AnimatedNumber } from '@/components/motion'
 import {
   TIPO_FOLLOWUP, MENSAGENS, CANAL_LABEL, mensagemComercial, temReclamacaoAberta, MAX_LEMBRETES,
   type FollowUpTarefa,
@@ -247,7 +250,7 @@ export function PosVendaPage() {
   const acoes = { marcarFeito, suprimir, semResposta, onSinais: atualizarSinais, onFeedback: registrarFeedback }
 
   function lista(itens: FollowUpTarefa[], vazio: string) {
-    if (carregando) return <p style={{ fontSize: 13, color: '#B8B8B8' }}>Carregando…</p>
+    if (carregando) return <Skeleton rows={3} label="Carregando…" />
     if (itens.length === 0) {
       return (
         <div style={{ textAlign: 'center', padding: 32, color: '#B8B8B8', fontSize: 14, border: '1px dashed var(--border)', borderRadius: 12 }}>
@@ -256,15 +259,17 @@ export function PosVendaPage() {
       )
     }
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {itens.map((t) => {
+      <AnimatedList gap={8}>
+        {itens.map((t, i) => {
           const venda = vendaPorId.get(t.pedidoId)
           return (
-            <CardFollowUp key={t.id} t={t} venda={venda} hoje={hoje}
-              reclamacao={venda ? temReclamacaoAberta(venda, tickets) : false} acoes={acoes} />
+            <AnimatedItem key={t.id} index={i}>
+              <CardFollowUp t={t} venda={venda} hoje={hoje}
+                reclamacao={venda ? temReclamacaoAberta(venda, tickets) : false} acoes={acoes} />
+            </AnimatedItem>
           )
         })}
-      </div>
+      </AnimatedList>
     )
   }
 
@@ -308,7 +313,7 @@ export function PosVendaPage() {
         ].map((k) => (
           <div key={k.label} className="kpi-card" style={{ flex: '1 1 140px', minWidth: 0 }}>
             <span style={{ fontSize: 12, color: '#B8B8B8' }}>{k.label}</span>
-            <span style={{ fontSize: 28, fontWeight: 700, color: k.cor, lineHeight: 1.2 }}>{k.valor}</span>
+            <AnimatedNumber value={k.valor} style={{ fontSize: 28, fontWeight: 700, color: k.cor, lineHeight: 1.2 }} />
           </div>
         ))}
       </div>

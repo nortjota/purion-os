@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useEffect, useState } from 'react'
 import { X, RotateCcw, Trash2, Archive, FileText, FolderOpen } from 'lucide-react'
 import { useConhecimento, type KbArquivado } from '@/hooks/useConhecimento'
@@ -73,7 +75,7 @@ export function ConhecimentoLixeira({ onFechar }: Props) {
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {carregando ? (
-            <p className="caption">Carregando…</p>
+            <Skeleton rows={3} label="Carregando…" />
           ) : categorias.length === 0 && documentos.length === 0 ? (
             <div className="empty-state">
               <Archive size={32} className="empty-state-icon" />

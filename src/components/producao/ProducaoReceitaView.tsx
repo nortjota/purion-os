@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useMemo, useState } from 'react'
 import { FlaskConical, Trash2, Plus, X } from 'lucide-react'
 import { InlineEdit } from '@/components/ui/InlineEdit'
@@ -27,7 +29,7 @@ export function ProducaoReceitaView() {
   const custoTotal = useMemo(() => custoReceitaPorUnidade(receita, insumos), [receita, insumos])
 
   if (carregandoInsumos || carregandoReceita) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando receita…</p></div>
+    return <Skeleton rows={4} label="Carregando receita…" />
   }
 
   return (

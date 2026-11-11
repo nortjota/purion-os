@@ -1,5 +1,7 @@
 'use client'
 
+import { CheckDraw } from '@/components/motion/CheckDraw'
+
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -233,12 +235,15 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
               style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border)', opacity: dragSubId === s.id ? 0.4 : 1 }}
             >
               <GripVertical size={12} className="text-[var(--text-secondary)] cursor-grab opacity-40" />
-              <input
-                type="checkbox"
-                checked={s.concluida}
-                onChange={(e) => props.onAtualizarSubtarefa(s.id, { concluida: e.target.checked })}
-                style={{ accentColor: '#C9A84C', width: 14, height: 14, cursor: 'pointer' }}
-              />
+              <label className="check-draw-label">
+                <input
+                  type="checkbox"
+                  checked={s.concluida}
+                  onChange={(e) => props.onAtualizarSubtarefa(s.id, { concluida: e.target.checked })}
+                  aria-label={s.titulo}
+                />
+                <CheckDraw checked={s.concluida} size={15} />
+              </label>
               <span className={`text-[13px] flex-1 ${s.concluida ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}>
                 {s.titulo}
               </span>

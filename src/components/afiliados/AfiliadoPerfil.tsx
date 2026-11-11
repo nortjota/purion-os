@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -142,7 +144,7 @@ export function AfiliadoPerfil({ id }: { id: string }) {
   if (carregando) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
-        <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Carregando perfil…</p>
+        <Skeleton rows={3} label="Carregando perfil…" />
       </div>
     )
   }

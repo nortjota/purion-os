@@ -36,9 +36,7 @@ const GraficoEvolucao = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[280px] flex items-center justify-center text-[#A0A0A0] text-xs">
-        Carregando gráfico...
-      </div>
+      <div className="h-[280px] skeleton" role="status" aria-label="Carregando gráfico" />
     ),
   }
 )

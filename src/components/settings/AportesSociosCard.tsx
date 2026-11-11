@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState } from 'react'
 import { Plus, Trash2, HandCoins } from 'lucide-react'
 import { useAportesSocios } from '@/hooks/useAportesSocios'
@@ -84,7 +86,7 @@ export function AportesSociosCard() {
 
       {/* Histórico */}
       {carregando ? (
-        <p className="text-xs text-[var(--text-secondary)]">Carregando…</p>
+        <Skeleton rows={3} label="Carregando…" />
       ) : aportes.length === 0 ? (
         <p className="text-xs text-[var(--text-secondary)]">Nenhum aporte registrado ainda.</p>
       ) : (

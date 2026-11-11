@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from 'react'
 import { MapPin, Clock, Calendar } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { spring } from '@/components/motion/presets'
 import type { Lead, StatusLead } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
 import {
@@ -121,8 +123,9 @@ function Coluna({
       className={`
         flex flex-col min-w-[240px] max-w-[250px] rounded-xl border
         transition-all duration-150
-        ${isDragOver ? 'border-[rgba(201,168,76,0.4)] bg-[rgba(201,168,76,0.04)]' : 'border-[var(--border)] bg-[var(--bg-surface-2)]'}
+        ${isDragOver ? 'border-[rgba(212,252,60,0.45)] bg-[rgba(212,252,60,0.035)]' : 'border-[var(--border)] bg-[var(--bg-surface-2)]'}
       `}
+      style={isDragOver ? { boxShadow: 'inset 0 0 0 1px rgba(212,252,60,0.25)' } : undefined}
       onDragOver={(e) => onDragOver(e, estagio.id)}
       onDragLeave={onDragLeave}
       onDrop={(e) => onDrop(e, estagio.id)}
@@ -147,16 +150,18 @@ function Coluna({
 
       <div className="p-2 flex flex-col gap-2 min-h-[120px] flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 380px)' }}>
         {leads.map((lead) => (
-          <LeadCard
-            key={lead.id}
-            lead={lead}
-            isDragging={dragLeadId === lead.id}
-            selecionado={selecionados.has(lead.id)}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onAbrir={onAbrir}
-            onToggleSel={onToggleSel}
-          />
+          // ao soltar em outra coluna, o card desliza até a nova posição com spring (layoutId)
+          <motion.div key={lead.id} layout="position" layoutId={`lead-card-${lead.id}`} transition={spring}>
+            <LeadCard
+              lead={lead}
+              isDragging={dragLeadId === lead.id}
+              selecionado={selecionados.has(lead.id)}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onAbrir={onAbrir}
+              onToggleSel={onToggleSel}
+            />
+          </motion.div>
         ))}
         {leads.length === 0 && isDragOver && (
           <div className="flex-1 rounded-lg border border-dashed border-[rgba(201,168,76,0.3)] flex items-center justify-center min-h-[80px]">

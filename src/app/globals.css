@@ -949,3 +949,20 @@
   .pulse::after, .skeleton::after { animation: none !important; }
   .lift.lift:hover { transform: none; }
 }
+
+/* Checkbox com check desenhado: input nativo invisível mantém teclado/leitor de tela */
+.check-draw-label { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+.check-draw-label > input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.check-draw-label > input:focus-visible + .check-draw { box-shadow: 0 0 0 3px #9CC3DB; }
+
+/* Linhas de tabela/lista: entrada escalonada sutil (só nas 10 primeiras) */
+.purion-row { animation: purion-rise var(--dur-base) var(--ease-expo) both; }
+.purion-row:nth-child(2)  { animation-delay: calc(var(--stagger) * 0.5); }
+.purion-row:nth-child(3)  { animation-delay: calc(var(--stagger) * 1); }
+.purion-row:nth-child(4)  { animation-delay: calc(var(--stagger) * 1.5); }
+.purion-row:nth-child(5)  { animation-delay: calc(var(--stagger) * 2); }
+.purion-row:nth-child(6)  { animation-delay: calc(var(--stagger) * 2.5); }
+.purion-row:nth-child(7)  { animation-delay: calc(var(--stagger) * 3); }
+.purion-row:nth-child(8)  { animation-delay: calc(var(--stagger) * 3.5); }
+.purion-row:nth-child(9)  { animation-delay: calc(var(--stagger) * 4); }
+.purion-row:nth-child(n+10) { animation-delay: calc(var(--stagger) * 4.5); }

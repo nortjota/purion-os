@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import { soft } from '@/components/motion/presets'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -229,7 +231,7 @@ export function Sidebar() {
                           color: ativo ? '#C9A84C' : '#B8B8B8',
                           background: ativo ? 'rgba(201,168,76,0.08)' : 'transparent',
                           textDecoration: 'none',
-                          transition: 'background 120ms, color 120ms',
+                          transition: 'background var(--dur-base) var(--ease-soft), color var(--dur-base) var(--ease-soft)',
                           position: 'relative',
                         }}
                         onMouseEnter={(e) => {
@@ -245,6 +247,18 @@ export function Sidebar() {
                           }
                         }}
                       >
+                        {/* indicador do item ativo: pílula verde que GLIDA entre itens (layoutId) */}
+                        {ativo && (
+                          <motion.span
+                            layoutId="sidebar-item-ativo"
+                            transition={soft}
+                            aria-hidden
+                            style={{
+                              position: 'absolute', left: recolhida ? 2 : 0, top: 8, bottom: 8, width: 3,
+                              borderRadius: 999, background: 'var(--accent-motion, #D4FC3C)',
+                            }}
+                          />
+                        )}
                         <Icon size={15} />
                         {!recolhida && (
                           <span style={{ flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>

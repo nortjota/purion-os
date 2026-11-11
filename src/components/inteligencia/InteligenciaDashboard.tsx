@@ -1,5 +1,6 @@
 'use client'
 
+
 /**
  * PURION OS — Módulo 7: Inteligência Comercial
  * Seções 1-6: rankings, mapa B2B, ticket médio, sazonalidade, insights.
@@ -17,9 +18,7 @@ const GraficosInteligencia = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[500px] flex items-center justify-center">
-        <p className="text-xs text-[#A0A0A0] tracking-widest">Carregando gráficos...</p>
-      </div>
+      <div className="h-[500px] skeleton" role="status" aria-label="Carregando gráficos" />
     ),
   }
 )

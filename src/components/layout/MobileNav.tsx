@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { soft } from '@/components/motion/presets'
 import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   MoreHorizontal, Package, Users2, BookOpen,
@@ -118,9 +119,17 @@ export function MobileNav() {
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 gap: 3, minWidth: 44, minHeight: 44, justifyContent: 'center',
                 color: active ? '#C9A84C' : 'var(--text-secondary)',
-                textDecoration: 'none', flex: 1,
+                textDecoration: 'none', flex: 1, position: 'relative',
               }}
             >
+              {active && (
+                <motion.span
+                  layoutId="mobile-nav-ativo"
+                  transition={soft}
+                  aria-hidden
+                  style={{ position: 'absolute', top: 0, width: 24, height: 2, borderRadius: 999, background: 'var(--accent-motion, #D4FC3C)' }}
+                />
+              )}
               <Icon size={20} />
               <span style={{ fontSize: 10, fontWeight: 500 }}>{label}</span>
             </Link>

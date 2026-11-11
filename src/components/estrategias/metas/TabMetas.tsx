@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useMemo } from 'react'
 import { Plus } from 'lucide-react'
 import { usePurionStore } from '@/store'
@@ -132,7 +134,7 @@ export function TabMetas() {
   }
 
   if (carregando) {
-    return <div className="empty-state"><p className="empty-state-title">Carregando metas…</p></div>
+    return <Skeleton rows={4} label="Carregando metas…" />
   }
 
   return (

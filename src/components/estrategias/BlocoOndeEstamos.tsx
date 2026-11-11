@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useMemo } from 'react'
 import { Star, DollarSign, Package, Users, Scale } from 'lucide-react'
 import { usePurionStore } from '@/store'
@@ -75,7 +77,7 @@ export function BlocoOndeEstamos() {
     [estoqueMovimentacoes, mesAtual]
   )
 
-  if (carregando) return <div className="empty-state"><p className="empty-state-title">Carregando…</p></div>
+  if (carregando) return <Skeleton rows={4} label="Carregando…" />
 
   return (
     <section className="flex flex-col gap-4">

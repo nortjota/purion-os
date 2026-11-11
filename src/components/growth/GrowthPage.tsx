@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useState, useMemo } from 'react'
 import {
   FlaskConical, Plus, X, ChevronRight, Star, Target, TrendingUp,
@@ -671,7 +673,7 @@ export function GrowthPage({ embutido = false }: { embutido?: boolean } = {}) {
       </div>
 
       {carregando ? (
-        <div className="empty-state"><p className="empty-state-title">Carregando…</p></div>
+        <Skeleton rows={4} label="Carregando…" />
       ) : aba === 'kanban' ? (
         <TabKanban
           experimentos={experimentos}

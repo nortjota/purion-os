@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useMemo, useState } from 'react'
 import { Plus, X, Milestone, ChevronRight } from 'lucide-react'
 import { useEstrategiaDecisoes } from '@/hooks/useEstrategia'
@@ -47,7 +49,7 @@ export function BlocoDecisoes() {
       </div>
 
       {carregando ? (
-        <p className="caption">Carregando…</p>
+        <Skeleton rows={3} label="Carregando…" />
       ) : recentes.length === 0 ? (
         <div className="empty-state">
           <Milestone size={32} className="empty-state-icon" />

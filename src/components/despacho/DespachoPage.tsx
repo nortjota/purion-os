@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/Toast'
 import { InnerTabs } from '@/components/ui/InnerTabs'
 import { PERFIS_INFO } from '@/lib/socios'
 import { frascosDaVenda } from '@/lib/escadaProdutos'
+import { AnimatedList, AnimatedItem, AnimatedNumber } from '@/components/motion'
 import {
   useDespacho, aguardandoDespacho, despachoAtrasado, despachadoHoje, horasDesde,
   mensagemM02, linkWhatsApp, TRANSPORTADORAS, HORAS_ALERTA_DESPACHO,
@@ -54,7 +55,7 @@ function Kpi({ label, valor, cor, sub }: { label: string; valor: number; cor: st
   return (
     <div className="kpi-card" style={{ flex: '1 1 150px', minWidth: 0 }}>
       <span style={{ fontSize: 12, color: '#B8B8B8' }}>{label}</span>
-      <span style={{ fontSize: 28, fontWeight: 700, color: cor, lineHeight: 1.2 }}>{valor}</span>
+      <AnimatedNumber value={valor} style={{ fontSize: 28, fontWeight: 700, color: cor, lineHeight: 1.2 }} />
       {sub && <span style={{ fontSize: 11, color: '#B8B8B8' }}>{sub}</span>}
     </div>
   )
@@ -316,7 +317,7 @@ export function DespachoPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {listaFila.length === 0
             ? <Vazio texto={aba === 'atrasados' ? 'Nenhum pedido atrasado.' : 'Nenhum pedido pago aguardando despacho.'} />
-            : listaFila.map((v) => <CardFila key={v.id} venda={v} onDespachar={despachar} />)}
+            : <AnimatedList>{listaFila.map((v, i) => <AnimatedItem key={v.id} index={i}><CardFila venda={v} onDespachar={despachar} /></AnimatedItem>)}</AnimatedList>}
         </div>
       )}
 
@@ -324,7 +325,7 @@ export function DespachoPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {hoje.length === 0
             ? <Vazio texto="Nenhum despacho registrado hoje." />
-            : hoje.map((v) => <CardDespachado key={v.id} venda={v} mostrarM02={!isLogistica} onMarcarM02={marcarM02Enviada} />)}
+            : <AnimatedList gap={8}>{hoje.map((v, i) => <AnimatedItem key={v.id} index={i}><CardDespachado venda={v} mostrarM02={!isLogistica} onMarcarM02={marcarM02Enviada} /></AnimatedItem>)}</AnimatedList>}
         </div>
       )}
 
@@ -335,7 +336,7 @@ export function DespachoPage() {
           </p>
           {semAviso.length === 0
             ? <Vazio texto="Todos os clientes com rastreio já foram avisados." />
-            : semAviso.map((v) => <CardDespachado key={v.id} venda={v} mostrarM02 onMarcarM02={marcarM02Enviada} />)}
+            : <AnimatedList gap={8}>{semAviso.map((v, i) => <AnimatedItem key={v.id} index={i}><CardDespachado venda={v} mostrarM02 onMarcarM02={marcarM02Enviada} /></AnimatedItem>)}</AnimatedList>}
         </div>
       )}
 

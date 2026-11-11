@@ -237,7 +237,7 @@ function FragmentGrupo({
       {!collapsed && grupo.vendas.map((v) => {
         const proximo = proximoStatusEntrega(v.statusEntrega)
         return (
-          <tr key={v.id}>
+          <tr key={v.id} className="purion-row">
             <td>{v.clienteNome || '—'}</td>
             {showCanal && <td><span className={`badge ${CANAL_BADGE[v.canal]}`}>{CANAL_LABEL[v.canal]}</span></td>}
             <td className="caption" style={{ fontWeight: 600 }}>{v.quantidade}</td>

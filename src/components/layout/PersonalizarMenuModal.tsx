@@ -1,5 +1,7 @@
 'use client'
 
+import { Skeleton } from '@/components/motion/Skeleton'
+
 import { useMemo, useState } from 'react'
 import { X, LayoutGrid, Lock, RotateCcw, AlertTriangle } from 'lucide-react'
 import { NAV_GROUPS, TODOS_OS_ITENS } from './navConfig'
@@ -104,7 +106,7 @@ export function PersonalizarMenuModal({ onFechar }: Props) {
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {carregando ? (
-            <p className="caption">Carregando…</p>
+            <Skeleton rows={3} label="Carregando…" />
           ) : (
             <div className="flex flex-col gap-5">
               {gruposVisiveis.map((grupo) => (

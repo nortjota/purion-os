@@ -1,5 +1,9 @@
 'use client'
 
+import { useId } from 'react'
+import { LayoutGroup, motion } from 'framer-motion'
+import { soft } from '@/components/motion/presets'
+
 export type InnerTab = { id: string; label: string; badge?: number }
 
 interface Props {
@@ -11,7 +15,10 @@ interface Props {
 }
 
 export function InnerTabs({ tabs, activeTab, onChange, className = '', style }: Props) {
+  // id único por instância: várias InnerTabs na mesma tela não disputam o indicador
+  const grupo = useId()
   return (
+    <LayoutGroup id={grupo}>
     <div
       className={className}
       style={{
@@ -57,14 +64,20 @@ export function InnerTabs({ tabs, activeTab, onChange, className = '', style }: 
               )}
             </span>
             {active && (
-              <span style={{
-                position: 'absolute', bottom: -1, left: 0, right: 0,
-                height: 2, background: '#C9A84C', borderRadius: '2px 2px 0 0',
-              }} />
+              // indicador que DESLIZA entre abas (layoutId) — sublinhado verde-limão
+              <motion.span
+                layoutId="inner-tab-indicador"
+                transition={soft}
+                style={{
+                  position: 'absolute', bottom: -1, left: 0, right: 0,
+                  height: 2, background: 'var(--accent-motion, #D4FC3C)', borderRadius: '2px 2px 0 0',
+                }}
+              />
             )}
           </button>
         )
       })}
     </div>
+    </LayoutGroup>
   )
 }
