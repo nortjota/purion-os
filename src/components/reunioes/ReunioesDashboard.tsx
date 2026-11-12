@@ -716,7 +716,7 @@ export function ReunioesDashboard() {
   const [editandoReuniao, setEditandoReuniao] = useState<ReuniaoItem | null>(null)
   const [secao, setSecao] = useState<'reunioes' | 'daily' | 'decisoes'>('reunioes')
   useAcaoRapida('registrar-daily', () => setSecao('daily'))
-  const [filtroReuniao, setFiltroReuniao] = useState<'proximas' | 'historico'>('proximas')
+  const [filtroReuniao, setFiltroReuniao] = useState<'proximas' | 'sem_registro' | 'historico'>('proximas')
   const [diaSelecionado, setDiaSelecionado] = useState<string | null>(null)
   const [linkCalendario, setLinkCalendario] = useState<string | null>(null)
 
@@ -728,13 +728,18 @@ export function ReunioesDashboard() {
   }, [])
 
   // Próximas (agendadas) ordenadas pela mais próxima primeiro; histórico (realizada/cancelada) pela mais recente primeiro
+  // "Próxima" só se ainda não passou. Agendada com data vencida vira "Sem registro": aconteceu? foi cancelada?
+  const hojeReuniao = new Date().toISOString().slice(0, 10)
   const reunioesProximas = useMemo(() =>
-    reunioes.filter((r) => r.status === 'agendada').sort((a, b) => a.data.localeCompare(b.data)),
-  [reunioes])
+    reunioes.filter((r) => r.status === 'agendada' && r.data.slice(0, 10) >= hojeReuniao).sort((a, b) => a.data.localeCompare(b.data)),
+  [reunioes, hojeReuniao])
+  const reunioesSemRegistro = useMemo(() =>
+    reunioes.filter((r) => r.status === 'agendada' && r.data.slice(0, 10) < hojeReuniao).sort((a, b) => b.data.localeCompare(a.data)),
+  [reunioes, hojeReuniao])
   const reunioesHistorico = useMemo(() =>
     reunioes.filter((r) => r.status !== 'agendada').sort((a, b) => b.data.localeCompare(a.data)),
   [reunioes])
-  const reunioesBase = filtroReuniao === 'proximas' ? reunioesProximas : reunioesHistorico
+  const reunioesBase = filtroReuniao === 'proximas' ? reunioesProximas : filtroReuniao === 'sem_registro' ? reunioesSemRegistro : reunioesHistorico
   const reunioesExibidas = diaSelecionado
     ? reunioesBase.filter((r) => r.data.slice(0, 10) === diaSelecionado)
     : reunioesBase
@@ -806,23 +811,18 @@ export function ReunioesDashboard() {
           </button>
         </div>
 
-        {/* Filtro: Próximas / Histórico */}
-        <div className="flex gap-1 mb-3 p-1 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border)] w-fit">
-          {([
-            { id: 'proximas' as const, label: `Próximas (${reunioesProximas.length})` },
-            { id: 'historico' as const, label: `Histórico (${reunioesHistorico.length})` },
-          ]).map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFiltroReuniao(f.id)}
-              className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-              style={filtroReuniao === f.id
-                ? { background: 'rgba(212,252,60,0.15)', color: '#D4FC3C' }
-                : { color: 'var(--text-secondary)' }}
-            >
-              {f.label}
-            </button>
-          ))}
+        <div className="mb-3">
+          <Segmentado
+            rotulo="Reuniões" valor={filtroReuniao} onChange={setFiltroReuniao}
+            opcoes={[
+              { id: 'proximas' as const, label: 'Próximas', contagem: reunioesProximas.length },
+              ...(reunioesSemRegistro.length > 0 ? [{ id: 'sem_registro' as const, label: 'Passaram sem registro', contagem: reunioesSemRegistro.length }] : []),
+              { id: 'historico' as const, label: 'Histórico', contagem: reunioesHistorico.length },
+            ]}
+          />
+          {filtroReuniao === 'sem_registro' && (
+            <p className="caption mt-2">A data já passou e a reunião segue como "agendada". Marque como realizada ou cancelada para ela ir ao histórico.</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 items-start">
@@ -836,7 +836,7 @@ export function ReunioesDashboard() {
             )}
             {reunioesExibidas.length === 0 && (
               <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-8 text-center text-xs text-[#A0A0A0]">
-                {filtroReuniao === 'proximas' ? 'Nenhuma reunião agendada' : 'Nenhuma reunião no histórico'}
+                {filtroReuniao === 'proximas' ? 'Nenhuma reunião agendada' : filtroReuniao === 'sem_registro' ? 'Nenhuma reunião pendente de registro' : 'Nenhuma reunião no histórico'}
               </div>
             )}
             {reunioesExibidas.map((reuniao) => {

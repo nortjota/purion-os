@@ -270,7 +270,7 @@ function ChipSaude({ hs }: { hs: HealthScore }) {
     <span
       className="chip-saude"
       style={{ ['--tom' as string]: hs.cor }}
-      title="Saúde do negócio (0–10): margem bruta 30% · ROAS 30% · estoque 20% · crescimento vs mês anterior 20%."
+      title="Saúde do negócio (0–10): resultado sobre a receita 30% (alvo 65%) · ROAS 30% · estoque 20% · crescimento vs mês anterior 20%."
     >
       <span className="chip-saude-ponto" aria-hidden />
       <span className="tnum"><strong>{hs.score}</strong><span style={{ opacity: 0.6 }}>/10</span></span>

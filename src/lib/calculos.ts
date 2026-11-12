@@ -271,44 +271,32 @@ export interface MesGrafico {
   margem: number  // %
 }
 
-// Histórico sintético para completar 6 meses quando só há 2 no seed
-const HISTORICO_SINTETICO: Array<{ mes: string; receita: number; despesa: number }> = [
-  { mes: '2023-09', receita: 7_800,  despesa: 5_100 },
-  { mes: '2023-10', receita: 9_200,  despesa: 5_600 },
-  { mes: '2023-11', receita: 11_400, despesa: 6_200 },
-  { mes: '2023-12', receita: 14_200, despesa: 7_800 },
-]
-
+/**
+ * Últimos 6 meses do calendário (até o mês atual), só com lançamentos reais.
+ * Mês sem lançamento aparece zerado — antes o gráfico era completado com um
+ * histórico fictício de 2023, o que fazia o passado parecer melhor do que foi.
+ */
 export function calcularGrafico6Meses(
   receitas: Receita[],
   despesas: Despesa[]
 ): MesGrafico[] {
-  // Meses únicos do seed
-  const mesesSeed = new Set<string>()
-  ;[...receitas, ...despesas].forEach((item) => mesesSeed.add(item.data.substring(0, 7)))
-
-  // Agrega valores por mês real
-  const mesesReais = [...mesesSeed].sort().map((mesKey) => ({
-    mes: mesKey,
-    receita: receitas
-      .filter((r) => r.data.startsWith(mesKey))
-      .reduce((s, r) => s + r.valor, 0),
-    despesa: despesas
-      .filter((d) => d.data.startsWith(mesKey))
-      .reduce((s, d) => s + d.valor, 0),
-  }))
-
-  // Combina histórico + reais e pega últimos 6
-  const todos = [...HISTORICO_SINTETICO, ...mesesReais]
-  const ultimos6 = todos.slice(-6)
-
-  return ultimos6.map(({ mes, receita, despesa }) => ({
-    mes: formatarMesLabel(mes),
-    mesKey: mes,
-    receita,
-    despesa,
-    margem: receita > 0 ? Math.round(((receita - despesa) / receita) * 100) : 0,
-  }))
+  const hoje = new Date()
+  const meses: string[] = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
+    meses.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+  }
+  return meses.map((mesKey) => {
+    const receita = receitas.filter((r) => r.data.startsWith(mesKey)).reduce((s, r) => s + r.valor, 0)
+    const despesa = despesas.filter((d) => d.data.startsWith(mesKey)).reduce((s, d) => s + d.valor, 0)
+    return {
+      mes: formatarMesLabel(mesKey),
+      mesKey,
+      receita,
+      despesa,
+      margem: receita > 0 ? Math.round(((receita - despesa) / receita) * 100) : 0,
+    }
+  })
 }
 
 // ─────────────────────────────────────────────
@@ -322,22 +310,24 @@ export interface ProjecaoDias {
   margemProjetada: number
 }
 
+/** Janela usada como base das projeções: o que de fato entrou e saiu nos últimos N dias. */
+export const JANELA_PROJECAO_DIAS = 90
+
+/**
+ * Projeção linear pelo ritmo diário REAL dos últimos 90 dias (mesma base do histórico).
+ * Antes era a média de dois meses do calendário escolhidos pelo último mês com receita,
+ * o que podia comparar um mês cheio de receita com um mês quase sem despesa lançada.
+ */
 export function calcularProjecoes(receitas: Receita[], despesas: Despesa[]): ProjecaoDias[] {
-  const mesAtual = getMesAtual(receitas)
-  const mesAnterior = getMesAnterior(mesAtual)
-
-  const r1 = receitas.filter((r) => r.data.startsWith(mesAtual)).reduce((s, r) => s + r.valor, 0)
-  const r2 = receitas.filter((r) => r.data.startsWith(mesAnterior)).reduce((s, r) => s + r.valor, 0)
-  const d1 = despesas.filter((d) => d.data.startsWith(mesAtual)).reduce((s, d) => s + d.valor, 0)
-  const d2 = despesas.filter((d) => d.data.startsWith(mesAnterior)).reduce((s, d) => s + d.valor, 0)
-
-  const mediaReceita = (r1 + r2) / 2
-  const mediaDespesa = (d1 + d2) / 2
+  const limite = new Date(Date.now() - JANELA_PROJECAO_DIAS * 86_400_000).toISOString().slice(0, 10)
+  const hoje = new Date().toISOString().slice(0, 10)
+  const naJanela = (data: string) => data.slice(0, 10) >= limite && data.slice(0, 10) <= hoje
+  const receitaDia = receitas.filter((r) => naJanela(r.data)).reduce((s, r) => s + r.valor, 0) / JANELA_PROJECAO_DIAS
+  const despesaDia = despesas.filter((d) => naJanela(d.data)).reduce((s, d) => s + d.valor, 0) / JANELA_PROJECAO_DIAS
 
   return ([30, 60, 90] as const).map((dias) => {
-    const fator = dias / 30
-    const receitaProjetada = Math.round(mediaReceita * fator)
-    const despesaProjetada = Math.round(mediaDespesa * fator)
+    const receitaProjetada = Math.round(receitaDia * dias)
+    const despesaProjetada = Math.round(despesaDia * dias)
     const margemProjetada =
       receitaProjetada > 0
         ? Math.round(((receitaProjetada - despesaProjetada) / receitaProjetada) * 100)

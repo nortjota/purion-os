@@ -40,11 +40,11 @@ export function ProducaoDashboard() {
     const custoReceita = custoReceitaPorUnidade(receita, insumos)
     const valorProntos = prontos * (estoqueProduto?.custoUnitario ?? 0)
     return [
-      { label: 'Frascos prontos', valor: prontos, sub: abaixo ? `abaixo do mínimo (${minimo})` : `mínimo ${minimo} · ok`, tom: abaixo ? 'danger' : undefined, onClick: () => setAba('estoque'), ativo: aba === 'estoque' },
+      { label: 'Frascos prontos', valor: estoqueProduto ? prontos : '—', sub: !estoqueProduto ? 'estoque não inventariado' : abaixo ? `abaixo do mínimo (${minimo})` : `mínimo ${minimo} · ok`, tom: !estoqueProduto ? 'warning' : abaixo ? 'danger' : undefined, onClick: () => setAba('estoque'), ativo: aba === 'estoque' },
       { label: 'Lotes ativos', valor: lotesAtivos, sub: 'em produção', onClick: () => setAba('lotes'), ativo: aba === 'lotes' },
       { label: 'Insumos em alerta', valor: emAlerta.length, sub: emAlerta.length > 0 ? 'abaixo do mínimo' : 'todos acima do mínimo', tom: emAlerta.length > 0 ? 'danger' : undefined, onClick: () => setAba('insumos'), ativo: aba === 'insumos' },
-      { label: 'Capacidade restante', valor: capacidade, sub: 'frascos com os insumos atuais', tom: capacidade === 0 && receita.length > 0 ? 'warning' : undefined, dica: 'Quantos frascos dá para produzir com os insumos em estoque, pela receita (BOM).' },
-      { label: 'Custo real / frasco', valor: formatarMoeda(custoReceita), sub: 'calculado da receita', onClick: () => setAba('receita'), ativo: aba === 'receita' },
+      { label: 'Capacidade restante', valor: receita.length > 0 ? capacidade : '—', sub: receita.length > 0 ? 'frascos com os insumos atuais' : 'receita do produto não cadastrada', tom: receita.length === 0 || capacidade === 0 ? 'warning' : undefined, dica: 'Quantos frascos dá para produzir com os insumos em estoque, pela receita (BOM).' },
+      { label: 'Custo real / frasco', valor: custoReceita > 0 ? formatarMoeda(custoReceita) : '—', sub: custoReceita > 0 ? 'calculado da receita' : 'cadastre a receita e o custo dos insumos', tom: custoReceita > 0 ? undefined : 'warning', onClick: () => setAba('receita'), ativo: aba === 'receita' },
       { label: 'Valor em estoque', valor: formatarMoeda(valorProntos + valorTotalInsumos), sub: 'insumos + prontos' },
     ]
   }, [estoqueProduto, lotes, receita, insumos, emAlerta, valorTotalInsumos, aba])

@@ -12,7 +12,6 @@ import dynamic from 'next/dynamic'
 import { useFinanceiro } from '@/hooks/useFinanceiro'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
-import { MARGEM_MINIMA_ALVO_PCT as MARGEM_META } from '@/lib/precificacao'
 import {
   TrendingUp, TrendingDown, DollarSign, BarChart2,
   Plus, X, Calculator, ChevronDown, Filter, Pencil, Trash2,
@@ -860,7 +859,7 @@ export function FinanceiroDashboard() {
     { label: 'Receita acumulada', valor: formatarMoeda(kpisGlobais.receitaTotal), sub: `último mês com receita: ${mesAtual.slice(5, 7)}/${mesAtual.slice(0, 4)}`, dica: 'Soma de todas as receitas registradas.' },
     { label: 'Despesa acumulada', valor: formatarMoeda(kpisGlobais.despesaTotal), sub: `${formatarPercentual(pctDespesa)} da receita` },
     { label: 'Saldo', valor: formatarMoeda(kpisGlobais.saldoTotal), sub: 'receita − despesa', tom: kpisGlobais.saldoTotal < 0 ? 'danger' : 'ok' },
-    { label: 'Margem bruta', valor: formatarPercentual(kpisGlobais.margemMedia), sub: `meta: ${MARGEM_META}%`, tom: kpisGlobais.margemMedia >= MARGEM_META ? 'ok' : 'warning', dica: 'Margem bruta média sobre a receita. A margem mínima oficial é 65%.' },
+    { label: 'Resultado / receita', valor: formatarPercentual(kpisGlobais.margemMedia), sub: 'sobra depois de TODAS as despesas', tom: kpisGlobais.saldoTotal < 0 ? 'danger' : undefined, dica: 'Não é margem bruta: é (receita − todas as despesas lançadas) ÷ receita. A margem do produto (preço − custo do frasco) fica em Vendas > Métricas.' },
   ]
 
   return (
@@ -886,11 +885,12 @@ export function FinanceiroDashboard() {
           <GraficoEvolucao dados={dadosGrafico} height={isMobile ? 200 : 280} />
         </div>
 
-        <div className="card-purion card-section" title="Projeção linear a partir da média diária dos últimos 30 dias.">
-          <p className="kpi-label mb-2">Projeção · ritmo dos últimos 30 dias</p>
+        <div className="card-purion card-section">
+          <p className="kpi-label mb-1">Projeção · ritmo dos últimos 90 dias</p>
+          <p className="caption mb-2">Só o que foi lançado. Despesa não lançada faz a margem parecer maior.</p>
           <table className="tabela-compacta">
             <thead>
-              <tr><th>Horizonte</th><th>Receita</th><th>Despesa</th><th>Margem</th></tr>
+              <tr><th>Horizonte</th><th>Receita</th><th>Despesa</th><th>Resultado</th></tr>
             </thead>
             <tbody>
               {projecoes.map(({ dias, receitaProjetada, despesaProjetada, margemProjetada }) => (
@@ -898,7 +898,7 @@ export function FinanceiroDashboard() {
                   <td>{dias} dias</td>
                   <td className="tnum">{formatarMoeda(receitaProjetada)}</td>
                   <td className="tnum" style={{ color: 'var(--text-secondary)' }}>{formatarMoeda(despesaProjetada)}</td>
-                  <td className="tnum" style={{ color: Number(margemProjetada) >= MARGEM_META ? 'var(--status-ok)' : 'var(--status-warning)' }}>
+                  <td className="tnum" style={{ color: Number(margemProjetada) < 0 ? 'var(--status-danger)' : undefined }}>
                     {String(margemProjetada).replace('.', ',')}%
                   </td>
                 </tr>
