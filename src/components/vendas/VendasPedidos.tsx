@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, ChevronDown, Search, List, Columns3, CalendarDays, X } from 'lucide-react'
@@ -53,15 +54,15 @@ export function VendasPedidos() {
   const { migrarVendasZeroParaUGC } = useDoacoesUGC()
 
   const [visao, setVisao] = useState<Visao>('lista')
-  const [canal, setCanal] = useState<Canal>('todos')
-  const [periodo, setPeriodo] = useState<PeriodoId>('30d')
+  const [canal, setCanal] = useEstadoPersistido<Canal>('vendas.canal', 'todos')
+  const [periodo, setPeriodo] = useEstadoPersistido<PeriodoId>('vendas.periodo', '30d')
   const [busca, setBusca] = useState('')
-  const [filtroEntrega, setFiltroEntrega] = useState('todos')
-  const [filtroPagamento, setFiltroPagamento] = useState('todos')
-  const [filtroMetodo, setFiltroMetodo] = useState('todos')
-  const [filtroAfiliado, setFiltroAfiliado] = useState('todos')
-  const [filtroParceiro, setFiltroParceiro] = useState('todos')
-  const [groupBy, setGroupBy] = useState<AgrupamentoVendas>('status_entrega')
+  const [filtroEntrega, setFiltroEntrega] = useEstadoPersistido('vendas.entrega', 'todos')
+  const [filtroPagamento, setFiltroPagamento] = useEstadoPersistido('vendas.pagamento', 'todos')
+  const [filtroMetodo, setFiltroMetodo] = useEstadoPersistido('vendas.metodo', 'todos')
+  const [filtroAfiliado, setFiltroAfiliado] = useEstadoPersistido('vendas.afiliado', 'todos')
+  const [filtroParceiro, setFiltroParceiro] = useEstadoPersistido('vendas.parceiro', 'todos')
+  const [groupBy, setGroupBy] = useEstadoPersistido<AgrupamentoVendas>('vendas.agrupar', 'status_entrega')
 
   const [menuNovaAberto, setMenuNovaAberto] = useState(false)
   const [modalCanal, setModalCanal] = useState<'b2c' | 'b2b'>('b2c')

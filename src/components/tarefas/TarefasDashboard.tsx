@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, SlidersHorizontal, X, Check, List, Columns3, GanttChart, CalendarDays, BarChart3 } from 'lucide-react'
@@ -59,8 +60,8 @@ export function TarefasDashboard() {
   } = useTarefas()
 
   const [visao, setVisao] = useState<Visao>('lista')
-  const [filtros, setFiltros] = useState<FiltrosTarefas>(FILTROS_VAZIOS)
-  const [groupBy, setGroupBy] = useState<GroupBy>('modulo')
+  const [filtros, setFiltros] = useEstadoPersistido<FiltrosTarefas>('tarefas.filtros', FILTROS_VAZIOS)
+  const [groupBy, setGroupBy] = useEstadoPersistido<GroupBy>('tarefas.agrupar', 'modulo')
   const [filtrosAbertos, setFiltrosAbertos] = useState(false)
   const [modalNova, setModalNova] = useState<{ aberto: boolean; colunaId: ColunaTarefa; dueDatePre?: string }>({
     aberto: false, colunaId: 'pendente',

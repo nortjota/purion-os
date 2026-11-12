@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useAcaoRapida } from '@/lib/acaoRapida'
 import Link from 'next/link'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
@@ -1754,7 +1755,7 @@ function AbaVendasAfiliados() {
 export function CreatorsDashboard() {
   const { adicionarCreator, atualizarCreator, deletarCreator, restaurarCreator } = useMarketing()
   const { isMaster } = useIsMaster()
-  const [activeTab, setActiveTab] = useState<TabId>('overview')
+  const [activeTab, setActiveTab] = useEstadoPersistido<TabId>('creators.aba', 'overview')
   const [drawerCreatorId, setDrawerCreatorId] = useState<string | null>(null)
   const [showModalCreator, setShowModalCreator] = useState(false)
   useAcaoRapida('adicionar-creator', () => setShowModalCreator(true))

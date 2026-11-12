@@ -6,6 +6,7 @@
  * A faixa de números fica sempre visível e leva à aba que resolve cada ponto.
  */
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { Plus, SlidersHorizontal } from 'lucide-react'
 import { useAcaoRapida, dispararAcaoRapida } from '@/lib/acaoRapida'
 import { useMemo, useState } from 'react'
@@ -24,7 +25,7 @@ import { ProducaoReceitaView } from './ProducaoReceitaView'
 type TabId = 'estoque' | 'lotes' | 'insumos' | 'receita' | 'expedicao'
 
 export function ProducaoDashboard() {
-  const [aba, setAba] = useState<TabId>('estoque')
+  const [aba, setAba] = useEstadoPersistido<TabId>('producao.aba', 'estoque')
   // leva à aba de lotes; quem abre o formulário é a própria aba
   useAcaoRapida('novo-lote', () => setAba('lotes'), { consumir: false })
   const { registrarMovimentacao } = useEstoque()

@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useAcaoRapida } from '@/lib/acaoRapida'
 import { MetricStrip } from '@/components/ui/MetricStrip'
 import { useState, useMemo, useCallback } from 'react'
@@ -65,7 +66,7 @@ type Props = {
 export function SacDashboard({ ticketsInicial }: Props) {
   const [tickets, setTickets]       = useState<Ticket[]>(ticketsInicial)
   const [busca, setBusca]           = useState('')
-  const [filtroStatus, setFiltro]   = useState<string>('todos')
+  const [filtroStatus, setFiltro] = useEstadoPersistido<string>('sac.status', 'todos')
   const [novoAberto, setNovoAberto] = useState(false)
   useAcaoRapida('novo-ticket', () => setNovoAberto(true))
   const [detalhe, setDetalhe]       = useState<Ticket | null>(null)

@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useMemo, useState } from 'react'
 import { Truck, CheckCircle2, Copy, MapPin, Phone, Package, MessageCircle, Clock } from 'lucide-react'
 import { usePurionStore } from '@/store'
@@ -228,7 +229,7 @@ export function DespachoPage() {
   const { isLogistica } = useIsLogistica()
   const isMobile = useMobile()
   const { despachar, marcarM02Enviada } = useDespacho()
-  const [aba, setAba] = useState<Aba>('fila')
+  const [aba, setAba] = useEstadoPersistido<Aba>('despacho.aba', 'fila')
 
   const fila = useMemo(
     () => vendas.filter(aguardandoDespacho).sort((a, b) => a.dataVenda.localeCompare(b.dataVenda)),

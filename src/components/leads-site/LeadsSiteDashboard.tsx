@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { MetricStrip } from '@/components/ui/MetricStrip'
 import { dbLog } from '@/lib/dbLog'
 import { linkWhatsApp } from '@/hooks/useDespacho'
@@ -62,11 +63,11 @@ type Props = {
 }
 
 export function LeadsSiteDashboard({ leadsInicial, carrinhosInicial }: Props) {
-  const [tab, setTab]               = useState<'leads' | 'carrinhos'>('leads')
+  const [tab, setTab] = useEstadoPersistido<'leads' | 'carrinhos'>('leads.lista', 'leads')
   const [leads, setLeads]           = useState<LeadSite[]>(leadsInicial)
   const [carrinhos, setCarrinhos]   = useState<CarrinhoAbandonado[]>(carrinhosInicial)
   const [busca, setBusca]           = useState('')
-  const [soNaoRecuperados, setSoNaoRecuperados] = useState(true)
+  const [soNaoRecuperados, setSoNaoRecuperados] = useEstadoPersistido('leads.soAbertos', true)
   const [carregando, setCarregando] = useState(false)
 
   const carregar = useCallback(async () => {

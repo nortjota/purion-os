@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useAcaoRapida } from '@/lib/acaoRapida'
 import { Segmentado } from '@/components/ui/Segmentado'
 import { useState, useEffect, useMemo } from 'react'
@@ -28,8 +29,8 @@ export function CalendarioPage() {
 
   const [visao, setVisao] = useState<Visao>('mes')
   const [referencia, setReferencia] = useState(new Date())
-  const [filtroTipo, setFiltroTipo] = useState<TipoEvento | 'todos'>('todos')
-  const [filtroResponsavel, setFiltroResponsavel] = useState<PerfilUsuario | 'todos'>('todos')
+  const [filtroTipo, setFiltroTipo] = useEstadoPersistido<TipoEvento | 'todos'>('calendario.tipo', 'todos')
+  const [filtroResponsavel, setFiltroResponsavel] = useEstadoPersistido<PerfilUsuario | 'todos'>('calendario.socio', 'todos')
   const [modalDia, setModalDia] = useState<Date | null>(null)
   const [modalEvento, setModalEvento] = useState<EventoCalendario | null>(null)
   const [criandoNovo, setCriandoNovo] = useState(false)

@@ -1,5 +1,7 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useMemo, useState } from 'react'
 import { InnerTabs } from '@/components/ui/InnerTabs'
 import { usePurionStore } from '@/store'
@@ -16,8 +18,11 @@ type TabId = 'pedidos' | 'despacho' | 'metricas' | 'produtos'
  * e a visão "Painel" saiu por repetir a aba Métricas.
  */
 export function VendasPage() {
-  const [aba, setAba] = useState<TabId>('pedidos')
+  const [aba, setAba] = useEstadoPersistido<TabId>('vendas.aba', 'pedidos')
   const { vendas } = usePurionStore()
+  // "Nova venda" (botão Criar / Ctrl+K) precisa da aba Pedidos, onde fica o formulário
+  useAcaoRapida('nova-venda-b2c', () => setAba('pedidos'), { consumir: false })
+  useAcaoRapida('nova-venda-b2b', () => setAba('pedidos'), { consumir: false })
   const naFila = useMemo(() => vendas.filter(aguardandoDespacho).length, [vendas])
 
   const tabs = [

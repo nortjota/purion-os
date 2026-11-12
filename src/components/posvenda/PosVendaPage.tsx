@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { Skeleton } from '@/components/motion/Skeleton'
 
 import { useEffect, useMemo, useState } from 'react'
@@ -224,7 +225,7 @@ export function PosVendaPage() {
   const isMobile = useMobile()
   const { vendas } = usePurionStore()
   const { tarefas, tickets, carregando, tabelaAusente, recarregar, marcarFeito, suprimir, semResposta, atualizarSinais, registrarFeedback } = usePosVenda()
-  const [aba, setAba] = useState<Aba>('hoje')
+  const [aba, setAba] = useEstadoPersistido<Aba>('posvenda.aba', 'hoje')
   const hoje = hojeLocalISO()
 
   // Reaplica a supressão quando as vendas chegam/alteram (consentimentos, devoluções)

@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { Skeleton } from '@/components/motion/Skeleton'
 
@@ -52,8 +53,8 @@ export function AfiliadosDashboard() {
   const [deletando, setDeletando]             = useState<Afiliado | null>(null)
   const [copiado, setCopiado]                 = useState<string | null>(null)
   const [busca, setBusca]                     = useState('')
-  const [filtroStatus, setFiltroStatus]       = useState<string>('todos')
-  const [filtroPlataforma, setFiltroPlataforma] = useState<string>('todos')
+  const [filtroStatus, setFiltroStatus] = useEstadoPersistido<string>('afiliados.status', 'todos')
+  const [filtroPlataforma, setFiltroPlataforma] = useEstadoPersistido<string>('afiliados.plataforma', 'todos')
 
   const mesAtual = new Date().toISOString().slice(0, 7)
 

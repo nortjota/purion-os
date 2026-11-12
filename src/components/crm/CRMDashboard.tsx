@@ -6,6 +6,7 @@
  * drawer lateral com ações rápidas, alerta D+21 de reposição e filtros avançados.
  */
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, SlidersHorizontal, Columns3, List, Filter, CalendarDays, BarChart3, Archive } from 'lucide-react'
@@ -59,8 +60,8 @@ export function CRMDashboard({ onVerArquivados }: { onVerArquivados?: () => void
   const { success } = useToast()
 
   const [visao, setVisao] = useState<Visao>('quadro')
-  const [filtros, setFiltros] = useState<FiltrosCRM>(FILTROS_CRM_VAZIOS)
-  const [groupBy, setGroupBy] = useState<LeadGroupBy>('estagio')
+  const [filtros, setFiltros] = useEstadoPersistido<FiltrosCRM>('crm.filtros', FILTROS_CRM_VAZIOS)
+  const [groupBy, setGroupBy] = useEstadoPersistido<LeadGroupBy>('crm.agrupar', 'estagio')
   const [filtrosAbertos, setFiltrosAbertos] = useState(false)
   const [modalNovaAberto, setModalNovaAberto] = useState(false)
   useAcaoRapida('novo-lead', () => setModalNovaAberto(true))

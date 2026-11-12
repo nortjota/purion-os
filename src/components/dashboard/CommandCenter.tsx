@@ -1,5 +1,6 @@
 'use client'
 
+import { useEstadoPersistido } from '@/hooks/useEstadoPersistido'
 import { useMemo, useState, useEffect } from 'react'
 import { useMobile } from '@/hooks/useMobile'
 import { ResumoDiario } from './ResumoDiario'
@@ -410,7 +411,7 @@ export function CommandCenter() {
   useEstoque()
   const faseAtual = fases.find((f) => f.status === 'atual')
 
-  const [periodo, setPeriodo] = useState<Periodo>('mes')
+  const [periodo, setPeriodo] = useEstadoPersistido<Periodo>('inicio.periodo', 'mes')
   const [diasPlaybook, setDiasPlaybook] = useState<30 | 90>(30)
   const kPlaybook = useKpisPlaybook(diasPlaybook)
   const layout = useDashboardLayout()
