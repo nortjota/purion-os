@@ -39,6 +39,7 @@ export function FilaDeAcao({ itens, rodape }: { itens: ItemAcao[]; rodape?: Reac
           {itens.length > 0 && <span className="pulse" aria-hidden style={{ background: criticos ? COR.danger : COR.warning }} />}
           Precisa de você
         </span>
+        <Link href="/meu-trabalho" className="link-limpar" style={{ marginLeft: 'auto', marginRight: 12 }}>Ver minha fila</Link>
         {itens.length > 0 ? (
           <span className="caption tnum">
             {itens.length} {itens.length === 1 ? 'item' : 'itens'}{criticos > 0 ? ` · ${criticos} crítico${criticos > 1 ? 's' : ''}` : ''}

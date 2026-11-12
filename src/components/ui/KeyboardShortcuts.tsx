@@ -14,6 +14,7 @@ interface ShortcutEntry {
 const SHORTCUTS: Record<string, ShortcutEntry[]> = {
   Navegação: [
     { keys: 'G + D', description: 'Início' },
+    { keys: 'G + W', description: 'Meu trabalho' },
     { keys: 'G + V', description: 'Vendas' },
     { keys: 'G + C', description: 'CRM' },
     { keys: 'G + E', description: 'Despachos' },
@@ -49,6 +50,7 @@ export function KeyboardShortcuts() {
   useHotkeys('g+d', () => router.push('/'),         { enableOnFormTags: false })
   useHotkeys('g+c', () => router.push('/crm'),      { enableOnFormTags: false })
   useHotkeys('g+v', () => router.push('/vendas'),   { enableOnFormTags: false })
+  useHotkeys('g+w', () => router.push('/meu-trabalho'), { enableOnFormTags: false })
   useHotkeys('g+e', () => router.push('/despacho'), { enableOnFormTags: false })
   useHotkeys('g+m', () => router.push('/metas'),    { enableOnFormTags: false })
   useHotkeys('g+t', () => router.push('/tarefas'),  { enableOnFormTags: false })

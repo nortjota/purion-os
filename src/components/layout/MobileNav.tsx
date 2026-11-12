@@ -20,7 +20,7 @@ const MAIN_ITEMS_LOGISTICA = [
 ]
 
 // Barra inferior: o que os sócios abrem no celular (rotina + operação do dia).
-const MAIN_HREFS = ['/', '/vendas', '/tarefas', '/despacho']
+const MAIN_HREFS = ['/', '/meu-trabalho', '/vendas', '/despacho']
 const MAIN_ITEMS = MAIN_HREFS
   .map((href) => TODOS_OS_ITENS.find((i) => i.href === href)!)
   .map((i) => ({ href: i.href, label: i.label, icon: i.icon }))

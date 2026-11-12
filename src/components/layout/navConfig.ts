@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Settings,
   BookOpen, Megaphone, Link2, Headphones, Mail, KeyRound, ShoppingBag, Target, Shapes, FlaskConical, Compass, CalendarDays,
-  Truck, HeartHandshake,
+  Truck, HeartHandshake, Inbox,
 } from 'lucide-react'
 
 export interface NavItemConfig {
@@ -40,6 +40,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'DIA A DIA',
     items: [
       { key: 'inicio',     href: '/',           label: 'Início',     icon: LayoutDashboard, essencial: true },
+      { key: 'meu-trabalho', href: '/meu-trabalho', label: 'Meu trabalho', icon: Inbox },
       { key: 'tarefas',    href: '/tarefas',    label: 'Tarefas',    icon: CheckSquare },
       { key: 'calendario', href: '/calendario', label: 'Calendário', icon: CalendarDays },
       { key: 'reunioes',   href: '/reunioes',   label: 'Reuniões',   icon: Calendar },

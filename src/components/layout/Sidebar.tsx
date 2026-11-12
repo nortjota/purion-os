@@ -20,6 +20,7 @@ import { PERFIS_INFO, SOCIOS_ATIVOS, corPerfil } from '@/lib/socios'
 import { NAV_GROUPS, NAV_GROUPS_LOGISTICA } from './navConfig'
 import { aguardandoDespacho, despachoAtrasado } from '@/hooks/useDespacho'
 import { PersonalizarMenuModal } from './PersonalizarMenuModal'
+import { useSocioAtual } from '@/components/meu-trabalho/useSocioAtual'
 
 const LARGURA_ABERTA = 232
 const LARGURA_RECOLHIDA = 60
@@ -69,7 +70,7 @@ export function Sidebar() {
   const { isLogistica } = useIsLogistica()
   const {
     perfilAtivo, setPerfilAtivo,
-    pedidosExpedicao, campanhasAds, produtosSKU, configuracoes, vendas, tarefas,
+    pedidosExpedicao, campanhasAds, produtosSKU, configuracoes, vendas, tarefas, leads,
     sidebarRecolhida, setSidebarRecolhida,
   } = usePurionStore()
 
@@ -156,7 +157,18 @@ export function Sidebar() {
     return tarefas.filter((t) => t.dueDate && t.dueDate < hoje && t.status !== 'concluida' && t.status !== 'cancelada').length
   }, [tarefas])
 
+  // fila pessoal (tarefas + follow-ups do CRM com prazo vencido ou hoje) para o selo de "Meu trabalho"
+  const socioAtual = useSocioAtual()
+  const filaPessoal = useMemo(() => {
+    const hoje = new Date().toISOString().slice(0, 10)
+    const t = tarefas.filter((x) => x.responsavel === socioAtual && x.dueDate && x.dueDate.slice(0, 10) <= hoje && !['concluida', 'cancelada'].includes(x.status))
+    const atrasadas = t.filter((x) => x.dueDate!.slice(0, 10) < hoje).length
+    const l = leads.filter((x) => x.responsavel === socioAtual && x.proximoPassoData && x.proximoPassoData.slice(0, 10) <= hoje)
+    return { total: t.length + l.length, atrasado: atrasadas + l.filter((x) => x.proximoPassoData!.slice(0, 10) < hoje).length }
+  }, [tarefas, leads, socioAtual])
+
   function getSelo(href: string): Selo | null {
+    if (href === '/meu-trabalho' && filaPessoal.total > 0) return { label: String(filaPessoal.total), tom: filaPessoal.atrasado > 0 ? 'danger' : 'warning' }
     if (href === '/tarefas' && tarefasAtrasadas > 0) return { label: String(tarefasAtrasadas), tom: 'danger' }
     if (href === '/despacho' && despachos.atrasados > 0) return { label: `${despachos.atrasados} +48h`, tom: 'danger' }
     if (href === '/despacho' && despachos.fila > 0) return { label: String(despachos.fila), tom: 'warning' }
