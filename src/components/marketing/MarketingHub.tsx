@@ -8,7 +8,7 @@ import { InteligenciaDashboard } from '@/components/inteligencia/InteligenciaDas
 
 const TABS = [
   { id: 'trafego',      label: 'Tráfego pago' },
-  { id: 'organico',     label: 'Conteúdo & kits' },
+  { id: 'organico',     label: 'Conteúdo' },
   { id: 'inteligencia', label: 'Inteligência' },
 ]
 

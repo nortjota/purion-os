@@ -155,7 +155,10 @@ export function AfiliadosDashboard() {
     <div className="page-content section-gap">
       {/* Header */}
       <div className="toolbar">
-        <h1 className="page-title" style={{ flex: '1 1 200px' }}>Afiliados</h1>
+        <div style={{ flex: '1 1 260px', minWidth: 0 }}>
+          <h1 className="page-title">Afiliados</h1>
+          <p className="caption mt-1">Parceiros com link próprio, cliques e comissão. Vendas por cupom de creator ficam em Creators.</p>
+        </div>
         <button onClick={() => { setEditando(null); setModalAberto(true) }} className="btn btn-accent btn-sm">
           <Plus size={14} /> Novo afiliado
         </button>

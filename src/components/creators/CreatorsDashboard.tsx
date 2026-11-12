@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { useState, useMemo } from 'react'
 import { useMobile } from '@/hooks/useMobile'
@@ -46,7 +47,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'overview',   label: 'Overview' },
   { id: 'pipeline',   label: 'Pipeline' },
   { id: 'campanhas',  label: 'Campanhas' },
-  { id: 'vendas',     label: 'Vendas & Afiliados' },
+  { id: 'vendas',     label: 'Vendas por cupom' },
   { id: 'analise',    label: 'Análise' },
   { id: 'arquivados', label: 'Arquivados' },
 ]
@@ -1664,6 +1665,11 @@ function AbaVendasAfiliados() {
 
   return (
     <div className="flex flex-col gap-6">
+      <p className="caption" style={{ maxWidth: 760 }}>
+        Aqui entram as vendas feitas com o <strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>cupom de um creator</strong>, com comissão fixa por venda.
+        O programa de afiliados com link próprio, cliques e pagamentos é outro cadastro e fica em{' '}
+        <Link href="/afiliados" style={{ color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 3 }}>Afiliados</Link>.
+      </p>
       <div className="cards-gap" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
         <div className="kpi-card">
           <p className="kpi-label mb-2">Vendas atribuídas</p>

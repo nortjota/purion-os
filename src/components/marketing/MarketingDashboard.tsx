@@ -6,16 +6,15 @@
  */
 
 import { useState, useMemo } from 'react'
-import { Plus, ExternalLink, ChevronLeft, ChevronRight, Filter } from 'lucide-react'
+import { Plus, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   usePurionStore,
-  type Creator,
   type ConteudoCalendario,
   type PerfilUsuario,
   type FormatoConteudo,
   type StatusConteudo,
 } from '@/store'
-import { useMarketing } from '@/hooks/useMarketing'
+import Link from 'next/link'
 
 // ─────────────────────────────────────────────
 // CONSTANTES
@@ -25,30 +24,6 @@ const META_KITS = 30
 const META_VIDEOS = 60
 
 const DIAS_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
-
-const STATUS_KIT_LABEL: Record<string, string> = {
-  contatado:    'Não enviado',
-  negociando:   'Não enviado',
-  kit_enviado:  'Enviado',
-  postado:      'Publicado',
-  pago:         'Publicado',
-  inativo:      'Sem retorno',
-}
-
-const STATUS_KIT_COLOR: Record<string, string> = {
-  contatado:    'text-[#B8B8B8] bg-[#2A2C2B]',
-  negociando:   'text-[#B8B8B8] bg-[#2A2C2B]',
-  kit_enviado:  'text-blue-400 bg-blue-400/10',
-  postado:      'text-emerald-400 bg-emerald-400/10',
-  pago:         'text-emerald-400 bg-emerald-400/10',
-  inativo:      'text-amber-400 bg-amber-400/10',
-}
-
-const PLATAFORMA_COLOR: Record<string, string> = {
-  instagram: 'text-pink-400 bg-pink-400/10',
-  tiktok:    'text-sky-400 bg-sky-400/10',
-  youtube:   'text-red-400 bg-red-400/10',
-}
 
 const FORMATO_COLOR: Record<FormatoConteudo, string> = {
   reels:    'text-pink-400 bg-pink-400/10',
@@ -82,13 +57,6 @@ const SOCIO_COLOR: Record<PerfilUsuario, string> = {
 // HELPERS
 // ─────────────────────────────────────────────
 
-function fmtSeguidores(n: number) {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`
-  return String(n)
-}
-
-/** Retorna segunda-feira da semana que contém `date` */
 function inicioSemana(date: Date): Date {
   const d = new Date(date)
   const dia = d.getUTCDay() // 0=Dom, 1=Seg...
@@ -115,112 +83,6 @@ function fmtDia(date: Date) {
 // ─────────────────────────────────────────────
 // MODAIS
 // ─────────────────────────────────────────────
-
-function ModalCreator({ onSalvar, onFechar }: {
-  onSalvar: (c: Creator) => void
-  onFechar: () => void
-}) {
-  const [form, setForm] = useState({
-    nome: '', instagram: '', tiktok: '', seguidores: '',
-    nicho: '', status: 'contatado' as Creator['status'],
-    cache: '', responsavel: 'joao' as PerfilUsuario, notas: '',
-  })
-
-  const handleSubmit = () => {
-    if (!form.nome || !form.instagram) return
-    const creator: Creator = {
-      id: `cre-${Date.now()}`,
-      nome: form.nome,
-      instagram: form.instagram,
-      tiktok: form.tiktok || undefined,
-      seguidores: parseInt(form.seguidores, 10) || 0,
-      nichoPrincipal: form.nicho,
-      status: form.status,
-      cacheCombinado: parseFloat(form.cache) || 0,
-      produtosEnviados: [],
-      postagens: [],
-      roi: 0,
-      createdAt: new Date().toISOString(),
-      responsavel: form.responsavel,
-      notas: form.notas,
-    }
-    onSalvar(creator)
-  }
-
-  const F = ({ label, field, type = 'text', placeholder = '' }: {
-    label: string; field: keyof typeof form; type?: string; placeholder?: string
-  }) => (
-    <div className="field-gap">
-      <label className="label-purion">{label}</label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={form[field] as string}
-        onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-        className="input-purion"
-      />
-    </div>
-  )
-
-  return (
-    <div className="modal-backdrop" onClick={onFechar}>
-      <div className="modal-container max-w-md max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3 className="modal-title">Adicionar Creator</h3>
-        </div>
-        <div className="p-7">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2"><F label="Nome" field="nome" placeholder="ex: Lucas Automania" /></div>
-            <F label="Instagram" field="instagram" placeholder="@usuario" />
-            <F label="TikTok (opcional)" field="tiktok" placeholder="@usuario" />
-            <F label="Seguidores" field="seguidores" type="number" placeholder="0" />
-            <F label="Nicho principal" field="nicho" placeholder="ex: Automotivo" />
-            <F label="Cachê combinado (R$)" field="cache" type="number" placeholder="0" />
-            <div>
-              <label className="label-purion">Status inicial</label>
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value as Creator['status'] })}
-                className="select-purion"
-              >
-                <option value="contatado">Contatado</option>
-                <option value="negociando">Negociando</option>
-                <option value="kit_enviado">Kit Enviado</option>
-                <option value="postado">Postado</option>
-                <option value="pago">Pago</option>
-                <option value="inativo">Inativo</option>
-              </select>
-            </div>
-            <div>
-              <label className="label-purion">Responsável</label>
-              <select
-                value={form.responsavel}
-                onChange={(e) => setForm({ ...form, responsavel: e.target.value as PerfilUsuario })}
-                className="select-purion"
-              >
-                <option value="joao">João</option>
-                <option value="matheus">Matheus</option>
-              </select>
-            </div>
-            <div className="col-span-2">
-              <label className="label-purion">Notas</label>
-              <textarea
-                rows={2}
-                value={form.notas}
-                onChange={(e) => setForm({ ...form, notas: e.target.value })}
-                className="textarea-purion"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="modal-footer">
-          <button onClick={onFechar} className="btn btn-secondary btn-sm">Cancelar</button>
-          <button onClick={handleSubmit} className="btn btn-primary btn-sm">Adicionar</button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function ModalConteudo({
   dataInicial,
@@ -335,7 +197,6 @@ function ModalConteudo({
 
 export function MarketingDashboard() {
   const { creators, conteudosCalendario, adicionarConteudo } = usePurionStore()
-  const { adicionarCreator } = useMarketing()
 
   // KPI calculations
   const kitsEnviados = creators.filter(
@@ -344,13 +205,10 @@ export function MarketingDashboard() {
   const videosPublicados = creators.reduce((acc, c) => acc + c.postagens.length, 0)
 
   // Filters
-  const [filtroPlatforma, setFiltroPlatforma] = useState<string>('todos')
-  const [filtroStatus, setFiltroStatus] = useState<string>('todos')
-  const [modalCreator, setModalCreator] = useState(false)
   const [modalConteudo, setModalConteudo] = useState<string | null>(null) // date string or null
 
-  // Calendar week navigation — start at week of 2024-02-12
-  const [semanaBase, setSemanaBase] = useState(() => inicioSemana(new Date('2024-02-12')))
+  // Navegação semanal do calendário — abre na semana atual
+  const [semanaBase, setSemanaBase] = useState(() => inicioSemana(new Date()))
 
   const diasSemanaAtual = useMemo(() =>
     Array.from({ length: 7 }, (_, i) => addDays(semanaBase, i)),
@@ -365,30 +223,13 @@ export function MarketingDashboard() {
     return map
   }, [conteudosCalendario, diasSemanaAtual])
 
-  const creatoresFiltrados = useMemo(() => {
-    return creators.filter((c) => {
-      if (filtroPlatforma !== 'todos') {
-        if (filtroPlatforma === 'instagram' && !c.instagram) return false
-        if (filtroPlatforma === 'tiktok' && !c.tiktok) return false
-      }
-      if (filtroStatus !== 'todos') {
-        const statusKit = STATUS_KIT_LABEL[c.status]
-        if (filtroStatus === 'Não enviado' && statusKit !== 'Não enviado') return false
-        if (filtroStatus === 'Enviado' && statusKit !== 'Enviado') return false
-        if (filtroStatus === 'Publicado' && statusKit !== 'Publicado') return false
-        if (filtroStatus === 'Sem retorno' && statusKit !== 'Sem retorno') return false
-      }
-      return true
-    })
-  }, [creators, filtroPlatforma, filtroStatus])
-
   return (
     <div className="page-content section-gap">
 
       {/* ── Header ── */}
       <div>
-        <h1 className="page-title">Conteúdo & kits</h1>
-        <p className="caption mt-1">Metas de kits e vídeos, envio de kits e calendário de conteúdo. O cadastro completo fica em Creators.</p>
+        <h1 className="page-title">Conteúdo</h1>
+        <p className="caption mt-1">Metas de kits e vídeos e o calendário de conteúdo da semana.</p>
       </div>
 
       {/* ══════════════════════════════════════
@@ -439,134 +280,16 @@ export function MarketingDashboard() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          SEÇÃO 2 — TRACKER DE CREATORS
-      ══════════════════════════════════════ */}
-      <section>
-        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <p className="kpi-label">
-            Tracker de Creators ({creatoresFiltrados.length})
-          </p>
-          <div className="flex items-center gap-2">
-            {/* Filtro plataforma */}
-            <div className="flex items-center gap-1.5">
-              <Filter size={11} className="text-[#B8B8B8]" />
-              <select
-                value={filtroPlatforma}
-                onChange={(e) => setFiltroPlatforma(e.target.value)}
-                className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[var(--ring)]"
-              >
-                <option value="todos">Todas plataformas</option>
-                <option value="instagram">Instagram</option>
-                <option value="tiktok">TikTok</option>
-              </select>
-            </div>
-            {/* Filtro status kit */}
-            <select
-              value={filtroStatus}
-              onChange={(e) => setFiltroStatus(e.target.value)}
-              className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-md px-2 py-1 text-xs text-[var(--text-secondary)] outline-none focus:border-[var(--ring)]"
-            >
-              <option value="todos">Todos os status</option>
-              <option value="Não enviado">Não enviado</option>
-              <option value="Enviado">Enviado</option>
-              <option value="Publicado">Publicado</option>
-              <option value="Sem retorno">Sem retorno</option>
-            </select>
-            <button
-              onClick={() => setModalCreator(true)}
-              className="btn btn-primary btn-sm"
-            >
-              <Plus size={12} />
-              Adicionar creator
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-          {/* Cabeçalho */}
-          <div className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 py-2.5 border-b border-[var(--border)]">
-            {['Nome', 'Plataforma', 'Seguidores', 'Status Kit', 'Data Envio', 'Link Conteúdo'].map((h) => (
-              <span key={h} className="text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider">{h}</span>
-            ))}
-          </div>
-
-          {creatoresFiltrados.length === 0 && (
-            <div className="px-4 py-8 text-center text-xs text-[#A0A0A0]">
-              Nenhum creator encontrado
-            </div>
-          )}
-
-          {creatoresFiltrados.map((creator) => {
-            const primeiraPostagem = creator.postagens[0]
-            const dataEnvio = creator.produtosEnviados.length > 0
-              ? primeiraPostagem?.data ?? '—'
-              : null
-            const linkConteudo = primeiraPostagem?.url
-
-            return (
-              <div
-                key={creator.id}
-                className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 items-center hover:bg-[rgba(255,255,255,0.02)]"
-              >
-                {/* Nome */}
-                <div>
-                  <p className="text-xs font-semibold text-[var(--text-primary)]">{creator.nome}</p>
-                  <p className="text-[10px] text-[#B8B8B8]">{creator.nichoPrincipal}</p>
-                </div>
-
-                {/* Plataformas */}
-                <div className="flex flex-wrap gap-1">
-                  {creator.instagram && (
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${PLATAFORMA_COLOR.instagram}`}>
-                      IG
-                    </span>
-                  )}
-                  {creator.tiktok && (
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${PLATAFORMA_COLOR.tiktok}`}>
-                      TT
-                    </span>
-                  )}
-                </div>
-
-                {/* Seguidores */}
-                <span className="text-xs text-[var(--text-primary)] font-semibold">
-                  {fmtSeguidores(creator.seguidores)}
-                </span>
-
-                {/* Status Kit */}
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full self-start mt-0.5 ${STATUS_KIT_COLOR[creator.status]}`}>
-                  {STATUS_KIT_LABEL[creator.status]}
-                </span>
-
-                {/* Data envio */}
-                <span className="text-xs text-[var(--text-secondary)]">
-                  {dataEnvio
-                    ? new Date(dataEnvio + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-                    : '—'
-                  }
-                </span>
-
-                {/* Link conteúdo */}
-                {linkConteudo ? (
-                  <a
-                    href={linkConteudo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-[var(--text-primary)] hover:text-[var(--brand-accent)]/85 truncate"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLink size={11} />
-                    <span className="truncate">Ver post</span>
-                  </a>
-                ) : (
-                  <span className="text-xs text-[#A0A0A0]">—</span>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </section>
+      {/* O acompanhamento de creators (cadastro, kits, status) vive em UM lugar só: o módulo Creators. */}
+      <Link href="/creators" className="card-purion lift" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', textDecoration: 'none' }}>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
+            {creators.length} creator{creators.length !== 1 ? 's' : ''} na base · {kitsEnviados} com kit enviado
+          </span>
+          <span className="caption" style={{ display: 'block' }}>Cadastro, pipeline de kits e resultados ficam em Creators.</span>
+        </span>
+        <span className="btn btn-secondary btn-sm">Abrir Creators <ExternalLink size={12} /></span>
+      </Link>
 
       {/* ══════════════════════════════════════
           SEÇÃO 3 — CALENDÁRIO DE CONTEÚDO
@@ -650,7 +373,7 @@ export function MarketingDashboard() {
                     onClick={() => setModalConteudo(key)}
                     className="text-[10px] text-[#8A8A8A] hover:text-[var(--brand-accent)] py-1 text-center rounded transition-colors"
                   >
-                    + add
+                    + adicionar
                   </button>
                 </div>
               </div>
@@ -660,12 +383,6 @@ export function MarketingDashboard() {
       </section>
 
       {/* ── Modais ── */}
-      {modalCreator && (
-        <ModalCreator
-          onSalvar={(c) => { adicionarCreator(c); setModalCreator(false) }}
-          onFechar={() => setModalCreator(false)}
-        />
-      )}
       {modalConteudo !== null && (
         <ModalConteudo
           dataInicial={modalConteudo}
