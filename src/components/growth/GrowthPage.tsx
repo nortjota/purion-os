@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmar } from '@/components/ui/Confirmar'
 import { MetricStrip } from '@/components/ui/MetricStrip'
 import { Segmentado } from '@/components/ui/Segmentado'
 import { Skeleton } from '@/components/motion/Skeleton'
@@ -144,7 +145,7 @@ function ModalExperimento({
           <h2 style={{ fontSize: 16, fontWeight: 700 }}>
             {editando ? 'Editar Experimento' : 'Novo Experimento ICE'}
           </h2>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <form onSubmit={submeter} className="flex flex-col gap-3">
           <div>
@@ -273,8 +274,8 @@ function CardExp({
           </button>
         ) : <span />}
         <div className="flex gap-1">
-          <button onClick={onEditar} className="icon-btn"><Pencil size={11} /></button>
-          <button onClick={onDeletar} className="icon-btn"><Trash2 size={11} /></button>
+          <button onClick={onEditar} className="icon-btn" aria-label="Editar" title="Editar"><Pencil size={11} /></button>
+          <button onClick={onDeletar} className="icon-btn" aria-label="Excluir" title="Excluir"><Trash2 size={11} /></button>
         </div>
       </div>
     </div>
@@ -634,7 +635,9 @@ export function GrowthPage({ embutido = false }: { embutido?: boolean } = {}) {
         <TabKanban
           experimentos={experimentos}
           onEditar={(e) => { setEditando(e); setModalAberto(true) }}
-          onDeletar={deletarExperimento}
+          onDeletar={async (id) => {
+            if (await confirmar({ titulo: 'Excluir este experimento?', mensagem: 'A exclusão é definitiva: hipótese, resultado e aprendizado somem.' })) deletarExperimento(id)
+          }}
           onMover={moverStatus}
           onNovo={() => { setEditando(null); setModalAberto(true) }}
         />

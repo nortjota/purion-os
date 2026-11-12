@@ -113,7 +113,7 @@ export function ProducaoReceitaView() {
           <div className="modal-container max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 className="modal-title">Adicionar insumo à receita</h3>
-              <button onClick={() => setModalAdicionar(false)} className="icon-btn border-0"><X size={16} /></button>
+              <button onClick={() => setModalAdicionar(false)} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
             </div>
             <div className="px-6 py-5">
               {insumosForaDaReceita.length === 0 ? (

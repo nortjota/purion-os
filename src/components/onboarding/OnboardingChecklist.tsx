@@ -106,6 +106,7 @@ export function OnboardingChecklist() {
         <div style={{ display: 'flex', gap: 4, marginLeft: 12 }}>
           <button
             onClick={() => setCollapsed(c => !c)}
+            aria-label={collapsed ? 'Expandir checklist' : 'Recolher checklist'} title={collapsed ? 'Expandir' : 'Recolher'}
             style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}
           >
             {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}

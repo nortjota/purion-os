@@ -89,7 +89,7 @@ export function PipelineSettings() {
                 <option value="perdido">Perdido</option>
               </select>
               <button onClick={() => setColunas(prev => prev.filter(c => c.id !== col.id))}
-                className="text-red-400 hover:text-red-300 p-1">
+                className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                 <Trash2 size={13} />
               </button>
             </div>
@@ -122,7 +122,7 @@ export function PipelineSettings() {
                 <span className="text-xs bg-[var(--bg-surface)] px-2 py-0.5 rounded text-[var(--text-secondary)]">{campo.tipo}</span>
                 {campo.obrigatorio && <span className="text-xs text-[var(--brand-accent)]">Obrigatório</span>}
                 <button onClick={() => setCampos(prev => prev.filter(c => c.id !== campo.id))}
-                  className="text-red-400 hover:text-red-300 p-1">
+                  className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                   <Trash2 size={13} />
                 </button>
               </div>
@@ -160,7 +160,7 @@ export function PipelineSettings() {
               <input className="input-purion flex-1" value={tipo}
                 onChange={e => setTiposEst(prev => prev.map((t, j) => j === i ? e.target.value : t))} />
               <button onClick={() => setTiposEst(prev => prev.filter((_, j) => j !== i))}
-                className="text-red-400 hover:text-red-300 p-1">
+                className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                 <Trash2 size={13} />
               </button>
             </div>

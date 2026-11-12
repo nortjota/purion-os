@@ -106,7 +106,7 @@ export function AportesSociosCard() {
                   <p className="text-[10px] text-[var(--text-secondary)]">{formatarDataBR(a.data)}</p>
                 </div>
                 <span className="text-sm font-bold" style={{ color: s?.cor ?? 'var(--brand-accent)' }}>{formatarMoeda(a.valor)}</span>
-                <button onClick={() => setDeletando(a.id)} className="text-red-400 hover:text-red-300 p-1">
+                <button onClick={() => setDeletando(a.id)} className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                   <Trash2 size={13} />
                 </button>
               </div>

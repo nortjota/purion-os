@@ -303,8 +303,7 @@ export function MarketingDashboard() {
             {/* Navegação de semana */}
             <button
               onClick={() => setSemanaBase((d) => addDays(d, -7))}
-              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[var(--brand-accent)] hover:bg-[rgba(212,252,60,0.08)]"
-            >
+              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[var(--brand-accent)] hover:bg-[rgba(212,252,60,0.08)]" aria-label="Anterior" title="Anterior">
               <ChevronLeft size={14} />
             </button>
             <span className="text-xs text-[var(--text-secondary)] min-w-[130px] text-center">
@@ -312,8 +311,7 @@ export function MarketingDashboard() {
             </span>
             <button
               onClick={() => setSemanaBase((d) => addDays(d, 7))}
-              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[var(--brand-accent)] hover:bg-[rgba(212,252,60,0.08)]"
-            >
+              className="p-1.5 rounded-md text-[#B8B8B8] hover:text-[var(--brand-accent)] hover:bg-[rgba(212,252,60,0.08)]" aria-label="Próximo" title="Próximo">
               <ChevronRight size={14} />
             </button>
             <button

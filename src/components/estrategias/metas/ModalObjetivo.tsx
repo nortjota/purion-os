@@ -74,7 +74,7 @@ export function ModalObjetivo({
       <div className="modal-container" style={{ maxWidth: 500 }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 style={{ fontSize: 16, fontWeight: 700 }}>{objetivo ? 'Editar meta' : 'Nova meta'}</h2>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         <form onSubmit={submeter} className="flex flex-col gap-3">

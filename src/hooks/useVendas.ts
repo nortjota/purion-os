@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmar } from '@/components/ui/Confirmar'
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { dbLog } from '@/lib/dbLog'
@@ -124,7 +125,7 @@ export type NovaVendaManual = {
 }
 
 export function useVendas() {
-  const { success, error: toastError } = useToast()
+  const { success, error: toastError, toast } = useToast()
 
   useEffect(() => {
     const sb = supabase
@@ -395,6 +396,11 @@ export function useVendas() {
     },
 
     deletarVenda: async (id: string) => {
+      const venda = usePurionStore.getState().vendas.find((v) => v.id === id)
+      if (!(await confirmar({
+        titulo: 'Excluir esta venda?',
+        mensagem: venda ? `${venda.clienteNome || 'Cliente'} · ${(venda.valorTotal ?? venda.valorLiquido).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}. Ela sai das métricas; dá para desfazer logo em seguida.` : 'Ela sai das métricas; dá para desfazer logo em seguida.',
+      }))) return
       const sb = supabase
       if (sb) {
         const { error } = await sb.from('vendas').update({ deleted_at: new Date().toISOString() }).eq('id', id)
@@ -402,7 +408,21 @@ export function useVendas() {
         if (error) { toastError('Erro ao excluir venda', error.message); return }
       }
       usePurionStore.getState().removerVenda(id)
-      success('Venda excluída')
+      toast({
+        type: 'info', title: 'Venda excluída', duration: 7000,
+        action: venda ? {
+          label: 'Desfazer',
+          onClick: async () => {
+            if (sb) {
+              const { error } = await sb.from('vendas').update({ deleted_at: null }).eq('id', id)
+              dbLog('UPDATE', 'vendas (desfazer exclusão)', error, id)
+              if (error) { toastError('Não foi possível restaurar', error.message); return }
+            }
+            usePurionStore.getState().adicionarVenda(venda)
+            success('Venda restaurada')
+          },
+        } : undefined,
+      })
     },
   }
 }

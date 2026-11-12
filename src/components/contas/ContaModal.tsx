@@ -50,7 +50,7 @@ export function ContaModal({ conta, onSalvar, onFechar }: ContaModalProps) {
       <div className="modal-container max-w-lg" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3 className="modal-title">{conta ? 'Editar Conta' : 'Nova Conta'}</h3>
-          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
           <input

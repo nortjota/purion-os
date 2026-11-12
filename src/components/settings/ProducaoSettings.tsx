@@ -169,7 +169,7 @@ export function ProducaoSettings() {
                 Obrigatório
               </label>
               <button onClick={() => setChecklist(prev => prev.filter(c => c.id !== item.id))}
-                className="text-red-400 hover:text-red-300 p-1">
+                className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                 <Trash2 size={13} />
               </button>
             </div>
@@ -203,7 +203,7 @@ export function ProducaoSettings() {
                   </div>
                 </div>
                 <button onClick={() => setFornecedores(prev => prev.filter(x => x.id !== f.id))}
-                  className="text-red-400 hover:text-red-300 p-1">
+                  className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                   <Trash2 size={13} />
                 </button>
               </div>

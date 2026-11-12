@@ -51,7 +51,7 @@ export function ModalMedicaoMensal({ objetivoTitulo, ano, mes, medicaoExistente,
             <h2 style={{ fontSize: 16, fontWeight: 700 }}>{MESES_LABEL[mes - 1]}/{ano}</h2>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{objetivoTitulo}</p>
           </div>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         <form onSubmit={submeter} className="flex flex-col gap-3">

@@ -121,7 +121,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
           <button
             onClick={onFechar}
             className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"
-          >
+           aria-label="Fechar" title="Fechar">
             <X size={16} />
           </button>
         </div>

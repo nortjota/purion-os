@@ -114,7 +114,8 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
       {/* Floating button */}
       <button
         onClick={() => setOpen(!open)}
-        title="Notas rápidas"
+        title="Notas rápidas (anotações pessoais)"
+        aria-label="Notas rápidas"
         style={{
           position: 'fixed',
           bottom: 24,
@@ -168,8 +169,7 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
                   background: 'var(--primary)', color: 'var(--primary-foreground)',
                   border: 'none', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
+                }} aria-label="Adicionar" title="Adicionar">
                 <Plus size={14} />
               </button>
               <button
@@ -179,8 +179,7 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
                   background: 'var(--bg-surface-2)', color: 'var(--text-secondary)',
                   border: 'none', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
+                }} aria-label="Fechar" title="Fechar">
                 <X size={14} />
               </button>
             </div>
@@ -285,8 +284,7 @@ export function QuickNotes({ onNotesChange }: QuickNotesProps) {
                       color: 'var(--text-secondary)', display: 'flex',
                       alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0,
-                    }}
-                  >
+                    }} aria-label="Excluir" title="Excluir">
                     <Trash2 size={12} />
                   </button>
                 </div>

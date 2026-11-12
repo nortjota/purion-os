@@ -107,7 +107,7 @@ export function TicketDetalhe({ ticket, onAtualizado, onFechar }: Props) {
             <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ticket.assunto}</p>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>{ticket.cliente_nome}</p>
           </div>
-          <button onClick={onFechar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', flexShrink: 0, padding: 4 }}><X size={18} /></button>
+          <button onClick={onFechar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', flexShrink: 0, padding: 4 }} aria-label="Fechar" title="Fechar"><X size={18} /></button>
         </div>
 
         {/* Controls */}
@@ -179,7 +179,7 @@ export function TicketDetalhe({ ticket, onAtualizado, onFechar }: Props) {
             rows={2}
             style={{ flex: 1, padding: '9px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-surface-2)', color: 'var(--text-primary)', fontSize: 13, outline: 'none', resize: 'none' }}
           />
-          <button onClick={enviarMsg} disabled={enviando || !novaMsg.trim()} className="btn btn-primary" style={{ padding: '0 16px' }}>
+          <button onClick={enviarMsg} disabled={enviando || !novaMsg.trim()} className="btn btn-primary" style={{ padding: '0 16px' }} aria-label="Enviar" title="Enviar">
             <Send size={16} />
           </button>
         </div>

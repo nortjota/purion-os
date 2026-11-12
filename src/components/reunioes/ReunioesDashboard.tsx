@@ -1000,12 +1000,10 @@ export function ReunioesDashboard() {
                   <div key={socio} className={`flex gap-1 ${isMobile ? 'flex-1' : ''}`}>
                     <button
                       onClick={() => handleVotar(decisao.id, 'sim')}
-                      className={`rounded hover:bg-emerald-400/20 text-emerald-400 ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-emerald-400/30' : 'p-0.5'}`}
-                    ><Check size={isMobile ? 16 : 11} /></button>
+                      className={`rounded hover:bg-emerald-400/20 text-emerald-400 ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-emerald-400/30' : 'p-0.5'}`} aria-label="Confirmar" title="Confirmar"><Check size={isMobile ? 16 : 11} /></button>
                     <button
                       onClick={() => handleVotar(decisao.id, 'nao')}
-                      className={`rounded hover:bg-red-400/20 text-red-400 ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-red-400/30' : 'p-0.5'}`}
-                    ><X size={isMobile ? 16 : 11} /></button>
+                      className={`rounded hover:bg-red-400/20 text-red-400 ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-red-400/30' : 'p-0.5'}`} aria-label="Fechar" title="Fechar"><X size={isMobile ? 16 : 11} /></button>
                     <button
                       onClick={() => handleVotar(decisao.id, 'abstencao')}
                       className={`rounded hover:bg-[#2E312F] text-[#B8B8B8] ${isMobile ? 'flex-1 py-2.5 flex items-center justify-center border border-[var(--border)]' : 'p-0.5'}`}

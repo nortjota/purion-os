@@ -78,7 +78,7 @@ export function TarefaModalNova({ statusInicial, perfilAtivo, onCriar, onFechar 
             <h3 className="modal-title">Nova Tarefa</h3>
             <p className="caption mt-0.5">Coluna: <span className="text-[var(--text-primary)]">{colLabel}</span></p>
           </div>
-          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">

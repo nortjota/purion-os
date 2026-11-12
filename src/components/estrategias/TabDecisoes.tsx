@@ -54,7 +54,7 @@ export function ModalDecisao({ onFechar, onSalvar }: { onFechar: () => void; onS
       <div className="modal-container" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 style={{ fontSize: 16, fontWeight: 700 }}>Registrar Decisão</h2>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <form onSubmit={submeter} className="flex flex-col gap-3">
           <div className="flex gap-3">
@@ -161,7 +161,7 @@ export function TabDecisoes() {
                         <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4, lineHeight: 1.5 }}>{d.justificativa}</p>
                       )}
                     </div>
-                    <button onClick={() => deletarDecisao(d.id)} className="icon-btn"><Trash2 size={12} /></button>
+                    <button onClick={() => deletarDecisao(d.id)} className="icon-btn" aria-label="Excluir" title="Excluir"><Trash2 size={12} /></button>
                   </div>
                 </div>
               </div>

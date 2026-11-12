@@ -191,7 +191,7 @@ export function UsuariosSettings() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-1">
-                    <button onClick={() => openEdit(u)} className="p-1.5 rounded-lg hover:bg-[rgba(255,255,255,0.06)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                    <button onClick={() => openEdit(u)} className="p-1.5 rounded-lg hover:bg-[rgba(255,255,255,0.06)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]" aria-label="Editar" title="Editar">
                       <Pencil size={13} />
                     </button>
                     <button

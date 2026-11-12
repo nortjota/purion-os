@@ -53,13 +53,13 @@ export function MiniCalendario({ reunioes, diaSelecionado, onSelecionarDia }: Mi
   return (
     <div className="card-purion p-4">
       <div className="flex items-center justify-between mb-3">
-        <button onClick={() => setMesAtual((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))} className="icon-btn border-0">
+        <button onClick={() => setMesAtual((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))} className="icon-btn border-0" aria-label="Anterior" title="Anterior">
           <ChevronLeft size={14} />
         </button>
         <span className="text-[13px] font-semibold text-[var(--text-primary)]">
           {MESES_PT[mesAtual.getMonth()]} {mesAtual.getFullYear()}
         </span>
-        <button onClick={() => setMesAtual((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))} className="icon-btn border-0">
+        <button onClick={() => setMesAtual((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))} className="icon-btn border-0" aria-label="Próximo" title="Próximo">
           <ChevronRight size={14} />
         </button>
       </div>

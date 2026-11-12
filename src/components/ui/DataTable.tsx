@@ -101,16 +101,14 @@ export function DataTable<T>({
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
               className="icon-btn"
-              style={{ opacity: page === 0 ? 0.35 : 1 }}
-            >
+              style={{ opacity: page === 0 ? 0.35 : 1 }} aria-label="Anterior" title="Anterior">
               <ChevronLeft size={14} />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
               className="icon-btn"
-              style={{ opacity: page >= totalPages - 1 ? 0.35 : 1 }}
-            >
+              style={{ opacity: page >= totalPages - 1 ? 0.35 : 1 }} aria-label="Próximo" title="Próximo">
               <ChevronRight size={14} />
             </button>
           </div>

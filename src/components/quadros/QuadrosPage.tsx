@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmar } from '@/components/ui/Confirmar'
 import { useState } from 'react'
 import Link from 'next/link'
 import { Plus, Trash2, Edit2, X, Brain } from 'lucide-react'
@@ -36,7 +37,7 @@ function ModalQuadro({
           <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>
             {inicial?.id ? 'Editar Quadro' : 'Novo Quadro'}
           </h2>
-          <button className="icon-btn" onClick={onFechar}><X size={15} /></button>
+          <button className="icon-btn" onClick={onFechar} aria-label="Fechar" title="Fechar"><X size={15} /></button>
         </div>
 
         <div style={{ display: 'grid', gap: 14 }}>
@@ -177,7 +178,7 @@ export function QuadrosPage() {
   }
 
   async function handleDeletar(quadro: Quadro) {
-    if (!confirm(`Deletar "${quadro.nome}"? Todos os nós e conexões serão apagados.`)) return
+    if (!(await confirmar({ titulo: `Excluir o quadro "${quadro.nome}"?`, mensagem: 'Todos os post-its e conexões dele serão apagados.' }))) return
     await deletarQuadro(quadro.id)
   }
 

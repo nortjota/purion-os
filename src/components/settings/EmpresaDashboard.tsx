@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmar } from '@/components/ui/Confirmar'
 import { Skeleton } from '@/components/motion/Skeleton'
 
 import { useState, useEffect } from 'react'
@@ -79,7 +80,7 @@ export default function EmpresaDashboard() {
 
   async function revogarAcesso(userId: string) {
     if (!supabase) return
-    if (!confirm('Revogar o acesso deste usuário?')) return
+    if (!(await confirmar({ titulo: 'Revogar o acesso deste usuário?', mensagem: 'Ele perde o acesso ao PURION OS imediatamente.', rotuloConfirmar: 'Revogar acesso' }))) return
     await supabase.from('perfis').delete().eq('id', userId)
     setUsuarios((prev) => prev.filter((u) => u.id !== userId))
   }

@@ -102,7 +102,7 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Registrar pagamento</p>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '2px 0 0' }}>{afiliado.nome} · {afiliado.codigo}</p>
           </div>
-          <button onClick={onFechar} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }}>
+          <button onClick={onFechar} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }} aria-label="Fechar" title="Fechar">
             <X size={18} />
           </button>
         </div>

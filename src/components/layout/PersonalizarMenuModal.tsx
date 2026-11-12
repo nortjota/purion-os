@@ -73,7 +73,7 @@ export function PersonalizarMenuModal({ onFechar }: Props) {
               Só afeta o seu menu — os outros sócios continuam vendo tudo.
             </p>
           </div>
-          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}>
@@ -98,7 +98,7 @@ export function PersonalizarMenuModal({ onFechar }: Props) {
                 Restaurar padrão?
               </button>
             </p>
-            <button onClick={() => setAvisoDispensado(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+            <button onClick={() => setAvisoDispensado(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }} aria-label="Fechar" title="Fechar">
               <X size={12} />
             </button>
           </div>

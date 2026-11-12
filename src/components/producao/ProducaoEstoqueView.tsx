@@ -1,5 +1,6 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useMemo, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { SlidersHorizontal } from 'lucide-react'
@@ -81,6 +82,7 @@ interface Props {
 export function ProducaoEstoqueView({ registrarMovimentacao }: Props) {
   const { estoqueProduto, estoqueMovimentacoes } = usePurionStore()
   const [modalAberto, setModalAberto] = useState(false)
+  useAcaoRapida('ajustar-estoque', () => setModalAberto(true))
 
   const evolucao = useMemo(() => {
     return [...estoqueMovimentacoes]

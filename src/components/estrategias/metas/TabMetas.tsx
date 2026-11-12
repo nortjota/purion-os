@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmar } from '@/components/ui/Confirmar'
 import { Skeleton } from '@/components/motion/Skeleton'
 
 import { useState, useMemo } from 'react'
@@ -103,8 +104,8 @@ export function TabMetas() {
     setModalObjetivo(null)
   }
 
-  function confirmarExcluirObjetivo(o: EstrategiaObjetivo) {
-    if (!window.confirm(`Excluir a meta "${o.titulo}"? Sub-metas e resultados-chave vinculados também serão removidos.`)) return
+  async function confirmarExcluirObjetivo(o: EstrategiaObjetivo) {
+    if (!(await confirmar({ titulo: `Excluir a meta "${o.titulo}"?`, mensagem: 'Sub-metas e resultados-chave vinculados também serão removidos.' }))) return
     removerObjetivo(o.id)
     setModalObjetivo(null)
     if (objetivoDetalheId === o.id) setObjetivoDetalheId(null)
@@ -127,8 +128,8 @@ export function TabMetas() {
     setModalResultado(null)
   }
 
-  function confirmarExcluirResultado(id: string) {
-    if (!window.confirm('Excluir este resultado-chave?')) return
+  async function confirmarExcluirResultado(id: string) {
+    if (!(await confirmar({ titulo: 'Excluir este resultado-chave?', mensagem: 'O histórico de medições dele também deixa de aparecer.' }))) return
     removerResultado(id)
     setModalResultado(null)
   }

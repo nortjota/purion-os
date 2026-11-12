@@ -44,7 +44,7 @@ function ModalPersona({ persona, onFechar, onSalvar }: {
       <div className="modal-container" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 style={{ fontSize: 16, fontWeight: 700 }}>Editar Persona</h2>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <form onSubmit={submeter} className="flex flex-col gap-3">
           <div className="flex gap-3">
@@ -113,7 +113,7 @@ function PersonaCard({ persona, onEditar }: { persona: IcpPersona; onEditar: () 
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{persona.demografia}</p>
           </div>
         </div>
-        <button onClick={onEditar} className="icon-btn"><Pencil size={13} /></button>
+        <button onClick={onEditar} className="icon-btn" aria-label="Editar" title="Editar"><Pencil size={13} /></button>
       </div>
 
       <div className="flex flex-col gap-3 mt-3">

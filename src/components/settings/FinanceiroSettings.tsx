@@ -284,7 +284,7 @@ function FinanceiroSettingsForm() {
               <input className="input-purion flex-1" value={cat}
                 onChange={e => setCatReceita(prev => prev.map((c, j) => j === i ? e.target.value : c))} />
               <button onClick={() => setCatReceita(prev => prev.filter((_, j) => j !== i))}
-                className="text-red-400 hover:text-red-300 p-1">
+                className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                 <Trash2 size={14} />
               </button>
             </div>
@@ -310,7 +310,7 @@ function FinanceiroSettingsForm() {
               <input className="input-purion flex-1" value={cat}
                 onChange={e => setCatDespesa(prev => prev.map((c, j) => j === i ? e.target.value : c))} />
               <button onClick={() => setCatDespesa(prev => prev.filter((_, j) => j !== i))}
-                className="text-red-400 hover:text-red-300 p-1">
+                className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                 <Trash2 size={14} />
               </button>
             </div>
@@ -336,7 +336,7 @@ function FinanceiroSettingsForm() {
               <input className="input-purion flex-1" value={centro.nome}
                 onChange={e => setCentrosCusto(prev => prev.map(c => c.id === centro.id ? { ...c, nome: e.target.value } : c))} />
               <button onClick={() => setCentrosCusto(prev => prev.filter(c => c.id !== centro.id))}
-                className="text-red-400 hover:text-red-300 p-1">
+                className="text-red-400 hover:text-red-300 p-1" aria-label="Excluir" title="Excluir">
                 <Trash2 size={14} />
               </button>
             </div>

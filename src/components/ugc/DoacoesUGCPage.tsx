@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmar } from '@/components/ui/Confirmar'
 import { MetricStrip } from '@/components/ui/MetricStrip'
 import { useState } from 'react'
 import { usePurionStore } from '@/store'
@@ -221,7 +222,8 @@ export function DoacoesUGCPage() {
                       Editar
                     </button>
                     <button
-                      onClick={() => { if (confirm('Excluir doação?')) deletarDoacao(d.id) }}
+                      onClick={async () => { if (await confirmar({ titulo: 'Excluir esta doação?', mensagem: 'Ela sai da lista e dos números de UGC.' })) deletarDoacao(d.id) }}
+                      aria-label="Excluir doação" title="Excluir doação"
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}
                     >
                       <X size={14} />
@@ -240,7 +242,7 @@ export function DoacoesUGCPage() {
           <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h2 style={{ fontSize: 16, fontWeight: 700 }}>Marcar como Postado</h2>
-              <button onClick={() => setRastreioModalId(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}><X size={18} /></button>
+              <button onClick={() => setRastreioModalId(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }} aria-label="Fechar" title="Fechar"><X size={18} /></button>
             </div>
             <label className="label-purion">Código de rastreio (opcional)</label>
             <input
@@ -263,7 +265,7 @@ export function DoacoesUGCPage() {
           <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700 }}>{editandoId ? 'Editar Doação' : 'Nova Doação UGC'}</h2>
-              <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}><X size={20} /></button>
+              <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }} aria-label="Fechar" title="Fechar"><X size={20} /></button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

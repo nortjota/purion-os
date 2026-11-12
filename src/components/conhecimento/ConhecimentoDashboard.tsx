@@ -127,7 +127,7 @@ export function ConhecimentoDashboard() {
             <div className="fixed inset-0 z-50" style={{ background: 'var(--bg-primary)' }}>
               <div className="flex items-center justify-between p-3 border-b border-[var(--border)]">
                 <span className="page-title" style={{ fontSize: 16 }}>Documentos</span>
-                <button onClick={() => setSidebarMobileAberta(false)} className="icon-btn border-0">
+                <button onClick={() => setSidebarMobileAberta(false)} className="icon-btn border-0" aria-label="Fechar" title="Fechar">
                   <X size={18} />
                 </button>
               </div>

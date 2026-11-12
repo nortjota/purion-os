@@ -12,6 +12,7 @@ import { CommandPalette } from '@/components/ui/CommandPalette'
 import { KeyboardShortcuts } from '@/components/ui/KeyboardShortcuts'
 import { QuickNotes } from '@/components/ui/QuickNotes'
 import { ModalErgonomia } from '@/components/ui/ModalErgonomia'
+import { ConfirmarHost } from '@/components/ui/Confirmar'
 import { TrialBanner } from '@/components/billing/TrialBanner'
 import { usePurionStore } from '@/store'
 import { X } from 'lucide-react'
@@ -91,6 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <ModalErgonomia />
+      <ConfirmarHost />
 
       {/* Mobile bottom nav — hidden on md+ */}
       <div className="md:hidden">

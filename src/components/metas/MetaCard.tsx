@@ -213,7 +213,7 @@ export function MetaCard({
                   </span>
                 )}
               </span>
-              <button onClick={onIncrementar} className="icon-btn" style={{ width: 22, height: 22 }}>
+              <button onClick={onIncrementar} className="icon-btn" style={{ width: 22, height: 22 }} aria-label="Adicionar" title="Adicionar">
                 <Plus size={11} />
               </button>
             </div>
@@ -263,7 +263,7 @@ export function MetaCard({
                 }}>
                   {item.texto}
                 </span>
-                <button onClick={() => onRemoverItem(item.id)} className="icon-btn" style={{ width: 18, height: 18 }}>
+                <button onClick={() => onRemoverItem(item.id)} className="icon-btn" style={{ width: 18, height: 18 }} aria-label="Fechar" title="Fechar">
                   <X size={10} />
                 </button>
               </div>

@@ -671,7 +671,7 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
               className="p-1.5 rounded-lg hover:bg-[rgba(229,84,75,0.1)] text-[#B8B8B8] hover:text-[var(--status-danger)] transition-colors"
               title="Excluir creator"
             ><Trash2 size={13} /></button>
-            <button onClick={onClose} className="icon-btn"><X size={14} /></button>
+            <button onClick={onClose} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={14} /></button>
           </div>
         </div>
 

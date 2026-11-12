@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmar } from '@/components/ui/Confirmar'
 import { Skeleton } from '@/components/motion/Skeleton'
 
 import { useState, useMemo } from 'react'
@@ -107,7 +108,7 @@ export function PainelRMR() {
   }
 
   async function handleConcluir() {
-    if (!window.confirm(`Concluir a RMR de ${MESES_NOME_COMPLETO[mes - 1]}/${ano}? Isso salva o snapshot do percentual geral (${percentualGeral ?? '—'}%).`)) return
+    if (!(await confirmar({ titulo: 'Concluir a RMR?', mensagem: `Concluir a RMR de ${MESES_NOME_COMPLETO[mes - 1]}/${ano}? Isso salva o snapshot do percentual geral (${percentualGeral ?? '—'}%).`, rotuloConfirmar: 'Concluir', perigo: false }))) return
     await concluirRMR(ano, mes, percentualGeral)
   }
 
@@ -122,11 +123,11 @@ export function PainelRMR() {
       {/* Header: navegação de mês + percentual geral */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <button onClick={() => mudarMes(-1)} className="icon-btn"><ChevronLeft size={14} /></button>
+          <button onClick={() => mudarMes(-1)} className="icon-btn" aria-label="Anterior" title="Anterior"><ChevronLeft size={14} /></button>
           <span style={{ fontSize: 15, fontWeight: 700, minWidth: 140, textAlign: 'center' }}>
             {MESES_NOME_COMPLETO[mes - 1]} / {ano}
           </span>
-          <button onClick={() => mudarMes(1)} className="icon-btn"><ChevronRight size={14} /></button>
+          <button onClick={() => mudarMes(1)} className="icon-btn" aria-label="Próximo" title="Próximo"><ChevronRight size={14} /></button>
           {reuniaoAtual?.concluida && (
             <span className="badge badge-success flex items-center gap-1"><CheckCircle2 size={10} /> RMR concluída</span>
           )}

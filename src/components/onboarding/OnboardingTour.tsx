@@ -87,7 +87,7 @@ export function OnboardingTour() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
           <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{current.title}</p>
-          <button onClick={finish} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }}>
+          <button onClick={finish} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }} aria-label="Fechar" title="Fechar">
             <X size={14} />
           </button>
         </div>

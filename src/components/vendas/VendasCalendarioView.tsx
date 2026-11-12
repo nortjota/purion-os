@@ -56,10 +56,10 @@ export function VendasCalendarioView({ vendas, onAbrirVenda }: Props) {
         padding: isMobile ? '10px 14px' : '12px 20px',
         flexShrink: 0, borderBottom: '1px solid var(--border)',
       }}>
-        <button onClick={() => setMesRef((d) => subMonths(d, 1))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }}>
+        <button onClick={() => setMesRef((d) => subMonths(d, 1))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }} aria-label="Anterior" title="Anterior">
           <ChevronLeft size={isMobile ? 22 : 18} />
         </button>
-        <button onClick={() => setMesRef((d) => addMonths(d, 1))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }}>
+        <button onClick={() => setMesRef((d) => addMonths(d, 1))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }} aria-label="Próximo" title="Próximo">
           <ChevronRight size={isMobile ? 22 : 18} />
         </button>
         <span style={{ fontSize: isMobile ? 14 : 15, fontWeight: 600, color: 'var(--text-primary)', flex: 1, textTransform: 'capitalize' }}>

@@ -54,7 +54,7 @@ export function TrialBanner() {
         style={{ padding: '5px 14px', borderRadius: 7, border: '2px solid #0B0B0B', background: '#0B0B0B', color: 'var(--text-primary)', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
         Ver planos
       </button>
-      <button onClick={dispensar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0B0B0B', padding: 2, flexShrink: 0 }}>
+      <button onClick={dispensar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0B0B0B', padding: 2, flexShrink: 0 }} aria-label="Fechar" title="Fechar">
         <X size={14} />
       </button>
     </div>

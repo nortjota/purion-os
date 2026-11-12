@@ -110,7 +110,7 @@ function ModalPilar({ pilar, onFechar, onSalvar }: {
       <div className="modal-container" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 style={{ fontSize: 16, fontWeight: 700 }}>Editar Pilar</h2>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <form onSubmit={submeter} className="flex flex-col gap-3">
           <div>
@@ -173,7 +173,7 @@ function ModalItemCalendario({ editando, diaPadrao, onFechar, onSalvar }: {
       <div className="modal-container" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 style={{ fontSize: 16, fontWeight: 700 }}>{editando ? 'Editar Post' : 'Novo Post'}</h2>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <form onSubmit={submeter} className="flex flex-col gap-3">
           <div className="flex gap-3">
@@ -228,8 +228,8 @@ function CardPost({ item, onEditar, onDeletar }: { item: SocialCalendarioItem; o
       <div className="flex items-center justify-between mb-1">
         <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{item.rede}</span>
         <div className="flex gap-1">
-          <button onClick={onEditar} className="icon-btn" style={{ width: 20, height: 20 }}><Pencil size={10} /></button>
-          <button onClick={onDeletar} className="icon-btn" style={{ width: 20, height: 20 }}><Trash2 size={10} /></button>
+          <button onClick={onEditar} className="icon-btn" style={{ width: 20, height: 20 }} aria-label="Editar" title="Editar"><Pencil size={10} /></button>
+          <button onClick={onDeletar} className="icon-btn" style={{ width: 20, height: 20 }} aria-label="Excluir" title="Excluir"><Trash2 size={10} /></button>
         </div>
       </div>
       {item.pilar && <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{item.pilar} · {item.formato}</span>}
@@ -296,7 +296,7 @@ export function TabSocial() {
               <div className="card-purion" style={{ padding: '14px 16px', marginTop: 12, borderColor: ativo.cor ?? undefined }}>
                 <div className="flex items-center justify-between mb-2">
                   <p style={{ fontSize: 13, fontWeight: 700, color: ativo.cor ?? 'var(--brand-accent)' }}>{ativo.nome} — {ativo.percentual}%</p>
-                  <button onClick={() => setEditandoPilar(ativo)} className="icon-btn"><Pencil size={12} /></button>
+                  <button onClick={() => setEditandoPilar(ativo)} className="icon-btn" aria-label="Editar" title="Editar"><Pencil size={12} /></button>
                 </div>
                 {ativo.descricao && <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>{ativo.descricao}</p>}
                 {ativo.exemplos.length > 0 && (
@@ -322,7 +322,7 @@ export function TabSocial() {
                   <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-secondary)' }}>
                     {DIA_LABEL[dia]}
                   </span>
-                  <button onClick={() => setModalItem({ dia, editando: null })} className="icon-btn" style={{ width: 20, height: 20 }}>
+                  <button onClick={() => setModalItem({ dia, editando: null })} className="icon-btn" style={{ width: 20, height: 20 }} aria-label="Adicionar" title="Adicionar">
                     <Plus size={12} />
                   </button>
                 </div>

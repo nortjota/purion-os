@@ -85,7 +85,7 @@ export function BottomSheet({
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'var(--text-secondary)',
                   }}
-                >
+                 aria-label="Fechar" title="Fechar">
                   <X size={13} />
                 </button>
               </div>

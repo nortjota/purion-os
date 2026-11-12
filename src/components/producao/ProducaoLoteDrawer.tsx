@@ -53,8 +53,8 @@ export function ProducaoLoteDrawer({ lote, onClose, onSalvar, onDeletar }: Props
           <p className="text-[11px] text-[#B8B8B8]">{lote.produto}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <button onClick={() => onDeletar(lote)} className="p-1.5 rounded-lg hover:bg-[rgba(229,84,75,0.1)] text-[#B8B8B8] hover:text-[var(--status-danger)] transition-colors"><Trash2 size={14} /></button>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors"><X size={16} /></button>
+          <button onClick={() => onDeletar(lote)} className="p-1.5 rounded-lg hover:bg-[rgba(229,84,75,0.1)] text-[#B8B8B8] hover:text-[var(--status-danger)] transition-colors" aria-label="Excluir" title="Excluir"><Trash2 size={14} /></button>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
       </div>
 

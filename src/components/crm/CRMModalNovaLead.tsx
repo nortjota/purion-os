@@ -71,7 +71,7 @@ export function CRMModalNovaLead({ perfilAtivo, onCriar, onFechar }: Props) {
       <div className="modal-container max-w-lg" onClick={(e) => e.stopPropagation()} style={{ maxHeight: '88vh', overflowY: 'auto' }}>
         <div className="modal-header">
           <h3 className="modal-title">Nova Lead B2B</h3>
-          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">

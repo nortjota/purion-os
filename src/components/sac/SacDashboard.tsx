@@ -154,8 +154,12 @@ export function SacDashboard({ ticketsInicial }: Props) {
       {/* Tickets table */}
       <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {filtrados.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 13 }}>
-            Nenhum ticket encontrado
+          <div className="empty-state">
+            <p className="empty-state-title">{busca || filtroStatus !== 'todos' ? 'Nenhum ticket com esse filtro' : 'Nenhum ticket aberto'}</p>
+            <div className="toolbar" style={{ justifyContent: 'center' }}>
+              {(busca || filtroStatus !== 'todos') && <button className="btn btn-secondary btn-sm" onClick={() => { setBusca(''); setFiltro('todos') }}>Ver todos</button>}
+              <button className="btn btn-secondary btn-sm" onClick={() => setNovoAberto(true)}><Plus size={13} /> Abrir ticket</button>
+            </div>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>

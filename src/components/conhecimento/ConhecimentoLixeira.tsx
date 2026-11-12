@@ -70,7 +70,7 @@ export function ConhecimentoLixeira({ onFechar }: Props) {
           <span className="flex items-center gap-2" style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
             <Archive size={16} style={{ color: 'var(--text-primary)' }} /> Arquivados
           </span>
-          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">

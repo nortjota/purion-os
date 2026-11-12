@@ -156,7 +156,7 @@ export function AfiliadoModal({ afiliado, onSalvar, onFechar }: Props) {
               Passo {passo + 1} de {PASSOS.length} — {PASSOS[passo]}
             </p>
           </div>
-          <button onClick={onFechar} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }}>
+          <button onClick={onFechar} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }} aria-label="Fechar" title="Fechar">
             <X size={18} />
           </button>
         </div>

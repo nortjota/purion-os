@@ -48,8 +48,7 @@ export function SelectBuscavel({ opcoes, valor, onSelecionar, placeholder = 'Bus
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onSelecionar(null); setBusca('') }}
-            className="shrink-0 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-          >
+            className="shrink-0 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" aria-label="Fechar" title="Fechar">
             <X size={14} />
           </button>
         </div>

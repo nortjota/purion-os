@@ -247,7 +247,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
               <span className={`text-[13px] flex-1 ${s.concluida ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}>
                 {s.titulo}
               </span>
-              <button onClick={() => props.onDeletarSubtarefa(s.id)} className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={() => props.onDeletarSubtarefa(s.id)} className="opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Excluir" title="Excluir">
                 <Trash2 size={12} className="text-[var(--status-danger)]" />
               </button>
             </div>
@@ -261,7 +261,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
             className="input-purion"
             style={{ height: 36, fontSize: 13 }}
           />
-          <button type="submit" className="icon-btn"><Plus size={14} /></button>
+          <button type="submit" className="icon-btn" aria-label="Adicionar" title="Adicionar"><Plus size={14} /></button>
         </form>
       </div>
 
@@ -282,7 +282,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
                 <p className="text-[12px] text-[var(--text-primary)] truncate">{a.nome}</p>
                 <p className="caption">{formatarKb(a.tamanhoKb)}</p>
               </a>
-              <button onClick={() => props.onDeletarAnexo(a.id, a.url)} className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={() => props.onDeletarAnexo(a.id, a.url)} className="opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Excluir" title="Excluir">
                 <Trash2 size={12} className="text-[var(--status-danger)]" />
               </button>
             </div>
@@ -306,7 +306,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
                 <span className="text-[12px] font-semibold text-[var(--text-primary)]">{c.autor}</span>
                 <div data-modal className="flex items-center gap-2">
                   <span className="caption">{formatarDataRelativa(c.createdAt.slice(0, 10))}</span>
-                  <button onClick={() => props.onDeletarComentario(c.id)} className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => props.onDeletarComentario(c.id)} className="opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Excluir" title="Excluir">
                     <Trash2 size={11} className="text-[var(--status-danger)]" />
                   </button>
                 </div>
@@ -323,7 +323,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
             className="input-purion"
             style={{ height: 36, fontSize: 13 }}
           />
-          <button type="submit" className="icon-btn"><Send size={13} /></button>
+          <button type="submit" className="icon-btn" aria-label="Enviar" title="Enviar"><Send size={13} /></button>
         </form>
       </div>
 
@@ -361,7 +361,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)] shrink-0">
           <span className="caption">Detalhes da tarefa</span>
-          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-5">
           {conteudo}

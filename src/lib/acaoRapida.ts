@@ -13,7 +13,7 @@ import { useEffect, useRef } from 'react'
 export type AcaoRapida =
   | 'nova-tarefa' | 'novo-lead' | 'nova-venda-b2c' | 'nova-venda-b2b'
   | 'registrar-receita' | 'registrar-despesa' | 'novo-lote' | 'adicionar-creator'
-  | 'registrar-daily' | 'novo-evento' | 'novo-ticket'
+  | 'registrar-daily' | 'novo-evento' | 'novo-ticket' | 'ajustar-estoque'
 
 const EVENTO = 'purion:action'
 const VALIDADE_MS = 6000

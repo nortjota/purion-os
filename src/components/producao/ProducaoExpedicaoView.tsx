@@ -98,7 +98,7 @@ export function ProducaoExpedicaoView() {
                       </select>
                     </td>
                     <td>
-                      <button onClick={() => setDeletandoPedido(p)} className="icon-btn"><Trash2 size={12} /></button>
+                      <button onClick={() => setDeletandoPedido(p)} className="icon-btn" aria-label="Excluir" title="Excluir"><Trash2 size={12} /></button>
                     </td>
                   </tr>
                 ))}

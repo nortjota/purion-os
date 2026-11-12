@@ -123,7 +123,7 @@ export function NotificationBell() {
                   <CheckCheck size={13} /> Marcar todas
                 </button>
               )}
-              <button onClick={() => setOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }}>
+              <button onClick={() => setOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex' }} aria-label="Fechar" title="Fechar">
                 <X size={14} />
               </button>
             </div>

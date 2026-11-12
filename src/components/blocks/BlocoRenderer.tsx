@@ -137,8 +137,7 @@ export function BlocoRenderer({
               <button
                 onClick={() => onAtualizar({ ...c, aberto: !c.aberto })}
                 className="shrink-0"
-                style={{ transform: c.aberto ? 'rotate(90deg)' : 'none', transition: 'transform 150ms ease' }}
-              >
+                style={{ transform: c.aberto ? 'rotate(90deg)' : 'none', transition: 'transform 150ms ease' }} aria-label="Próximo" title="Próximo">
                 <ChevronRight size={14} className="text-[var(--text-secondary)]" />
               </button>
               <input
@@ -193,8 +192,7 @@ export function BlocoRenderer({
                 />
                 <button
                   onClick={() => onAtualizar({ itens: c.itens.filter((_, i) => i !== idx) })}
-                  className="opacity-0 group-hover/item:opacity-100 transition-opacity mt-1"
-                >
+                  className="opacity-0 group-hover/item:opacity-100 transition-opacity mt-1" aria-label="Fechar" title="Fechar">
                   <X size={12} className="text-[var(--status-danger)]" />
                 </button>
               </div>
@@ -242,8 +240,7 @@ export function BlocoRenderer({
                 />
                 <button
                   onClick={() => onAtualizar({ itens: c.itens.filter((_, i) => i !== idx) })}
-                  className="opacity-0 group-hover/item:opacity-100 transition-opacity mt-1"
-                >
+                  className="opacity-0 group-hover/item:opacity-100 transition-opacity mt-1" aria-label="Fechar" title="Fechar">
                   <X size={12} className="text-[var(--status-danger)]" />
                 </button>
               </div>
@@ -277,7 +274,7 @@ export function BlocoRenderer({
                     </th>
                   ))}
                   <th style={{ width: 28 }}>
-                    <button onClick={() => onAtualizar({ ...c, colunas: [...c.colunas, 'Coluna'], linhas: c.linhas.map((l) => [...l, '']) })}>
+                    <button onClick={() => onAtualizar({ ...c, colunas: [...c.colunas, 'Coluna'], linhas: c.linhas.map((l) => [...l, '']) })} aria-label="Adicionar" title="Adicionar">
                       <Plus size={12} className="text-[var(--text-secondary)]" />
                     </button>
                   </th>
@@ -300,7 +297,7 @@ export function BlocoRenderer({
                       </td>
                     ))}
                     <td>
-                      <button onClick={() => onAtualizar({ ...c, linhas: c.linhas.filter((_, i) => i !== li) })}>
+                      <button onClick={() => onAtualizar({ ...c, linhas: c.linhas.filter((_, i) => i !== li) })} aria-label="Fechar" title="Fechar">
                         <X size={11} className="text-[var(--status-danger)]" />
                       </button>
                     </td>

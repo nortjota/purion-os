@@ -6,7 +6,8 @@
  * A faixa de números fica sempre visível e leva à aba que resolve cada ponto.
  */
 
-import { useAcaoRapida } from '@/lib/acaoRapida'
+import { Plus, SlidersHorizontal } from 'lucide-react'
+import { useAcaoRapida, dispararAcaoRapida } from '@/lib/acaoRapida'
 import { useMemo, useState } from 'react'
 import { InnerTabs } from '@/components/ui/InnerTabs'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
@@ -59,7 +60,18 @@ export function ProducaoDashboard() {
 
   return (
     <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      <h1 className="page-title">Produção & Estoque</h1>
+      {/* As duas ações do dia a dia ficam no topo, não no fim da página */}
+      <div className="toolbar">
+        <h1 className="page-title" style={{ flex: '1 1 200px' }}>Produção & Estoque</h1>
+        <button className="btn btn-secondary btn-sm" disabled={!estoqueProduto}
+          title={estoqueProduto ? 'Corrigir o saldo de frascos prontos (com motivo registrado)' : 'Estoque ainda não inventariado'}
+          onClick={() => { setAba('estoque'); dispararAcaoRapida('ajustar-estoque') }}>
+          <SlidersHorizontal size={13} /> Ajustar estoque
+        </button>
+        <button className="btn btn-accent btn-sm" onClick={() => { setAba('lotes'); dispararAcaoRapida('novo-lote') }}>
+          <Plus size={14} /> Novo lote
+        </button>
+      </div>
 
       <MetricStrip metricas={metricas} rotulo="Resumo de produção e estoque" />
 

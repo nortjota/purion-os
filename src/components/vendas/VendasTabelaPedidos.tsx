@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { ArrowRight, Pencil, Trash2, Eye, ChevronDown, ChevronRight } from 'lucide-react'
+import { ArrowRight, Pencil, Trash2, Eye, ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { frascosDaVenda } from '@/lib/escadaProdutos'
 import type { Venda, StatusPagamentoVenda } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
@@ -55,11 +55,16 @@ interface Props {
   onExcluir: (id: string) => void
   onAvancarEntrega: (id: string, proximo: NonNullable<ReturnType<typeof proximoStatusEntrega>>) => void
   onMudarStatusPagamento: (id: string, status: StatusPagamentoVenda) => void
+  /** estado vazio acionável */
+  filtrosAtivos?: boolean
+  onLimparFiltros?: () => void
+  onNovaVenda?: () => void
 }
 
 export function VendasTabelaPedidos({
   vendas, groupBy = 'none', showCanal = true, nomeAfiliado,
   onVerDetalhes, onEditar, onExcluir, onAvancarEntrega, onMudarStatusPagamento,
+  filtrosAtivos = false, onLimparFiltros, onNovaVenda,
 }: Props) {
   const isMobile = useMobile()
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
@@ -74,8 +79,14 @@ export function VendasTabelaPedidos({
   if (vendas.length === 0) {
     return (
       <div className="empty-state">
-        <p className="empty-state-title">Nenhum pedido encontrado</p>
-        <p className="empty-state-subtitle">Ajuste os filtros ou registre uma nova venda.</p>
+        <p className="empty-state-title">{filtrosAtivos ? 'Nenhum pedido com esses filtros' : 'Nenhum pedido no período'}</p>
+        <p className="empty-state-subtitle">{filtrosAtivos ? 'Os pedidos existem, mas nenhum bate com o recorte atual.' : 'Registre uma venda ou amplie o período.'}</p>
+        {(onLimparFiltros || onNovaVenda) && (
+          <div className="toolbar" style={{ justifyContent: 'center', marginTop: 4 }}>
+            {filtrosAtivos && onLimparFiltros && <button className="btn btn-secondary btn-sm" onClick={onLimparFiltros}>Limpar filtros</button>}
+            {onNovaVenda && <button className="btn btn-secondary btn-sm" onClick={onNovaVenda}><Plus size={13} /> Registrar venda</button>}
+          </div>
+        )}
       </div>
     )
   }
@@ -120,9 +131,9 @@ export function VendasTabelaPedidos({
                         <ArrowRight size={11} /> {STATUS_ENTREGA_LABEL[proximo]}
                       </button>
                     )}
-                    <button onClick={() => onVerDetalhes(v)} className="icon-btn"><Eye size={12} /></button>
-                    <button onClick={() => onEditar(v)} className="icon-btn"><Pencil size={12} /></button>
-                    <button onClick={() => onExcluir(v.id)} className="icon-btn"><Trash2 size={12} /></button>
+                    <button onClick={() => onVerDetalhes(v)} className="icon-btn" aria-label="Ver detalhes" title="Ver detalhes"><Eye size={12} /></button>
+                    <button onClick={() => onEditar(v)} className="icon-btn" aria-label="Editar" title="Editar"><Pencil size={12} /></button>
+                    <button onClick={() => onExcluir(v.id)} className="icon-btn" aria-label="Excluir" title="Excluir"><Trash2 size={12} /></button>
                   </div>
                 </div>
               )

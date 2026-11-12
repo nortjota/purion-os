@@ -124,7 +124,7 @@ export function CRMFiltrosBar({ leads, filtros, onChange }: Props) {
               style={{ background: 'rgba(245,245,240,0.1)', border: '1px solid rgba(245,245,240,0.25)', color: 'var(--text-primary)', borderRadius: 20, padding: '4px 10px' }}
             >
               {c.label}
-              <button onClick={() => set(c.key, FILTROS_CRM_VAZIOS[c.key] as never)} style={{ display: 'flex', cursor: 'pointer' }}>
+              <button onClick={() => set(c.key, FILTROS_CRM_VAZIOS[c.key] as never)} style={{ display: 'flex', cursor: 'pointer' }} aria-label="Fechar" title="Fechar">
                 <X size={11} />
               </button>
             </span>

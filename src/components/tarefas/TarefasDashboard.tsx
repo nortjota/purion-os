@@ -181,7 +181,7 @@ export function TarefasDashboard() {
           position: 'relative',
         }}>
           <TarefaFiltros tarefas={tarefasAtivas} filtros={filtros} onChange={setFiltros} />
-          <button onClick={() => setFiltrosAbertos(false)} style={{ position: 'absolute', top: 10, right: 20, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+          <button onClick={() => setFiltrosAbertos(false)} style={{ position: 'absolute', top: 10, right: 20, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }} aria-label="Fechar" title="Fechar">
             <X size={14} />
           </button>
         </div>

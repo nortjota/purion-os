@@ -94,7 +94,7 @@ export function BlocoDecisoes() {
           >
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Todas as decisões</span>
-              <button onClick={() => setVerTodas(false)} className="icon-btn border-0"><X size={16} /></button>
+              <button onClick={() => setVerTodas(false)} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
             </div>
             <div className="flex-1 overflow-y-auto" style={{ padding: 20 }}>
               <TabDecisoes />

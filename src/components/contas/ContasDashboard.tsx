@@ -118,10 +118,10 @@ export function ContasDashboard() {
                       {conta.vaultRef && <span className="caption">🔒 {conta.vaultRef}</span>}
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setEditando(conta); setModalAberto(true) }} className="icon-btn border-0" style={{ width: 24, height: 24 }}>
+                      <button onClick={() => { setEditando(conta); setModalAberto(true) }} className="icon-btn border-0" style={{ width: 24, height: 24 }} aria-label="Editar" title="Editar">
                         <Pencil size={12} />
                       </button>
-                      <button onClick={() => setDeletando(conta)} className="icon-btn border-0" style={{ width: 24, height: 24 }}>
+                      <button onClick={() => setDeletando(conta)} className="icon-btn border-0" style={{ width: 24, height: 24 }} aria-label="Excluir" title="Excluir">
                         <Trash2 size={12} className="text-[var(--status-danger)]" />
                       </button>
                     </div>

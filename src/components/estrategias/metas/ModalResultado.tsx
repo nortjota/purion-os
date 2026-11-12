@@ -50,7 +50,7 @@ export function ModalResultado({ resultado, objetivoTitulo, metricas, onFechar, 
             <h2 style={{ fontSize: 16, fontWeight: 700 }}>{resultado ? 'Editar resultado-chave' : 'Novo resultado-chave'}</h2>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{objetivoTitulo}</p>
           </div>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         <form onSubmit={submeter} className="flex flex-col gap-3">

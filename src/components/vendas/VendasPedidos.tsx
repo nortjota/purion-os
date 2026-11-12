@@ -277,6 +277,9 @@ export function VendasPedidos() {
             onExcluir={deletarVenda}
             onAvancarEntrega={mudarStatusEntrega}
             onMudarStatusPagamento={mudarStatusPagamento}
+            filtrosAtivos={filtrosExtras > 0}
+            onLimparFiltros={limparFiltros}
+            onNovaVenda={() => canal === 'todos' ? setMenuNovaAberto(true) : handleNovaVenda(canal)}
           />
         )}
         {visao === 'quadro' && (

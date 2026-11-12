@@ -90,7 +90,7 @@ export function BlocoProgressoMetas() {
           >
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Metas — detalhe G4</span>
-              <button onClick={() => setVerTodas(false)} className="icon-btn border-0"><X size={16} /></button>
+              <button onClick={() => setVerTodas(false)} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
             </div>
             <div className="px-5 pt-3">
               {isMobile ? (

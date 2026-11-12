@@ -96,7 +96,7 @@ export function AdvancedFilters({ filters, values, onChange, moduleKey }: Advanc
               <button onClick={() => handleApplySaved(sf)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: 12 }}>
                 {sf.name}
               </button>
-              <button onClick={() => handleRemoveSaved(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', display: 'flex', alignItems: 'center' }}>
+              <button onClick={() => handleRemoveSaved(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', display: 'flex', alignItems: 'center' }} aria-label="Fechar" title="Fechar">
                 <X size={10} />
               </button>
             </div>

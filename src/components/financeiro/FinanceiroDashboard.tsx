@@ -101,7 +101,7 @@ function ModalSplit({ valor, items, onClose }: ModalSplitProps) {
               Receita registrada: <span className="text-[var(--text-primary)] font-semibold">{formatarMoeda(valor)}</span>
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors" aria-label="Fechar" title="Fechar">
             <X size={16} />
           </button>
         </div>
@@ -195,7 +195,7 @@ function ModalEditarMovimentacao({ linha, onFechar, onSalvar }: ModalEditarProps
               {' '}· ID {linha.id.slice(0, 8)}
             </p>
           </div>
-          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors" aria-label="Fechar" title="Fechar">
             <X size={16} />
           </button>
         </div>
@@ -612,7 +612,7 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
             className="w-full bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-xs text-[var(--text-secondary)] placeholder-[#A0A0A0] focus:outline-none focus:border-[rgba(156,195,219,0.4)] transition-colors"
           />
           {busca && (
-            <button onClick={() => setBusca('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#A0A0A0] hover:text-[var(--text-primary)]">
+            <button onClick={() => setBusca('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#A0A0A0] hover:text-[var(--text-primary)]" aria-label="Fechar" title="Fechar">
               <X size={10} />
             </button>
           )}
@@ -749,14 +749,12 @@ function TabelaHistorico({ linhas, isMobile, onDeletar, onEditar }: TabelaHistor
                           {onEditar && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onEditar(linha) }}
-                              className="p-1 rounded hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--status-info)]"
-                            ><Pencil size={11} /></button>
+                              className="p-1 rounded hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--status-info)]" aria-label="Editar" title="Editar"><Pencil size={11} /></button>
                           )}
                           {onDeletar && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onDeletar(linha.id, linha.tipo) }}
-                              className="p-1 rounded hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--status-danger)]"
-                            ><Trash2 size={11} /></button>
+                              className="p-1 rounded hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--status-danger)]" aria-label="Excluir" title="Excluir"><Trash2 size={11} /></button>
                           )}
                         </div>
                       </td>

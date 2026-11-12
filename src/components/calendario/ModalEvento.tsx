@@ -67,7 +67,7 @@ export function ModalEvento({ evento, dataPadrao, onFechar, onSalvar, onDeletar,
             <span style={{ width: 10, height: 10, borderRadius: 999, background: evento ? corEvento(evento) : '#B8B8B8' }} />
             <h2 style={{ fontSize: 16, fontWeight: 700 }}>{evento ? (isVirtual ? 'Detalhe do evento' : 'Editar evento') : 'Novo evento'}</h2>
           </div>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
 
         {isVirtual && (

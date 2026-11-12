@@ -108,10 +108,10 @@ export function TarefaCalendarView({ tarefas, onAbrirTarefa, onNovaTarefa, onAtu
           </button>
         )}
 
-        <button onClick={navAnterior} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', padding: 4 }}>
+        <button onClick={navAnterior} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', padding: 4 }} aria-label="Anterior" title="Anterior">
           <ChevronLeft size={isMobile ? 22 : 18} />
         </button>
-        <button onClick={navProximo} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', padding: 4 }}>
+        <button onClick={navProximo} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', padding: 4 }} aria-label="Próximo" title="Próximo">
           <ChevronRight size={isMobile ? 22 : 18} />
         </button>
 

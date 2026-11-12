@@ -109,8 +109,7 @@ export function KeyboardShortcuts() {
               background: 'var(--bg-surface-2)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: 'var(--text-secondary)',
-            }}
-          >
+            }} aria-label="Fechar" title="Fechar">
             <X size={14} />
           </button>
         </div>

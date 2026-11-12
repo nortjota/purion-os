@@ -228,7 +228,7 @@ export function DetalheObjetivo({
                     <span onClick={() => onSelecionarResultado(r)} style={{ fontSize: 12, fontWeight: 600, cursor: 'pointer', flex: 1 }}>
                       {r.descricao} {r.fonteAuto && <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--status-info)' }}>· AUTO</span>}
                     </span>
-                    <button onClick={() => onDeletarResultado(r.id)} className="icon-btn" style={{ color: 'var(--status-danger)', width: 22, height: 22 }}><Trash2 size={11} /></button>
+                    <button onClick={() => onDeletarResultado(r.id)} className="icon-btn" style={{ color: 'var(--status-danger)', width: 22, height: 22 }} aria-label="Excluir" title="Excluir"><Trash2 size={11} /></button>
                   </div>
                   <div className="flex items-center justify-between mb-1">
                     <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{formatNumber(atual)} / {formatNumber(r.meta)} {r.unidade ?? ''}</span>
@@ -298,7 +298,7 @@ export function DetalheObjetivo({
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)] shrink-0">
           <span className="caption">Detalhes da meta</span>
-          <button onClick={onFechar} className="icon-btn border-0"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn border-0" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-5">
           {conteudo}

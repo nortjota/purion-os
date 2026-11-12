@@ -119,7 +119,7 @@ function ToastItem({ t, onRemove }: { t: Toast; onRemove: () => void }) {
               background: 'none', border: 'none', cursor: 'pointer', padding: 2,
               color: 'var(--text-secondary)', lineHeight: 1,
             }}
-          >
+           aria-label="Fechar" title="Fechar">
             <X size={13} />
           </button>
         </div>

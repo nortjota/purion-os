@@ -61,7 +61,7 @@ export function ModalMetaCompleta({ escopo, responsavel, tituloInicial, onFechar
           <h2 style={{ fontSize: 16, fontWeight: 700 }}>
             Nova meta{escopo === 'time' ? ' do time' : responsavel ? ` — ${responsavel}` : ''}
           </h2>
-          <button onClick={onFechar} className="icon-btn"><X size={16} /></button>
+          <button onClick={onFechar} className="icon-btn" aria-label="Fechar" title="Fechar"><X size={16} /></button>
         </div>
         <form onSubmit={submeter} className="flex flex-col gap-3">
           <div>
@@ -106,7 +106,7 @@ export function ModalMetaCompleta({ escopo, responsavel, tituloInicial, onFechar
                 {itens.map((item, i) => (
                   <div key={i} className="flex items-center gap-2" style={{ fontSize: 12 }}>
                     <span style={{ flex: 1 }}>{item}</span>
-                    <button type="button" onClick={() => setItens((prev) => prev.filter((_, idx) => idx !== i))} className="icon-btn" style={{ width: 20, height: 20 }}>
+                    <button type="button" onClick={() => setItens((prev) => prev.filter((_, idx) => idx !== i))} className="icon-btn" style={{ width: 20, height: 20 }} aria-label="Excluir" title="Excluir">
                       <Trash2 size={11} />
                     </button>
                   </div>
@@ -120,7 +120,7 @@ export function ModalMetaCompleta({ escopo, responsavel, tituloInicial, onFechar
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); adicionarItem() } }}
                   placeholder="Adicionar item e Enter"
                 />
-                <button type="button" onClick={adicionarItem} className="btn btn-secondary btn-sm"><Plus size={12} /></button>
+                <button type="button" onClick={adicionarItem} className="btn btn-secondary btn-sm" aria-label="Adicionar" title="Adicionar"><Plus size={12} /></button>
               </div>
             </div>
           )}

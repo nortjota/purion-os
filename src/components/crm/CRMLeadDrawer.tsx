@@ -90,7 +90,7 @@ export function CRMLeadDrawer({
           <button onClick={() => onDeletar(lead)} className="p-1.5 rounded-lg hover:bg-[rgba(229,84,75,0.1)] text-[#B8B8B8] hover:text-[var(--status-danger)] transition-colors" title="Excluir lead">
             <Trash2 size={14} />
           </button>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A2C2B] text-[#B8B8B8] hover:text-[var(--text-primary)] transition-colors" aria-label="Fechar" title="Fechar">
             <X size={16} />
           </button>
         </div>
@@ -255,8 +255,7 @@ export function CRMLeadDrawer({
             />
             <button
               onClick={() => { if (textoContato.trim()) { onRegistrarContato(textoContato.trim()); setTextoContato('') } }}
-              className="px-3 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold hover:bg-[var(--brand-accent)]/85 transition-colors"
-            >
+              className="px-3 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold hover:bg-[var(--brand-accent)]/85 transition-colors" aria-label="Adicionar" title="Adicionar">
               <Plus size={13} />
             </button>
           </div>
