@@ -82,7 +82,7 @@ export function PagamentoModal({ afiliado, vendas, onRegistrar, onFechar }: Prop
   }
 
   return (
-    <div
+    <div data-modal
       onClick={onFechar}
       style={{
         position: 'fixed', inset: 0, zIndex: 200,

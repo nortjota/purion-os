@@ -86,7 +86,7 @@ export function BlocoDecisoes() {
       )}
 
       {verTodas && (
-        <div className="fixed inset-0 z-[150] flex items-start justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }} onClick={() => setVerTodas(false)}>
+        <div data-modal className="fixed inset-0 z-[150] flex items-start justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }} onClick={() => setVerTodas(false)}>
           <div
             className="w-full rounded-2xl overflow-hidden"
             style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', maxWidth: 900, maxHeight: '90vh', display: 'flex', flexDirection: 'column', marginTop: '3vh' }}

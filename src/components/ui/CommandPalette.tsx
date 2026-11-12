@@ -1,6 +1,6 @@
 'use client'
 
-import { dispararAcaoRapida, type AcaoRapida } from '@/lib/acaoRapida'
+import { dispararAcaoRapida, ACOES_RAPIDAS, type AcaoRapida } from '@/lib/acaoRapida'
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Command } from 'cmdk'
 import { useRouter } from 'next/navigation'
@@ -25,19 +25,11 @@ const ICONE_EXTRA: Record<string, React.ComponentType<{ size?: number; style?: R
   '/minha-atividade': UserCircle, '/planos': FileText, '/diagnostico': Settings,
 }
 
-const ACTIONS: Array<{ label: string; action: AcaoRapida; href: string; icon: typeof Plus }> = [
-  { label: 'Nova tarefa',         action: 'nova-tarefa',       href: '/tarefas',    icon: Plus         },
-  { label: 'Nova venda B2C',      action: 'nova-venda-b2c',    href: '/vendas',     icon: ShoppingBag  },
-  { label: 'Nova venda B2B',      action: 'nova-venda-b2b',    href: '/vendas',     icon: ShoppingBag  },
-  { label: 'Novo lead',           action: 'novo-lead',         href: '/crm',        icon: UserPlus     },
-  { label: 'Novo ticket de SAC',  action: 'novo-ticket',       href: '/sac',        icon: Plus         },
-  { label: 'Novo evento',         action: 'novo-evento',       href: '/calendario', icon: CalendarDays },
-  { label: 'Registrar receita',   action: 'registrar-receita', href: '/financeiro', icon: TrendingUp   },
-  { label: 'Registrar despesa',   action: 'registrar-despesa', href: '/financeiro', icon: TrendingDown },
-  { label: 'Novo lote',           action: 'novo-lote',         href: '/producao',   icon: Boxes        },
-  { label: 'Adicionar creator',   action: 'adicionar-creator', href: '/creators',   icon: UserCog      },
-  { label: 'Registrar daily',     action: 'registrar-daily',   href: '/reunioes',   icon: Calendar     },
-]
+const ICONE_ACAO: Partial<Record<AcaoRapida, typeof Plus>> = {
+  'nova-venda-b2c': ShoppingBag, 'nova-venda-b2b': ShoppingBag, 'novo-lead': UserPlus, 'novo-evento': CalendarDays,
+  'registrar-receita': TrendingUp, 'registrar-despesa': TrendingDown, 'novo-lote': Boxes, 'adicionar-creator': UserCog, 'registrar-daily': Calendar,
+}
+const ACTIONS = ACOES_RAPIDAS.map((a) => ({ ...a, icon: ICONE_ACAO[a.action] ?? Plus }))
 
 interface CommandPaletteProps {
   open: boolean

@@ -58,7 +58,7 @@ export function PersonalizarMenuModal({ onFechar }: Props) {
   const mostrarAviso = totalOcultas >= LIMITE_AVISO_OCULTAS && !avisoDispensado
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }} onClick={onFechar}>
+    <div data-modal className="fixed inset-0 z-[150] flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }} onClick={onFechar}>
       <div
         className="w-full max-w-md rounded-2xl overflow-hidden"
         style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', maxHeight: '85vh', display: 'flex', flexDirection: 'column' }}

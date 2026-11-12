@@ -44,7 +44,7 @@ export function ConfirmModal({
     {open && (
     <motion.div
       key="confirm-modal"
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      data-modal className="fixed inset-0 z-[200] flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
       onClick={onCancel}
       initial={{ opacity: 0 }}

@@ -304,7 +304,7 @@ export function TarefaDetalhesPainel(props: TarefaDetalhesPainelProps) {
             <div key={c.id} className="group">
               <div className="flex items-center justify-between">
                 <span className="text-[12px] font-semibold text-[var(--text-primary)]">{c.autor}</span>
-                <div className="flex items-center gap-2">
+                <div data-modal className="flex items-center gap-2">
                   <span className="caption">{formatarDataRelativa(c.createdAt.slice(0, 10))}</span>
                   <button onClick={() => props.onDeletarComentario(c.id)} className="opacity-0 group-hover:opacity-100 transition-opacity">
                     <Trash2 size={11} className="text-[var(--status-danger)]" />

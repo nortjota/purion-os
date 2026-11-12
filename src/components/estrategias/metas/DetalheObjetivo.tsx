@@ -254,7 +254,7 @@ export function DetalheObjetivo({
             <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '4px 0 8px' }}>{tarefasConcluidas} de {tarefasVinculadas.length} concluídas</p>
             <div className="flex flex-col gap-1.5">
               {tarefasVinculadas.map((t) => (
-                <div key={t.id} className="flex items-center gap-2" style={{ fontSize: 12 }}>
+                <div data-modal key={t.id} className="flex items-center gap-2" style={{ fontSize: 12 }}>
                   <CheckSquare size={12} style={{ color: t.status === 'concluida' ? 'var(--status-ok)' : 'var(--text-secondary)' }} />
                   <span style={{
                     flex: 1, color: t.status === 'concluida' ? 'var(--text-secondary)' : 'var(--text-primary)',

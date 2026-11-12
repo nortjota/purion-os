@@ -95,7 +95,7 @@ export function ProducaoLotesView() {
 
       {loteSelecionado && !isMobile && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-30 backdrop-blur-[2px]" onClick={() => setLoteSelecionadoId(null)} />
+          <div data-modal className="fixed inset-0 bg-black/50 z-30 backdrop-blur-[2px]" onClick={() => setLoteSelecionadoId(null)} />
           <div className="fixed top-0 right-0 h-full w-[420px] z-40 bg-[var(--bg-surface-2)] border-l border-[var(--border)] shadow-2xl flex flex-col">
             <ProducaoLoteDrawer
               lote={loteSelecionado}

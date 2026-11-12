@@ -1,7 +1,9 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import { Maximize2, Search } from 'lucide-react'
+import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Maximize2, Search, Plus } from 'lucide-react'
+import { ACOES_RAPIDAS, dispararAcaoRapida, type AcaoRapida } from '@/lib/acaoRapida'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { usePurionStore } from '@/store'
 import { useIsLogistica } from '@/hooks/useIsLogistica'
@@ -13,6 +15,15 @@ import { nomeDoModulo, grupoDoModulo } from './navConfig'
  */
 export function ContentHeader() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [criarAberto, setCriarAberto] = useState(false)
+
+  function criar(acao: AcaoRapida, href: string) {
+    setCriarAberto(false)
+    dispararAcaoRapida(acao)
+    if (pathname !== href) router.push(href)
+  }
+  const grupos = [...new Set(ACOES_RAPIDAS.map((a) => a.grupo))]
   const { focusMode, setFocusMode } = usePurionStore()
   const { isLogistica } = useIsLogistica()
   const moduleName = nomeDoModulo(pathname)
@@ -43,6 +54,36 @@ export function ContentHeader() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {/* Criar qualquer coisa de qualquer tela, sem navegar antes */}
+          {!isLogistica && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setCriarAberto((o) => !o)} className="btn btn-secondary btn-sm"
+                aria-haspopup="menu" aria-expanded={criarAberto} title="Criar (também pela busca: Ctrl+K)"
+              >
+                <Plus size={14} /> Criar
+              </button>
+              {criarAberto && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setCriarAberto(false)} />
+                  <div className="menu-flutuante" role="menu" style={{ minWidth: 250 }}>
+                    {grupos.map((g, gi) => (
+                      <div key={g}>
+                        {gi > 0 && <div className="nav-menu-sep" />}
+                        <p className="nav-group-label" style={{ cursor: 'default', height: 24 }}>{g}</p>
+                        {ACOES_RAPIDAS.filter((a) => a.grupo === g).map((a) => (
+                          <button key={a.action} role="menuitem" className="nav-menu-item" onClick={() => criar(a.action, a.href)}>
+                            <span style={{ flex: 1 }}>{a.label}</span>
+                            {a.atalho && <kbd className="nav-kbd">{a.atalho}</kbd>}
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
           <button
             onClick={() => setFocusMode(!focusMode)}
             title="Modo foco — esconde menu e cabeçalho (Esc para sair)"

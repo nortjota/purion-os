@@ -96,7 +96,7 @@ export function TicketDetalhe({ ticket, onAtualizado, onFechar }: Props) {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', justifyContent: 'flex-end', background: 'rgba(0,0,0,0.5)' }}
+    <div data-modal style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', justifyContent: 'flex-end', background: 'rgba(0,0,0,0.5)' }}
       onClick={e => { if (e.target === e.currentTarget) onFechar() }}>
       <div style={{ width: '100%', maxWidth: 520, height: '100%', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', boxShadow: '-4px 0 40px rgba(0,0,0,0.4)' }}>
 

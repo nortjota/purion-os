@@ -632,7 +632,7 @@ function DrawerPerfil({ creatorId, atualizarCreator, onClose, onDeletar }: {
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+      <div data-modal className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
       {/* Drawer */}
       <div className="fixed right-0 top-0 h-screen w-[480px] z-50 flex flex-col bg-[var(--bg-surface)] border-l border-[var(--border)] overflow-hidden">

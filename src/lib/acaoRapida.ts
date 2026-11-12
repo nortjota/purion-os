@@ -51,3 +51,18 @@ export function useAcaoRapida(acao: AcaoRapida, handler: () => void, { consumir 
     return () => window.removeEventListener(EVENTO, ouvir)
   }, [acao, consumir])
 }
+
+/** Lista única das ações rápidas — usada pelo botão "Criar" do cabeçalho e pela busca (Ctrl+K). */
+export const ACOES_RAPIDAS: ReadonlyArray<{ label: string; action: AcaoRapida; href: string; grupo: string; atalho?: string }> = [
+  { label: 'Nova tarefa',        action: 'nova-tarefa',       href: '/tarefas',    grupo: 'Dia a dia', atalho: 'N + T' },
+  { label: 'Novo evento',        action: 'novo-evento',       href: '/calendario', grupo: 'Dia a dia' },
+  { label: 'Registrar daily',    action: 'registrar-daily',   href: '/reunioes',   grupo: 'Dia a dia' },
+  { label: 'Nova venda B2C',     action: 'nova-venda-b2c',    href: '/vendas',     grupo: 'Vendas & clientes', atalho: 'N + V' },
+  { label: 'Nova venda B2B',     action: 'nova-venda-b2b',    href: '/vendas',     grupo: 'Vendas & clientes' },
+  { label: 'Novo lead',          action: 'novo-lead',         href: '/crm',        grupo: 'Vendas & clientes', atalho: 'N + L' },
+  { label: 'Novo ticket de SAC', action: 'novo-ticket',       href: '/sac',        grupo: 'Vendas & clientes' },
+  { label: 'Novo lote',          action: 'novo-lote',         href: '/producao',   grupo: 'Operação & gestão' },
+  { label: 'Registrar receita',  action: 'registrar-receita', href: '/financeiro', grupo: 'Operação & gestão' },
+  { label: 'Registrar despesa',  action: 'registrar-despesa', href: '/financeiro', grupo: 'Operação & gestão' },
+  { label: 'Adicionar creator',  action: 'adicionar-creator', href: '/creators',   grupo: 'Operação & gestão' },
+]

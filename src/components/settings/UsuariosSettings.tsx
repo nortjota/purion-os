@@ -210,7 +210,7 @@ export function UsuariosSettings() {
 
       {/* Edit Modal */}
       {editModal.open && editModal.user && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+        <div data-modal className="fixed inset-0 z-[200] flex items-center justify-center p-4"
           style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
           onClick={() => setEditModal({ open: false, user: null })}>
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-sm shadow-2xl"
