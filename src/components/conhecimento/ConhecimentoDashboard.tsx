@@ -107,7 +107,7 @@ export function ConhecimentoDashboard() {
   )
 
   return (
-    <div style={{ display: 'flex', height: '100%', minHeight: 'calc(100vh - 1px)' }}>
+    <div style={{ display: 'flex', height: 'calc(100vh - 53px)', minHeight: 0 }}>
       {!isMobile && (
         <div style={{ width: 260, flexShrink: 0 }}>
           {sidebarContent}

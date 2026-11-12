@@ -183,19 +183,13 @@ export function QuadrosPage() {
 
   return (
     <div className="page-content">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Brain size={22} style={{ color: 'var(--text-primary)' }} />
-          <div>
-            <h1 className="page-title" style={{ margin: 0 }}>Quadros</h1>
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>
-              Canvas colaborativo — post-its, fluxos e mapas mentais
-            </p>
-          </div>
+      <div className="toolbar" style={{ marginBottom: 18 }}>
+        <div style={{ flex: '1 1 240px', minWidth: 0 }}>
+          <h1 className="page-title">Quadros</h1>
+          <p className="caption mt-1">Canvas livre para post-its, fluxos e mapas mentais.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setModalAberto(true)}>
-          <Plus size={15} />
-          Novo Quadro
+        <button className="btn btn-accent btn-sm" onClick={() => setModalAberto(true)}>
+          <Plus size={14} /> Novo quadro
         </button>
       </div>
 

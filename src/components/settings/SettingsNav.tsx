@@ -7,48 +7,68 @@ import {
   Users, Palette, BellRing, Database, Trash2, FileText,
 } from 'lucide-react'
 
-const NAV_ITEMS = [
-  { icon: Sliders,    label: 'Configurações', href: '/settings/geral' },
-  { icon: DollarSign, label: 'Financeiro',    href: '/settings/financeiro' },
-  { icon: Target,     label: 'Metas',         href: '/settings/metas' },
-  { icon: Bell,       label: 'Alertas',       href: '/settings/alertas' },
-  { icon: GitBranch,  label: 'Pipeline CRM',  href: '/settings/pipeline' },
-  { icon: Package,    label: 'Produção',      href: '/settings/producao' },
-  { icon: Users,      label: 'Usuários',      href: '/settings/usuarios' },
-  { icon: Palette,    label: 'Aparência',     href: '/settings/aparencia' },
-  { icon: BellRing,   label: 'Notificações',  href: '/settings/notificacoes' },
-  { icon: Database,   label: 'Dados',         href: '/settings/dados' },
-  { icon: Trash2,     label: 'Lixeira',       href: '/settings/lixeira' },
-  { icon: FileText,   label: 'Auditoria',     href: '/settings/auditoria' },
+// Agrupado por intenção: regras do negócio · pessoas e preferências · dados e histórico
+const NAV_GRUPOS = [
+  {
+    label: 'Negócio',
+    items: [
+      { icon: Sliders,    label: 'Geral',        href: '/settings/geral' },
+      { icon: DollarSign, label: 'Financeiro',   href: '/settings/financeiro' },
+      { icon: Target,     label: 'Metas',        href: '/settings/metas' },
+      { icon: Bell,       label: 'Alertas',      href: '/settings/alertas' },
+      { icon: GitBranch,  label: 'Pipeline CRM', href: '/settings/pipeline' },
+      { icon: Package,    label: 'Produção',     href: '/settings/producao' },
+    ],
+  },
+  {
+    label: 'Pessoas & preferências',
+    items: [
+      { icon: Users,    label: 'Usuários',     href: '/settings/usuarios' },
+      { icon: Palette,  label: 'Aparência',    href: '/settings/aparencia' },
+      { icon: BellRing, label: 'Notificações', href: '/settings/notificacoes' },
+    ],
+  },
+  {
+    label: 'Dados & histórico',
+    items: [
+      { icon: Database, label: 'Dados',     href: '/settings/dados' },
+      { icon: Trash2,   label: 'Lixeira',   href: '/settings/lixeira' },
+      { icon: FileText, label: 'Auditoria', href: '/settings/auditoria' },
+    ],
+  },
 ]
+const NAV_ITEMS = NAV_GRUPOS.flatMap((g) => g.items)
 
 export function SettingsNav() {
   const pathname = usePathname()
 
   return (
     <>
-      {/* Desktop nav */}
-      <nav className="hidden md:flex w-[220px] shrink-0 border-r border-[var(--border)] flex-col gap-0.5 p-3 min-h-screen">
-        <p className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider px-3 mb-2">
-          Configurações
-        </p>
-        {NAV_ITEMS.map(({ icon: Icon, label, href }) => {
-          const active = pathname.startsWith(href)
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                active
-                  ? 'bg-[rgba(212,252,60,0.12)] text-[var(--brand-accent)] border-l-2 border-[var(--brand-accent)]'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)]'
-              }`}
-            >
-              <Icon size={16} className="shrink-0" />
-              {label}
-            </Link>
-          )
-        })}
+      {/* Desktop nav — mesmo padrão visual do menu principal */}
+      <nav className="hidden md:flex w-[220px] shrink-0 border-r border-[var(--border)] flex-col p-3 sticky top-[53px] self-start" style={{ height: 'calc(100vh - 53px)', overflowY: 'auto' }}>
+        {NAV_GRUPOS.map((grupo, gi) => (
+          <div key={grupo.label} style={{ marginTop: gi === 0 ? 0 : 10 }}>
+            <p className="nav-group-label" style={{ cursor: 'default' }}>{grupo.label}</p>
+            <div className="flex flex-col gap-px">
+              {grupo.items.map(({ icon: Icon, label, href }) => {
+                const active = pathname.startsWith(href)
+                return (
+                  <Link
+                    key={href} href={href} aria-current={active ? 'page' : undefined}
+                    className={`nav-item${active ? ' nav-item-ativo' : ''}`}
+                    style={{
+                      gap: 10, padding: '0 10px',
+                      ...(active ? { background: 'color-mix(in srgb, var(--foreground) 7%, transparent)', boxShadow: 'inset 2px 0 0 var(--brand-accent)' } : null),
+                    }}
+                  >
+                    <Icon size={16} style={{ flexShrink: 0, color: active ? 'var(--brand-accent)' : undefined }} />
+                    {label}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Mobile nav */}
@@ -61,7 +81,7 @@ export function SettingsNav() {
               href={href}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                 active
-                  ? 'bg-[rgba(212,252,60,0.12)] text-[var(--brand-accent)] border border-[var(--brand-accent)]'
+                  ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border border-transparent'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)] border border-transparent'
               }`}
             >
