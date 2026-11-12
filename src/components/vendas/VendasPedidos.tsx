@@ -1,5 +1,6 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, ChevronDown, Search, List, Columns3, CalendarDays, X } from 'lucide-react'
 import { usePurionStore } from '@/store'
@@ -68,6 +69,8 @@ export function VendasPedidos() {
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false)
   const [detalheAberto, setDetalheAberto] = useState<Venda | null>(null)
   const [migrando, setMigrando] = useState(false)
+  useAcaoRapida('nova-venda-b2c', () => { setEditando(undefined); setModalCanal('b2c'); setModalEdicaoAberto(true) })
+  useAcaoRapida('nova-venda-b2b', () => { setEditando(undefined); setModalCanal('b2b'); setModalEdicaoAberto(true) })
 
   useEffect(() => {
     const salva = window.localStorage.getItem(CHAVE_VISAO)

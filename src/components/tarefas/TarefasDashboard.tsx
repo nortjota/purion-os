@@ -1,5 +1,6 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, SlidersHorizontal, X, List, Columns3, GanttChart, CalendarDays, BarChart3 } from 'lucide-react'
 import { Segmentado } from '@/components/ui/Segmentado'
@@ -63,6 +64,7 @@ export function TarefasDashboard() {
   })
   const [tarefaSelecionadaId, setTarefaSelecionadaId] = useState<string | null>(null)
   const [deletando, setDeletando] = useState<Tarefa | null>(null)
+  useAcaoRapida('nova-tarefa', () => setModalNova({ aberto: true, colunaId: 'pendente' }))
 
   useEffect(() => { setVisao(carregarVisaoSalva()) }, [])
 

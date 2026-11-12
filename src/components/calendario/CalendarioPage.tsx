@@ -1,5 +1,6 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { Segmentado } from '@/components/ui/Segmentado'
 import { useState, useEffect, useMemo } from 'react'
 import { ChevronLeft, ChevronRight, Plus, AlertTriangle, ExternalLink, RefreshCw } from 'lucide-react'
@@ -32,6 +33,7 @@ export function CalendarioPage() {
   const [modalDia, setModalDia] = useState<Date | null>(null)
   const [modalEvento, setModalEvento] = useState<EventoCalendario | null>(null)
   const [criandoNovo, setCriandoNovo] = useState(false)
+  useAcaoRapida('novo-evento', () => { setModalDia(new Date()); setModalEvento(null); setCriandoNovo(true) })
   const [googleStatus, setGoogleStatus] = useState<GoogleStatus | null>(null)
 
   useEffect(() => {

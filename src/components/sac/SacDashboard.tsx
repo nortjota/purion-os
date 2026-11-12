@@ -1,5 +1,6 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { MetricStrip } from '@/components/ui/MetricStrip'
 import { useState, useMemo, useCallback } from 'react'
 import { Plus, Search, Clock, CheckCircle, AlertCircle, MessageSquare, RefreshCw } from 'lucide-react'
@@ -66,6 +67,7 @@ export function SacDashboard({ ticketsInicial }: Props) {
   const [busca, setBusca]           = useState('')
   const [filtroStatus, setFiltro]   = useState<string>('todos')
   const [novoAberto, setNovoAberto] = useState(false)
+  useAcaoRapida('novo-ticket', () => setNovoAberto(true))
   const [detalhe, setDetalhe]       = useState<Ticket | null>(null)
   const [carregando, setCarregando] = useState(false)
 

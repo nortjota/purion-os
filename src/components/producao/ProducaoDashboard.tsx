@@ -6,6 +6,7 @@
  * A faixa de números fica sempre visível e leva à aba que resolve cada ponto.
  */
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useMemo, useState } from 'react'
 import { InnerTabs } from '@/components/ui/InnerTabs'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
@@ -23,6 +24,8 @@ type TabId = 'estoque' | 'lotes' | 'insumos' | 'receita' | 'expedicao'
 
 export function ProducaoDashboard() {
   const [aba, setAba] = useState<TabId>('estoque')
+  // leva à aba de lotes; quem abre o formulário é a própria aba
+  useAcaoRapida('novo-lote', () => setAba('lotes'), { consumir: false })
   const { registrarMovimentacao } = useEstoque()
   const { estoqueProduto, lotes } = usePurionStore()
   const { insumos, emAlerta, valorTotalInsumos } = useInsumos()

@@ -1,5 +1,6 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus } from 'lucide-react'
 import { usePurionStore } from '@/store'
@@ -40,6 +41,7 @@ export function ProducaoLotesView() {
 
   const [visao, setVisao] = useState<Visao>('quadro')
   const [modalNovoAberto, setModalNovoAberto] = useState(false)
+  useAcaoRapida('novo-lote', () => setModalNovoAberto(true))
   const [loteSelecionadoId, setLoteSelecionadoId] = useState<string | null>(null)
   const [deletando, setDeletando] = useState<Lote | null>(null)
 

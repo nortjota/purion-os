@@ -5,6 +5,7 @@
  * Daily assíncrono, reuniões semanais, log de decisões estratégicas.
  */
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { Segmentado } from '@/components/ui/Segmentado'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, ChevronDown, ChevronUp, Check, X, Minus, AlertTriangle, Clock, Trash2, Pencil, CalendarCheck2, CalendarOff, CalendarPlus } from 'lucide-react'
@@ -714,6 +715,7 @@ export function ReunioesDashboard() {
   const [reuniaoExpandida, setReuniaoExpandida] = useState<string | null>(null)
   const [editandoReuniao, setEditandoReuniao] = useState<ReuniaoItem | null>(null)
   const [secao, setSecao] = useState<'reunioes' | 'daily' | 'decisoes'>('reunioes')
+  useAcaoRapida('registrar-daily', () => setSecao('daily'))
   const [filtroReuniao, setFiltroReuniao] = useState<'proximas' | 'historico'>('proximas')
   const [diaSelecionado, setDiaSelecionado] = useState<string | null>(null)
   const [linkCalendario, setLinkCalendario] = useState<string | null>(null)

@@ -1302,3 +1302,11 @@
 }
 .tabela-compacta th:first-child, .tabela-compacta td:first-child { text-align: left; color: var(--text-secondary); }
 .tabela-compacta td { text-align: right; padding: 10px 0; border-top: 1px solid var(--border); color: var(--text-primary); white-space: nowrap; }
+
+/* Paleta de comandos (Ctrl+K): item selecionado pelo teclado e títulos de grupo */
+[cmdk-item][data-selected="true"] { background: color-mix(in srgb, var(--foreground) 8%, transparent); }
+[cmdk-item] { scroll-margin: 8px; }
+[cmdk-group-heading] {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-secondary); padding: 10px 12px 4px;
+}

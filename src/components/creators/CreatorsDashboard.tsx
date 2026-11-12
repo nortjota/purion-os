@@ -1,5 +1,6 @@
 'use client'
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import Link from 'next/link'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { useState, useMemo } from 'react'
@@ -1756,6 +1757,7 @@ export function CreatorsDashboard() {
   const [activeTab, setActiveTab] = useState<TabId>('overview')
   const [drawerCreatorId, setDrawerCreatorId] = useState<string | null>(null)
   const [showModalCreator, setShowModalCreator] = useState(false)
+  useAcaoRapida('adicionar-creator', () => setShowModalCreator(true))
   const [deletandoCreator, setDeletandoCreator] = useState<Creator | null>(null)
 
   return (

@@ -5,6 +5,7 @@
  * KPIs · Registro de Movimentação · Gráfico · Projeção · Histórico · Calculadora
  */
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { useMobile } from '@/hooks/useMobile'
 import dynamic from 'next/dynamic'
@@ -818,6 +819,8 @@ export function FinanceiroDashboard() {
   const [editandoFin, setEditandoFin]   = useState<LinhaHistorico | null>(null)
 
   const [painelAberto, setPainelAberto] = useState<'registrar' | 'calculadora' | null>(null)
+  useAcaoRapida('registrar-receita', () => setPainelAberto('registrar'))
+  useAcaoRapida('registrar-despesa', () => setPainelAberto('registrar'))
   const [showModalSplit, setShowModalSplit] = useState(false)
   const [splitInfo, setSplitInfo] = useState<{ valor: number; items: ReturnType<typeof calcularSplit> } | null>(null)
 

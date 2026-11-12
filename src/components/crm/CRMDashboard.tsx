@@ -6,6 +6,7 @@
  * drawer lateral com ações rápidas, alerta D+21 de reposição e filtros avançados.
  */
 
+import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, SlidersHorizontal, Columns3, List, Filter, CalendarDays, BarChart3, Archive } from 'lucide-react'
 import { Segmentado } from '@/components/ui/Segmentado'
@@ -62,6 +63,7 @@ export function CRMDashboard({ onVerArquivados }: { onVerArquivados?: () => void
   const [groupBy, setGroupBy] = useState<LeadGroupBy>('estagio')
   const [filtrosAbertos, setFiltrosAbertos] = useState(false)
   const [modalNovaAberto, setModalNovaAberto] = useState(false)
+  useAcaoRapida('novo-lead', () => setModalNovaAberto(true))
   const [leadSelecionadoId, setLeadSelecionadoId] = useState<string | null>(null)
   const [deletandoLead, setDeletandoLead] = useState<Lead | null>(null)
 

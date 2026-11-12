@@ -1,5 +1,6 @@
 'use client'
 
+import { dispararAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useEffect } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useRouter } from 'next/navigation'
@@ -12,29 +13,26 @@ interface ShortcutEntry {
 
 const SHORTCUTS: Record<string, ShortcutEntry[]> = {
   Navegação: [
-    { keys: 'G → D', description: 'Início' },
-    { keys: 'G → V', description: 'Vendas' },
-    { keys: 'G → C', description: 'CRM' },
-    { keys: 'G → E', description: 'Despachos' },
-    { keys: 'G → M', description: 'Metas' },
-    { keys: 'G → T', description: 'Tarefas' },
-    { keys: 'G → F', description: 'Financeiro' },
-    { keys: 'G → P', description: 'Produção' },
-    { keys: 'G → S', description: 'Configurações' },
+    { keys: 'G + D', description: 'Início' },
+    { keys: 'G + V', description: 'Vendas' },
+    { keys: 'G + C', description: 'CRM' },
+    { keys: 'G + E', description: 'Despachos' },
+    { keys: 'G + M', description: 'Metas' },
+    { keys: 'G + T', description: 'Tarefas' },
+    { keys: 'G + F', description: 'Financeiro' },
+    { keys: 'G + P', description: 'Produção' },
+    { keys: 'G + S', description: 'Configurações' },
   ],
   'Nova Entrada': [
-    { keys: 'N → T', description: 'Nova tarefa' },
-    { keys: 'N → L', description: 'Novo lead' },
+    { keys: 'N + T', description: 'Nova tarefa' },
+    { keys: 'N + L', description: 'Novo lead' },
+    { keys: 'N + V', description: 'Nova venda B2C' },
   ],
   Sistema: [
     { keys: 'Ctrl + K', description: 'Abrir paleta de comandos' },
     { keys: '?', description: 'Ver atalhos de teclado' },
     { keys: 'Escape', description: 'Fechar modais' },
   ],
-}
-
-function dispatch(action: string) {
-  window.dispatchEvent(new CustomEvent('purion:action', { detail: { action } }))
 }
 
 export function KeyboardShortcuts() {
@@ -68,8 +66,9 @@ export function KeyboardShortcuts() {
   }, { enableOnFormTags: false })
 
   // Quick actions
-  useHotkeys('n+t', () => dispatch('nova-tarefa'), { enableOnFormTags: false })
-  useHotkeys('n+l', () => dispatch('novo-lead'),   { enableOnFormTags: false })
+  useHotkeys('n+t', () => { dispararAcaoRapida('nova-tarefa'); router.push('/tarefas') }, { enableOnFormTags: false })
+  useHotkeys('n+l', () => { dispararAcaoRapida('novo-lead'); router.push('/crm') },      { enableOnFormTags: false })
+  useHotkeys('n+v', () => { dispararAcaoRapida('nova-venda-b2c'); router.push('/vendas') }, { enableOnFormTags: false })
 
   // Listen for purion:open-palette to show modal
   useEffect(() => {
