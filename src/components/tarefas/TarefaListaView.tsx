@@ -74,6 +74,10 @@ interface TarefaListaViewProps {
   onAbrirTarefa: (tarefa: Tarefa) => void
   onConcluirRapido: (tarefa: Tarefa) => void
   onNovaTarefa: (colunaId: ColunaTarefa) => void
+  /** seleção para ações em lote (só na tabela do desktop) */
+  selecionados?: Set<string>
+  onToggleSel?: (id: string) => void
+  onToggleVarios?: (ids: string[], marcar: boolean) => void
 }
 
 function ThSortable({ label, campo, ordenacao, onSort }: {
@@ -94,12 +98,12 @@ function ThSortable({ label, campo, ordenacao, onSort }: {
   )
 }
 
-function GrupoHeader({ label, cor, count, collapsed, onToggle }: {
-  label: string; cor?: string; count: number; collapsed: boolean; onToggle: () => void
+function GrupoHeader({ label, cor, count, collapsed, onToggle, colunas = 8 }: {
+  label: string; cor?: string; count: number; collapsed: boolean; onToggle: () => void; colunas?: number
 }) {
   return (
     <tr>
-      <td colSpan={8} style={{ padding: 0 }}>
+      <td colSpan={colunas} style={{ padding: 0 }}>
         <button
           onClick={onToggle}
           style={{
@@ -133,10 +137,12 @@ function GrupoHeader({ label, cor, count, collapsed, onToggle }: {
   )
 }
 
-function TarefaLinha({ t, onAbrirTarefa, onConcluirRapido }: {
+function TarefaLinha({ t, onAbrirTarefa, onConcluirRapido, selecionada, onToggleSel }: {
   t: Tarefa
   onAbrirTarefa: (t: Tarefa) => void
   onConcluirRapido: (t: Tarefa) => void
+  selecionada?: boolean
+  onToggleSel?: (id: string) => void
 }) {
   const prio = PRIORIDADE_CONFIG[t.prioridade]
   const info = socioInfo(t.responsavel)
@@ -149,8 +155,16 @@ function TarefaLinha({ t, onAbrirTarefa, onConcluirRapido }: {
     <tr
       onClick={() => onAbrirTarefa(t)}
       style={{ cursor: 'pointer' }}
-      className="hover:bg-[rgba(212,252,60,0.03)] purion-row"
+      className={`purion-row linha-selecionavel${selecionada ? ' linha-selecionada' : ''}`}
     >
+      {onToggleSel && (
+        <td onClick={(e) => e.stopPropagation()} style={{ width: 32, paddingRight: 0 }}>
+          <input
+            type="checkbox" className="sel-check" checked={!!selecionada}
+            onChange={() => onToggleSel(t.id)} aria-label={`Selecionar ${t.titulo}`}
+          />
+        </td>
+      )}
       <td onClick={(e) => e.stopPropagation()} style={{ width: 36 }}>
         <label className="check-draw-label">
           <input
@@ -226,7 +240,9 @@ function TarefaLinha({ t, onAbrirTarefa, onConcluirRapido }: {
   )
 }
 
-export function TarefaListaView({ tarefas, groupBy, onAbrirTarefa, onConcluirRapido, onNovaTarefa }: TarefaListaViewProps) {
+export function TarefaListaView({ tarefas, groupBy, onAbrirTarefa, onConcluirRapido, onNovaTarefa, selecionados, onToggleSel, onToggleVarios }: TarefaListaViewProps) {
+  const comSelecao = !!onToggleSel
+  const colunas = comSelecao ? 9 : 8
   const isMobile = useMobile()
   const [ordenacao, setOrdenacao] = useState<{ campo: CampoOrdenacao; direcao: Direcao }>({ campo: 'dueDate', direcao: 'asc' })
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
@@ -325,6 +341,7 @@ export function TarefaListaView({ tarefas, groupBy, onAbrirTarefa, onConcluirRap
       <div style={{ overflowX: 'auto' }}>
         <table className="table-purion" style={{ tableLayout: 'fixed', width: '100%' }}>
           <colgroup>
+            {comSelecao && <col style={{ width: 32 }} />}
             <col style={{ width: 36 }} />
             <col style={{ minWidth: 220 }} />
             <col style={{ width: 140 }} />
@@ -336,6 +353,16 @@ export function TarefaListaView({ tarefas, groupBy, onAbrirTarefa, onConcluirRap
           </colgroup>
           <thead>
             <tr>
+              {comSelecao && (
+                <th style={{ width: 32, paddingRight: 0 }}>
+                  <input
+                    type="checkbox" className="sel-check" aria-label="Selecionar todas as tarefas visíveis"
+                    checked={tarefas.length > 0 && tarefas.every((t) => selecionados?.has(t.id))}
+                    ref={(el) => { if (el) el.indeterminate = !!selecionados && selecionados.size > 0 && !tarefas.every((t) => selecionados.has(t.id)) }}
+                    onChange={(e) => onToggleVarios?.(tarefas.map((t) => t.id), e.target.checked)}
+                  />
+                </th>
+              )}
               <th />
               <ThSortable label="Nome"         campo="titulo"     ordenacao={ordenacao} onSort={handleSort} />
               <ThSortable label="Responsável"  campo="responsavel" ordenacao={ordenacao} onSort={handleSort} />
@@ -356,6 +383,7 @@ export function TarefaListaView({ tarefas, groupBy, onAbrirTarefa, onConcluirRap
                     count={grupo.tarefas.length}
                     collapsed={!!collapsed[grupo.id]}
                     onToggle={() => toggleGrupo(grupo.id)}
+                    colunas={colunas}
                   />
                 )}
                 {!collapsed[grupo.id] && grupo.tarefas.map((t) => (
@@ -364,11 +392,13 @@ export function TarefaListaView({ tarefas, groupBy, onAbrirTarefa, onConcluirRap
                     t={t}
                     onAbrirTarefa={onAbrirTarefa}
                     onConcluirRapido={onConcluirRapido}
+                    selecionada={selecionados?.has(t.id)}
+                    onToggleSel={onToggleSel}
                   />
                 ))}
                 {!collapsed[grupo.id] && (
                   <tr>
-                    <td colSpan={8} style={{ padding: 0 }}>
+                    <td colSpan={colunas} style={{ padding: 0 }}>
                       <button
                         onClick={() => onNovaTarefa('pendente')}
                         style={{

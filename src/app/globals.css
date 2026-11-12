@@ -1339,3 +1339,9 @@
 .trabalho-linha:hover .trabalho-acoes, .trabalho-acoes:focus-within { opacity: 1; }
 @media (pointer: coarse) { .trabalho-acoes { opacity: 1; } .trabalho-check { width: 28px; height: 28px; } }
 @media (max-width: 640px) { .trabalho-data { display: none; } }
+
+/* Seleção em lote nas tabelas */
+.sel-check { width: 15px; height: 15px; cursor: pointer; accent-color: var(--brand-accent); vertical-align: middle; }
+.linha-selecionada td { background: color-mix(in srgb, var(--brand-accent) 6%, transparent); }
+.linha-selecionavel:hover td { background: color-mix(in srgb, var(--foreground) 3%, transparent); }
+.linha-selecionada:hover td { background: color-mix(in srgb, var(--brand-accent) 9%, transparent); }

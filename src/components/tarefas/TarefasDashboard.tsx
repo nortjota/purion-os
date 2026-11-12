@@ -2,7 +2,7 @@
 
 import { useAcaoRapida } from '@/lib/acaoRapida'
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, SlidersHorizontal, X, List, Columns3, GanttChart, CalendarDays, BarChart3 } from 'lucide-react'
+import { Plus, SlidersHorizontal, X, Check, List, Columns3, GanttChart, CalendarDays, BarChart3 } from 'lucide-react'
 import { Segmentado } from '@/components/ui/Segmentado'
 import { MetricStrip, type MetricaFaixa } from '@/components/ui/MetricStrip'
 import { usePurionStore } from '@/store'
@@ -11,7 +11,10 @@ import { useMobile } from '@/hooks/useMobile'
 import { BottomSheet } from '@/components/ui/BottomSheet'
 import { useTarefas } from '@/hooks/useTarefas'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
-import { type ColunaTarefa, type GroupBy } from './tarefasHelpers'
+import { BulkActionsBar } from '@/components/ui/BulkActionsBar'
+import { useToast } from '@/components/ui/Toast'
+import { confirmar } from '@/components/ui/Confirmar'
+import { type ColunaTarefa, type GroupBy, SOCIOS, STATUS_LABEL, PRIORIDADE_CONFIG } from './tarefasHelpers'
 import { TarefaFiltros, FILTROS_VAZIOS, aplicarFiltros, type FiltrosTarefas } from './TarefaFiltros'
 import { TarefaKanbanView } from './TarefaKanbanView'
 import { TarefaListaView } from './TarefaListaView'
@@ -96,6 +99,61 @@ export function TarefasDashboard() {
       completedAt: novoStatus === 'concluida' ? new Date().toISOString() : null,
     })
   }
+
+  // ── Ações em lote (lista) ──
+  const { toast } = useToast()
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set())
+  const [processandoLote, setProcessandoLote] = useState(false)
+  function toggleSel(id: string) {
+    setSelecionados((prev) => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n })
+  }
+  function toggleVarios(ids: string[], marcar: boolean) {
+    setSelecionados((prev) => { const n = new Set(prev); ids.forEach((id) => { if (marcar) n.add(id); else n.delete(id) }); return n })
+  }
+  // a seleção acompanha o filtro e só existe na visão de lista
+  useEffect(() => {
+    if (visao !== 'lista') { setSelecionados((prev) => (prev.size ? new Set() : prev)); return }
+    const visiveis = new Set(tarefasFiltradas.map((t) => t.id))
+    setSelecionados((prev) => { const n = new Set([...prev].filter((id) => visiveis.has(id))); return n.size === prev.size ? prev : n })
+  }, [tarefasFiltradas, visao])
+  useEffect(() => {
+    if (selecionados.size === 0) return
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !document.querySelector('.modal-backdrop, [data-modal]')) setSelecionados(new Set())
+    }
+    window.addEventListener('keydown', esc)
+    return () => window.removeEventListener('keydown', esc)
+  }, [selecionados.size])
+
+  /** Aplica a mesma mudança em todas as selecionadas, com "Desfazer" que devolve cada uma ao estado anterior. */
+  async function aplicarEmLote(mudar: (t: Tarefa) => Partial<Tarefa>, rotulo: string) {
+    const alvo = tarefas.filter((t) => selecionados.has(t.id))
+    if (alvo.length === 0) return
+    setProcessandoLote(true)
+    const mudancas = alvo.map((t) => {
+      const novo = mudar(t)
+      const anterior = Object.fromEntries(Object.keys(novo).map((k) => [k, t[k as keyof Tarefa] ?? null])) as Partial<Tarefa>
+      return { id: t.id, novo, anterior }
+    })
+    await Promise.all(mudancas.map(({ id, novo }) => atualizarTarefa(id, novo)))
+    setProcessandoLote(false)
+    setSelecionados(new Set())
+    toast({
+      type: 'success', title: `${alvo.length} tarefa${alvo.length > 1 ? 's' : ''}: ${rotulo}`, duration: 7000,
+      action: { label: 'Desfazer', onClick: () => { void Promise.all(mudancas.map(({ id, anterior }) => atualizarTarefa(id, anterior))) } },
+    })
+  }
+
+  async function excluirEmLote() {
+    const n = selecionados.size
+    if (!(await confirmar({ titulo: `Excluir ${n} tarefa${n > 1 ? 's' : ''}?`, mensagem: 'Elas vão para a Lixeira (Configurações › Lixeira), de onde podem ser restauradas.' }))) return
+    setProcessandoLote(true)
+    await Promise.all([...selecionados].map((id) => deletarTarefa(id)))
+    setProcessandoLote(false)
+    setSelecionados(new Set())
+  }
+
+  const somarDiasLote = (dias: number) => { const d = new Date(); d.setDate(d.getDate() + dias); return d.toISOString().slice(0, 10) }
 
   function handleConfirmarDelete() {
     if (deletando) {
@@ -198,6 +256,9 @@ export function TarefasDashboard() {
               onAbrirTarefa={(t) => setTarefaSelecionadaId(t.id)}
               onConcluirRapido={handleConcluirRapido}
               onNovaTarefa={handleNovaTarefa}
+              selecionados={isMobile ? undefined : selecionados}
+              onToggleSel={isMobile ? undefined : toggleSel}
+              onToggleVarios={isMobile ? undefined : toggleVarios}
             />
           </div>
         )}
@@ -294,6 +355,47 @@ export function TarefasDashboard() {
       )}
 
       {/* ── Confirmar delete ── */}
+      {visao === 'lista' && (
+        <BulkActionsBar
+          selecionados={selecionados.size}
+          total={tarefasFiltradas.length}
+          onLimpar={() => setSelecionados(new Set())}
+          onSelecionarTodos={() => toggleVarios(tarefasFiltradas.map((t) => t.id), true)}
+          onArquivar={excluirEmLote}
+          rotuloArquivar="Excluir"
+          processando={processandoLote}
+          acoes={[
+            { label: 'Concluir', icon: Check, principal: true, onClick: () => aplicarEmLote(() => ({ status: 'concluida', completedAt: new Date().toISOString() }), 'concluídas') },
+            { label: 'Para amanhã', onClick: () => aplicarEmLote(() => ({ dueDate: somarDiasLote(1) }), 'prazo para amanhã') },
+          ]}
+          campos={[
+            {
+              key: 'responsavel', label: 'Responsável',
+              options: SOCIOS.map((x) => ({ value: x.id, label: x.nome })),
+              onAplicar: (v) => aplicarEmLote(() => ({ responsavel: v as Tarefa['responsavel'] }), `responsável ${SOCIOS.find((x) => x.id === v)?.nome ?? v}`),
+            },
+            {
+              key: 'prazo', label: 'Prazo',
+              options: [
+                { value: '0', label: 'Hoje' }, { value: '7', label: 'Daqui a 1 semana' },
+                { value: '30', label: 'Daqui a 1 mês' }, { value: 'sem', label: 'Sem prazo' },
+              ],
+              onAplicar: (v) => aplicarEmLote(() => ({ dueDate: v === 'sem' ? null : somarDiasLote(Number(v)) }), v === 'sem' ? 'sem prazo' : 'prazo alterado'),
+            },
+            {
+              key: 'prioridade', label: 'Prioridade',
+              options: (Object.keys(PRIORIDADE_CONFIG) as Tarefa['prioridade'][]).map((k) => ({ value: k, label: PRIORIDADE_CONFIG[k].label })),
+              onAplicar: (v) => aplicarEmLote(() => ({ prioridade: v as Tarefa['prioridade'] }), `prioridade ${PRIORIDADE_CONFIG[v as Tarefa['prioridade']].label.toLowerCase()}`),
+            },
+            {
+              key: 'status', label: 'Status',
+              options: (Object.keys(STATUS_LABEL) as Tarefa['status'][]).filter((k) => k !== 'cancelada' && k !== 'bloqueada').map((k) => ({ value: k, label: STATUS_LABEL[k] })),
+              onAplicar: (v) => aplicarEmLote((t) => ({ status: v as Tarefa['status'], completedAt: v === 'concluida' ? (t.completedAt ?? new Date().toISOString()) : null }), STATUS_LABEL[v as Tarefa['status']].toLowerCase()),
+            },
+          ]}
+        />
+      )}
+
       <ConfirmModal
         open={!!deletando}
         title="Excluir Tarefa"
