@@ -34,6 +34,57 @@ const EVENTO_PARA_STATUS: Record<string, string> = {
 
 type AppmaxData = Record<string, unknown>
 
+// Status do gateway → vocabulário que o CRM usa no fluxo de pagamento (Despacho, KPIs, Clientes).
+// Sem isso a venda do site ficava "pendente" para sempre e nunca entrava na fila de despacho.
+const STATUS_PARA_PAGAMENTO: Record<string, 'pago' | 'pendente' | 'estornado' | 'cancelado'> = {
+  aprovado: 'pago',
+  pendente: 'pendente',
+  recusado: 'cancelado',
+  reembolsado: 'estornado',
+  estornado: 'estornado',
+}
+
+// Eventos em que o cliente chegou ao pagamento e não concluiu → vira carrinho a recuperar.
+const EVENTOS_CARRINHO_PERDIDO = new Set(['order_pix_expired', 'order_billet_overdue', 'payment_not_authorized'])
+
+// IDs de produto do checkout (pay.puriongt.com.br) → SKU da escada. Mantenha igual ao site.
+const PRODUTO_PARA_SKU: Record<string, { sku: string; frascos: number }> = {
+  '12c09776-a3c7-11f1-a1eb-46da4690ad53': { sku: 'frasco_60ml', frascos: 1 },
+  '5611c8a9-946a-11f1-a1eb-46da4690ad53': { sku: 'kit_2', frascos: 2 },
+}
+
+function primeiro(...vals: unknown[]): string {
+  for (const v of vals) if (v != null && String(v).trim()) return String(v).trim()
+  return ''
+}
+
+/** SKU pelo ID do produto no checkout; sem ID conhecido, pelo nome ("kit 3", "3 frascos"…). */
+function inferirSku(produtos: Array<Record<string, unknown>>, nome: string): { sku: string; frascos: number } {
+  for (const p of produtos) {
+    const id = primeiro(p.id, p.sku, p.product_id, p.external_id)
+    if (PRODUTO_PARA_SKU[id]) return PRODUTO_PARA_SKU[id]
+  }
+  const n = nome.toLowerCase()
+  if (/kit\s*3|3\s*frascos/.test(n)) return { sku: 'kit_3', frascos: 3 }
+  if (/kit\s*2|2\s*frascos/.test(n)) return { sku: 'kit_2', frascos: 2 }
+  if (/discovery|amostra/.test(n)) return { sku: 'discovery', frascos: 0 }
+  return { sku: 'frasco_60ml', frascos: 1 }
+}
+
+/** Endereço de entrega: a Appmax manda no cliente (address_*) ou num objeto shipping/address. */
+function extrairEndereco(cliente: Record<string, unknown>, data: AppmaxData) {
+  const end = ((data.shipping ?? data.address ?? cliente.address) as Record<string, unknown> | undefined) ?? {}
+  return {
+    cep:         primeiro(cliente.postcode, cliente.zip_code, cliente.cep, end.postcode, end.zip_code, end.cep) || null,
+    endereco:    primeiro(cliente.address_street, end.street, end.address, end.logradouro) || null,
+    numero:      primeiro(cliente.address_street_number, end.number, end.numero) || null,
+    complemento: primeiro(cliente.address_street_complement, end.complement, end.complemento) || null,
+    bairro:      primeiro(cliente.address_street_district, end.district, end.neighborhood, end.bairro) || null,
+    cidade:      primeiro(cliente.address_city, end.city, end.cidade) || null,
+    uf:          primeiro(cliente.address_state, end.state, end.uf) || null,
+  }
+}
+
 function num(v: unknown): number {
   if (typeof v === 'number') return v
   if (typeof v === 'string') return parseFloat(v.replace(',', '.')) || 0
@@ -133,41 +184,89 @@ export async function POST(req: NextRequest) {
   // ── Upsert idempotente em vendas (chave: pedido_appmax) ──────
   const { data: vendaExistente } = await db
     .from('vendas')
-    .select('id, status')
+    .select('id, status, status_pagamento')
     .eq('pedido_appmax', pedidoAppmax)
     .maybeSingle()
 
-  const vendaPayload = {
+  // Eventos podem chegar fora de ordem: um "pendente" atrasado não desfaz um pedido já pago.
+  let statusPagamento = STATUS_PARA_PAGAMENTO[status] ?? 'pendente'
+  if (vendaExistente?.status_pagamento === 'pago' && statusPagamento === 'pendente') statusPagamento = 'pago'
+  const statusFinal = vendaExistente?.status === 'aprovado' && status === 'pendente' ? 'aprovado' : status
+
+  const { sku, frascos } = inferirSku(produtos, produtoNome)
+  const documento = primeiro(cliente.document_number, cliente.cpf, cliente.document, cliente.cpf_cnpj, data.customer_document).replace(/\D/g, '')
+
+  const vendaPayload: Record<string, unknown> = {
     pedido_appmax:    pedidoAppmax,
     cliente_nome:     str(cliente.fullname ?? cliente.name ?? data.customer_name ?? ''),
-    cliente_email:    str(cliente.email ?? data.customer_email ?? ''),
+    cliente_email:    str(cliente.email ?? data.customer_email ?? '').trim().toLowerCase(),
     cliente_telefone: str(cliente.telephone ?? cliente.phone ?? data.customer_phone ?? ''),
+    cliente_documento: documento || null,
+    ...extrairEndereco(cliente, data),
     valor_bruto:      valorBruto,
-    valor_liquido:     valorLiquido,
+    valor_liquido:    valorLiquido,
+    valor_total:      valorBruto,
     taxa,
-    status,
+    status:           statusFinal,
+    status_pagamento: statusPagamento,
     metodo_pagamento: extrairMetodoPagamento(data),
     parcelas:         Number((data.payment as Record<string, unknown> | undefined)?.installments ?? data.installments ?? 1) || 1,
     canal,
     afiliado_codigo:  afiliadoCodigo,
     produto:          produtoNome,
     quantidade,
-    data_venda:       new Date().toISOString(),
+    sku_codigo:          sku,
+    frascos_por_unidade: frascos,
     tenant_id:        PURION_TENANT_ID,
   }
+  // a data da venda é a do primeiro evento; os seguintes só atualizam o status
+  if (!vendaExistente) vendaPayload.data_venda = new Date().toISOString()
+  // endereço vazio num evento posterior não apaga o que já veio antes
+  for (const k of ['cep', 'endereco', 'numero', 'complemento', 'bairro', 'cidade', 'uf', 'cliente_documento']) {
+    if (vendaExistente && vendaPayload[k] == null) delete vendaPayload[k]
+  }
+
+  /** Antes da migration da escada (sku_codigo/frascos_por_unidade) o upsert não pode quebrar. */
+  const semColunasNovas = (e: { code?: string; message?: string } | null) =>
+    !!e && (e.code === 'PGRST204' || /sku_codigo|frascos_por_unidade|cliente_documento|status_pagamento|valor_total/.test(e.message ?? ''))
+  const salvar = async (dados: Record<string, unknown>) => vendaExistente
+    ? db.from('vendas').update(dados).eq('id', vendaExistente.id).select('id').single()
+    : db.from('vendas').insert(dados).select('id').single()
 
   let vendaId: string | undefined
-  if (vendaExistente) {
-    const { data: upd } = await db.from('vendas').update(vendaPayload).eq('id', vendaExistente.id).select('id').single()
-    vendaId = upd?.id
-  } else {
-    const { data: ins, error: insErr } = await db.from('vendas').insert(vendaPayload).select('id').single()
-    if (insErr) {
-      console.error('[webhook/appmax] erro ao inserir venda:', insErr.message)
-      if (logRow) await db.from('webhook_logs').update({ status_processamento: 'erro' }).eq('id', logRow.id)
-      return NextResponse.json({ ok: true, msg: 'Erro ao registrar venda (logado)' })
-    }
-    vendaId = ins?.id
+  let { data: salvo, error: erroSalvar } = await salvar(vendaPayload)
+  if (semColunasNovas(erroSalvar)) {
+    const { sku_codigo: _s, frascos_por_unidade: _f, ...semEscada } = vendaPayload
+    ;({ data: salvo, error: erroSalvar } = await salvar(semEscada))
+  }
+  if (erroSalvar) {
+    console.error('[webhook/appmax] erro ao salvar venda:', erroSalvar.message)
+    if (logRow) await db.from('webhook_logs').update({ status_processamento: 'erro' }).eq('id', logRow.id)
+    return NextResponse.json({ ok: true, msg: 'Erro ao registrar venda (logado)' })
+  }
+  vendaId = salvo?.id
+
+  // ── Carrinho a recuperar: chegou ao pagamento e não pagou (Pix/boleto vencido, cartão recusado) ──
+  const emailCliente = str(vendaPayload.cliente_email)
+  if (EVENTOS_CARRINHO_PERDIDO.has(evento) && emailCliente) {
+    const { error: errCarrinho } = await db.from('carrinhos_abandonados').insert({
+      tenant_id:   PURION_TENANT_ID,
+      nome:        vendaPayload.cliente_nome || null,
+      email:       emailCliente,
+      telefone:    vendaPayload.cliente_telefone || null,
+      etapa:       'pagamento',
+      produtos:    produtos.map((p) => ({ name: str(p.name), qty: Number(p.quantity) || 1, price: num(p.price) })),
+      valor_total: valorBruto,
+      utm_source:  primeiro(data.utm_source, (data as { utm?: Record<string, unknown> }).utm?.source) || null,
+      recuperado:  false,
+    })
+    if (errCarrinho) console.error('[webhook/appmax] carrinho não registrado:', errCarrinho.message)
+  }
+  // Pagou: qualquer carrinho em aberto do mesmo e-mail conta como recuperado
+  if (statusPagamento === 'pago' && emailCliente) {
+    await db.from('carrinhos_abandonados').update({ recuperado: true, atualizado_em: new Date().toISOString() })
+      .eq('email', emailCliente).eq('recuperado', false)
+      .then(({ error }) => { if (error) console.error('[webhook/appmax] carrinho não marcado como recuperado:', error.message) })
   }
 
   // ── Quando aprovado E ainda não tinha sido aprovado antes: lança no financeiro ──
