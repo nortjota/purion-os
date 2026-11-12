@@ -1345,3 +1345,22 @@
 .linha-selecionada td { background: color-mix(in srgb, var(--brand-accent) 6%, transparent); }
 .linha-selecionavel:hover td { background: color-mix(in srgb, var(--foreground) 3%, transparent); }
 .linha-selecionada:hover td { background: color-mix(in srgb, var(--brand-accent) 9%, transparent); }
+
+/* Ficha do cliente: painel lateral */
+.ficha-fundo { position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,0.55); display: flex; justify-content: flex-end; }
+.ficha-painel {
+  width: min(560px, 100vw); height: 100%; overflow-y: auto; padding: 22px 24px 40px;
+  background: var(--popover); border-left: 1px solid var(--border); box-shadow: var(--shadow-float);
+  animation: ficha-entra var(--dur-base) var(--ease-expo) both;
+}
+@keyframes ficha-entra { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.ficha-linha { list-style: none; margin: 0; padding: 0; }
+.ficha-evento {
+  display: flex; align-items: flex-start; gap: 10px; padding: 9px 8px; border-radius: 10px; text-decoration: none; color: inherit;
+}
+a.ficha-evento:hover { background: color-mix(in srgb, var(--foreground) 5%, transparent); }
+.ficha-linha li + li .ficha-evento { box-shadow: 0 -1px 0 var(--border); }
+.ficha-icone {
+  width: 26px; height: 26px; border-radius: 999px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-secondary); background: color-mix(in srgb, var(--foreground) 6%, transparent);
+}

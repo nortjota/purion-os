@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { X, User, MapPin, Package, CreditCard, Truck, Users, FileText, Building2, TrendingUp, Check } from 'lucide-react'
 import type { Venda } from '@/store'
 import { formatarDataBR } from '@/lib/calculos'
@@ -116,6 +118,7 @@ export function ModalDetalheVenda({ venda: v, onFechar }: Props) {
               <span className="text-[var(--text-primary)] font-semibold">{v.canal.toUpperCase()}</span>
               {v.pedidoAppmax && ` · Appmax #${v.pedidoAppmax}`}
               {' '}· {formatarDataBR(v.dataVenda.slice(0, 10))}
+              {' '}· <Link href={`/clientes?venda=${v.id}`} onClick={onFechar} className="link-limpar" style={{ padding: 0 }}>Ficha do cliente</Link>
             </p>
           </div>
           <button
