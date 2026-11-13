@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Archivo, Geist, Geist_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import { StoreProvider }  from '@/components/providers/StoreProvider'
 import { ThemeProvider }  from '@/components/providers/ThemeProvider'
@@ -9,22 +9,24 @@ import { ToastProvider } from '@/components/ui/Toast'
 
 // Brand Book PURION GT: Archivo (títulos — substituta oficial da Grift),
 // Geist (texto) e Geist Mono (rótulos, números, preço).
-const archivo = Archivo({
-  subsets: ['latin'],
+// Fontes servidas do próprio repositório (variáveis, subset latin): o build não depende
+// mais do Google Fonts — falhas intermitentes de download derrubavam deploys na Vercel.
+const archivo = localFont({
+  src: './fonts/archivo.woff2',
   variable: '--font-archivo',
-  weight: ['600', '700', '800'],
+  weight: '100 900',
   display: 'swap',
 })
-const geist = Geist({
-  subsets: ['latin'],
+const geist = localFont({
+  src: './fonts/geist.woff2',
   variable: '--font-geist-sans',
-  weight: ['400', '500', '600'],
+  weight: '100 900',
   display: 'swap',
 })
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
+const geistMono = localFont({
+  src: './fonts/geist-mono.woff2',
   variable: '--font-geist-mono',
-  weight: ['400', '500'],
+  weight: '100 900',
   display: 'swap',
 })
 
