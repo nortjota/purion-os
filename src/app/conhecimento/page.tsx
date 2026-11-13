@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { ConhecimentoDashboard } from '@/components/conhecimento/ConhecimentoDashboard'
+import { ConhecimentoHub } from '@/components/conhecimento/ConhecimentoHub'
 
 export const metadata: Metadata = { title: 'Central de Conhecimento' }
 
 export default function ConhecimentoPage() {
-  return <ConhecimentoDashboard />
+  return <ConhecimentoHub />
 }
