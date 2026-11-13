@@ -13,7 +13,7 @@ import { useEffect, useRef } from 'react'
 export type AcaoRapida =
   | 'nova-tarefa' | 'novo-lead' | 'nova-venda-b2c' | 'nova-venda-b2b'
   | 'registrar-receita' | 'registrar-despesa' | 'novo-lote' | 'adicionar-creator'
-  | 'registrar-daily' | 'novo-evento' | 'novo-ticket' | 'ajustar-estoque'
+  | 'registrar-daily' | 'novo-evento' | 'novo-ticket' | 'ajustar-estoque' | 'nova-ideia-video'
 
 const EVENTO = 'purion:action'
 const VALIDADE_MS = 6000
@@ -65,4 +65,5 @@ export const ACOES_RAPIDAS: ReadonlyArray<{ label: string; action: AcaoRapida; h
   { label: 'Registrar receita',  action: 'registrar-receita', href: '/financeiro', grupo: 'Operação & gestão' },
   { label: 'Registrar despesa',  action: 'registrar-despesa', href: '/financeiro', grupo: 'Operação & gestão' },
   { label: 'Adicionar creator',  action: 'adicionar-creator', href: '/creators',   grupo: 'Operação & gestão' },
+  { label: 'Nova ideia de vídeo (TikTok)', action: 'nova-ideia-video', href: '/tiktok?tab=studio', grupo: 'Operação & gestão' },
 ]

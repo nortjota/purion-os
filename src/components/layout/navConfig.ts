@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Users, CheckSquare, TrendingUp,
   Package, Users2, BarChart2, Calendar, Settings,
   BookOpen, Megaphone, Link2, Headphones, Mail, KeyRound, ShoppingBag, Target, Shapes, FlaskConical, Compass, CalendarDays,
-  Truck, HeartHandshake, Inbox, Contact,
+  Truck, HeartHandshake, Inbox, Contact, Clapperboard,
 } from 'lucide-react'
 
 export interface NavItemConfig {
@@ -71,6 +71,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: 'CRESCIMENTO',
     items: [
       { key: 'marketing', href: '/marketing', label: 'Marketing', icon: Megaphone },
+      { key: 'tiktok',    href: '/tiktok',    label: 'TikTok',    icon: Clapperboard },
       { key: 'creators',  href: '/creators',  label: 'Creators',  icon: Users2 },
       { key: 'afiliados', href: '/afiliados', label: 'Afiliados', icon: Link2 },
       { key: 'growth',    href: '/growth',    label: 'Growth',    icon: FlaskConical },
